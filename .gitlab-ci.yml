@@ -1,0 +1,80 @@
+default:
+  image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+  tags:
+    - k8s-cvmfs
+  before_script:
+    - ulimit -n 1048576
+    - set +e
+    - export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+    - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh --quiet
+    - asetup StatAnalysis,0.2,latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
+stages:
+  - build
+  - check
+
+cmake:
+  stage: build
+  script:
+     - mkdir -p build && cd build
+     - cmake .. | tee cmake.log
+  artifacts:
+     paths:
+      - build
+     expire_in: 1d
+
+compile:
+  stage: build
+  needs:
+    - cmake
+  script:
+     - cd build
+     - make clean #make sure we don't have residual compilation results
+     - make -j4 2>&1 | tee -a cmake.log  #dump the log files
+  artifacts:
+     paths:
+      - build
+     expire_in: 1d
+
+compile_root_latest:
+  stage: build
+  before_script:
+    - set +e # overwrite default, do nothing
+  script:
+     - export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+     - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh --quiet
+     - asetup main,StatAnalysis,latest
+     - mkdir -p build && cd build
+     - cmake .. | tee cmake.log
+     - make clean #make sure we don't have residual compilation results
+     - make -j4 2>&1 | tee -a cmake.log  #dump the log files
+  allow_failure: true
+
+cppcheck:
+  stage: check
+  # image is from https://hub.docker.com/r/neszt/cppcheck-docker
+  image:
+    name: registry.cern.ch/docker.io/neszt/cppcheck-docker:latest
+    entrypoint: [""]
+  before_script:
+    - "" # overwrite default, do nothing
+  needs:
+    - compile
+  script:
+    - cppcheck --version
+    - echo "running cppcheck"
+    - set +e
+    - echo $ROOTSYS
+    - cppcheck --enable=all --verbose --output-file=cppcheck.txt --inline-suppr --language=c++ --suppress=useStlAlgorithm --project=build/compile_commands.json --suppress=missingIncludeSystem --check-level=exhaustive
+    - cat cppcheck.txt
+    - source test/scripts/cppcheck_output.sh
+  allow_failure: true
+  artifacts:
+    paths:
+      - cppcheck.txt
+    expire_in: 1d
+    when: always
+
