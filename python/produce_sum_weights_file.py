@@ -2,56 +2,76 @@ from ROOT import TFile, TTree
 from sys import argv
 import os
 
-class Metadata:
-    def __init__(self):
-        self.dsid        = 0
-        self.campaign    = ""
-        self.data_type = "mc"
+def read_filelist(main_folder : str) -> str:
+    filelist = {}
+    with open(main_folder + "/filelist.txt") as f:
+        for line in f.readlines():
+            elements = line.split()
+            key = tuple(elements[:-1])
+            file_name = elements[-1]
+            if key not in filelist:
+                filelist[key] = []
+            filelist[key].append(file_name)
+    return filelist
 
-    def get_metadata_tuple(self):
-        return (self.dsid, self.campaign, self.data_type)
+def get_variation_name(histo_name : str) -> str:
+    elements = histo_name.split("_")
+    if len(elements) < 4:
+        return ""
+    if elements[0] != "CutBookkeeper":
+        return ""
+    if not (elements[1].isdigit() and elements[2].isdigit()):
+        return ""
+    return "_".join(elements[3:])
 
-def get_list_of_root_files_in_folder(folder_path : str) -> list:
-    return [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(".root")]
-
-def get_metadata_string(root_file : TFile, key : str) -> str:
-    tnamed_object = root_file.Get(key)
-    if tnamed_object == None:
-        raise Exception("Could not find key {} in file {}".format(key, root_file.GetName()))
-    return tnamed_object.GetTitle()
-
-def get_file_metadata(file_path : str) -> Metadata:
-    metadata = Metadata()
-    root_file = TFile(file_path)
-    metadata.dsid        = int(get_metadata_string(root_file, "dsid"))
-    metadata.campaign    = get_metadata_string(root_file, "campaign")
-    metadata.data_type = get_metadata_string(root_file, "dataType")
+def get_sum_of_weights_for_single_file(root_file : str) -> dict:
+    result = {}
+    root_file = TFile(root_file)
+    # loop over all objects in file
+    for key in root_file.GetListOfKeys():
+        if key.GetClassName() == "TH1F":
+            histogram = key.ReadObj()
+            histogram_name = histogram.GetName()
+            variation_name = get_variation_name(histogram_name)
+            if variation_name == "":
+                continue
+            sum_of_weights = histogram.GetBinContent(2)
+            result[variation_name] = sum_of_weights
     root_file.Close()
-    return metadata
+    return result
 
-def produce_filelist(root_files_folder : str) -> None:
-    sample_map = {}
-
-    root_files = get_list_of_root_files_in_folder(root_files_folder)
-    filelist_address = root_files_folder + "/filelist.txt"
+def get_sum_of_weights_for_sample(root_files : list) -> dict:
+    result = {}
+    result_initialized = False
     for root_file in root_files:
-        metadata = get_file_metadata(root_file)
-        metadata_tuple = metadata.get_metadata_tuple()
-        if metadata_tuple not in sample_map:
-            sample_map[metadata_tuple] = []
-        sample_map[metadata_tuple].append(root_file)
+        sum_of_weights_for_single_file = get_sum_of_weights_for_single_file(root_file)
+        for variation_name, sum_of_weights in sum_of_weights_for_single_file.items():
+            if variation_name not in result:
+                if result_initialized:
+                    raise Exception("Variation {} found in file {} but not in other files".format(variation_name, root_file))
+                result[variation_name] = 0
+            result[variation_name] += sum_of_weights
+        result_initialized = True
+    return result
 
-    MAX_METADATA_ITEM_LENGTHS = [8 for i in range(len(metadata_tuple))]
-    with open(filelist_address, "w") as filelist:
-        for metadata_tuple, root_files in sample_map.items():
-            for root_file in root_files:
-                for metadata_element in metadata_tuple:
-                    n_spaces = MAX_METADATA_ITEM_LENGTHS[metadata_tuple.index(metadata_element)] - len(str(metadata_element))
-                    filelist.write(str(metadata_element) + n_spaces*" ")
-                filelist.write("{}\n".format(root_file))
-
+def produce_sum_of_weights_file(root_files_folder : str) -> None:
+    sample_map = {}
+    if len(argv) != 2:
+        raise Exception("Usage: python produce_filelist.py <folder_path>")
+    filelist = read_filelist(root_files_folder)
+    with open(root_files_folder + "/sum_of_weights.txt", "w") as sum_of_weights_file:
+        for sample, root_files in filelist.items():
+            MAX_METADATA_ITEM_LENGTHS = [8 for i in range(len(sample))]
+            sample_map[sample] = get_sum_of_weights_for_sample(root_files)
+            for variation_name, sum_of_weights in sample_map[sample].items():
+                for metadata_element in sample:
+                    n_spaces = MAX_METADATA_ITEM_LENGTHS[sample.index(metadata_element)] - len(str(metadata_element))
+                    sum_of_weights_file.write(str(metadata_element) + n_spaces*" ")
+                sum_of_weights_file.write("{} {}\n".format(variation_name, sum_of_weights))
 
 if __name__ == "__main__":
     if len(argv) != 2:
         raise Exception("Usage: python produce_filelist.py <folder_path>")
-    produce_filelist(argv[1])
+
+    root_files_folder = argv[1]
+    produce_sum_of_weights_file(root_files_folder)
