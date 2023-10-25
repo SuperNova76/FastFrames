@@ -1,9 +1,14 @@
 #include "FastFrames/MainFrame.h"
+#include "FastFrames/Sample.h"
+#include "FastFrames/UniqueSampleID.h"
+
+#include "ROOT/RDataFrame.hxx"
 
 #include <iostream>
 
-MainFrame::MainFrame() :
-m_metadataManager{}
+MainFrame::MainFrame(const std::shared_ptr<ConfigSetting>& config) :
+m_metadataManager{},
+m_config(config)
 {
 }
 
@@ -13,8 +18,15 @@ void MainFrame::init() {
 }
 
 void MainFrame::execute() {
-    UniqueSampleID id(410470, "mc20e", "mc");
-    std::cout << "xSec: " << m_metadataManager.crossSection(id) << ", luminosity: " << m_metadataManager.luminosity(id.campaign()) << "\n";
-    std::cout << "nominal sumWeights: " << m_metadataManager.sumWeights(id, "NOSYS") << ", normalisation: " << m_metadataManager.normalisation(id, "NOSYS") << "\n";
-    std::cout << "GEN_0p5muF_0p5muR_CT14 sumWeights: " << m_metadataManager.sumWeights(id, "GEN_0p5muF_0p5muR_CT14") << ", normalisation: " << m_metadataManager.normalisation(id, "GEN_0p5muF_0p5muR_CT14") << "\n";
+    for (const auto& isample : m_config->samples()) {
+        for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
+            this->processUniqueSample(isample, iUniqueSampleID);
+        }
+    }
 } 
+
+void MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID) const {
+    const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
+
+    ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
+}
