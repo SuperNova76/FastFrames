@@ -13,8 +13,13 @@ public:
 
   inline const std::string& name() {return m_name;}
 
+  inline void setSelection(const std::string& selection) {m_selection = selection;}
+
+  inline const std::string& selection() const {return m_selection;}
+
 private:
 
   std::string m_name;
+  std::string m_selection;
   std::vector<Variable> m_variables;
 };

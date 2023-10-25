@@ -23,6 +23,14 @@ public:
 
   inline void addUniqueSampleID(const UniqueSampleID& id) {m_uniqueSampleIDs.emplace_back(id);}
 
+  inline void addSystematic(const std::shared_ptr<Systematic>& syst) {m_systematics.emplace_back(syst);}
+
+  inline const std::vector<std::shared_ptr<Systematic> >& systematics() const {return m_systematics;}
+
+  inline void addRegion(const std::shared_ptr<Region>& region) {m_regions.emplace_back(region);}
+
+  inline const std::vector<std::shared_ptr<Region> >& regions() const {return m_regions;}
+
 private:
   std::string m_name;
 
