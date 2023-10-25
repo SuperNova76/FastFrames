@@ -13,3 +13,8 @@ std::string Utils::replaceString(const std::string& original,
 
     return result;
 }
+  
+bool Utils::stringEndsWithString(const std::string& toCheck, const std::string& ending) {
+    if (ending.size() > toCheck.size()) return false;
+    return std::equal(ending.rbegin(), ending.rend(), toCheck.rbegin());
+}

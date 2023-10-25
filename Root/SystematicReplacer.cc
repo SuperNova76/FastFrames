@@ -58,8 +58,8 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
         std::vector<std::string> affectedBranches;
         for (const auto& ivariable : variables) {
 
-            // the systematic substring is not found in the branch name
-            if (ivariable.find(systName) == std::string::npos) continue;
+            // the systematic substring should be the suffix
+            if (Utils::stringEndsWithString(ivariable, systName)) continue;
             
             // if it is found, we need to replace the systematic suffix with "NOSYS:
             const std::string nominalBranch = Utils::replaceString(ivariable, systName, "NOSYS");
