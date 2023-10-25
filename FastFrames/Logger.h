@@ -40,6 +40,14 @@ public:
     return *this;
   }
 
+private:
+  Logger() :
+    m_logLevel(LoggingLevel::INFO),
+    m_currentLevel(LoggingLevel::INFO) {};
+  LoggingLevel m_logLevel;
+  LoggingLevel m_currentLevel;
+  std::ostream& m_stream = std::cout;
+
   static std::string fancyHeader(const LoggingLevel& level) {
     switch (level) {
       case LoggingLevel::ERROR:
@@ -55,13 +63,6 @@ public:
     }
   }
 
-private:
-  Logger() :
-    m_logLevel(LoggingLevel::INFO),
-    m_currentLevel(LoggingLevel::INFO) {};
-  LoggingLevel m_logLevel;
-  LoggingLevel m_currentLevel;
-  std::ostream& m_stream = std::cout;
 };
 
 template<typename T>
