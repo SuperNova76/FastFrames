@@ -8,7 +8,8 @@
 
 MainFrame::MainFrame(const std::shared_ptr<ConfigSetting>& config) :
 m_metadataManager{},
-m_config(config)
+m_config(config),
+m_systReplacer()
 {
 }
 
@@ -25,8 +26,12 @@ void MainFrame::execute() {
     }
 } 
 
-void MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID) const {
+void MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID) {
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
+    if (filePaths.empty()) return;
+
+    // we could use any file from the list, use the first one
+    m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), m_config->systematics());
 
     ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
 }

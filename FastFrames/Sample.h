@@ -21,6 +21,8 @@ public:
 
   inline const std::vector<UniqueSampleID>& uniqueSampleIDs() const {return m_uniqueSampleIDs;}
 
+  inline void addUniqueSampleID(const UniqueSampleID& id) {m_uniqueSampleIDs.emplace_back(id);}
+
 private:
   std::string m_name;
 

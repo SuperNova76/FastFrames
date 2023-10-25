@@ -2,6 +2,7 @@
 
 #include "FastFrames/ConfigSetting.h"
 #include "FastFrames/MetadataManager.h"
+#include "FastFrames/SystematicReplacer.h"
 
 #include <memory>
 
@@ -17,8 +18,9 @@ public:
 
 private:
 
-  void processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID) const;
+  void processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID);
 
   MetadataManager m_metadataManager;
   std::shared_ptr<ConfigSetting> m_config;
+  SystematicReplacer m_systReplacer;
 };
