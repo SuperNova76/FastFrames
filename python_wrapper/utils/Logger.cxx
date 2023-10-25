@@ -25,15 +25,15 @@ static const map<LoggingLevel, int>  mapLoggingLevelToInt = {
 };
 
 static PyObject *setLogLevel([[__maybe_unused__]]PyObject *self, PyObject *args) {
-    int logLevel;
-    if (!PyArg_ParseTuple(args, "i", &logLevel))    {
+    int logLevelVar;
+    if (!PyArg_ParseTuple(args, "i", &logLevelVar))    {
         const std::string errorMessage = "Could not parse input as integer";
         return Py_BuildValue("s", errorMessage.c_str());
     };
 
     try {
         Logger &logger = Logger::get();
-        logger.setLogLevel(mapIntToLoggingLevel.at(logLevel));
+        logger.setLogLevel(mapIntToLoggingLevel.at(logLevelVar));
     }
     catch (const runtime_error &e) {
         const char *error = e.what();
@@ -43,16 +43,16 @@ static PyObject *setLogLevel([[__maybe_unused__]]PyObject *self, PyObject *args)
 }
 
 static PyObject *logMessage([[__maybe_unused__]]PyObject *self, PyObject *args) {
-    int logLevel,lineNumber;
+    int logLevelVar,lineNumber;
     const char *message, *fileName;
-    if (!PyArg_ParseTuple(args, "issi", &logLevel, &message, &fileName, &lineNumber))    {
+    if (!PyArg_ParseTuple(args, "issi", &logLevelVar, &message, &fileName, &lineNumber))    {
         const std::string errorMessage = "Could not parse inputs";
         return Py_BuildValue("s", errorMessage.c_str());
     };
 
     try {
         Logger &logger = Logger::get();
-        logger(mapIntToLoggingLevel.at(logLevel), fileName, lineNumber) << std::string(message);
+        logger(mapIntToLoggingLevel.at(logLevelVar), fileName, lineNumber) << std::string(message);
     }
     catch (const runtime_error &e) {
         const char *error = e.what();
