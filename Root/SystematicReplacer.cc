@@ -19,7 +19,7 @@ void SystematicReplacer::readSystematicMapFromFile(const std::string& path,
     m_affectedBranches.clear();
     std::unique_ptr<TFile> file(TFile::Open(path.c_str(), "read"));
     if (!file) {
-        LOG(ERROR) << "Cannot ROOT file at: " << path << "\n";
+        LOG(ERROR) << "Cannot open ROOT file at: " << path << "\n";
         throw std::invalid_argument("");
     }
 
