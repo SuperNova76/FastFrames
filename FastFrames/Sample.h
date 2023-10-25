@@ -1,7 +1,5 @@
 #pragma once
 
-#include "FastFrames/UniqueSample.h"
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -19,8 +17,6 @@ public:
 
 private:
   std::string m_name;
-
-  std::vector<UniqueSample> m_uniqueSamples;
 
   std::vector<std::shared_ptr<Region> > m_regions;
   
