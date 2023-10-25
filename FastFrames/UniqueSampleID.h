@@ -6,7 +6,7 @@
 class UniqueSampleID {
 public:
 
-  UniqueSampleID(const int dsid, const std::string& campaign, const std::string& simulation);
+  UniqueSampleID(const int dsid, const std::string& campaign, const std::string& simulation) noexcept;
 
   ~UniqueSampleID() = default;
 

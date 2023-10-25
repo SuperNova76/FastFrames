@@ -6,7 +6,7 @@
 
 class Metadata {
 public:
-  explicit Metadata();
+  explicit Metadata() noexcept;
   
   ~Metadata() = default;
 

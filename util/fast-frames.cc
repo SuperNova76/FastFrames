@@ -1,8 +1,9 @@
+#include "FastFrames/Logger.h"
 #include "FastFrames/MainFrame.h"
 
-#include <iostream>
-
 int main (int argc, const char **argv) {
+
+  Logger::get().setLogLevel(LoggingLevel::INFO);
 
   MainFrame frame{};
 
@@ -10,7 +11,7 @@ int main (int argc, const char **argv) {
 
   frame.execute();
 
-  std::cout << "finish\n";
+  LOG(INFO) << "Finished running the code\n";
 
   return 0;
 }
