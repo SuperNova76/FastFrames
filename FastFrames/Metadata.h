@@ -20,7 +20,7 @@ public:
 
   void addFilePath(const std::string& path);
 
-  inline const std::vector<std::string>& filePaths() {return m_filePaths;}
+  inline const std::vector<std::string>& filePaths() const {return m_filePaths;}
 
 private:
   double m_crossSection;

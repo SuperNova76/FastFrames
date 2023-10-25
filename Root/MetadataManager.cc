@@ -122,3 +122,13 @@ double MetadataManager::crossSection(const UniqueSampleID& id) const {
 double MetadataManager::normalisation(const UniqueSampleID& id, const std::string& systematic) const {
     return this->crossSection(id) * this->luminosity(id.campaign()) / this->sumWeights(id, systematic);
 }
+
+const std::vector<std::string>& MetadataManager::filePaths(const UniqueSampleID& id) const {
+    auto itr = m_metadata.find(id);
+    if (itr == m_metadata.end()) {
+        LOG(ERROR) << "Cannot find ID " << id << " in the map! Please, fix\n";
+        throw std::invalid_argument("");
+    } 
+
+    return itr->second.filePaths();
+}

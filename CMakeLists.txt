@@ -52,7 +52,9 @@ set( lib_headers
   FastFrames/Region.h
   FastFrames/Sample.h
   FastFrames/Systematic.h
+  FastFrames/SystematicReplacer.h
   FastFrames/UniqueSampleID.h
+  FastFrames/Utils.h
   FastFrames/Variable.h )
 
 # Source files for the shared/static library.
@@ -65,7 +67,9 @@ set( lib_sources
   Root/Region.cc
   Root/Sample.cc
   Root/Systematic.cc
+  Root/SystematicReplacer.cc
   Root/UniqueSampleID.cc
+  Root/Utils.cc
   Root/Variable.cc )
 
 # Build the shared library.

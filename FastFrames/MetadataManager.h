@@ -25,6 +25,8 @@ public:
 
   double normalisation(const UniqueSampleID& id, const std::string& systematic) const;
 
+  const std::vector<std::string>& filePaths(const UniqueSampleID& id) const;
+
 private:
 
   std::map<UniqueSampleID, Metadata> m_metadata;
