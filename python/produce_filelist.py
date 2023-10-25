@@ -1,6 +1,6 @@
-from ROOT import TFile, TTree
-from sys import argv
+from ROOT import TFile
 import os
+import argparse
 
 class Metadata:
     def __init__(self):
@@ -29,11 +29,10 @@ def get_file_metadata(file_path : str) -> Metadata:
     root_file.Close()
     return metadata
 
-def produce_filelist(root_files_folder : str) -> None:
+def produce_filelist(root_files_folder : str, filelist_address : str) -> None:
     sample_map = {}
 
     root_files = get_list_of_root_files_in_folder(root_files_folder)
-    filelist_address = root_files_folder + "/filelist.txt"
     for root_file in root_files:
         metadata = get_file_metadata(root_file)
         metadata_tuple = metadata.get_metadata_tuple()
@@ -52,6 +51,11 @@ def produce_filelist(root_files_folder : str) -> None:
 
 
 if __name__ == "__main__":
-    if len(argv) != 2:
-        raise Exception("Usage: python produce_filelist.py <folder_path>")
-    produce_filelist(argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root_files_folder",  help="Path to folder containing root files")
+    parser.add_argument("--output_path",        help="Address of the output filelist", nargs = '?', default="")
+    args = parser.parse_args()
+    root_files_folder = args.root_files_folder
+    output_path = args.output_path if args.output_path != "" else root_files_folder + "/filelist.txt"
+
+    produce_filelist(root_files_folder, output_path)
