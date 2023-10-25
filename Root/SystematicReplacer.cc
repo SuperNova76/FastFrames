@@ -59,7 +59,7 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
         for (const auto& ivariable : variables) {
 
             // the systematic substring should be the suffix
-            if (Utils::stringEndsWithString(ivariable, systName)) continue;
+            if (!Utils::stringEndsWithString(ivariable, systName)) continue;
             
             // if it is found, we need to replace the systematic suffix with "NOSYS:
             const std::string nominalBranch = Utils::replaceString(ivariable, systName, "NOSYS");
@@ -67,4 +67,22 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
         }
         m_affectedBranches.insert({systName, affectedBranches});
     }
+}
+  
+std::string SystematicReplacer::replaceString(const std::string& original, const std::shared_ptr<Systematic>& systematic) const {
+    auto itr = m_affectedBranches.find(systematic->name());
+    if (itr == m_affectedBranches.end()) {
+        LOG(ERROR) << "Cannot find systematic: " << systematic->name() << " in the systematic map. Please, fix!\n";
+        throw std::invalid_argument("");
+    }
+
+    std::string result(original);
+
+    // loop over all affected branches and replace all of them
+    for (const std::string& ibranch : itr->second) {
+        const std::string replacer = Utils::replaceString(ibranch, "NOSYS", systematic->name());
+        result = Utils::replaceString(result, ibranch, replacer);
+    }
+
+    return result;
 }

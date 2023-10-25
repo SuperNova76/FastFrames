@@ -24,6 +24,8 @@ public:
   void matchSystematicVariables(const std::vector<std::string>& variables,
                                 const std::vector<std::shared_ptr<Systematic> >& systematics);
 
+  std::string replaceString(const std::string& original, const std::shared_ptr<Systematic>& systematic) const;
+
 private:
   std::map<std::string, std::vector<std::string> > m_affectedBranches;
 };
