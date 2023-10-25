@@ -1,6 +1,7 @@
 #pragma once
 
 #define LOG(x) Logger::get()(LoggingLevel::x, __PRETTY_FUNCTION__, __LINE__)
+#define LOG_ENUM(x) Logger::get() (x, __PRETTY_FUNCTION__, __LINE__)
 
 #include <iostream>
 
@@ -26,7 +27,7 @@ public:
   }
 
   const LoggingLevel& currentLevel() const {return m_currentLevel;}
-  
+
   const LoggingLevel& logLevel() const {return m_logLevel;}
 
   Logger& operator() (const LoggingLevel& level,
