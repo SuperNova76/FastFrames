@@ -7,7 +7,7 @@
 
 class Region {
 public:
-  explicit Region(const std::string& name);
+  explicit Region(const std::string& name) noexcept;
 
   ~Region() = default;
 

@@ -44,6 +44,7 @@ find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame 
 set( lib_headers
   FastFrames/Binning.h
   FastFrames/ConfigSetting.h
+  FastFrames/Logger.h
   FastFrames/MainFrame.h
   FastFrames/Metadata.h
   FastFrames/MetadataManager.h

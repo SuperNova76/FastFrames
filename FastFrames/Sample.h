@@ -10,7 +10,7 @@ class Systematic;
 class Sample {
 public:
 
-  explicit Sample(const std::string& name);
+  explicit Sample(const std::string& name) noexcept;
   ~Sample() = default;
 
   const std::string& name() const {return m_name;}

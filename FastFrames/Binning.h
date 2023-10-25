@@ -4,11 +4,11 @@
 
 class Binning {
 public:
-  Binning(const int min, const int max, const int nbins);
+  Binning(const int min, const int max, const int nbins) noexcept;
 
-  explicit Binning(const std::vector<double>& binEdges);
+  explicit Binning(const std::vector<double>& binEdges) noexcept;
   
-  explicit Binning();
+  explicit Binning() noexcept;
   
   ~Binning() = default;
 
@@ -19,7 +19,6 @@ public:
   };
 
   inline void setBinning(const std::vector<double>& binEdges) {m_binEdges = binEdges;}
-
 
 private:
   int m_min;

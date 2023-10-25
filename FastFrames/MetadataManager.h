@@ -8,8 +8,7 @@
 
 class MetadataManager {
 public:
-  explicit MetadataManager();
-
+  explicit MetadataManager() noexcept;
   ~MetadataManager() = default;
 
   void readFileList(const std::string& path);

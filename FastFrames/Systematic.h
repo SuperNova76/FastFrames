@@ -5,7 +5,7 @@
 class Systematic {
 public:
 
-  explicit Systematic(const std::string& name);
+  explicit Systematic(const std::string& name) noexcept;
 
   ~Systematic() = default;
 

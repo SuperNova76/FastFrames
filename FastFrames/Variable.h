@@ -6,7 +6,7 @@
 
 class Variable {
 public:
-  explicit Variable(const std::string& name);
+  explicit Variable(const std::string& name) noexcept;
 
   ~Variable() = default;
 
