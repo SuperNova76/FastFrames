@@ -1,6 +1,7 @@
 #pragma once
 
 #define LOG(x) Logger::get()(LoggingLevel::x, __PRETTY_FUNCTION__, __LINE__)
+#define LOG_ENUM(x) Logger::get() (x, __PRETTY_FUNCTION__, __LINE__)
 
 #include <iostream>
 
@@ -26,7 +27,7 @@ public:
   }
 
   const LoggingLevel& currentLevel() const {return m_currentLevel;}
-  
+
   const LoggingLevel& logLevel() const {return m_logLevel;}
 
   Logger& operator() (const LoggingLevel& level,
@@ -38,6 +39,14 @@ public:
     }
     return *this;
   }
+
+private:
+  Logger() :
+    m_logLevel(LoggingLevel::INFO),
+    m_currentLevel(LoggingLevel::INFO) {};
+  LoggingLevel m_logLevel;
+  LoggingLevel m_currentLevel;
+  std::ostream& m_stream = std::cout;
 
   static std::string fancyHeader(const LoggingLevel& level) {
     switch (level) {
@@ -54,13 +63,6 @@ public:
     }
   }
 
-private:
-  Logger() :
-    m_logLevel(LoggingLevel::INFO),
-    m_currentLevel(LoggingLevel::INFO) {};
-  LoggingLevel m_logLevel;
-  LoggingLevel m_currentLevel;
-  std::ostream& m_stream = std::cout;
 };
 
 template<typename T>

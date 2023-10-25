@@ -2,3 +2,4 @@ build/*
 .vscode/*
 filelist.txt
 sum_of_weights.txt
+***/__pycache__/
