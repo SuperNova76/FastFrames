@@ -1,5 +1,6 @@
 
 from sys import path
+from inspect import currentframe, getframeinfo, stack
 
 # module "lives" in bin folder
 path.append("../../bin/lib")
@@ -10,9 +11,12 @@ import cppLogger
 
 class Logger:
     def log_message(log_level : int, message : str) -> None:
+        caller = getframeinfo(stack()[1][0])
         cppLogger.log_message(
             Logger._convert_level_str_to_int(log_level),
-            message+'\n'
+            message+'\n',
+            caller.filename,
+            caller.lineno
         )
 
     def set_log_level(log_level : str) -> None:

@@ -43,15 +43,16 @@ static PyObject *setLogLevel([[__maybe_unused__]]PyObject *self, PyObject *args)
 }
 
 static PyObject *logMessage([[__maybe_unused__]]PyObject *self, PyObject *args) {
-    int logLevel;
-    const char *message;
-    if (!PyArg_ParseTuple(args, "is", &logLevel, &message))    {
-        const std::string errorMessage = "Could not parse input as integer and string";
+    int logLevel,lineNumber;
+    const char *message, *fileName;
+    if (!PyArg_ParseTuple(args, "issi", &logLevel, &message, &fileName, &lineNumber))    {
+        const std::string errorMessage = "Could not parse inputs";
         return Py_BuildValue("s", errorMessage.c_str());
     };
 
     try {
-        LOG_ENUM(mapIntToLoggingLevel.at(logLevel)) << std::string(message);
+        Logger &logger = Logger::get();
+        logger(mapIntToLoggingLevel.at(logLevel), fileName, lineNumber) << std::string(message);
     }
     catch (const runtime_error &e) {
         const char *error = e.what();
