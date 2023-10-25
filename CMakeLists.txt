@@ -44,11 +44,12 @@ find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame 
 set( lib_headers
   FastFrames/Binning.h
   FastFrames/ConfigSetting.h
+  FastFrames/MainFrame.h
   FastFrames/Metadata.h
+  FastFrames/MetadataManager.h
   FastFrames/Region.h
   FastFrames/Sample.h
   FastFrames/Systematic.h
-  FastFrames/UniqueSample.h
   FastFrames/UniqueSampleID.h
   FastFrames/Variable.h )
 
@@ -56,11 +57,12 @@ set( lib_headers
 set( lib_sources
   Root/Binning.cc
   Root/ConfigSetting.cc
+  Root/MainFrame.cc
   Root/Metadata.cc
+  Root/MetadataManager.cc
   Root/Region.cc
   Root/Sample.cc
   Root/Systematic.cc
-  Root/UniqueSample.cc
   Root/UniqueSampleID.cc
   Root/Variable.cc )
 

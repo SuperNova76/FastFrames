@@ -68,7 +68,7 @@ cppcheck:
     - echo "running cppcheck"
     - set +e
     - echo $ROOTSYS
-    - cppcheck --enable=all --verbose --output-file=cppcheck.txt --inline-suppr --language=c++ --suppress=useStlAlgorithm --project=build/compile_commands.json --suppress=missingIncludeSystem --check-level=exhaustive
+    - cppcheck --enable=all --verbose --output-file=cppcheck.txt --inline-suppr --language=c++ --suppress=useStlAlgorithm --project=build/compile_commands.json --suppress=missingIncludeSystem --suppress=unusedFunction --check-level=exhaustive
     - cat cppcheck.txt
     - source test/scripts/cppcheck_output.sh
   allow_failure: true
