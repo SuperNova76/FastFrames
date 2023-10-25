@@ -1,10 +1,11 @@
 from ROOT import TFile, TTree
 from sys import argv
 import os
+import argparse
 
-def read_filelist(main_folder : str) -> str:
+def read_filelist(filelist_path : str) -> str:
     filelist = {}
-    with open(main_folder + "/filelist.txt") as f:
+    with open(filelist_path) as f:
         for line in f.readlines():
             elements = line.split()
             key = tuple(elements[:-1])
@@ -54,12 +55,10 @@ def get_sum_of_weights_for_sample(root_files : list) -> dict:
         result_initialized = True
     return result
 
-def produce_sum_of_weights_file(root_files_folder : str) -> None:
+def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
     sample_map = {}
-    if len(argv) != 2:
-        raise Exception("Usage: python produce_filelist.py <folder_path>")
-    filelist = read_filelist(root_files_folder)
-    with open(root_files_folder + "/sum_of_weights.txt", "w") as sum_of_weights_file:
+    filelist = read_filelist(filelist_path)
+    with open(output_path, "w") as sum_of_weights_file:
         for sample, root_files in filelist.items():
             MAX_METADATA_ITEM_LENGTHS = [8 for i in range(len(sample))]
             sample_map[sample] = get_sum_of_weights_for_sample(root_files)
@@ -70,8 +69,11 @@ def produce_sum_of_weights_file(root_files_folder : str) -> None:
                 sum_of_weights_file.write("{} {}\n".format(variation_name, sum_of_weights))
 
 if __name__ == "__main__":
-    if len(argv) != 2:
-        raise Exception("Usage: python produce_filelist.py <folder_path>")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--filelist_path", help="Path to the filelist")
+    parser.add_argument("--output_path", help="Path the output metadata file", nargs = '?', default="")
+    args = parser.parse_args()
+    filelist_path = args.filelist_path
+    output_path = args.output_path if args.output_path != "" else "/".join(filelist_path.split("/")[:-1]) + "/sum_of_weights.txt"
 
-    root_files_folder = argv[1]
-    produce_sum_of_weights_file(root_files_folder)
+    produce_sum_of_weights_file(filelist_path, output_path)
