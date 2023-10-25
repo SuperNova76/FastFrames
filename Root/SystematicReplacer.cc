@@ -16,6 +16,7 @@ SystematicReplacer::SystematicReplacer() noexcept
 void SystematicReplacer::readSystematicMapFromFile(const std::string& path,
                                                    const std::string& treeName,
                                                    const std::vector<std::shared_ptr<Systematic> >& systematics) {
+    m_affectedBranches.clear();
     std::unique_ptr<TFile> file(TFile::Open(path.c_str(), "read"));
     if (!file) {
         LOG(ERROR) << "Cannot ROOT file at: " << path << "\n";
