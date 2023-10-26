@@ -35,3 +35,19 @@ m_systematics({})
     sample->addRegion(reg);
     m_samples.emplace_back(sample);
 }
+
+
+void ConfigSetting::addLuminosityInformation(const std::string& campaign, const float luminosity)   {
+    if (m_luminosity_map.find(campaign) != m_luminosity_map.end()) {
+        throw std::runtime_error("Campaign " + campaign + " already exists in the luminosity map");
+    }
+    m_luminosity_map[campaign] = luminosity;
+};
+
+
+float ConfigSetting::getLuminosity(const std::string& campaign) const  {
+    if (m_luminosity_map.find(campaign) == m_luminosity_map.end()) {
+        throw std::runtime_error("Campaign " + campaign + " does not exist in the luminosity map");
+    }
+    return m_luminosity_map.at(campaign);
+};
