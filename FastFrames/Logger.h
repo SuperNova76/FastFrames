@@ -1,7 +1,10 @@
 #pragma once
 
-#define LOG(x) Logger::get()(LoggingLevel::x, __PRETTY_FUNCTION__, __LINE__)
-#define LOG_ENUM(x) Logger::get() (x, __PRETTY_FUNCTION__, __LINE__)
+#include <cstring>
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define LOG(x) Logger::get()(LoggingLevel::x, __FILENAME__,  __FUNCTION__, __LINE__)
+#define LOG_ENUM(x) Logger::get() (x, __FILE__, __FUNCTION__, __LINE__)
 
 #include <iostream>
 
@@ -31,11 +34,12 @@ public:
   const LoggingLevel& logLevel() const {return m_logLevel;}
 
   Logger& operator() (const LoggingLevel& level,
+                      const char* file,
                       const char* function,
                       int line) {
     m_currentLevel = level;
     if (level <= m_logLevel) {
-      m_stream << fancyHeader(level) << function << " line: " << line << ": ";
+      m_stream << fancyHeader(level) << file << ":" << line << " " << function << " | ";
     }
     return *this;
   }
