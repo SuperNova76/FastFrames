@@ -19,6 +19,9 @@ set( CMAKE_CXX_EXTENSIONS FALSE CACHE BOOL
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_INSTALL_PREFIX "../install/" CACHE STRING "Path to the install directory")
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
 # Specify the install locations for libraries and binaries.
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
