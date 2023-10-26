@@ -181,7 +181,7 @@ ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode mainNode,
     ss << normalisation;
     
     const std::string& systName = "weight_total_" + systematic->name();
-    const std::string formula = m_systReplacer.replaceString(nominalWeight, systematic) + "/" + ss.str();
+    const std::string formula = m_systReplacer.replaceString(nominalWeight, systematic) + "*" + ss.str();
     LOG(DEBUG) << "Unique sample: " << id << ", systematic: " << systematic->name() << ", weight formula: " << formula << ", new weight name: " << systName << "\n";
     
     auto node = mainNode.Define(systName, formula);
