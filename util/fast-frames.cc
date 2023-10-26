@@ -4,9 +4,9 @@
 
 #include <memory>
 
-int main (int argc, const char **argv) {
+int main (int /*argc*/, const char** /*argv*/) {
 
-  Logger::get().setLogLevel(LoggingLevel::INFO);
+  Logger::get().setLogLevel(LoggingLevel::DEBUG);
 
   auto config = std::make_shared<ConfigSetting>();
 
@@ -14,7 +14,7 @@ int main (int argc, const char **argv) {
 
   frame.init();
 
-  frame.execute();
+  frame.executeHistograms();
 
   LOG(INFO) << "Finished running the code\n";
 

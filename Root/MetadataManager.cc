@@ -7,10 +7,10 @@
 
 MetadataManager::MetadataManager() noexcept
 {
-    m_luminosity.insert({"mc20a", 1});
-    m_luminosity.insert({"mc20d", 1});
-    m_luminosity.insert({"mc20e", 1});
-    m_luminosity.insert({"mc23a", 1});
+    m_luminosity.insert({"mc20a", 3244.54+33402.2});
+    m_luminosity.insert({"mc20d", 44630.6});
+    m_luminosity.insert({"mc20e", 58791.6});
+    m_luminosity.insert({"mc23a", 29049.3});
     m_luminosity.insert({"mc23c", 1});
 }
 
@@ -116,7 +116,13 @@ double MetadataManager::crossSection(const UniqueSampleID& id) const {
         throw std::invalid_argument("");
     }
 
-    return itr->second.crossSection();
+    const double crossSection = itr->second.crossSection();
+
+    if (crossSection <= 0) {
+        LOG(WARNING) << "Cross-section for sample: " << id << " is <= 0, this is suspicious\n";
+    }
+
+    return crossSection;
 }
 
 double MetadataManager::normalisation(const UniqueSampleID& id, const std::string& systematic) const {
