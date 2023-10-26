@@ -12,7 +12,7 @@ project( FastFrames )
 # Set up the "C++ version" to use.
 set( CMAKE_CXX_STANDARD_REQUIRED 17 CACHE STRING
    "Minimum C++ standard required for the build" )
-set( CMAKE_CXX_STANDARD 20 CACHE STRING
+set( CMAKE_CXX_STANDARD 17 CACHE STRING
    "C++ standard to use for the build" )
 set( CMAKE_CXX_EXTENSIONS FALSE CACHE BOOL
    "(Dis)allow using compiler extensions" )
@@ -25,7 +25,7 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_INSTALL_LIBDIR ${CMAKE_BINARY_DIR}/lib )  # Needed by ROOT_GENERATE_DICTIONARY()
 
 # Set the warning flag(s) to use.
-set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -pedantic -O3" )
+set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -pedantic -O3 -g" )
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
@@ -45,6 +45,7 @@ find_package( Python3 COMPONENTS Development REQUIRED )
 set( lib_headers
   FastFrames/Binning.h
   FastFrames/ConfigSetting.h
+  FastFrames/HistoContainer.h
   FastFrames/Logger.h
   FastFrames/MainFrame.h
   FastFrames/Metadata.h
@@ -61,6 +62,7 @@ set( lib_headers
 set( lib_sources
   Root/Binning.cc
   Root/ConfigSetting.cc
+  Root/HistoContainer.cc
   Root/MainFrame.cc
   Root/Metadata.cc
   Root/MetadataManager.cc

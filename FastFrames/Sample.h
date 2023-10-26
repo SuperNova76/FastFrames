@@ -31,6 +31,10 @@ public:
 
   inline const std::vector<std::shared_ptr<Region> >& regions() const {return m_regions;}
 
+  inline void setEventWeight(const std::string& weight) {m_eventWeight = weight;}
+
+  inline const std::string& weight() const {return m_eventWeight;} 
+
 private:
   std::string m_name;
 
@@ -41,4 +45,6 @@ private:
   std::vector<std::shared_ptr<Systematic> > m_systematics;
 
   std::vector<UniqueSampleID> m_uniqueSampleIDs;
+
+  std::string m_eventWeight;
 };

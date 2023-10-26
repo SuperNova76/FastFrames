@@ -17,20 +17,21 @@ void SystematicReplacer::readSystematicMapFromFile(const std::string& path,
                                                    const std::string& treeName,
                                                    const std::vector<std::shared_ptr<Systematic> >& systematics) {
     m_affectedBranches.clear();
+    m_allBranches.clear();
     std::unique_ptr<TFile> file(TFile::Open(path.c_str(), "read"));
     if (!file) {
         LOG(ERROR) << "Cannot open ROOT file at: " << path << "\n";
         throw std::invalid_argument("");
     }
 
-    const std::vector<std::string> branches = this->getBranchesFromFile(file, treeName);
-    this->matchSystematicVariables(branches, systematics);
+    this->getBranchesFromFile(file, treeName);
+    this->matchSystematicVariables(m_allBranches, systematics);
 
     file->Close();
 } 
 
-std::vector<std::string> SystematicReplacer::getBranchesFromFile(const std::unique_ptr<TFile>& file,
-                                                                 const std::string& treeName) {
+void SystematicReplacer::getBranchesFromFile(const std::unique_ptr<TFile>& file,
+                                             const std::string& treeName) {
 
     TTree* tree = file->Get<TTree>(treeName.c_str());
     if (!tree) {
@@ -38,16 +39,12 @@ std::vector<std::string> SystematicReplacer::getBranchesFromFile(const std::uniq
         throw std::invalid_argument("");
     }
 
-    std::vector<std::string> result;
-
     const auto branchList = tree->GetListOfBranches();
     std::size_t branchSize = tree->GetNbranches();
     for (std::size_t ibranch = 0; ibranch < branchSize; ++ibranch) {
         const std::string name = branchList->At(ibranch)->GetName();
-        result.emplace_back(std::move(name));
+        m_allBranches.emplace_back(std::move(name));
     }
-
-    return result;
 }
 
 void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>& variables,
