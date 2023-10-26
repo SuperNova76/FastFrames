@@ -1,10 +1,5 @@
 
 #include <boost/python.hpp>
-#include <cstdint>
-#include <string>
-#include <vector>
-#include <boost/utility.hpp>
-#include <boost/shared_ptr.hpp>
 #include <string>
 
 #include "FastFrames/ConfigSetting.h"
@@ -27,11 +22,11 @@ std::string _inputFilelistPath(const ConfigSetting &self) {
     return self.inputFilelistPath();
 }
 
-BOOST_PYTHON_MODULE(ConfigReader) {
+BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
 
-    class_<ConfigSetting>("ConfigReader",
+    class_<ConfigSetting>("ConfigReaderCpp",
         init<>())
         .add_property("outputPath", &ConfigSetting::outputPath, &ConfigSetting::setOutputPath)
 
@@ -43,7 +38,6 @@ BOOST_PYTHON_MODULE(ConfigReader) {
         .def("outputPath",      _outputPath)
         .def("setOutputPath",   &ConfigSetting::setOutputPath)
 
-
         // inputSumWeightsPath
         .def("inputSumWeightsPath",    _inputSumWeightsPath)
         .def("setInputSumWeightsPath", &ConfigSetting::setInputSumWeightsPath)
@@ -53,7 +47,7 @@ BOOST_PYTHON_MODULE(ConfigReader) {
         .def("setInputFilelistPath",&ConfigSetting::setInputFilelistPath)
 
         // addLuminosityInformation
-        .def("addLuminosityInformation", &ConfigSetting::addLuminosityInformation)
+        .def("setLuminosity", &ConfigSetting::addLuminosityInformation)
         .def("getLuminosity", &ConfigSetting::getLuminosity)
     ;
 }

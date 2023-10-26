@@ -3,6 +3,7 @@
 #include "FastFrames/Region.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
+#include "FastFrames/Logger.h"
 
 #include <memory>
 #include <string>

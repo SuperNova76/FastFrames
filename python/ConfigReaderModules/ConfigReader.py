@@ -11,5 +11,5 @@ if __name__ == "__main__":
         block_general = BlockReaderGeneral(data["general"])
         block_region = BlockReaderRegion(data["regions"][0])
 
-        print(block_region.variables[0].variables.bin_edges)
+        print(block_general.config_reader_cpp.getLuminosity("mc20a"))
 

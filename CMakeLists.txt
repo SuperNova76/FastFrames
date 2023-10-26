@@ -119,8 +119,8 @@ set_target_properties( cppLogger PROPERTIES
    OUTPUT_NAME "cppLogger" )
 
 # Build the Python module for config reader
-add_library( configReader SHARED python_wrapper/utils/ConfigReader.cxx ${lib_headers} )
-target_link_libraries( configReader PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
-set_target_properties( configReader PROPERTIES
+add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${lib_headers} )
+target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
+set_target_properties( ConfigReaderCpp PROPERTIES
    PREFIX ""
-   OUTPUT_NAME "ConfigReader" )
+   OUTPUT_NAME "ConfigReaderCpp" )
