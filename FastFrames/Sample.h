@@ -35,6 +35,9 @@ public:
 
   inline const std::string& weight() const {return m_eventWeight;} 
 
+  bool skipSystematicRegionCombination(const std::shared_ptr<Systematic>& syst,
+                                       const std::shared_ptr<Region>& reg) const;
+
 private:
   std::string m_name;
 
