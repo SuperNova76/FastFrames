@@ -15,6 +15,7 @@ variables:
 stages:
   - build
   - check
+  - run
 
 cmake:
   stage: build
@@ -78,3 +79,11 @@ cppcheck:
     expire_in: 1d
     when: always
 
+python_config_reader_test:
+  stage: run
+  needs:
+    - compile
+  script:
+     - cd python/ConfigReaderModules/
+     - python3 ConfigReader.py ../../test/configs/config.yml
+  allow_failure: true
