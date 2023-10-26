@@ -37,6 +37,16 @@ public:
   void setInputFilelistPath(const std::string &inputFilelistPath) {m_inputFilelistPath = inputFilelistPath;}
 
 
+  const std::string &defaultRecoTreeName() const {return m_defaultRecoTreeName;}
+
+  void setDefaultRecoTreeName(const std::string &defaultRecoTreeName) {m_defaultRecoTreeName = defaultRecoTreeName;}
+
+
+  int numCPU() const {return m_numCPU;}
+
+  void setNumCPU(int numCPU) {m_numCPU = numCPU;}
+
+
   void addLuminosityInformation(const std::string& campaign, const float luminosity);
 
   float getLuminosity(const std::string& campaign) const;
@@ -53,8 +63,9 @@ private:
   std::string m_inputPath;
   std::string m_inputSumWeightsPath;
   std::string m_inputFilelistPath;
-  std::string m_default_sumweights;
-  std::string m_default_event_weights;
+  std::string m_defaultRecoTreeName;
+  int         m_numCPU = 1;
+
 
   std::map<std::string, float> m_luminosity_map;
 

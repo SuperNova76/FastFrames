@@ -17,6 +17,8 @@ class BlockReaderGeneral:
         self.output_path = input_dict.get("output_path")
         self.default_sumweights = input_dict.get("default_sumweights", "NOSYS")
         self.default_event_weights = input_dict.get("default_event_weights")
+        self.default_reco_tree_name = input_dict.get("default_reco_tree_name")
+        self.number_of_cpus = input_dict.get("number_of_cpus", 1)
         self.__set_luminosity_map(input_dict.get("luminosity"))
         Logger.set_log_level(self.debug_level)
         self.config_reader_cpp = ConfigReaderCpp()
@@ -32,6 +34,8 @@ class BlockReaderGeneral:
         self.config_reader_cpp.setInputSumWeightsPath(self.input_sumweights_path)
         self.config_reader_cpp.setOutputPath(self.output_path)
         self.config_reader_cpp.setInputFilelistPath(self.input_filelist_path)
+        self.config_reader_cpp.setDefaultRecoTreeName(self.default_reco_tree_name)
+        self.config_reader_cpp.setNumCPU(self.number_of_cpus)
 
         for campaign, lumi_value in self.luminosity_map.items():
             self.config_reader_cpp.setLuminosity(campaign, lumi_value)
