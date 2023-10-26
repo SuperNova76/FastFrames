@@ -13,6 +13,7 @@ m_metadataManager{},
 m_config(config),
 m_systReplacer()
 {
+    ROOT::EnableImplicitMT();
 }
 
 void MainFrame::init() {
