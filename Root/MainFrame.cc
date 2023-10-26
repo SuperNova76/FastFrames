@@ -191,7 +191,7 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         throw std::invalid_argument("");
     }
     
-    LOG(INFO) << "Writing histograms to sample: " << fileName << "\n";
+    LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
 
     for (const auto& isystHist : histos) {
         out->mkdir(isystHist.name().c_str());
