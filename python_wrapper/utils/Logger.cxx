@@ -52,7 +52,7 @@ static PyObject *logMessage([[__maybe_unused__]]PyObject *self, PyObject *args) 
 
     try {
         Logger &logger = Logger::get();
-        logger(mapIntToLoggingLevel.at(logLevelVar), "", fileName, lineNumber) << std::string(message);
+        logger(mapIntToLoggingLevel.at(logLevelVar), fileName, "", lineNumber) << std::string(message);
     }
     catch (const runtime_error &e) {
         const char *error = e.what();

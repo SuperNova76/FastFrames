@@ -1,12 +1,13 @@
 #pragma once
 
+#include <chrono>
 #include <cstring>
+#include <ctime>
+#include <iostream>
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define LOG(x) Logger::get()(LoggingLevel::x, __FILENAME__,  __FUNCTION__, __LINE__)
 #define LOG_ENUM(x) Logger::get() (x, __FILE__, __FUNCTION__, __LINE__)
-
-#include <iostream>
 
 enum class LoggingLevel {
   ERROR = 0,
@@ -38,8 +39,12 @@ public:
                       const char* function,
                       int line) {
     m_currentLevel = level;
+    std::time_t t = std::time(0);
+    std::tm* now = std::localtime(&t); 
     if (level <= m_logLevel) {
-      m_stream << fancyHeader(level) << file << ":" << line << " " << function << " | ";
+      m_stream << fancyHeader(level) << formatString(file + std::string(":") + std::to_string(line), 25) << " " << formatString(function, 20) <<
+              " " << now->tm_mday << "-" << now->tm_mon+1 << "-" << now->tm_year+1900 << " " << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec 
+              << " | ";
     }
     return *this;
   }
@@ -65,6 +70,17 @@ private:
       default:
         return "";
     }
+  }
+
+  static std::string formatString(std::string input, std::size_t max) {
+    std::size_t size = input.size();
+    if (size >= max-2) {
+      input.resize(max-3);
+      input += "...";
+    } else {
+      input += std::string(max-size, ' ');
+    }
+    return input;
   }
 
 };
