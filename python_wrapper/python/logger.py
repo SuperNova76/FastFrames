@@ -19,10 +19,13 @@ class Logger:
             caller.lineno
         )
 
-    def set_log_level(log_level : str) -> None:
-        cppLogger.set_log_level(
-            Logger._convert_level_str_to_int(log_level)
-        )
+    def set_log_level(log_level) -> None:
+        if log_level is int:
+            cppLogger.set_log_level(log_level)
+        if log_level is str:
+            cppLogger.set_log_level(
+                Logger._convert_level_str_to_int(log_level)
+            )
 
     def log_level() -> str:
         return Logger._convert_level_int_to_str(cppLogger.log_level())
