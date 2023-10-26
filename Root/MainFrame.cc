@@ -81,13 +81,19 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
     for (const auto& isyst : sample->systematics()) {
         std::vector<ROOT::RDF::RNode> perSystFilter;
         for (const auto& ireg : sample->regions()) {
-            // TODO skip wrong region/systematic combination
+
+            if (sample->skipSystematicRegionCombination(isyst, ireg)) {
+                LOG(DEBUG) << "Skipping region: " << ireg->name() << ", systematic: " << isyst->name() << " combination for sample: " << sample->name() << " (filter)\n";
+                continue;
+            }
+
             auto filter = weightNode.Filter(this->systematicFilter(/*sample,*/ isyst, ireg));
             perSystFilter.emplace_back(std::move(filter));
         }
         filterStore.emplace_back(std::move(perSystFilter));
     }
 
+    LOG(INFO) << "Triggering event loop!\n";
     // retrieve the histograms;
     std::vector<SystematicHisto> histoContainer;
     std::size_t systIndex(0);
@@ -96,6 +102,10 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
 
         std::size_t regIndex(0);
         for (const auto& ireg : sample->regions()) {
+            if (sample->skipSystematicRegionCombination(isyst, ireg)) {
+                LOG(DEBUG) << "Skipping region: " << ireg->name() << ", systematic: " << isyst->name() << " combination for sample: " << sample->name() << " (histogram)\n";
+                continue;
+            }
             RegionHisto regionHisto(ireg->name());
 
             for (const auto& ivariable : ireg->variables()) {
@@ -181,6 +191,10 @@ ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode mainNode,
 void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
                                   const std::shared_ptr<Sample>& sample) const {
 
+    if (histos.empty()) {
+        LOG(WARNING) << "No histograms available for sample: " << sample->name() << "\n";
+    } 
+
     std::string fileName = m_config->outputPath();
     fileName += fileName.empty() ? "" : "/";
     fileName += sample->name() + ".root";
@@ -194,6 +208,10 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
     LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
 
     for (const auto& isystHist : histos) {
+        if (isystHist.regionHistos().empty()) {
+            LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
+            continue;
+        } 
         out->mkdir(isystHist.name().c_str());
         out->cd(isystHist.name().c_str());
         for (const auto& iregionHist : isystHist.regionHistos()) {
