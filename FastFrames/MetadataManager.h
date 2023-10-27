@@ -4,7 +4,10 @@
 #include "FastFrames/Metadata.h"
 
 #include <map>
+#include <memory>
 #include <string>
+
+class Systematic;
 
 class MetadataManager {
 public:
@@ -17,13 +20,13 @@ public:
 
   void addLuminosity(const std::string& campaign, const double lumi);
 
-  double sumWeights(const UniqueSampleID& id, const std::string& systematic) const;
+  double sumWeights(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const;
 
   double luminosity(const std::string& campaign) const;
 
   double crossSection(const UniqueSampleID& id) const;
 
-  double normalisation(const UniqueSampleID& id, const std::string& systematic) const;
+  double normalisation(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const;
 
   const std::vector<std::string>& filePaths(const UniqueSampleID& id) const;
 

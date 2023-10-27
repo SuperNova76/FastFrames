@@ -174,7 +174,7 @@ ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode mainNode,
                                              const UniqueSampleID& id) const {
     
     const std::string& nominalWeight = sample->weight();
-    const float normalisation = m_metadataManager.normalisation(id, systematic->sumWeights());
+    const float normalisation = m_metadataManager.normalisation(id, systematic);
 
     // to not cut very small numbers to zero
     std::ostringstream ss;
