@@ -34,7 +34,6 @@ class BlockReaderGeneral:
         self.config_reader_cpp.setInputSumWeightsPath(self.input_sumweights_path)
         self.config_reader_cpp.setOutputPath(self.output_path)
         self.config_reader_cpp.setInputFilelistPath(self.input_filelist_path)
-        self.config_reader_cpp.setDefaultRecoTreeName(self.default_reco_tree_name)
         self.config_reader_cpp.setNumCPU(self.number_of_cpus)
 
         for campaign, lumi_value in self.luminosity_map.items():

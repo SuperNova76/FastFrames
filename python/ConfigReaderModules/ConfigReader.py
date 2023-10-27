@@ -21,7 +21,6 @@ if __name__ == "__main__":
         print("inputSumWeightsPath: ", block_general.config_reader_cpp.inputSumWeightsPath())
         print("outputPath: ", block_general.config_reader_cpp.outputPath())
         print("inputFilelistPath: ", block_general.config_reader_cpp.inputFilelistPath())
-        print("defaultRecoTreeName: ", block_general.config_reader_cpp.defaultRecoTreeName())
         print("numCPU: ", block_general.config_reader_cpp.numCPU())
         print("luminosity, mc20a: ", block_general.config_reader_cpp.getLuminosity("mc20a"))
         print("luminosity, mc23c: ", block_general.config_reader_cpp.getLuminosity("mc23c"))

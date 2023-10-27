@@ -22,10 +22,6 @@ std::string _inputFilelistPath(const ConfigSetting &self) {
     return self.inputFilelistPath();
 }
 
-std::string _defaultRecoTreeName(const ConfigSetting &self) {
-    return self.defaultRecoTreeName();
-}
-
 BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
@@ -49,10 +45,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // inputFilelistPath
         .def("inputFilelistPath",   _inputFilelistPath)
         .def("setInputFilelistPath",&ConfigSetting::setInputFilelistPath)
-
-        // defaultRecoTreeName
-        .def("defaultRecoTreeName", _defaultRecoTreeName)
-        .def("setDefaultRecoTreeName", &ConfigSetting::setDefaultRecoTreeName)
 
         // numCPU
         .def("numCPU",      &ConfigSetting::numCPU)
