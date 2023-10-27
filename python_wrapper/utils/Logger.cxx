@@ -1,4 +1,4 @@
-#include "../../FastFrames/Logger.h"
+#include "FastFrames/Logger.h"
 
 #include <Python.h>
 

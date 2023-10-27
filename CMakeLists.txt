@@ -39,7 +39,9 @@ set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 # Add ROOT system directory and require ROOT.
 find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame ROOTVecOps)
 find_package( Python3 COMPONENTS Development REQUIRED )
+find_package( Boost COMPONENTS python REQUIRED )
 
+include_directories(${CMAKE_SOURCE_DIR})
 # ------------------------------------------------
 # The actual FastFrames library
 # ------------------------------------------------
@@ -115,3 +117,10 @@ target_link_libraries( cppLogger PRIVATE Python3::Python ${Python3_LIBRARIES} )
 set_target_properties( cppLogger PROPERTIES
    PREFIX ""
    OUTPUT_NAME "cppLogger" )
+
+# Build the Python module for config reader
+add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${lib_headers} )
+target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
+set_target_properties( ConfigReaderCpp PROPERTIES
+   PREFIX ""
+   OUTPUT_NAME "ConfigReaderCpp" )
