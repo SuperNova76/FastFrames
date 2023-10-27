@@ -14,9 +14,9 @@ namespace StringOperations  {
 
     bool ends_with(const std::string &main_string, const std::string &suffix);
 
-    std::vector<std::string> split_and_strip_string(std::string input_string, const std::string &separator);
+    std::vector<std::string> split_and_strip_string(const std::string &input_string, const std::string &separator);
 
-    std::vector<std::string> split_string(std::string input_string, const std::string &separator);
+    std::vector<std::string> split_string(const std::string input_string, const std::string &separator);
 
     std::vector<std::string> split_by_whitespaces(std::string line);
 
@@ -28,6 +28,7 @@ namespace StringOperations  {
 
     // convert both strings to uppercase and compare
     bool compare_case_insensitive(const std::string &x, const std::string &y);
+
     template <class ResultType>
     ResultType convert_string_to([[__maybe_unused__]]const std::string &input_string) {
         throw std::runtime_error ("Requested type not implemented!");

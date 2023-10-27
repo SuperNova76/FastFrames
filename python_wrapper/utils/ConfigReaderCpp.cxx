@@ -50,7 +50,7 @@ std::vector<Variable> _variables_region(const Region &self) {
 }
 
 void _add_variable_region(Region &self, unsigned long long int variable_ptr) {
-    Variable *variable = reinterpret_cast<Variable*>(variable_ptr);
+    const Variable *variable = reinterpret_cast<Variable*>(variable_ptr);
     self.addVariable(*variable);
 }
 

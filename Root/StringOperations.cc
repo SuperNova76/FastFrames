@@ -20,7 +20,7 @@ bool StringOperations::ends_with(const string &main_string, const string &suffix
     return suffix == main_string.substr(string_lenght-suffix_lenght, string_lenght);
 };
 
-vector<string> StringOperations::split_and_strip_string(string input_string, const string &separator) {
+vector<string> StringOperations::split_and_strip_string(const string &input_string, const string &separator) {
     vector<string> result = split_string(input_string, separator);
     for (string &x : result)    {
         strip_string(&x, " \n\t\r");
@@ -31,7 +31,6 @@ vector<string> StringOperations::split_and_strip_string(string input_string, con
 vector<string> StringOperations::split_string(string input_string, const string &separator)    {
     vector<string> result;
     size_t pos = 0;
-    std::string token;
     while ((pos = input_string.find(separator)) != std::string::npos) {
         result.push_back(input_string.substr(0, pos));
         input_string.erase(0, pos + separator.length());
