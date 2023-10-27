@@ -1,6 +1,7 @@
 #include "FastFrames/MetadataManager.h"
 
 #include "FastFrames/Logger.h"
+#include "FastFrames/Systematic.h"
 
 #include <fstream>
 #include <exception>
@@ -88,14 +89,14 @@ void MetadataManager::addLuminosity(const std::string& campaign, const double lu
     }
 }
 
-double MetadataManager::sumWeights(const UniqueSampleID& id, const std::string& systematic) const {
+double MetadataManager::sumWeights(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const {
     auto itr = m_metadata.find(id);
     if (itr == m_metadata.end()) {
         LOG(ERROR) << "Cannot find the correct sample in the map for the sumweights\n";
         throw std::invalid_argument("");
     }
 
-    return itr->second.sumWeight(systematic);
+    return itr->second.sumWeight(systematic->sumWeights());
 }
 
 double MetadataManager::luminosity(const std::string& campaign) const {
@@ -125,7 +126,7 @@ double MetadataManager::crossSection(const UniqueSampleID& id) const {
     return crossSection;
 }
 
-double MetadataManager::normalisation(const UniqueSampleID& id, const std::string& systematic) const {
+double MetadataManager::normalisation(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const {
     return this->crossSection(id) * this->luminosity(id.campaign()) / this->sumWeights(id, systematic);
 }
 
