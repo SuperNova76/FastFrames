@@ -1,4 +1,4 @@
-# FastFrames [![build status](https://https://gitlab.cern.ch/atlas-amglab/fastframes/badges/main/pipeline.svg "build status")](https://https://gitlab.cern.ch/atlas-amglab/fastframes/commits/main)
+# FastFrames [![build status](https://gitlab.cern.ch/atlas-amglab/fastframes/badges/main/pipeline.svg "build status")](https://gitlab.cern.ch/atlas-amglab/fastframes/commits/main)
 
 ## Install requirements (locally)
 
