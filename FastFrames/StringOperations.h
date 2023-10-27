@@ -16,7 +16,7 @@ namespace StringOperations  {
 
     std::vector<std::string> splitAndStripString(const std::string &input_string, const std::string &separator);
 
-    std::vector<std::string> splitString(const std::string input_string, const std::string &separator);
+    std::vector<std::string> splitString(std::string input_string, const std::string &separator);
 
     std::vector<std::string> splitByWhitespaces(std::string line);
 
