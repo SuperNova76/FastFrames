@@ -9,6 +9,8 @@ class Region {
 public:
   explicit Region(const std::string& name) noexcept;
 
+  Region()  = delete;
+
   ~Region() = default;
 
   inline const std::string& name() const {return m_name;}
