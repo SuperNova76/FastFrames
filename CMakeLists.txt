@@ -6,7 +6,8 @@ if( NOT ${CMAKE_VERSION} VERSION_LESS 3.9 )
    cmake_policy( SET CMP0068 NEW )
 endif()
 
-set(CMAKE_INSTALL_PREFIX "../install/" CACHE PATH "Path to the install directory")
+
+set(CMAKE_INSTALL_PREFIX "" CACHE PATH "Path to the install directory")
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Set the project's name and version.
@@ -26,6 +27,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 set( CMAKE_INSTALL_LIBDIR ${CMAKE_BINARY_DIR}/lib )  # Needed by ROOT_GENERATE_DICTIONARY()
+
+set(FastFrames_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Path to the includes")
 
 # Set the warning flag(s) to use.
 set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -pedantic -O3 -g" )
@@ -58,8 +61,7 @@ add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
 target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> $<INSTALL_INTERFACE:> ${ROOT_INCLUDE_DIRS} )
 target_link_libraries( FastFrames ${ROOT_LIBRARIES} )
 set_property( TARGET FastFrames
-   PROPERTY PUBLIC_HEADER ${lib_headers} )
-target_include_directories(FastFrames PUBLIC ${CMAKE_CURRENT_LIST_DIR} )
+   PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 
 # Install the libraries.
 install( TARGETS FastFrames
@@ -67,6 +69,25 @@ install( TARGETS FastFrames
    ARCHIVE DESTINATION lib
    LIBRARY DESTINATION lib
    PUBLIC_HEADER DESTINATION include/FastFrames )
+
+# Export the targets.
+install( EXPORT FastFramesTargets
+   FILE FastFramesTargets.cmake
+   NAMESPACE FastFrames::
+   DESTINATION lib/cmake/FastFrames )
+
+# Create a Config file for the package.
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+   "${CMAKE_CURRENT_LIST_DIR}/FastFramesConfig.cmake.in"
+   "${CMAKE_CURRENT_BINARY_DIR}/FastFramesConfig.cmake"
+   INSTALL_DESTINATION lib/cmake/FastFrames
+   PATH_VARS CMAKE_INSTALL_PREFIX
+)
+
+# Install the Config file.
+install( FILES "${CMAKE_CURRENT_BINARY_DIR}/FastFramesConfig.cmake"
+   DESTINATION lib/cmake/FastFrames )
 
 
 # ------------------------------------------------
@@ -93,7 +114,7 @@ set_target_properties( cppLogger PROPERTIES
    OUTPUT_NAME "cppLogger" )
 
 # Build the Python module for config reader
-add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${lib_headers} )
+add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${LIB_HEADERS} )
 target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
 set_target_properties( ConfigReaderCpp PROPERTIES
    PREFIX ""
