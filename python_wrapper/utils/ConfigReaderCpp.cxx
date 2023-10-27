@@ -6,8 +6,15 @@
 #include "FastFrames/Region.h"
 #include "FastFrames/Variable.h"
 #include "FastFrames/Binning.h"
+#include "FastFrames/StringOperations.h"
 
 using namespace std;
+
+template <typename T>
+unsigned long long int getPtr(T &ptr) {
+    return reinterpret_cast<unsigned long long int>(&ptr);
+}
+
 
 // general block:
 
@@ -38,6 +45,14 @@ std::string _selection_region(const Region &self) {
     return self.selection();
 }
 
+std::vector<Variable> _variables_region(const Region &self) {
+    return self.variables();
+}
+
+void _add_variable_region(Region &self, unsigned long long int variable_ptr) {
+    Variable *variable = reinterpret_cast<Variable*>(variable_ptr);
+    self.addVariable(*variable);
+}
 
 
 //  variable block:
@@ -54,16 +69,22 @@ std::string _title_variable(const Variable &self) {
 }
 
 //binning block:
-void _set_binning_regular(Binning &self, const double min, const double max, const int nbins) {
+void _setBinningRegular(Binning &self, const double min, const double max, const int nbins) {
     self.setBinning(min, max, nbins);
 }
 
-void _set_binning_irregular(Binning &self, const std::vector<double> &edges) {
-    self.setBinning(edges);
+void _setBinningIrregular(Binning &self, const std::string &binning_string) {
+    const std::vector<double> binEdges = StringOperations::convert_string_to<std::vector<double>>(binning_string);
+    return self.setBinning(binEdges);
 }
 
-vector<double> _binEdges_binning(const Binning &self) {
-    return self.binEdges();
+std::string _getBinEdges(const Binning &self) {
+    const vector<double> &edges = self.binEdges();
+    string result = "";
+    for (const double &edge : edges) {
+        result += to_string(edge) + ",";
+    }
+    return result.substr(0, result.size()-1);
 }
 
 
@@ -73,6 +94,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
     class_<ConfigSetting>("ConfigReaderCppGeneral",
         init<>())
+        // getPtr
+        .def("getPtr",          &getPtr<ConfigSetting>)
+
         // inputPath
         .def("inputPath",       _inputPath_general)
         .def("setInputPath",    &ConfigSetting::setInputPath)
@@ -101,6 +125,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
     class_<Region>("ConfigReaderCppRegion",
         init<std::string>())
+        // getPtr
+        .def("getPtr",          &getPtr<Region>)
 
         // name
         .def("name",        _name_region)
@@ -108,10 +134,16 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // selection
         .def("selection",   _selection_region)
         .def("setSelection",&Region::setSelection)
+
+        // addVariable
+        .def("addVariable", _add_variable_region)
+        .def("variables",   _variables_region)
     ;
 
     class_<Variable>("ConfigReaderCppVariable",
         init<std::string>())
+        // getPtr
+        .def("getPtr",          &getPtr<Variable>)
 
         // name
         .def("name",        _name_variable)
@@ -127,6 +159,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
     class_<Binning>("ConfigReaderCppBinning",
         init<>())
+        // getPtr
+        .def("getPtr",          &getPtr<Binning>)
 
         // min
         .def("min",         &Binning::min)
@@ -138,11 +172,11 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("nbins",       &Binning::nbins)
 
         // setBinning
-        .def("setBinningRegular",   _set_binning_regular)
-        .def("setBinningIrregular", _set_binning_irregular)
+        .def("setBinningRegular",   _setBinningRegular)
+        .def("setBinningIrregular", _setBinningIrregular)
 
         // binEdges
-        .def("binEdges",    &_binEdges_binning)
+        .def("binEdges",    _getBinEdges)
 
         // hasRegularBinning
         .def("hasRegularBinning", &Binning::hasRegularBinning)

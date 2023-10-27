@@ -16,8 +16,9 @@ class BlockReaderRegion:
         if block_reader_general is not None:
             self.__merge_settings(block_reader_general)
 
-        for variable in input_dict.get("variables"):
-            self.variables.append(BlockReaderVariable(variable))
+        for variable_dict in input_dict.get("variables"):
+            variable = BlockReaderVariable(variable_dict)
+            self.variables.append(variable)
 
         self.__set_config_reader_cpp_region = None
         self.__set_config_reader_cpp()
@@ -26,6 +27,9 @@ class BlockReaderRegion:
     def __set_config_reader_cpp(self):
         self.config_reader_cpp_region = ConfigReaderCppRegion(self.name)
         self.config_reader_cpp_region.setSelection(self.selection)
+        for variable in self.variables:
+            ptr = variable.config_reader_cpp_variable.getPtr()
+            self.config_reader_cpp_region.addVariable(variable.config_reader_cpp_variable.getPtr())
 
     def __merge_settings(self, block_reader_general) -> list:
         if block_reader_general is None:
