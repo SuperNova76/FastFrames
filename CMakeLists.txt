@@ -6,6 +6,9 @@ if( NOT ${CMAKE_VERSION} VERSION_LESS 3.9 )
    cmake_policy( SET CMP0068 NEW )
 endif()
 
+set(CMAKE_INSTALL_PREFIX "../install/" CACHE PATH "Path to the install directory")
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
 # Set the project's name and version.
 project( FastFrames )
 
@@ -19,9 +22,6 @@ set( CMAKE_CXX_EXTENSIONS FALSE CACHE BOOL
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_INSTALL_PREFIX "../install/" CACHE STRING "Path to the install directory")
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
 # Specify the install locations for libraries and binaries.
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
@@ -31,6 +31,10 @@ set( CMAKE_INSTALL_LIBDIR ${CMAKE_BINARY_DIR}/lib )  # Needed by ROOT_GENERATE_D
 set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -pedantic -O3 -g" )
 
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+
+# Silence boost warnings
+add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
+add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
 
 # ------------------------------------------------
 # Dependencies and sub-libraries
@@ -46,41 +50,11 @@ include_directories(${CMAKE_SOURCE_DIR})
 # The actual FastFrames library
 # ------------------------------------------------
 
-# Public header files for the shared/static library.
-set( lib_headers
-  FastFrames/Binning.h
-  FastFrames/ConfigSetting.h
-  FastFrames/HistoContainer.h
-  FastFrames/Logger.h
-  FastFrames/MainFrame.h
-  FastFrames/Metadata.h
-  FastFrames/MetadataManager.h
-  FastFrames/Region.h
-  FastFrames/Sample.h
-  FastFrames/Systematic.h
-  FastFrames/SystematicReplacer.h
-  FastFrames/UniqueSampleID.h
-  FastFrames/Utils.h
-  FastFrames/Variable.h )
-
-# Source files for the shared/static library.
-set( lib_sources
-  Root/Binning.cc
-  Root/ConfigSetting.cc
-  Root/HistoContainer.cc
-  Root/MainFrame.cc
-  Root/Metadata.cc
-  Root/MetadataManager.cc
-  Root/Region.cc
-  Root/Sample.cc
-  Root/Systematic.cc
-  Root/SystematicReplacer.cc
-  Root/UniqueSampleID.cc
-  Root/Utils.cc
-  Root/Variable.cc )
+file(GLOB SOURCES "Root/*.cc")
+file(GLOB LIB_HEADERS "FastFrames/*.h")
 
 # Build the shared library.
-add_library( FastFrames SHARED ${lib_headers} ${lib_sources} )
+add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
 target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> $<INSTALL_INTERFACE:> ${ROOT_INCLUDE_DIRS} )
 target_link_libraries( FastFrames ${ROOT_LIBRARIES} )
 set_property( TARGET FastFrames
