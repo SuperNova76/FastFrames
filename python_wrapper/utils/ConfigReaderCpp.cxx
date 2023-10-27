@@ -74,7 +74,7 @@ void _setBinningRegular(Binning &self, const double min, const double max, const
 }
 
 void _setBinningIrregular(Binning &self, const std::string &binning_string) {
-    const std::vector<double> binEdges = StringOperations::convert_string_to<std::vector<double>>(binning_string);
+    const std::vector<double> binEdges = StringOperations::convertStringTo<std::vector<double>>(binning_string);
     return self.setBinning(binEdges);
 }
 
