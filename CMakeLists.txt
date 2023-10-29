@@ -119,3 +119,5 @@ target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARI
 set_target_properties( ConfigReaderCpp PROPERTIES
    PREFIX ""
    OUTPUT_NAME "ConfigReaderCpp" )
+
+ROOT_GENERATE_DICTIONARY(FastFrames_dict FastFrames/MainFrame.h MODULE FastFrames LINKDEF Root/LinkDef.h)

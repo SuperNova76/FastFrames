@@ -1,8 +1,11 @@
+#pragma once
+
 #include "FastFrames/MainFrame.h"
 
 #include "FastFrames/ConfigSetting.h"
 
 #include "ROOT/RDataFrame.hxx"
+#include "TClass.h"
 
 #include <memory>
 
@@ -16,5 +19,7 @@ public:
   virtual ROOT::RDF::RNode defineVariables(const ROOT::RDataFrame& df) override final;
 
 private:
+
+  ClassDefOverride(CustomFrame, 1);
 
 };

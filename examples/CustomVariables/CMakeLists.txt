@@ -6,7 +6,7 @@ if( NOT ${CMAKE_VERSION} VERSION_LESS 3.9 )
    cmake_policy( SET CMP0068 NEW )
 endif()
 
-set(CMAKE_INSTALL_PREFIX "../install/" CACHE PATH "Path to the install directory")
+set(CMAKE_INSTALL_PREFIX "" CACHE PATH "Path to the install directory")
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Set the project's name and version.
@@ -55,3 +55,12 @@ target_link_libraries( CustomFrame ${FastFrames_LIBRARIES} ${ROOT_LIBRARIES} )
 set_property( TARGET CustomFrame
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 target_include_directories(CustomFrame PUBLIC ${CMAKE_CURRENT_LIST_DIR} )
+
+# Install the libraries.
+install( TARGETS CustomFrame
+   EXPORT CustomFrameTargets
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   PUBLIC_HEADER DESTINATION include/CustomFrame )
+
+ROOT_GENERATE_DICTIONARY(CustomFrame_dict CustomFrame/CustomFrame.h MODULE CustomFrame LINKDEF Root/LinkDef.h)

@@ -6,6 +6,7 @@
 #include "FastFrames/SystematicReplacer.h"
 
 #include "ROOT/RDataFrame.hxx"
+#include "TClass.h"
 
 #include <memory>
 
@@ -47,4 +48,7 @@ private:
   MetadataManager m_metadataManager;
   std::shared_ptr<ConfigSetting> m_config;
   SystematicReplacer m_systReplacer;
+
+
+  ClassDef(MainFrame, 1);
 };

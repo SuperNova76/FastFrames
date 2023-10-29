@@ -1,5 +1,6 @@
 build/*
 examples/CustomVariables/build/*
+examples/CustomVariables/install/*
 install/*
 .vscode/*
 filelist.txt
