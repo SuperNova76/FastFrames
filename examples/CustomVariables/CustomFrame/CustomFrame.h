@@ -12,11 +12,11 @@
 class CustomFrame : public MainFrame {
 public:
 
-  explicit CustomFrame(const std::shared_ptr<ConfigSetting>& config);
-
   explicit CustomFrame() = default;
 
-  virtual ~CustomFrame();
+  virtual ~CustomFrame() = default;
+
+  virtual void setConfig(const std::shared_ptr<ConfigSetting>& config) override final {MainFrame::setConfig(config);} 
 
   virtual void init() override final {MainFrame::init();}
 

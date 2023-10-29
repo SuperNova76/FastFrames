@@ -53,8 +53,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 # The actual FastFrames library
 # ------------------------------------------------
 
-file(GLOB SOURCES "Root/*.cc")
-file(GLOB LIB_HEADERS "FastFrames/*.h")
+file(GLOB SOURCES "Root/*.cc" )
+file(GLOB LIB_HEADERS "FastFrames/*.h" )
 
 # Build the shared library.
 add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
