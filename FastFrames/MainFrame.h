@@ -16,6 +16,8 @@ class MainFrame {
 public:
   explicit MainFrame(const std::shared_ptr<ConfigSetting>& config);
 
+  MainFrame() = default;
+
   virtual ~MainFrame() = default;
 
   virtual void init();

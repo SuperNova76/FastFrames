@@ -39,14 +39,10 @@ add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
 # Add ROOT system directory and require ROOT.
 find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame ROOTVecOps)
 
-find_package( FastFrames REQUIRED)
-
-# ------------------------------------------------
-# The actual FastFrames library
-# ------------------------------------------------
+find_package( FastFrames REQUIRED )
 
 file(GLOB SOURCES "Root/*.cc")
-file(GLOB LIB_HEADERS_MINE "CustomFrame/*.h")
+file(GLOB LIB_HEADERS "CustomFrame/*.h")
 
 # Build the shared library.
 add_library( CustomFrame SHARED ${LIB_HEADERS} ${SOURCES} )
@@ -64,3 +60,4 @@ install( TARGETS CustomFrame
    PUBLIC_HEADER DESTINATION include/CustomFrame )
 
 ROOT_GENERATE_DICTIONARY(CustomFrame_dict CustomFrame/CustomFrame.h MODULE CustomFrame LINKDEF Root/LinkDef.h)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

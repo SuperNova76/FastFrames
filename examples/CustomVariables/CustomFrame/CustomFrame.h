@@ -14,7 +14,13 @@ public:
 
   explicit CustomFrame(const std::shared_ptr<ConfigSetting>& config);
 
+  explicit CustomFrame() = default;
+
   virtual ~CustomFrame();
+
+  virtual void init() override final {MainFrame::init();}
+
+  virtual void executeHistograms() override final {MainFrame::executeHistograms();}
 
   virtual ROOT::RDF::RNode defineVariables(const ROOT::RDataFrame& df) override final;
 

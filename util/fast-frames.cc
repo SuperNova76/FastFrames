@@ -2,6 +2,8 @@
 #include "FastFrames/Logger.h"
 #include "FastFrames/MainFrame.h"
 
+#include "TClass.h"
+
 #include <memory>
 
 int main (int /*argc*/, const char** /*argv*/) {

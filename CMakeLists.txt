@@ -121,3 +121,4 @@ set_target_properties( ConfigReaderCpp PROPERTIES
    OUTPUT_NAME "ConfigReaderCpp" )
 
 ROOT_GENERATE_DICTIONARY(FastFrames_dict FastFrames/MainFrame.h MODULE FastFrames LINKDEF Root/LinkDef.h)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
