@@ -8,14 +8,6 @@
 #include <iostream>
 #include <exception>
 
-MainFrame::MainFrame(const std::shared_ptr<ConfigSetting>& config) :
-m_metadataManager{},
-m_config(config),
-m_systReplacer()
-{
-    ROOT::EnableImplicitMT();
-}
-
 void MainFrame::init() {
     m_metadataManager.readFileList("test/input/filelist.txt");
     m_metadataManager.readSumWeights("test/input/sum_of_weights.txt");

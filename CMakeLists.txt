@@ -53,8 +53,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 # The actual FastFrames library
 # ------------------------------------------------
 
-file(GLOB SOURCES "Root/*.cc")
-file(GLOB LIB_HEADERS "FastFrames/*.h")
+file(GLOB SOURCES "Root/*.cc" )
+file(GLOB LIB_HEADERS "FastFrames/*.h" )
 
 # Build the shared library.
 add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
@@ -119,3 +119,6 @@ target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARI
 set_target_properties( ConfigReaderCpp PROPERTIES
    PREFIX ""
    OUTPUT_NAME "ConfigReaderCpp" )
+
+ROOT_GENERATE_DICTIONARY(FastFrames_dict FastFrames/MainFrame.h MODULE FastFrames LINKDEF Root/LinkDef.h)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

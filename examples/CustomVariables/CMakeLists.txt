@@ -6,7 +6,7 @@ if( NOT ${CMAKE_VERSION} VERSION_LESS 3.9 )
    cmake_policy( SET CMP0068 NEW )
 endif()
 
-set(CMAKE_INSTALL_PREFIX "../install/" CACHE PATH "Path to the install directory")
+set(CMAKE_INSTALL_PREFIX "" CACHE PATH "Path to the install directory")
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Set the project's name and version.
@@ -39,14 +39,10 @@ add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
 # Add ROOT system directory and require ROOT.
 find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame ROOTVecOps)
 
-find_package( FastFrames REQUIRED)
-
-# ------------------------------------------------
-# The actual FastFrames library
-# ------------------------------------------------
+find_package( FastFrames REQUIRED )
 
 file(GLOB SOURCES "Root/*.cc")
-file(GLOB LIB_HEADERS_MINE "CustomFrame/*.h")
+file(GLOB LIB_HEADERS "CustomFrame/*.h")
 
 # Build the shared library.
 add_library( CustomFrame SHARED ${LIB_HEADERS} ${SOURCES} )
@@ -55,3 +51,13 @@ target_link_libraries( CustomFrame ${FastFrames_LIBRARIES} ${ROOT_LIBRARIES} )
 set_property( TARGET CustomFrame
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 target_include_directories(CustomFrame PUBLIC ${CMAKE_CURRENT_LIST_DIR} )
+
+# Install the libraries.
+install( TARGETS CustomFrame
+   EXPORT CustomFrameTargets
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib
+   PUBLIC_HEADER DESTINATION include/CustomFrame )
+
+ROOT_GENERATE_DICTIONARY(CustomFrame_dict CustomFrame/CustomFrame.h MODULE CustomFrame LINKDEF Root/LinkDef.h)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

@@ -6,6 +6,7 @@
 #include "FastFrames/SystematicReplacer.h"
 
 #include "ROOT/RDataFrame.hxx"
+#include "TClass.h"
 
 #include <memory>
 
@@ -13,9 +14,11 @@ class Variable;
 
 class MainFrame {
 public:
-  explicit MainFrame(const std::shared_ptr<ConfigSetting>& config);
+  explicit MainFrame() = default;
 
   virtual ~MainFrame() = default;
+
+  virtual void setConfig(const std::shared_ptr<ConfigSetting>& config) {m_config = config;}
 
   virtual void init();
 
@@ -44,7 +47,11 @@ private:
   void writeHistosToFile(const std::vector<SystematicHisto>& histos,
                          const std::shared_ptr<Sample>& sample) const;
 
+protected:
   MetadataManager m_metadataManager;
   std::shared_ptr<ConfigSetting> m_config;
   SystematicReplacer m_systReplacer;
+
+
+  ClassDef(MainFrame, 1);
 };
