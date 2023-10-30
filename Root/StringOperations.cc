@@ -5,15 +5,28 @@
 using namespace std;
 using namespace StringOperations;
 
+std::string StringOperations::replaceString(const std::string& original,
+                                 const std::string& from,
+                                 const std::string& to) {
 
-bool StringOperations::startsWith(const string &main_string, const string &prefix)    {
+    std::string result(original);
+    std::string::size_type n = 0;
+    while ((n = result.find(from, n)) != std::string::npos) {
+        result.replace(n, from.size(), to);
+        n += to.size();
+    }
+
+    return result;
+}
+
+bool StringOperations::stringStartsWith(const string &main_string, const string &prefix)    {
     const unsigned int prefix_lenght = prefix.length();
     const unsigned int string_lenght = main_string.length();
     if (prefix_lenght > string_lenght) return false;
     return prefix == main_string.substr(0, prefix_lenght);
 };
 
-bool StringOperations::endsWith(const string &main_string, const string &suffix)    {
+bool StringOperations::stringEndsWith(const string &main_string, const string &suffix)    {
     const unsigned int suffix_lenght = suffix.length();
     const unsigned int string_lenght = main_string.length();
     if (suffix_lenght > string_lenght) return false;

@@ -6,13 +6,17 @@
 
 namespace StringOperations  {
 
+    std::string replaceString(  const std::string& original,
+                                const std::string& from,
+                                const std::string& to);
+
     inline bool contains(const std::string &main_string, const std::string &substring)  {
         return (main_string.find(substring)) != std::string::npos;
     };
 
-    bool startsWith(const std::string &main_string, const std::string &prefix);
+    bool stringStartsWith(const std::string &main_string, const std::string &prefix);
 
-    bool endsWith(const std::string &main_string, const std::string &suffix);
+    bool stringEndsWith(const std::string &main_string, const std::string &suffix);
 
     std::vector<std::string> splitAndStripString(const std::string &input_string, const std::string &separator);
 
