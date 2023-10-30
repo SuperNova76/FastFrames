@@ -1,5 +1,5 @@
-from BlockReaderCommon import set_path_to_shared_lib
-set_path_to_shared_lib()
+from BlockReaderCommon import set_paths
+set_paths()
 
 from ConfigReaderCpp import ConfigReaderCppGeneral
 from python_wrapper.python.logger import Logger
