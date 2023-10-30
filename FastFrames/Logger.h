@@ -43,7 +43,8 @@ public:
     std::tm* now = std::localtime(&t); 
     if (level <= m_logLevel) {
       m_stream << fancyHeader(level) << formatString(file + std::string(":") + std::to_string(line), 25) << " " << formatString(function, 20) <<
-              " " << now->tm_mday << "-" << now->tm_mon+1 << "-" << now->tm_year+1900 << " " << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec 
+              " " << formatTime(now->tm_mday) << "-" << formatTime(now->tm_mon+1) << "-" << now->tm_year+1900 << " " << formatTime(now->tm_hour) <<
+              ":" << formatTime(now->tm_min) << ":" << formatTime(now->tm_sec) 
               << " | ";
     }
     return *this;
@@ -82,6 +83,11 @@ private:
     }
     return input;
   }
+
+  static std::string formatTime(int time) {
+    if (time > 9) return std::to_string(time);
+    return "0" + std::to_string(time); 
+  } 
 
 };
 

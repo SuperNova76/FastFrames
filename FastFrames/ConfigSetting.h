@@ -37,6 +37,11 @@ public:
   void setInputFilelistPath(const std::string &inputFilelistPath) {m_inputFilelistPath = inputFilelistPath;}
 
 
+  const std::string &customFrameName() const {return m_customFrameName;}
+
+  void setCustomFrameName(const std::string &customFrameName) {m_customFrameName = customFrameName;}
+
+
   int numCPU() const {return m_numCPU;}
 
   void setNumCPU(int numCPU) {m_numCPU = numCPU;}
@@ -58,8 +63,9 @@ private:
   std::string m_inputPath;
   std::string m_inputSumWeightsPath;
   std::string m_inputFilelistPath;
-  int         m_numCPU = 1;
+  std::string m_customFrameName;
 
+  int         m_numCPU = 1;
 
   std::map<std::string, float> m_luminosity_map;
 

@@ -2,185 +2,96 @@
 #include <boost/python.hpp>
 #include <string>
 
-#include "FastFrames/ConfigSetting.h"
-#include "FastFrames/Region.h"
-#include "FastFrames/Variable.h"
+#include "python_wrapper/headers/ConfigSettingWrapper.h"
+#include "python_wrapper/headers/RegionWrapper.h"
+#include "python_wrapper/headers/VariableWrapper.h"
+
 #include "FastFrames/Binning.h"
-#include "FastFrames/StringOperations.h"
 
 using namespace std;
-
-template <typename T>
-unsigned long long int getPtr(T &ptr) {
-    return reinterpret_cast<unsigned long long int>(&ptr);
-}
-
-
-// general block:
-
-std::string _outputPath_general(const ConfigSetting &self) {
-    return self.outputPath();
-}
-
-std::string _inputPath_general(const ConfigSetting &self) {
-    return self.inputPath();
-}
-
-std::string _inputSumWeightsPath_general(const ConfigSetting &self) {
-    return self.inputSumWeightsPath();
-}
-
-std::string _inputFilelistPath_general(const ConfigSetting &self) {
-    return self.inputFilelistPath();
-}
-
-
-
-// region block:
-std::string _name_region(const Region &self) {
-    return self.name();
-}
-
-std::string _selection_region(const Region &self) {
-    return self.selection();
-}
-
-std::vector<Variable> _variables_region(const Region &self) {
-    return self.variables();
-}
-
-void _add_variable_region(Region &self, unsigned long long int variable_ptr) {
-    const Variable *variable = reinterpret_cast<Variable*>(variable_ptr);
-    self.addVariable(*variable);
-}
-
-
-//  variable block:
-std::string _name_variable(const Variable &self) {
-    return self.name();
-}
-
-std::string _definition_variable(const Variable &self) {
-    return self.definition();
-}
-
-std::string _title_variable(const Variable &self) {
-    return self.title();
-}
-
-//binning block:
-void _setBinningRegular(Binning &self, const double min, const double max, const int nbins) {
-    self.setBinning(min, max, nbins);
-}
-
-void _setBinningIrregular(Binning &self, const std::string &binning_string) {
-    const std::vector<double> binEdges = StringOperations::convertStringTo<std::vector<double>>(binning_string);
-    return self.setBinning(binEdges);
-}
-
-std::string _getBinEdges(const Binning &self) {
-    const vector<double> &edges = self.binEdges();
-    string result = "";
-    for (const double &edge : edges) {
-        result += to_string(edge) + ",";
-    }
-    return result.substr(0, result.size()-1);
-}
 
 
 BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
 
-    class_<ConfigSetting>("ConfigReaderCppGeneral",
+    class_<ConfigSettingWrapper>("ConfigReaderCppGeneral",
         init<>())
         // getPtr
-        .def("getPtr",          &getPtr<ConfigSetting>)
+        .def("getPtr",          &ConfigSettingWrapper::getPtr)
 
         // inputPath
-        .def("inputPath",       _inputPath_general)
-        .def("setInputPath",    &ConfigSetting::setInputPath)
+        .def("inputPath",       &ConfigSettingWrapper::inputPath)
+        .def("setInputPath",    &ConfigSettingWrapper::setInputPath)
 
         // outputPath
-        .def("outputPath",      _outputPath_general)
-        .def("setOutputPath",   &ConfigSetting::setOutputPath)
+        .def("outputPath",      &ConfigSettingWrapper::outputPath)
+        .def("setOutputPath",   &ConfigSettingWrapper::setOutputPath)
 
         // inputSumWeightsPath
-        .def("inputSumWeightsPath",    _inputSumWeightsPath_general)
-        .def("setInputSumWeightsPath", &ConfigSetting::setInputSumWeightsPath)
+        .def("inputSumWeightsPath",    &ConfigSettingWrapper::inputSumWeightsPath)
+        .def("setInputSumWeightsPath", &ConfigSettingWrapper::setInputSumWeightsPath)
 
         // inputFilelistPath
-        .def("inputFilelistPath",   _inputFilelistPath_general)
-        .def("setInputFilelistPath",&ConfigSetting::setInputFilelistPath)
+        .def("inputFilelistPath",   &ConfigSettingWrapper::inputFilelistPath)
+        .def("setInputFilelistPath",&ConfigSettingWrapper::setInputFilelistPath)
+
+        // customFrameName
+        .def("customFrameName",     &ConfigSettingWrapper::customFrameName)
+        .def("setCustomFrameName",  &ConfigSettingWrapper::setCustomFrameName)
 
         // numCPU
-        .def("numCPU",      &ConfigSetting::numCPU)
-        .def("setNumCPU",   &ConfigSetting::setNumCPU)
-
+        .def("numCPU",      &ConfigSettingWrapper::numCPU)
+        .def("setNumCPU",   &ConfigSettingWrapper::setNumCPU)
 
         // addLuminosityInformation
-        .def("setLuminosity", &ConfigSetting::addLuminosityInformation)
-        .def("getLuminosity", &ConfigSetting::getLuminosity)
+        .def("setLuminosity", &ConfigSettingWrapper::addLuminosityInformation)
+        .def("getLuminosity", &ConfigSettingWrapper::getLuminosity)
     ;
 
-    class_<Region>("ConfigReaderCppRegion",
+    class_<RegionWrapper>("ConfigReaderCppRegion",
         init<std::string>())
         // getPtr
-        .def("getPtr",          &getPtr<Region>)
+        .def("getPtr",          &RegionWrapper::getPtr)
 
         // name
-        .def("name",        _name_region)
+        .def("name",            &RegionWrapper::name)
 
         // selection
-        .def("selection",   _selection_region)
-        .def("setSelection",&Region::setSelection)
+        .def("selection",       &RegionWrapper::selection)
+        .def("setSelection",    &RegionWrapper::setSelection)
 
         // addVariable
-        .def("addVariable", _add_variable_region)
-        .def("variables",   _variables_region)
+        .def("addVariable",     &RegionWrapper::addVariable)
+        .def("variables",       &RegionWrapper::variables)
     ;
 
-    class_<Variable>("ConfigReaderCppVariable",
+    class_<VariableWrapper>("ConfigReaderCppVariable",
         init<std::string>())
         // getPtr
-        .def("getPtr",          &getPtr<Variable>)
+        .def("getPtr",          &VariableWrapper::getPtr)
 
         // name
-        .def("name",        _name_variable)
+        .def("name",            &VariableWrapper::name)
 
         // definition
-        .def("definition",  _definition_variable)
-        .def("setDefinition",&Variable::setDefinition)
+        .def("definition",      &VariableWrapper::definition)
+        .def("setDefinition",   &VariableWrapper::setDefinition)
 
         // title
-        .def("title",       _title_variable)
-        .def("setTitle",    &Variable::setTitle)
+        .def("title",               &VariableWrapper::title)
+        .def("setTitle",            &VariableWrapper::setTitle)
+
+        // binning
+        .def("setBinningRegular",   &VariableWrapper::setBinningRegular)
+        .def("setBinningIrregular", &VariableWrapper::setBinningIrregular)
+        .def("hasRegularBinning",   &VariableWrapper::hasRegularBinning)
+
+        .def("binEdges",            &VariableWrapper::binEdges)
+        .def("binEdgesString",      &VariableWrapper::binEdgesString)
+        .def("axisMin",             &VariableWrapper::axisMin)
+        .def("axisMax",             &VariableWrapper::axisMax)
+        .def("axisNbins",           &VariableWrapper::axisNbins)
     ;
-
-    class_<Binning>("ConfigReaderCppBinning",
-        init<>())
-        // getPtr
-        .def("getPtr",          &getPtr<Binning>)
-
-        // min
-        .def("min",         &Binning::min)
-
-        // max
-        .def("max",         &Binning::max)
-
-        // nbins
-        .def("nbins",       &Binning::nbins)
-
-        // setBinning
-        .def("setBinningRegular",   _setBinningRegular)
-        .def("setBinningIrregular", _setBinningIrregular)
-
-        // binEdges
-        .def("binEdges",    _getBinEdges)
-
-        // hasRegularBinning
-        .def("hasRegularBinning", &Binning::hasRegularBinning)
-    ;
-
 
 }

@@ -6,13 +6,37 @@
 
 namespace StringOperations  {
 
+    /**
+     * @brief Replaces all occurances of substring with another string 
+     * 
+     * @param original input string
+     * @param from string to be replaced
+     * @param to replace with
+     * @return std::string 
+     */
+    std::string replaceString(const std::string& original,
+                              const std::string& from,
+                              const std::string& to);
+
+    /**
+     * @brief calls replaceString on each element of a string vector
+     * 
+     * @param input input string vector 
+     * @param from string to be replaced in each element
+     * @param to replace with
+     * @return std::vector<std::string> 
+     */
+    std::vector<std::string> replaceVector(const std::vector<std::string>& input,
+                                           const std::string& from,
+                                           const std::string& to);
+
     inline bool contains(const std::string &main_string, const std::string &substring)  {
         return (main_string.find(substring)) != std::string::npos;
     };
 
-    bool startsWith(const std::string &main_string, const std::string &prefix);
+    bool stringStartsWith(const std::string &main_string, const std::string &prefix);
 
-    bool endsWith(const std::string &main_string, const std::string &suffix);
+    bool stringEndsWith(const std::string &main_string, const std::string &suffix);
 
     std::vector<std::string> splitAndStripString(const std::string &input_string, const std::string &separator);
 

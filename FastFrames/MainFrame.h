@@ -3,8 +3,8 @@
 #include "FastFrames/ConfigSetting.h"
 #include "FastFrames/HistoContainer.h"
 #include "FastFrames/MetadataManager.h"
+#include "FastFrames/StringOperations.h"
 #include "FastFrames/SystematicReplacer.h"
-#include "FastFrames/Utils.h"
 
 #include "ROOT/RDataFrame.hxx"
 #include "TClass.h"
@@ -39,6 +39,11 @@ public:
       throw std::invalid_argument("");
     }
 
+    if (m_systReplacer.branchExists(newVariable)) {
+      LOG(WARNING) << "Variable: " << newVariable << " is already in the input, ignoring\n";
+      return node;
+    }
+
     // first add the nominal define
     node = node.Define(newVariable, defineFunction, branches);
 
@@ -47,8 +52,8 @@ public:
     std::vector<std::string> effectiveSystematics = m_systReplacer.getListOfEffectiveSystematics(branches);
 
     for (const auto& isystematic : effectiveSystematics) {
-      const std::string systName = Utils::replaceString(newVariable, "NOSYS", isystematic);
-      const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
+      const std::string systName = StringOperations::replaceString(newVariable, "NOSYS", isystematic);
+      const std::vector<std::string> systBranches = StringOperations::replaceVector(branches, "NOSYS", isystematic);
       node = node.Define(systName, defineFunction, systBranches);
     }
 

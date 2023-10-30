@@ -2,7 +2,7 @@
 
 #include "FastFrames/Logger.h"
 #include "FastFrames/Systematic.h"
-#include "FastFrames/Utils.h"
+#include "FastFrames/StringOperations.h"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -30,7 +30,7 @@ void SystematicReplacer::readSystematicMapFromFile(const std::string& path,
     this->matchSystematicVariables(m_allBranches, systematics);
 
     file->Close();
-} 
+}
 
 void SystematicReplacer::getBranchesFromFile(const std::unique_ptr<TFile>& file,
                                              const std::string& treeName) {
@@ -57,10 +57,10 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
         std::vector<std::string> affectedBranches;
         for (const auto& ivariable : variables) {
             // the systematic substring should be the suffix
-            if (!Utils::stringEndsWithString(ivariable, systName)) continue;
-            
+            if (!StringOperations::stringEndsWith(ivariable, systName)) continue;
+
             // if it is found, we need to replace the systematic suffix with "NOSYS:
-            const std::string nominalBranch = Utils::replaceString(ivariable, systName, "NOSYS");
+            const std::string nominalBranch = StringOperations::replaceString(ivariable, systName, "NOSYS");
             affectedBranches.emplace_back(nominalBranch);
 
             // also do it the other way around
@@ -74,7 +74,7 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
         m_systImpactsBranches.insert({systName, affectedBranches});
     }
 }
-  
+
 std::string SystematicReplacer::replaceString(const std::string& original, const std::shared_ptr<Systematic>& systematic) const {
     auto itr = m_systImpactsBranches.find(systematic->name());
     if (itr == m_systImpactsBranches.end()) {
@@ -86,8 +86,8 @@ std::string SystematicReplacer::replaceString(const std::string& original, const
 
     // loop over all affected branches and replace all of them
     for (const std::string& ibranch : itr->second) {
-        const std::string replacer = Utils::replaceString(ibranch, "NOSYS", systematic->name());
-        result = Utils::replaceString(result, ibranch, replacer);
+        const std::string replacer = StringOperations::replaceString(ibranch, "NOSYS", systematic->name());
+        result = StringOperations::replaceString(result, ibranch, replacer);
     }
 
     return result;
@@ -153,16 +153,4 @@ void SystematicReplacer::addVariableAndEffectiveSystematics(const std::string& v
         }
         itr->second.emplace_back(variable);
     }
-}
-
-std::vector<std::string> SystematicReplacer::replaceVector(const std::vector<std::string>& input,
-                                                           const std::string& systematic) const {
-
-    std::vector<std::string> result;
-
-    for (const auto& ivariable : input) {
-        result.emplace_back(Utils::replaceString(ivariable, "NOSYS", systematic));
-    }
-
-    return result;
 }
