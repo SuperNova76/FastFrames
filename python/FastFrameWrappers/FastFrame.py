@@ -24,5 +24,5 @@ if __name__ == "__main__":
     Logger.log_message("INFO", "Config file path: " + config_file_path)
 
 
-    fast_frames_executor = FastFramesExecutor(config_reader.getPtr())
+    fast_frames_executor = FastFramesExecutor(config_reader.block_general.config_reader_cpp_general.getPtr())
     fast_frames_executor.runFastFrames()
