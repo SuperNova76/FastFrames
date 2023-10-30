@@ -10,17 +10,17 @@
 
 class VariableHisto {
 public:
-  VariableHisto(const std::string& name) :
+  explicit VariableHisto(const std::string& name) :
     m_name(name) {}
 
   ~VariableHisto() {};
 
   VariableHisto(const VariableHisto& other) = delete;
 
-  VariableHisto(VariableHisto&& other) = default;   
+  VariableHisto(VariableHisto&& other) = default;
 
   VariableHisto& operator =(const VariableHisto& other) = delete;
-  
+
   VariableHisto& operator =(VariableHisto&& other) = default;
 
   inline const std::string& name() const {return m_name;}
@@ -39,7 +39,7 @@ private:
 
 class RegionHisto {
 public:
-  RegionHisto(const std::string& name) :
+  explicit RegionHisto(const std::string& name) :
     m_name(name){}
 
   ~RegionHisto() = default;
@@ -51,13 +51,13 @@ public:
   RegionHisto& operator=(const RegionHisto&) = delete;
 
   RegionHisto& operator=(RegionHisto&&) = default;
-  
+
   inline const std::string& name() const {return m_name;}
 
   inline void addVariableHisto(VariableHisto&& vh) {m_variables.emplace_back(std::move(vh));}
 
   inline const std::vector<VariableHisto>& variableHistos() const {return m_variables;}
-  
+
   inline std::vector<VariableHisto>& variableHistos() {return m_variables;}
 
 private:
@@ -68,7 +68,7 @@ private:
 
 class SystematicHisto {
 public:
-  SystematicHisto(const std::string& name) :
+  explicit SystematicHisto(const std::string& name) :
     m_name(name) {}
 
   ~SystematicHisto() = default;

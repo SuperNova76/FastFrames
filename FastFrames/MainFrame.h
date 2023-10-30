@@ -10,12 +10,13 @@
 #include "TClass.h"
 
 #include <memory>
+#include <string>
 
 class Variable;
 
 class MainFrame {
 public:
-  explicit MainFrame() = default;
+  explicit MainFrame() : m_config(std::make_shared<ConfigSetting>()) {};
 
   virtual ~MainFrame() = default;
 
@@ -28,7 +29,7 @@ public:
   virtual ROOT::RDF::RNode defineVariables(const ROOT::RDF::RNode& node,
                                            const UniqueSampleID& /*sampleID*/) {return node;}
 
-  template<typename F> 
+  template<typename F>
   ROOT::RDF::RNode systematicDefine(ROOT::RDF::RNode node,
                                     const std::string& newVariable,
                                     F defineFunction,
@@ -70,7 +71,7 @@ private:
   std::string systematicFilter(/*const std::shared_ptr<Sample>& sample,*/
                                const std::shared_ptr<Systematic>& systematic,
                                const std::shared_ptr<Region>& region) const;
-                                  
+
   std::string systematicVariable(const Variable& Variable,
                                  const std::shared_ptr<Systematic>& systematic) const;
 

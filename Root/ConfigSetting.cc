@@ -6,6 +6,8 @@
 
 ConfigSetting::ConfigSetting() :
 m_outputPath(""),
+m_inputSumWeightsPath("test/input/sum_of_weights.txt"),
+m_inputFilelistPath("test/input/filelist.txt"),
 m_regions({}),
 m_samples({}),
 m_systematics({})

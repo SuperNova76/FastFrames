@@ -5,6 +5,8 @@
 #include "python_wrapper/headers/ConfigSettingWrapper.h"
 #include "python_wrapper/headers/RegionWrapper.h"
 #include "python_wrapper/headers/VariableWrapper.h"
+#include "python_wrapper/headers/MainFrameWrapper.h"
+#include "python_wrapper/headers/MainFrameWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -14,6 +16,18 @@ using namespace std;
 BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
+
+    class_<MainFrameWrapper>("MainFrame",
+        init<>())
+        // setConfig
+        .def("setConfig",           &MainFrameWrapper::setConfig)
+
+        // init
+        .def("init",                &MainFrameWrapper::init)
+
+        // executeHistograms
+        .def("executeHistograms",   &MainFrameWrapper::executeHistograms)
+    ;
 
     class_<ConfigSettingWrapper>("ConfigReaderCppGeneral",
         init<>())

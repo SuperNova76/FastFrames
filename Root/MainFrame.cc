@@ -4,19 +4,22 @@
 #include "FastFrames/Sample.h"
 #include "FastFrames/UniqueSampleID.h"
 
+#include "TSystem.h"
+
 #include <iostream>
 #include <exception>
 
 void MainFrame::init() {
-    m_metadataManager.readFileList("test/input/filelist.txt");
-    m_metadataManager.readSumWeights("test/input/sum_of_weights.txt");
+    m_metadataManager.readFileList( m_config->inputFilelistPath() );
+    m_metadataManager.readSumWeights( m_config->inputSumWeightsPath() );
+    ROOT::EnableImplicitMT(m_config->numCPU());
 }
 
 void MainFrame::executeHistograms() {
     LOG(INFO) << "Started the main histogram processing\n";
     std::size_t sampleN(1);
     for (const auto& isample : m_config->samples()) {
-        LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n"; 
+        LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
         std::vector<SystematicHisto> systHistos;
         std::size_t uniqueSampleN(1);
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
@@ -36,7 +39,7 @@ void MainFrame::executeHistograms() {
                     throw std::runtime_error("");
                 }
 
-                LOG(INFO) << "Merging samples\n"; 
+                LOG(INFO) << "Merging samples\n";
                 for (std::size_t isyst = 0; isyst < systHistos.size(); ++isyst) {
                     systHistos.at(isyst).merge(currentHistos.at(isyst));
                 }
@@ -47,7 +50,7 @@ void MainFrame::executeHistograms() {
         this->writeHistosToFile(systHistos, isample);
         ++sampleN;
     }
-} 
+}
 
 std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID) {
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
@@ -61,7 +64,7 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
     ROOT::RDF::RNode mainNode = df;
 
     mainNode =this->addWeightColumns(mainNode, sample, uniqueSampleID);
-    
+
     // this is the method users will be able to override
     mainNode = this->defineVariables(mainNode, uniqueSampleID);
 
@@ -94,10 +97,10 @@ std::string MainFrame::systematicVariable(const Variable& variable,
 }
 
 std::string MainFrame::systematicWeight(const std::shared_ptr<Systematic>& systematic) const {
-    
+
     return "weight_total_" + systematic->name();
 }
-  
+
 std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::RNode mainNode,
                                                                     const std::shared_ptr<Sample>& sample) const {
 
@@ -120,7 +123,7 @@ std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::R
 
     return result;
 }
-  
+
 ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode node,
                                              const std::shared_ptr<Sample>& sample,
                                              const UniqueSampleID& id) const {
@@ -136,18 +139,18 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
                                                   const std::shared_ptr<Sample>& sample,
                                                   const std::shared_ptr<Systematic>& systematic,
                                                   const UniqueSampleID& id) const {
-    
+
     const std::string& nominalWeight = sample->weight();
     const float normalisation = m_metadataManager.normalisation(id, systematic);
 
     // to not cut very small numbers to zero
     std::ostringstream ss;
     ss << normalisation;
-    
+
     const std::string& systName = "weight_total_" + systematic->name();
     const std::string formula = m_systReplacer.replaceString(nominalWeight, systematic) + "*" + ss.str();
     LOG(DEBUG) << "Unique sample: " << id << ", systematic: " << systematic->name() << ", weight formula: " << formula << ", new weight name: " << systName << "\n";
-    
+
     auto node = mainNode.Define(systName, formula);
     return node;
 }
@@ -204,13 +207,13 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 
     return result;
 }
-  
+
 void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
                                   const std::shared_ptr<Sample>& sample) const {
 
     if (histos.empty()) {
         LOG(WARNING) << "No histograms available for sample: " << sample->name() << "\n";
-    } 
+    }
 
     std::string fileName = m_config->outputPath();
     fileName += fileName.empty() ? "" : "/";
@@ -221,14 +224,14 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         LOG(ERROR) << "Cannot open ROOT file at: " << fileName << "\n";
         throw std::invalid_argument("");
     }
-    
+
     LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
 
     for (const auto& isystHist : histos) {
         if (isystHist.regionHistos().empty()) {
             LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
             continue;
-        } 
+        }
         out->mkdir(isystHist.name().c_str());
         out->cd(isystHist.name().c_str());
         for (const auto& iregionHist : isystHist.regionHistos()) {
