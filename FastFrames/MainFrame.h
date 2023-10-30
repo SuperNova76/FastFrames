@@ -4,6 +4,7 @@
 #include "FastFrames/HistoContainer.h"
 #include "FastFrames/MetadataManager.h"
 #include "FastFrames/SystematicReplacer.h"
+#include "FastFrames/Utils.h"
 
 #include "ROOT/RDataFrame.hxx"
 #include "TClass.h"
@@ -26,6 +27,36 @@ public:
 
   virtual ROOT::RDF::RNode defineVariables(const ROOT::RDF::RNode& node,
                                            const UniqueSampleID& /*sampleID*/) {return node;}
+
+  template<typename F> 
+  ROOT::RDF::RNode systematicDefine(ROOT::RDF::RNode node,
+                                    const std::string& newVariable,
+                                    F defineFunction,
+                                    const std::vector<std::string>& branches) {
+
+    if (newVariable.find("NOSYS") == std::string::npos) {
+      LOG(ERROR) << "The new variable name does not contain \"NOSYS\"\n";
+      throw std::invalid_argument("");
+    }
+
+    // first add the nominal define
+    node = node.Define(newVariable, defineFunction, branches);
+
+    // add systematics
+    // get list of all systeamtics affecting the inputs
+    std::vector<std::string> effectiveSystematics = m_systReplacer.getListOfEffectiveSystematics(branches);
+
+    for (const auto& isystematic : effectiveSystematics) {
+      const std::string systName = Utils::replaceString(newVariable, "NOSYS", isystematic);
+      const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
+      node = node.Define(systName, defineFunction, systBranches);
+    }
+
+    // tell the replacer about the new columns
+    m_systReplacer.addVariableAndEffectiveSystematics(newVariable, effectiveSystematics);
+
+    return node;
+  }
 
 private:
 

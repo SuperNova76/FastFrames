@@ -34,6 +34,9 @@ public:
 
   void addVariableAndEffectiveSystematics(const std::string& variable, const std::vector<std::string>& systematics);
 
+  std::vector<std::string> replaceVector(const std::vector<std::string>& input,
+                                         const std::string& systematic) const;
+
 private:
   /**
    * @brief map where the key is the name of the systematic

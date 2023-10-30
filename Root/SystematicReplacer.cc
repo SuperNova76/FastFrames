@@ -154,3 +154,15 @@ void SystematicReplacer::addVariableAndEffectiveSystematics(const std::string& v
         itr->second.emplace_back(variable);
     }
 }
+
+std::vector<std::string> SystematicReplacer::replaceVector(const std::vector<std::string>& input,
+                                                           const std::string& systematic) const {
+
+    std::vector<std::string> result;
+
+    for (const auto& ivariable : input) {
+        result.emplace_back(Utils::replaceString(ivariable, "NOSYS", systematic));
+    }
+
+    return result;
+}
