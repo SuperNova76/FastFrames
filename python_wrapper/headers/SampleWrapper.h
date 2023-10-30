@@ -7,7 +7,7 @@
 
 class SampleWrapper {
     public:
-        SampleWrapper(const std::string& name) :
+        explicit SampleWrapper(const std::string& name) :
             m_sample(std::make_shared<Sample>(name))  {};
 
         ~SampleWrapper() = default;

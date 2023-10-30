@@ -9,6 +9,7 @@
 #include "python_wrapper/headers/FastFramesExecutorWrapper.h"
 #include "python_wrapper/headers/UniqueSampleIDWrapper.h"
 #include "python_wrapper/headers/SampleWrapper.h"
+#include "python_wrapper/headers/SystematicWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -162,5 +163,22 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // skipSystematicRegionCombination
         .def("skipSystematicRegionCombination", &SampleWrapper::skipSystematicRegionCombination)
+    ;
+
+    class_<SystematicWrapper>("SystematicWrapper",
+        init<std::string>())
+
+        // getPtr
+        .def("getPtr",          &SystematicWrapper::getPtr)
+
+        // name
+        .def("name",            &SystematicWrapper::name)
+
+        // setSumWeights
+        .def("setSumWeights",   &SystematicWrapper::setSumWeights)
+        .def("sumWeights",      &SystematicWrapper::sumWeights)
+
+        // addRegion
+        .def("addRegion",       &SystematicWrapper::addRegion)
     ;
 }
