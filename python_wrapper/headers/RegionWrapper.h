@@ -42,8 +42,8 @@ class RegionWrapper {
 
 
         void addVariable(unsigned long long int variable_ptr) {
-            const Variable *variable = reinterpret_cast<Variable*>(variable_ptr);
-            m_region->addVariable(*variable);
+            const std::shared_ptr<Variable> *variable = reinterpret_cast<std::shared_ptr<Variable> *>(variable_ptr);
+            m_region->addVariable(*(*variable));
         };
 
         std::vector<Variable> variables() const {

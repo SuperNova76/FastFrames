@@ -47,13 +47,13 @@ if __name__ == "__main__":
             print("\t\ttitle: ", variable.config_reader_cpp_variable.title())
             print("\t\tdefinition: ", variable.config_reader_cpp_variable.definition())
             #print("\t\tbinning: ", variable.config_reader_cpp_variable.binning())
-            if variable.binning.config_reader_cpp_binning.hasRegularBinning():
+            if variable.config_reader_cpp_variable.hasRegularBinning():
                 print(  "\t\tbinning: ",
-                        variable.binning.config_reader_cpp_binning.nbins(), ", ",
-                        variable.binning.config_reader_cpp_binning.min(), ", ",
-                        variable.binning.config_reader_cpp_binning.max())
+                        variable.config_reader_cpp_variable.axisNbins(), ", ",
+                        variable.config_reader_cpp_variable.axisMin(), ", ",
+                        variable.config_reader_cpp_variable.axisMax())
             else:
-                print("\t\tbinning: ", variable.binning.get_bin_edges_from_cpp_part())
+                print("\t\tbinning: ", variable.config_reader_cpp_variable.binEdgesString())
             print("\n")
 
 
