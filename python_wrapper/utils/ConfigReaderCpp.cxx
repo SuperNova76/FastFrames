@@ -6,7 +6,7 @@
 #include "python_wrapper/headers/RegionWrapper.h"
 #include "python_wrapper/headers/VariableWrapper.h"
 #include "python_wrapper/headers/MainFrameWrapper.h"
-#include "python_wrapper/headers/MainFrameWrapper.h"
+#include "python_wrapper/headers/FastFramesExecutorWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -16,6 +16,13 @@ using namespace std;
 BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
+
+    class_<FastFramesExecutorWrapper>("FastFramesExecutor",
+        init<long long unsigned int>())
+        // runFastFrames
+        .def("runFastFrames",   &FastFramesExecutorWrapper::runFastFrames)
+    ;
+
 
     class_<MainFrameWrapper>("MainFrame",
         init<>())
