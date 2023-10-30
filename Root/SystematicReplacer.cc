@@ -62,23 +62,47 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
             // if it is found, we need to replace the systematic suffix with "NOSYS:
             const std::string nominalBranch = StringOperations::replaceString(ivariable, systName, "NOSYS");
             affectedBranches.emplace_back(nominalBranch);
+        }
 
-            // also do it the other way around
-            auto itr = m_branchesAffectedBySyst.find(nominalBranch);
+        m_systImpactsBranches.insert({systName, affectedBranches});
+    }
+
+    // now do it the other way around
+    for (const auto& ielement : m_systImpactsBranches) {
+        for (const auto& ivariable : ielement.second) {
+            auto itr = m_branchesAffectedBySyst.find(ivariable);
             if (itr == m_branchesAffectedBySyst.end()) {
-                m_branchesAffectedBySyst.insert({nominalBranch, {systName}});
+                m_branchesAffectedBySyst.insert({ivariable, {ielement.first}});
             } else {
-                itr->second.emplace_back(systName);
+                itr->second.emplace_back(ielement.first);
             }
         }
-        m_systImpactsBranches.insert({systName, affectedBranches});
+    }
+
+    LOG(DEBUG) << "List of branches and systematics that affect them\n";
+    for (const auto& ibranch : m_branchesAffectedBySyst) {
+        LOG(DEBUG) << "branch: " << ibranch.first << "\n";
+        for (const auto& isyst : ibranch.second) {
+            LOG(DEBUG) << "\t systematic: " << isyst << "\n";
+        }
+    }
+
+    LOG(DEBUG) << "\nList of systematics and which branches they affect\n";
+    for (const auto& isyst : m_systImpactsBranches) {
+        LOG(DEBUG) << "systematic: " << isyst.first << "\n";
+        for (const auto& ibranch : isyst.second) {
+            LOG(DEBUG) << "\t branch: " << ibranch << "\n";
+        }
     }
 }
 
 std::string SystematicReplacer::replaceString(const std::string& original, const std::shared_ptr<Systematic>& systematic) const {
-    auto itr = m_systImpactsBranches.find(systematic->name());
+    return this->replaceString(original, systematic->name());
+}
+std::string SystematicReplacer::replaceString(const std::string& original, const std::string& systematicName) const {
+    auto itr = m_systImpactsBranches.find(systematicName);
     if (itr == m_systImpactsBranches.end()) {
-        LOG(ERROR) << "Cannot find systematic: " << systematic->name() << " in the systematic map. Please, fix!\n";
+        LOG(ERROR) << "Cannot find systematic: " << systematicName << " in the systematic map. Please, fix!\n";
         throw std::invalid_argument("");
     }
 
@@ -86,8 +110,17 @@ std::string SystematicReplacer::replaceString(const std::string& original, const
 
     // loop over all affected branches and replace all of them
     for (const std::string& ibranch : itr->second) {
-        const std::string replacer = StringOperations::replaceString(ibranch, "NOSYS", systematic->name());
+        const std::string replacer = StringOperations::replaceString(ibranch, "NOSYS", systematicName);
         result = StringOperations::replaceString(result, ibranch, replacer);
+    }
+
+    return result;
+}
+
+std::vector<std::string> SystematicReplacer::replaceVector(const std::vector<std::string>& originalVector, const std::string& systematicName) const {
+    std::vector<std::string> result;
+    for (const auto& ielement : originalVector) {
+        result.emplace_back(this->replaceString(ielement, systematicName));
     }
 
     return result;

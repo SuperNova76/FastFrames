@@ -26,7 +26,7 @@ public:
 
   virtual void executeHistograms();
 
-  virtual ROOT::RDF::RNode defineVariables(const ROOT::RDF::RNode& node,
+  virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode node,
                                            const UniqueSampleID& /*sampleID*/) {return node;}
 
   template<typename F>
@@ -55,7 +55,7 @@ public:
     for (const auto& isystematic : effectiveSystematics) {
       if (isystematic == "NOSYS") continue;
       const std::string systName = StringOperations::replaceString(newVariable, "NOSYS", isystematic);
-      const std::vector<std::string> systBranches = StringOperations::replaceVector(branches, "NOSYS", isystematic);
+      const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
       node = node.Define(systName, defineFunction, systBranches);
     }
 

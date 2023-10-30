@@ -163,7 +163,7 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
 ROOT::RDF::RNode MainFrame::addTLorentzVectors(ROOT::RDF::RNode mainNode) {
     std::vector<std::string> objects = {"jet", "el"};
     for (const auto& iobject : objects) {
-        this->addSingleTLorentzVector(mainNode, iobject);
+        mainNode = this->addSingleTLorentzVector(mainNode, iobject);
     }
 
     return mainNode;

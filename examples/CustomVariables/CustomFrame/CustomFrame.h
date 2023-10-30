@@ -9,6 +9,8 @@
 
 #include <memory>
 
+class UniqueSampleID;
+
 class CustomFrame : public MainFrame {
 public:
 
@@ -16,13 +18,12 @@ public:
 
   virtual ~CustomFrame() = default;
 
-  virtual void setConfig(const std::shared_ptr<ConfigSetting>& config) override final {MainFrame::setConfig(config);} 
-
   virtual void init() override final {MainFrame::init();}
 
   virtual void executeHistograms() override final {MainFrame::executeHistograms();}
 
-  virtual ROOT::RDF::RNode defineVariables(const ROOT::RDataFrame& df) override final;
+  virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
+                                           const UniqueSampleID& id) override final;
 
 private:
 

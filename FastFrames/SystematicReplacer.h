@@ -26,6 +26,10 @@ public:
 
   std::string replaceString(const std::string& original, const std::shared_ptr<Systematic>& systematic) const;
 
+  std::string replaceString(const std::string& original, const std::string& systematicname) const;
+
+  std::vector<std::string> replaceVector(const std::vector<std::string>& originalVector, const std::string& systematicname) const;
+
   inline const std::vector<std::string>& allBranches() const {return m_allBranches;}
 
   bool branchExists(const std::string& branch) const;
@@ -38,20 +42,20 @@ private:
   /**
    * @brief map where the key is the name of the systematic
    * and the value is the list of branches affected by the systematic
-   * 
+   *
    */
   std::map<std::string, std::vector<std::string> > m_systImpactsBranches;
 
   /**
    * @brief map where the key is the branch and the value
-   * is the list of systematics that affect it 
-   * 
+   * is the list of systematics that affect it
+   *
    */
   std::map<std::string, std::vector<std::string> > m_branchesAffectedBySyst;
 
   /**
-   * @brief list of all branches 
-   * 
+   * @brief list of all branches
+   *
    */
   std::vector<std::string> m_allBranches;
 };
