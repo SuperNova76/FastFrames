@@ -52,6 +52,9 @@ public:
   float getLuminosity(const std::string& campaign) const;
 
 
+  void addRegion(const std::shared_ptr<Region>& region);
+
+
   const std::vector<std::shared_ptr<Region> >& regions() const {return m_regions;}
 
   const std::vector<std::shared_ptr<Sample> >& samples() const {return m_samples;}

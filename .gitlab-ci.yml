@@ -110,3 +110,16 @@ run_cpp:
       - ttbar_FS.root
      expire_in: 1d
   allow_failure: true
+
+run_python:
+  stage: run
+  needs:
+    - compile
+    - run_filelist
+  script:
+     - python3 python/FastFrameWrappers/FastFrame.py test/configs/config.yml
+  artifacts:
+     paths:
+      - ttbar_FS.root
+     expire_in: 1d
+  allow_failure: true
