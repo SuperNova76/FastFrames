@@ -108,16 +108,4 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("axisNbins",           &VariableWrapper::axisNbins)
     ;
 
-    class_<MainFrameWrapper>("ConfigReaderCppMainFrame",
-        init<>())
-        // setConfig
-        .def("setConfig",           &MainFrameWrapper::setConfig)
-
-        // init
-        .def("init",                &MainFrameWrapper::init)
-
-        // executeHistograms
-        .def("executeHistograms",   &MainFrameWrapper::executeHistograms)
-    ;
-
 }
