@@ -87,3 +87,26 @@ python_config_reader_test:
      - cd python/ConfigReaderModules/
      - python3 ConfigReader.py ../../test/configs/config.yml
   allow_failure: true
+
+run_filelist:
+  stage: run
+  script:
+     - python3 python/produce_metadata_files.py --root_files_folder test/input/
+  artifacts:
+     paths:
+      - test/input/
+     expire_in: 1d
+  allow_failure: true
+
+run_cpp:
+  stage: run
+  needs:
+    - compile
+    - run_filelist
+  script:
+     - ./build/bin/fast-frames.exe
+  artifacts:
+     paths:
+      - ttbar_FS.root
+     expire_in: 1d
+  allow_failure: true
