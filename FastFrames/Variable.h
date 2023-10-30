@@ -8,6 +8,8 @@ class Variable {
 public:
   explicit Variable(const std::string& name) noexcept;
 
+  Variable()  = delete;
+
   ~Variable() = default;
 
   inline const std::string& name() const {return m_name;}
@@ -23,7 +25,7 @@ public:
   inline void setBinning(const double min, const double max, const int nbins) {
     m_binning.setBinning(min, max, nbins);
   }
-  
+
   inline void setBinning(const std::vector<double>& edges) {
     m_binning.setBinning(edges);
   }

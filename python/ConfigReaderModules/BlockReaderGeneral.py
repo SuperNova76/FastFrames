@@ -1,12 +1,7 @@
-from sys import path
+from BlockReaderCommon import set_path_to_shared_lib
+set_path_to_shared_lib()
 
-path.append("../build/lib")
-path.append("../../build/lib")
-path.append("../bin/lib")
-path.append("../../bin/lib")
-path.append("../../")
-
-from ConfigReaderCpp import ConfigReaderCpp
+from ConfigReaderCpp import ConfigReaderCppGeneral
 from python_wrapper.python.logger import Logger
 
 class BlockReaderGeneral:
@@ -21,7 +16,7 @@ class BlockReaderGeneral:
         self.number_of_cpus = input_dict.get("number_of_cpus", 1)
         self.__set_luminosity_map(input_dict.get("luminosity"))
         Logger.set_log_level(self.debug_level)
-        self.config_reader_cpp = ConfigReaderCpp()
+        self.config_reader_cpp_general = ConfigReaderCppGeneral()
         self.__set_config_reader_cpp()
 
     def __set_luminosity_map(self, luminosity_map : dict) -> None:
@@ -30,11 +25,11 @@ class BlockReaderGeneral:
             self.luminosity_map[key] = float(value)
 
     def __set_config_reader_cpp(self):
-        self.config_reader_cpp.setInputPath(self.input_filelist_path)
-        self.config_reader_cpp.setInputSumWeightsPath(self.input_sumweights_path)
-        self.config_reader_cpp.setOutputPath(self.output_path)
-        self.config_reader_cpp.setInputFilelistPath(self.input_filelist_path)
-        self.config_reader_cpp.setNumCPU(self.number_of_cpus)
+        self.config_reader_cpp_general.setInputPath(self.input_filelist_path)
+        self.config_reader_cpp_general.setInputSumWeightsPath(self.input_sumweights_path)
+        self.config_reader_cpp_general.setOutputPath(self.output_path)
+        self.config_reader_cpp_general.setInputFilelistPath(self.input_filelist_path)
+        self.config_reader_cpp_general.setNumCPU(self.number_of_cpus)
 
         for campaign, lumi_value in self.luminosity_map.items():
-            self.config_reader_cpp.setLuminosity(campaign, lumi_value)
+            self.config_reader_cpp_general.setLuminosity(campaign, lumi_value)
