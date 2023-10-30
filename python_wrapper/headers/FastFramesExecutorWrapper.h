@@ -12,12 +12,10 @@
  */
 class FastFramesExecutorWrapper {
     public:
-        explicit FastFramesExecutorWrapper(long long unsigned int config_shared_ptr)    {
-            const std::shared_ptr<ConfigSetting> *config = reinterpret_cast<std::shared_ptr<ConfigSetting>*>(config_shared_ptr);
-            m_executor = std::make_shared<FastFramesExecutor>(*config);
-        };
+        explicit FastFramesExecutorWrapper(long long unsigned int config_shared_ptr) :
+            m_executor(std::make_shared<FastFramesExecutor>(*(reinterpret_cast<std::shared_ptr<ConfigSetting>*>(config_shared_ptr))))   {};
 
-        ~FastFramesExecutorWrapper();
+        ~FastFramesExecutorWrapper() = default;
 
         void runFastFrames() const  { m_executor->runFastFrames(); };
 

@@ -13,6 +13,7 @@ class ConfigReader:
             self.regions = []
             for region in data["regions"]:
                 self.regions.append(BlockReaderRegion(region, self.block_general))
+                self.block_general.add_region(self.regions[-1])
 
 
 if __name__ == "__main__":

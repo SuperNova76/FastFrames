@@ -1,7 +1,7 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigReaderCppGeneral
+from ConfigReaderCpp import ConfigReaderCppGeneral, ConfigReaderCppRegion
 from python_wrapper.python.logger import Logger
 
 class BlockReaderGeneral:
@@ -35,3 +35,6 @@ class BlockReaderGeneral:
 
         for campaign, lumi_value in self.luminosity_map.items():
             self.config_reader_cpp_general.setLuminosity(campaign, lumi_value)
+
+    def add_region(self, region):
+        self.config_reader_cpp_general.addRegion(region.config_reader_cpp_region.getPtr())

@@ -53,3 +53,9 @@ float ConfigSetting::getLuminosity(const std::string& campaign) const  {
     }
     return m_luminosity_map.at(campaign);
 };
+
+
+void ConfigSetting::addRegion(const std::shared_ptr<Region>& region) {
+    LOG(INFO) << "Adding region " << region->name() << "\n";
+    m_regions.emplace_back(region);
+}

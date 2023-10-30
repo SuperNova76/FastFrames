@@ -12,10 +12,12 @@ import cppLogger
 class Logger:
     def log_message(log_level : int, message : str) -> None:
         caller = getframeinfo(stack()[1][0])
+        file_name = caller.filename.split("/")[-1]
         cppLogger.log_message(
             Logger._convert_level_str_to_int(log_level),
             message+'\n',
-            caller.filename,
+            file_name,
+            caller.function,
             caller.lineno
         )
 

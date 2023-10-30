@@ -68,6 +68,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addLuminosityInformation
         .def("setLuminosity", &ConfigSettingWrapper::addLuminosityInformation)
         .def("getLuminosity", &ConfigSettingWrapper::getLuminosity)
+
+        // addRegion
+        .def("addRegion",   &ConfigSettingWrapper::addRegion)
     ;
 
     class_<RegionWrapper>("ConfigReaderCppRegion",

@@ -85,6 +85,13 @@ class ConfigSettingWrapper {
         };
 
 
+        // regions
+        void addRegion(long long int region_shared_ptr_int) {
+            std::shared_ptr<Region> *region = reinterpret_cast<std::shared_ptr<Region> *>(region_shared_ptr_int);
+            m_configSetting->addRegion(*region);
+        };
+
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };
