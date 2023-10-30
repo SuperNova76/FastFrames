@@ -1,6 +1,5 @@
 #include "FastFrames/MainFrame.h"
 
-#include "FastFrames/HistoContainer.h"
 #include "FastFrames/Logger.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/UniqueSampleID.h"
@@ -57,81 +56,20 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), m_config->systematics());
 
-    std::vector<std::vector<ROOT::RDF::RNode> > filterStore;
-
     ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
+
+    ROOT::RDF::RNode mainNode = df;
+
+    mainNode =this->addWeightColumns(mainNode, sample, uniqueSampleID);
     
     // this is the method users will be able to override
-    ROOT::RDF::RNode mainNode = this->defineVariables(df);
+    mainNode = this->defineVariables(mainNode, uniqueSampleID);
 
-    ROOT::RDF::RNode weightNode = mainNode;
-
-    for (const auto& isyst : sample->systematics()) {
-        weightNode = this->addWeightColumns(weightNode, sample, isyst, uniqueSampleID);
-    }
-
-    for (const auto& isyst : sample->systematics()) {
-        std::vector<ROOT::RDF::RNode> perSystFilter;
-        for (const auto& ireg : sample->regions()) {
-
-            if (sample->skipSystematicRegionCombination(isyst, ireg)) {
-                LOG(DEBUG) << "Skipping region: " << ireg->name() << ", systematic: " << isyst->name() << " combination for sample: " << sample->name() << " (filter)\n";
-                continue;
-            }
-
-            auto filter = weightNode.Filter(this->systematicFilter(/*sample,*/ isyst, ireg));
-            perSystFilter.emplace_back(std::move(filter));
-        }
-        filterStore.emplace_back(std::move(perSystFilter));
-    }
+    std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample);
 
     LOG(INFO) << "Triggering event loop!\n";
     // retrieve the histograms;
-    std::vector<SystematicHisto> histoContainer;
-    std::size_t systIndex(0);
-    for (const auto& isyst : sample->systematics()) {
-        SystematicHisto systematicHisto(isyst->name());
-
-        std::size_t regIndex(0);
-        for (const auto& ireg : sample->regions()) {
-            if (sample->skipSystematicRegionCombination(isyst, ireg)) {
-                LOG(DEBUG) << "Skipping region: " << ireg->name() << ", systematic: " << isyst->name() << " combination for sample: " << sample->name() << " (histogram)\n";
-                continue;
-            }
-            RegionHisto regionHisto(ireg->name());
-
-            for (const auto& ivariable : ireg->variables()) {
-                VariableHisto variableHisto(ivariable.name());
-
-                ROOT::RDF::RResultPtr<TH1D> histogram;
-                if (ivariable.hasRegularBinning()) {
-                    histogram = filterStore.at(systIndex).at(regIndex).
-                                    Histo1D({"", ivariable.title().c_str(), ivariable.axisNbins(), ivariable.axisMin(), ivariable.axisMax()},
-                                    this->systematicVariable(ivariable, isyst), this->systematicWeight(isyst));
-                } else {
-                    const std::vector<double> binEdges = ivariable.binEdges();
-                    histogram = filterStore.at(systIndex).at(regIndex).
-                                    Histo1D({"", ivariable.title().c_str(), (int)binEdges.size(), binEdges.data()},
-                                    this->systematicVariable(ivariable, isyst), this->systematicWeight(isyst));
-                }
-
-                if (!histogram) {
-                    LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
-                               << isyst->name() << ", region: " << ireg->name() << " and variable: " << ivariable.name() << " is empty!\n";
-                    throw std::runtime_error("");
-
-                }
-                variableHisto.setHisto(histogram);
-
-                regionHisto.addVariableHisto(std::move(variableHisto));
-            }
-
-            systematicHisto.addRegionHisto(std::move(regionHisto));
-            ++regIndex;
-        }
-        histoContainer.emplace_back(std::move(systematicHisto));
-        ++systIndex;
-    }
+    std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
 
     return histoContainer;
 }
@@ -159,11 +97,45 @@ std::string MainFrame::systematicWeight(const std::shared_ptr<Systematic>& syste
     
     return "weight_total_" + systematic->name();
 }
+  
+std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::RNode mainNode,
+                                                                    const std::shared_ptr<Sample>& sample) const {
 
-ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode mainNode,
+    std::vector<std::vector<ROOT::RDF::RNode> > result;
+
+    for (const auto& isyst : sample->systematics()) {
+        std::vector<ROOT::RDF::RNode> perSystFilter;
+        for (const auto& ireg : sample->regions()) {
+
+            if (sample->skipSystematicRegionCombination(isyst, ireg)) {
+                LOG(DEBUG) << "Skipping region: " << ireg->name() << ", systematic: " << isyst->name() << " combination for sample: " << sample->name() << " (filter)\n";
+                continue;
+            }
+
+            auto filter = mainNode.Filter(this->systematicFilter(/*sample,*/ isyst, ireg));
+            perSystFilter.emplace_back(std::move(filter));
+        }
+        result.emplace_back(std::move(perSystFilter));
+    }
+
+    return result;
+}
+  
+ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode node,
                                              const std::shared_ptr<Sample>& sample,
-                                             const std::shared_ptr<Systematic>& systematic,
                                              const UniqueSampleID& id) const {
+
+    for (const auto& isyst : sample->systematics()) {
+        node = this->addSingleWeightColumn(node, sample, isyst, id);
+    }
+
+    return node;
+}
+
+ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
+                                                  const std::shared_ptr<Sample>& sample,
+                                                  const std::shared_ptr<Systematic>& systematic,
+                                                  const UniqueSampleID& id) const {
     
     const std::string& nominalWeight = sample->weight();
     const float normalisation = m_metadataManager.normalisation(id, systematic);
@@ -178,6 +150,59 @@ ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode mainNode,
     
     auto node = mainNode.Define(systName, formula);
     return node;
+}
+
+std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,
+                                                          const std::shared_ptr<Sample>& sample) const {
+
+    std::vector<SystematicHisto> result;
+
+    std::size_t systIndex(0);
+    for (const auto& isyst : sample->systematics()) {
+        SystematicHisto systematicHisto(isyst->name());
+
+        std::size_t regIndex(0);
+        for (const auto& ireg : sample->regions()) {
+            if (sample->skipSystematicRegionCombination(isyst, ireg)) {
+                LOG(DEBUG) << "Skipping region: " << ireg->name() << ", systematic: " << isyst->name() << " combination for sample: " << sample->name() << " (histogram)\n";
+                continue;
+            }
+            RegionHisto regionHisto(ireg->name());
+
+            for (const auto& ivariable : ireg->variables()) {
+                VariableHisto variableHisto(ivariable.name());
+
+                ROOT::RDF::RResultPtr<TH1D> histogram;
+                if (ivariable.hasRegularBinning()) {
+                    histogram = filters.at(systIndex).at(regIndex).
+                                    Histo1D({"", ivariable.title().c_str(), ivariable.axisNbins(), ivariable.axisMin(), ivariable.axisMax()},
+                                    this->systematicVariable(ivariable, isyst), this->systematicWeight(isyst));
+                } else {
+                    const std::vector<double> binEdges = ivariable.binEdges();
+                    histogram = filters.at(systIndex).at(regIndex).
+                                    Histo1D({"", ivariable.title().c_str(), (int)binEdges.size(), binEdges.data()},
+                                    this->systematicVariable(ivariable, isyst), this->systematicWeight(isyst));
+                }
+
+                if (!histogram) {
+                    LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
+                               << isyst->name() << ", region: " << ireg->name() << " and variable: " << ivariable.name() << " is empty!\n";
+                    throw std::runtime_error("");
+
+                }
+                variableHisto.setHisto(histogram);
+
+                regionHisto.addVariableHisto(std::move(variableHisto));
+            }
+
+            systematicHisto.addRegionHisto(std::move(regionHisto));
+            ++regIndex;
+        }
+        result.emplace_back(std::move(systematicHisto));
+        ++systIndex;
+    }
+
+    return result;
 }
   
 void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,

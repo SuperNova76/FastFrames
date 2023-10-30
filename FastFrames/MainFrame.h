@@ -24,7 +24,8 @@ public:
 
   virtual void executeHistograms();
 
-  virtual ROOT::RDF::RNode defineVariables(const ROOT::RDataFrame& df) {return df;}
+  virtual ROOT::RDF::RNode defineVariables(const ROOT::RDF::RNode& node,
+                                           const UniqueSampleID& /*sampleID*/) {return node;}
 
 private:
 
@@ -39,10 +40,20 @@ private:
 
   std::string systematicWeight(const std::shared_ptr<Systematic>& systematic) const;
 
+  std::vector<std::vector<ROOT::RDF::RNode> > applyFilters(ROOT::RDF::RNode mainNode,
+                                                           const std::shared_ptr<Sample>& sample) const;
+
   ROOT::RDF::RNode addWeightColumns(ROOT::RDF::RNode mainNode,
                                     const std::shared_ptr<Sample>& sample,
-                                    const std::shared_ptr<Systematic>& systematic,
                                     const UniqueSampleID& id) const;
+
+  ROOT::RDF::RNode addSingleWeightColumn(ROOT::RDF::RNode mainNode,
+                                         const std::shared_ptr<Sample>& sample,
+                                         const std::shared_ptr<Systematic>& systematic,
+                                         const UniqueSampleID& id) const;
+
+  std::vector<SystematicHisto> processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,
+                                                 const std::shared_ptr<Sample>& sample) const;
 
   void writeHistosToFile(const std::vector<SystematicHisto>& histos,
                          const std::shared_ptr<Sample>& sample) const;
