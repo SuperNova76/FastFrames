@@ -8,6 +8,7 @@
 #include "python_wrapper/headers/MainFrameWrapper.h"
 #include "python_wrapper/headers/FastFramesExecutorWrapper.h"
 #include "python_wrapper/headers/UniqueSampleIDWrapper.h"
+#include "python_wrapper/headers/SampleWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -134,4 +135,32 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("axisNbins",           &VariableWrapper::axisNbins)
     ;
 
+    class_<SampleWrapper>("SampleWrapper",
+        init<std::string>())
+
+        // getPtr
+        .def("getPtr",          &SampleWrapper::getPtr)
+
+        // name
+        .def("name",            &SampleWrapper::name)
+
+        // recoTreeName
+        .def("recoTreeName",    &SampleWrapper::recoTreeName)
+
+        // addUniqueSampleID
+        .def("addUniqueSampleID",   &SampleWrapper::addUniqueSampleID)
+
+        // addSystematic
+        .def("addSystematic",       &SampleWrapper::addSystematic)
+
+        // addRegion
+        .def("addRegion",           &SampleWrapper::addRegion)
+
+        // setEventWeight
+        .def("setEventWeight",      &SampleWrapper::setEventWeight)
+        .def("weight",              &SampleWrapper::weight)
+
+        // skipSystematicRegionCombination
+        .def("skipSystematicRegionCombination", &SampleWrapper::skipSystematicRegionCombination)
+    ;
 }
