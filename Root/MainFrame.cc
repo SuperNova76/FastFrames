@@ -6,6 +6,8 @@
 
 #include "TSystem.h"
 
+#include "Math/Vector4D.h"
+
 #include <iostream>
 #include <exception>
 
@@ -63,7 +65,10 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
 
     ROOT::RDF::RNode mainNode = df;
 
-    mainNode =this->addWeightColumns(mainNode, sample, uniqueSampleID);
+    mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
+
+    // add TLorentzVectors for objects
+    mainNode = this->addTLorentzVectors(mainNode);
 
     // this is the method users will be able to override
     mainNode = this->defineVariables(mainNode, uniqueSampleID);
@@ -153,6 +158,47 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
 
     auto node = mainNode.Define(systName, formula);
     return node;
+}
+
+ROOT::RDF::RNode MainFrame::addTLorentzVectors(ROOT::RDF::RNode mainNode) {
+    std::vector<std::string> objects = {"jet", "el"};
+    for (const auto& iobject : objects) {
+        this->addSingleTLorentzVector(mainNode, iobject);
+    }
+
+    return mainNode;
+}
+
+ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
+                                                    const std::string& object) {
+
+    const std::vector<std::string> kinematics = {"_pt_NOSYS", "_eta", "_phi", "_e_NOSYS"};
+
+    auto createTLV = [&kinematics](const std::vector<float>& pt,
+                                   const std::vector<float>& eta,
+                                   const std::vector<float>& phi,
+                                   const std::vector<float>& e) {
+
+
+        std::vector<ROOT::Math::PtEtaPhiEVector> result;
+        for (std::size_t i = 0; i < pt.size(); ++i) {
+            ROOT::Math::PtEtaPhiEVector vector(pt.at(i), eta.at(i), phi.at(i), e.at(i));
+            result.emplace_back(vector);
+        }
+
+        return result;
+    };
+
+    std::vector<std::string> objectColumns;
+    for (const auto& ikinematics : kinematics) {
+        const std::string variable = object + ikinematics;
+        objectColumns.emplace_back(std::move(variable));
+    }
+
+    const std::string vectorName = object + "_TLV_NOSYS";
+    mainNode = this->systematicDefine(mainNode, vectorName, createTLV, objectColumns);
+
+    return mainNode;
 }
 
 std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,

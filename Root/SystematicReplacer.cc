@@ -105,8 +105,7 @@ std::vector<std::string> SystematicReplacer::getListOfEffectiveSystematics(const
 
     for (const auto& ivariable : variables) {
         if (ivariable.find("NOSYS") == std::string::npos) {
-            LOG(ERROR) << "Wrong name of a variable, it does not contain \"NOSYS\"\n";
-            throw std::invalid_argument("");
+            return result;
         }
 
         // get the variables from the map and then take the unique ones
@@ -127,7 +126,7 @@ std::vector<std::string> SystematicReplacer::getListOfEffectiveSystematics(const
 
     return result;
 }
-  
+
 void SystematicReplacer::addVariableAndEffectiveSystematics(const std::string& variable, const std::vector<std::string>& systematics) {
     if (this->branchExists(variable)) {
         LOG(DEBUG) << "Variable " << variable << " already exists, not adding it\n";
