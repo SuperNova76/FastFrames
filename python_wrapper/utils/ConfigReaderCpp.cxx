@@ -3,8 +3,8 @@
 #include <string>
 
 #include "python_wrapper/headers/ConfigSettingWrapper.h"
+#include "python_wrapper/headers/RegionWrapper.h"
 
-#include "FastFrames/Region.h"
 #include "FastFrames/Variable.h"
 #include "FastFrames/Binning.h"
 #include "FastFrames/StringOperations.h"
@@ -15,25 +15,6 @@ template <typename T>
 unsigned long long int getPtr(T &ptr) {
     return reinterpret_cast<unsigned long long int>(&ptr);
 }
-
-// region block:
-std::string _name_region(const Region &self) {
-    return self.name();
-}
-
-std::string _selection_region(const Region &self) {
-    return self.selection();
-}
-
-std::vector<Variable> _variables_region(const Region &self) {
-    return self.variables();
-}
-
-void _add_variable_region(Region &self, unsigned long long int variable_ptr) {
-    const Variable *variable = reinterpret_cast<Variable*>(variable_ptr);
-    self.addVariable(*variable);
-}
-
 
 //  variable block:
 std::string _name_variable(const Variable &self) {
@@ -106,21 +87,21 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getLuminosity", &ConfigSettingWrapper::getLuminosity)
     ;
 
-    class_<Region>("ConfigReaderCppRegion",
+    class_<RegionWrapper>("ConfigReaderCppRegion",
         init<std::string>())
         // getPtr
-        .def("getPtr",          &getPtr<Region>)
+        .def("getPtr",          &RegionWrapper::getPtr)
 
         // name
-        .def("name",        _name_region)
+        .def("name",            &RegionWrapper::name)
 
         // selection
-        .def("selection",   _selection_region)
-        .def("setSelection",&Region::setSelection)
+        .def("selection",       &RegionWrapper::selection)
+        .def("setSelection",    &RegionWrapper::setSelection)
 
         // addVariable
-        .def("addVariable", _add_variable_region)
-        .def("variables",   _variables_region)
+        .def("addVariable",     &RegionWrapper::addVariable)
+        .def("variables",       &RegionWrapper::variables)
     ;
 
     class_<Variable>("ConfigReaderCppVariable",
