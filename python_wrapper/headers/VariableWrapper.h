@@ -16,9 +16,8 @@ class VariableWrapper   {
     public:
         VariableWrapper() = delete;
 
-        VariableWrapper(const std::string& name) {
-            m_variable = std::make_shared<Variable>(name);
-        };
+        explicit VariableWrapper(const std::string& name)  : m_variable(std::make_shared<Variable>(name)) {};
+
 
         ~VariableWrapper() = default;
 

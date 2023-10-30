@@ -12,10 +12,8 @@
  */
 class ConfigSettingWrapper {
     public:
-        ConfigSettingWrapper()  {
-            m_configSetting = std::make_shared<ConfigSetting>();
+        ConfigSettingWrapper() :  m_configSetting(std::make_shared<ConfigSetting>())    {};
 
-        };
         ~ConfigSettingWrapper() = default;
 
 

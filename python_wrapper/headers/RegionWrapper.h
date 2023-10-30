@@ -16,9 +16,7 @@ class RegionWrapper {
     public:
         RegionWrapper() = delete;
 
-        RegionWrapper(const std::string& name) {
-            m_region = std::make_shared<Region>(name);
-        };
+        explicit RegionWrapper(const std::string& name) : m_region(std::make_shared<Region>(name)) {};
 
         ~RegionWrapper() = default;
 
