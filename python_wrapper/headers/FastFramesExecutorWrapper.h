@@ -17,7 +17,7 @@ class FastFramesExecutorWrapper {
             m_executor = std::make_shared<FastFramesExecutor>(*config);
         };
 
-        ~FastFramesExecutorWrapper() = default;
+        ~FastFramesExecutorWrapper();
 
         void runFastFrames() const  { m_executor->runFastFrames(); };
 
