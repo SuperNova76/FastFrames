@@ -30,6 +30,7 @@ if __name__ == "__main__":
     print("\toutputPath: ", block_general.config_reader_cpp_general.outputPath())
     print("\tinputFilelistPath: ", block_general.config_reader_cpp_general.inputFilelistPath())
     print("\tnumCPU: ", block_general.config_reader_cpp_general.numCPU())
+    print("\tcustomFrameName: ", block_general.config_reader_cpp_general.customFrameName())
     print("\tluminosity, mc20a: ", block_general.config_reader_cpp_general.getLuminosity("mc20a"))
     print("\tluminosity, mc23c: ", block_general.config_reader_cpp_general.getLuminosity("mc23c"))
 

@@ -2,7 +2,8 @@
 #include <boost/python.hpp>
 #include <string>
 
-#include "FastFrames/ConfigSetting.h"
+#include "python_wrapper/headers/ConfigSettingWrapper.h"
+
 #include "FastFrames/Region.h"
 #include "FastFrames/Variable.h"
 #include "FastFrames/Binning.h"
@@ -14,27 +15,6 @@ template <typename T>
 unsigned long long int getPtr(T &ptr) {
     return reinterpret_cast<unsigned long long int>(&ptr);
 }
-
-
-// general block:
-
-std::string _outputPath_general(const ConfigSetting &self) {
-    return self.outputPath();
-}
-
-std::string _inputPath_general(const ConfigSetting &self) {
-    return self.inputPath();
-}
-
-std::string _inputSumWeightsPath_general(const ConfigSetting &self) {
-    return self.inputSumWeightsPath();
-}
-
-std::string _inputFilelistPath_general(const ConfigSetting &self) {
-    return self.inputFilelistPath();
-}
-
-
 
 // region block:
 std::string _name_region(const Region &self) {
@@ -92,35 +72,38 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
 
-    class_<ConfigSetting>("ConfigReaderCppGeneral",
+    class_<ConfigSettingWrapper>("ConfigReaderCppGeneral",
         init<>())
         // getPtr
-        .def("getPtr",          &getPtr<ConfigSetting>)
+        .def("getPtr",          &ConfigSettingWrapper::getPtr)
 
         // inputPath
-        .def("inputPath",       _inputPath_general)
-        .def("setInputPath",    &ConfigSetting::setInputPath)
+        .def("inputPath",       &ConfigSettingWrapper::inputPath)
+        .def("setInputPath",    &ConfigSettingWrapper::setInputPath)
 
         // outputPath
-        .def("outputPath",      _outputPath_general)
-        .def("setOutputPath",   &ConfigSetting::setOutputPath)
+        .def("outputPath",      &ConfigSettingWrapper::outputPath)
+        .def("setOutputPath",   &ConfigSettingWrapper::setOutputPath)
 
         // inputSumWeightsPath
-        .def("inputSumWeightsPath",    _inputSumWeightsPath_general)
-        .def("setInputSumWeightsPath", &ConfigSetting::setInputSumWeightsPath)
+        .def("inputSumWeightsPath",    &ConfigSettingWrapper::inputSumWeightsPath)
+        .def("setInputSumWeightsPath", &ConfigSettingWrapper::setInputSumWeightsPath)
 
         // inputFilelistPath
-        .def("inputFilelistPath",   _inputFilelistPath_general)
-        .def("setInputFilelistPath",&ConfigSetting::setInputFilelistPath)
+        .def("inputFilelistPath",   &ConfigSettingWrapper::inputFilelistPath)
+        .def("setInputFilelistPath",&ConfigSettingWrapper::setInputFilelistPath)
+
+        // customFrameName
+        .def("customFrameName",     &ConfigSettingWrapper::customFrameName)
+        .def("setCustomFrameName",  &ConfigSettingWrapper::setCustomFrameName)
 
         // numCPU
-        .def("numCPU",      &ConfigSetting::numCPU)
-        .def("setNumCPU",   &ConfigSetting::setNumCPU)
-
+        .def("numCPU",      &ConfigSettingWrapper::numCPU)
+        .def("setNumCPU",   &ConfigSettingWrapper::setNumCPU)
 
         // addLuminosityInformation
-        .def("setLuminosity", &ConfigSetting::addLuminosityInformation)
-        .def("getLuminosity", &ConfigSetting::getLuminosity)
+        .def("setLuminosity", &ConfigSettingWrapper::addLuminosityInformation)
+        .def("getLuminosity", &ConfigSettingWrapper::getLuminosity)
     ;
 
     class_<Region>("ConfigReaderCppRegion",
