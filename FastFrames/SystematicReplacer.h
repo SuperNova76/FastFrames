@@ -28,7 +28,30 @@ public:
 
   inline const std::vector<std::string>& allBranches() const {return m_allBranches;}
 
+  bool branchExists(const std::string& branch) const;
+
+  std::vector<std::string> getListOfEffectiveSystematics(const std::vector<std::string>& variable) const;
+
+  void addVariableAndEffectiveSystematics(const std::string& variable, const std::vector<std::string>& systematics);
+
 private:
-  std::map<std::string, std::vector<std::string> > m_affectedBranches;
+  /**
+   * @brief map where the key is the name of the systematic
+   * and the value is the list of branches affected by the systematic
+   * 
+   */
+  std::map<std::string, std::vector<std::string> > m_systImpactsBranches;
+
+  /**
+   * @brief map where the key is the branch and the value
+   * is the list of systematics that affect it 
+   * 
+   */
+  std::map<std::string, std::vector<std::string> > m_branchesAffectedBySyst;
+
+  /**
+   * @brief list of all branches 
+   * 
+   */
   std::vector<std::string> m_allBranches;
 };

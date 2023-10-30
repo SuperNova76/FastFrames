@@ -6,14 +6,27 @@ using namespace std;
 using namespace StringOperations;
 
 std::string StringOperations::replaceString(const std::string& original,
-                                 const std::string& from,
-                                 const std::string& to) {
+                                            const std::string& from,
+                                            const std::string& to) {
 
     std::string result(original);
     std::string::size_type n = 0;
     while ((n = result.find(from, n)) != std::string::npos) {
         result.replace(n, from.size(), to);
         n += to.size();
+    }
+
+    return result;
+}
+
+std::vector<std::string> StringOperations::replaceVector(const std::vector<std::string>& input,
+                                                         const std::string& from,
+                                                         const std::string& to) {
+
+    std::vector<std::string> result;
+
+    for (const auto& ielement : input) {
+        result.emplace_back(StringOperations::replaceString(ielement, from, to));
     }
 
     return result;
