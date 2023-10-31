@@ -150,11 +150,61 @@ public:
   const std::vector<std::shared_ptr<Sample> >& samples() const {return m_samples;}
 
   /**
+   * @brief Get list of all Samples (non const)
+   *
+   * @return const std::vector<std::shared_ptr<Sample> >&
+   */
+  std::vector<std::shared_ptr<Sample> >& samples() {return m_samples;}
+
+  /**
    * @brief Get list of all Systematics
    *
    * @return const std::vector<std::shared_ptr<Systematic> >&
    */
   const std::vector<std::shared_ptr<Systematic> >& systematics() const {return m_systematics;}
+
+  /**
+   * @brief Set to true to only use nominal systematics
+   *
+   * @param flag
+   */
+  void setNominalOnly(const bool flag) {m_nominalOnly = flag;}
+
+  /**
+   * @brief Get is nominal only
+   *
+   * @return true
+   * @return false
+   */
+  bool nominalOnly() const {return m_nominalOnly;}
+
+  /**
+   * @brief Set to true if all systematic uncertainties should be read from the file
+   *
+   * @param flag
+   */
+  void setAutomaticSystematics(const bool flag) {m_automaticSystematics = flag;}
+
+  /**
+   * @brief Get automaticSystematics
+   *
+   * @return true
+   * @return false
+   */
+  bool automaticSystematics() const {return m_automaticSystematics;}
+
+  /**
+   * @brief Remove all systematics
+   *
+   */
+  void clearSystematics() {m_systematics.clear();}
+
+  /**
+   * @brief Add systematic that is not present
+   *
+   * @param syst
+   */
+  void addUniqueSystematic(const std::shared_ptr<Systematic>& syst);
 
 private:
   std::string m_outputPath;
@@ -163,6 +213,8 @@ private:
   std::string m_customFrameName;
 
   int         m_numCPU = 1;
+  bool        m_nominalOnly = false;
+  bool        m_automaticSystematics = false;
 
   std::map<std::string, float> m_luminosity_map;
 

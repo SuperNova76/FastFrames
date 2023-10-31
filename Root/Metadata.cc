@@ -36,6 +36,11 @@ double Metadata::sumWeight(const std::string& name) const {
     }
 }
 
+bool Metadata::sumWeightExist(const std::string& name) const {
+    auto itr = m_sumWeights.find(name);
+    return itr != m_sumWeights.end();
+}
+
 void Metadata::addFilePath(const std::string& path) {
     auto itr = std::find(m_filePaths.begin(), m_filePaths.end(), path);
     if (itr == m_filePaths.end()) {

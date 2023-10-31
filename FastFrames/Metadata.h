@@ -60,6 +60,15 @@ public:
   double sumWeight(const std::string& name) const;
 
   /**
+   * @brief Tells yuo if a given sumWeight exists
+   *
+   * @param name name of the sumWeights
+   * @return true
+   * @return false
+   */
+  bool sumWeightExist(const std::string& name) const;
+
+  /**
    * @brief Add a path to a ROOT file belonging to this sample
    *
    * @param path
