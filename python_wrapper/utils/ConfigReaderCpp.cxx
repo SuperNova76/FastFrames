@@ -7,6 +7,9 @@
 #include "python_wrapper/headers/VariableWrapper.h"
 #include "python_wrapper/headers/MainFrameWrapper.h"
 #include "python_wrapper/headers/FastFramesExecutorWrapper.h"
+#include "python_wrapper/headers/UniqueSampleIDWrapper.h"
+#include "python_wrapper/headers/SampleWrapper.h"
+#include "python_wrapper/headers/SystematicWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -73,6 +76,21 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
     ;
 
+    class_<UniqueSampleIDWrapper>("ConfigReaderCppUniqueSampleID",
+        init<int, std::string, std::string>())
+        // getPtr
+        .def("getPtr",          &UniqueSampleIDWrapper::getPtr)
+
+        // dsid
+        .def("dsid",            &UniqueSampleIDWrapper::dsid)
+
+        // campaign
+        .def("campaign",        &UniqueSampleIDWrapper::campaign)
+
+        // simulation
+        .def("simulation",      &UniqueSampleIDWrapper::simulation)
+    ;
+
     class_<RegionWrapper>("ConfigReaderCppRegion",
         init<std::string>())
         // getPtr
@@ -118,4 +136,49 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("axisNbins",           &VariableWrapper::axisNbins)
     ;
 
+    class_<SampleWrapper>("SampleWrapper",
+        init<std::string>())
+
+        // getPtr
+        .def("getPtr",          &SampleWrapper::getPtr)
+
+        // name
+        .def("name",            &SampleWrapper::name)
+
+        // recoTreeName
+        .def("recoTreeName",    &SampleWrapper::recoTreeName)
+
+        // addUniqueSampleID
+        .def("addUniqueSampleID",   &SampleWrapper::addUniqueSampleID)
+
+        // addSystematic
+        .def("addSystematic",       &SampleWrapper::addSystematic)
+
+        // addRegion
+        .def("addRegion",           &SampleWrapper::addRegion)
+
+        // setEventWeight
+        .def("setEventWeight",      &SampleWrapper::setEventWeight)
+        .def("weight",              &SampleWrapper::weight)
+
+        // skipSystematicRegionCombination
+        .def("skipSystematicRegionCombination", &SampleWrapper::skipSystematicRegionCombination)
+    ;
+
+    class_<SystematicWrapper>("SystematicWrapper",
+        init<std::string>())
+
+        // getPtr
+        .def("getPtr",          &SystematicWrapper::getPtr)
+
+        // name
+        .def("name",            &SystematicWrapper::name)
+
+        // setSumWeights
+        .def("setSumWeights",   &SystematicWrapper::setSumWeights)
+        .def("sumWeights",      &SystematicWrapper::sumWeights)
+
+        // addRegion
+        .def("addRegion",       &SystematicWrapper::addRegion)
+    ;
 }
