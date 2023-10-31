@@ -51,6 +51,7 @@ public:
 
   float getLuminosity(const std::string& campaign) const;
 
+  const std::map<std::string, float>& luminosityMap() const {return m_luminosity_map;}
 
   void addRegion(const std::shared_ptr<Region>& region);
 

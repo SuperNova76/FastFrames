@@ -9,25 +9,87 @@
 
 class Systematic;
 
+/**
+ * @brief Class responsible for managing metadata
+ *
+ */
 class MetadataManager {
 public:
+
+  /**
+   * @brief Construct a new Metadata Manager object
+   *
+   */
   explicit MetadataManager() noexcept;
+
+  /**
+   * @brief Destroy the Metadata Manager object
+   *
+   */
   ~MetadataManager() = default;
 
+  /**
+   * @brief Reads file lists txt file
+   *
+   * @param path Path to the txt file
+   */
   void readFileList(const std::string& path);
 
+  /**
+   * @brief Reads file with the sumweight information
+   *
+   * @param path Oath to the txt file
+   */
   void readSumWeights(const std::string& path);
 
+  /**
+   * @brief Adds luminosity value for a given campaign
+   *
+   * @param campaign
+   * @param lumi
+   */
   void addLuminosity(const std::string& campaign, const double lumi);
 
+  /**
+   * @brief Get sumweights for a given Unique sample and systematic
+   *
+   * @param id
+   * @param systematic
+   * @return double
+   */
   double sumWeights(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const;
 
+  /**
+   * @brief Get luminosity for a given campaign
+   *
+   * @param campaign
+   * @return double
+   */
   double luminosity(const std::string& campaign) const;
 
+  /**
+   * @brief Get cross-section for a given sample
+   *
+   * @param id
+   * @return double
+   */
   double crossSection(const UniqueSampleID& id) const;
 
+  /**
+   * @brief Get normalisation (luminosity * cross-section/sumweights) for a given sample and systematic
+   *
+   * @param id
+   * @param systematic
+   * @return double
+   */
   double normalisation(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const;
 
+  /**
+   * @brief Get file paths for a given unique sample
+   *
+   * @param id
+   * @return const std::vector<std::string>&
+   */
   const std::vector<std::string>& filePaths(const UniqueSampleID& id) const;
 
 private:

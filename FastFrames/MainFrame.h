@@ -14,21 +14,65 @@
 
 class Variable;
 
+/**
+ * @brief Main class that does all the hard work
+ *
+ */
 class MainFrame {
 public:
+
+  /**
+   * @brief Construct a new Main Frame object
+   *
+   */
   explicit MainFrame() : m_config(std::make_shared<ConfigSetting>()) {};
 
+  /**
+   * @brief Destroy the Main Frame object
+   *
+   */
   virtual ~MainFrame() = default;
 
+  /**
+   * @brief Set the Config object
+   *
+   * @param config
+   */
   virtual void setConfig(const std::shared_ptr<ConfigSetting>& config) {m_config = config;}
 
+  /**
+   * @brief Run all the steps needed at the beggining of the code
+   *
+   */
   virtual void init();
 
+  /**
+   * @brief Method to process histograms
+   *
+   */
   virtual void executeHistograms();
 
+  /**
+   * @brief Allows to define new observables
+   * Users can override this and add their own variables
+   *
+   * @param node The input RDF node
+   * @return ROOT::RDF::RNode the output node containg the new columns
+   */
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode node,
                                            const UniqueSampleID& /*sampleID*/) {return node;}
 
+  /**
+   * @brief A helper method that make systematic copies of a provided nominal column
+   * Name of the new varaible has to contain _NOSYS
+   *
+   * @tparam F
+   * @param node Input node
+   * @param newVariable Name of the new variable
+   * @param defineFunction Actual function to be used for the variable definition
+   * @param branches List of branch names that the function processes
+   * @return ROOT::RDF::RNode Output node with the new columns
+   */
   template<typename F>
   ROOT::RDF::RNode systematicDefine(ROOT::RDF::RNode node,
                                     const std::string& newVariable,
@@ -67,15 +111,41 @@ public:
 
 private:
 
+  /**
+   * @brief Process one UniqueSample (dsid, campaign, simulation type)
+   *
+   * @param sample
+   * @param uniqueSampleID
+   * @return std::vector<SystematicHisto>
+   */
   std::vector<SystematicHisto> processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID);
 
+  /**
+   * @brief Get name of a filter after applying the systematic replacements
+   *
+   * @param systematic Systematic to be used for the replacement
+   * @param region Region to be used for the replacement
+   * @return std::string
+   */
   std::string systematicFilter(/*const std::shared_ptr<Sample>& sample,*/
                                const std::shared_ptr<Systematic>& systematic,
                                const std::shared_ptr<Region>& region) const;
 
-  std::string systematicVariable(const Variable& Variable,
+  /**
+   * @brief Get name of a variable after applying the systematic replacements
+   *
+   * @param systematic Variable to be used for the replacement
+   * @return std::string
+   */
+  std::string systematicVariable(const Variable& variable,
                                  const std::shared_ptr<Systematic>& systematic) const;
 
+  /**
+   * @brief Get name of a systematic weight after applying the systematic replacements
+   *
+   * @param systematic Systematic to be used for the replacement
+   * @return std::string
+   */
   std::string systematicWeight(const std::shared_ptr<Systematic>& systematic) const;
 
   /**

@@ -81,10 +81,10 @@ void MetadataManager::addLuminosity(const std::string& campaign, const double lu
     }
     auto itr = m_luminosity.find(campaign);
     if (itr == m_luminosity.end()) {
-        LOG(INFO) << "Adding luminosity for compaign: " << campaign << ", value: " << lumi << "\n";
+        LOG(INFO) << "Adding luminosity for campaign: " << campaign << ", value: " << lumi << "\n";
         m_luminosity.insert({campaign, lumi});
     } else {
-        LOG(INFO) << "Changing luminosity for compaign: " << campaign << " to value: " << lumi << "\n";
+        LOG(INFO) << "Changing luminosity for campaign: " << campaign << " to value: " << lumi << "\n";
         itr->second = lumi;
     }
 }

@@ -17,7 +17,6 @@ class Logger:
             Logger._convert_level_str_to_int(log_level),
             message+'\n',
             file_name,
-            caller.function,
             caller.lineno
         )
 

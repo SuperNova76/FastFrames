@@ -4,22 +4,67 @@
 #include <map>
 #include <vector>
 
+/**
+ * @brief Class containing sample Metadata information, such as cross-section, sumWeights etc
+ *
+ */
 class Metadata {
 public:
+
+  /**
+   * @brief Construct a new Metadata object
+   *
+   */
   explicit Metadata() noexcept;
-  
+
+  /**
+   * @brief Destroy the Metadata object
+   *
+   */
   ~Metadata() = default;
 
+  /**
+   * @brief Set the Cross Section object
+   *
+   * @param xSec
+   */
   inline void setCrossSection(const double xSec) {m_crossSection = xSec;}
 
+  /**
+   * @brief Get cross-section
+   *
+   * @return double
+   */
   inline double crossSection() const {return m_crossSection;}
 
+  /**
+   * @brief Add sumWeights for this sample
+   *
+   * @param name Name of the sumWeights variation
+   * @param value sumWeights
+   */
   void addSumWeights(const std::string& name, const double value);
 
+  /**
+   * @brief Get sumWeights for a given name
+   *
+   * @param name Name of sumWeights
+   * @return double
+   */
   double sumWeight(const std::string& name) const;
 
+  /**
+   * @brief Add a path to a ROOT file belonging to this sample
+   *
+   * @param path
+   */
   void addFilePath(const std::string& path);
 
+  /**
+   * @brief Get all file paths for this sample
+   *
+   * @return const std::vector<std::string>&
+   */
   inline const std::vector<std::string>& filePaths() const {return m_filePaths;}
 
 private:
