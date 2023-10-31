@@ -1,3 +1,9 @@
+/**
+ * @file LinkDef.h
+ * @brief File needed for ROOT dictionaries creation
+ *
+ */
+
 #include "FastFrames/MainFrame.h"
 
 #ifdef __CINT__

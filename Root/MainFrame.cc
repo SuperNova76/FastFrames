@@ -1,3 +1,10 @@
+/**
+ * @file MainFrame.cc
+ * @brief Main class responsible for histogramming and ntupling
+ *
+ */
+
+
 #include "FastFrames/MainFrame.h"
 
 #include "FastFrames/Logger.h"

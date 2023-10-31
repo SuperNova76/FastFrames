@@ -62,7 +62,6 @@ install:
   script:
      - mkdir -p install
      - cd build
-     - make clean #make sure we don't have residual compilation results
      - make install | tee -a install.log  #dump the log files
   artifacts:
      paths:

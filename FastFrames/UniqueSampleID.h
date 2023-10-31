@@ -1,3 +1,9 @@
+/**
+ * @file UniqueSampleID.h
+ * @brief Sample identifier
+ *
+ */
+
 #pragma once
 
 #include <iostream>

@@ -1,3 +1,9 @@
+/**
+ * @file HistoContainer.h
+ * @brief File containing classes for hsitogram storage
+ *
+ */
+
 #pragma once
 
 #include "TH1D.h"

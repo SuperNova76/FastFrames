@@ -1,3 +1,9 @@
+/**
+ * @file MainFrame.h
+ * @brief Main class responsible for histogramming and ntupling
+ *
+ */
+
 #pragma once
 
 #include "FastFrames/ConfigSetting.h"

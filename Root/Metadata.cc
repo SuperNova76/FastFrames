@@ -1,3 +1,9 @@
+/**
+ * @file Metadata.cc
+ * @brief Metadata information for a sample
+ *
+ */
+
 #include "FastFrames/Metadata.h"
 
 #include "FastFrames/Logger.h"
