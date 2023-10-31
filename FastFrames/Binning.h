@@ -1,3 +1,12 @@
+/**
+ * @file Binning.h
+ * @author your name (you@domain.com)
+ * @brief Header file for the Binning class
+ * @version 0.1
+ *
+ *
+ */
+
 #pragma once
 
 #include <vector>

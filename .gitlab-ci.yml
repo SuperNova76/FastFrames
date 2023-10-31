@@ -21,10 +21,22 @@ cmake:
   stage: build
   script:
      - mkdir -p build && cd build
-     - cmake .. | tee cmake.log
+     - cmake -DCMAKE_INSTALL_PREFIX=../install/ .. | tee cmake.log
   artifacts:
      paths:
       - build
+     expire_in: 1d
+
+cmake_doxygen:
+  stage: build
+  script:
+     - mkdir -p build && cd build
+     - cmake -DBUILD_DOC=ON .. | tee cmake.log
+  only:
+    - main
+  artifacts:
+     paths:
+      - build/docs/
      expire_in: 1d
 
 compile:
@@ -34,10 +46,24 @@ compile:
   script:
      - cd build
      - make clean #make sure we don't have residual compilation results
-     - make -j4 2>&1 | tee -a cmake.log  #dump the log files
+     - make -j4 2>&1 | tee -a make.log  #dump the log files
   artifacts:
      paths:
       - build
+     expire_in: 1d
+
+install:
+  stage: build
+  needs:
+    - compile
+  script:
+     - mkdir -p install
+     - cd build
+     - make clean #make sure we don't have residual compilation results
+     - make install | tee -a install.log  #dump the log files
+  artifacts:
+     paths:
+      - install
      expire_in: 1d
 
 compile_root_latest:

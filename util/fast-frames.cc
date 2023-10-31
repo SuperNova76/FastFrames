@@ -1,3 +1,15 @@
+/**
+ * @file fast-frames.cc
+ * @brief main c++ executable
+ * @version 0.1
+ *
+ */
+
+/*! \mainpage FastFrames
+ * Documentation of the FastFrames code
+ *
+ */
+
 #include "FastFrames/ConfigSetting.h"
 #include "FastFrames/Logger.h"
 #include "FastFrames/FastFramesExecutor.h"
@@ -8,6 +20,10 @@
 #include <exception>
 #include <memory>
 
+/**
+ * @brief c++ main executable
+ *
+ */
 int main (int /*argc*/, const char** /*argv*/) {
 
   Logger::get().setLogLevel(LoggingLevel::DEBUG);
