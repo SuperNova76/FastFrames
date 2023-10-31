@@ -38,7 +38,7 @@ class BlockReaderSystematic:
         if self.sum_weights is None:
             self.sum_weights = block_reader_general.default_sumweights
 
-    def adjust_regions(self, regions : dict):
+    def adjust_regions(self, regions : dict) -> None:
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
             for region in regions:
@@ -49,6 +49,14 @@ class BlockReaderSystematic:
                     Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self.name))
                     exit(1)
 
+    def check_samples_existence(self, sample_dict : dict) -> None:
+        """
+        Check if all samples specified for the systematic exist
+        """
+        for sample in self.samples:
+            if sample not in sample_dict:
+                Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                exit(1)
 
 def read_systematics_variations(input_dict : dict, block_reader_general : BlockReaderGeneral = None) -> list:
     """

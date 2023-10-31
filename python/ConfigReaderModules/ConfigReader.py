@@ -45,6 +45,12 @@ class ConfigReader:
                         exit(1)
                     self.systematics[systematic_name] = systematic
 
+            for systematic_name,systematic in self.systematics.items():
+                systematic.check_samples_existence(self.samples)
+
+            for sample_name,sample in self.samples.items():
+                sample.adjust_systematics(self.systematics)
+
 
 if __name__ == "__main__":
 
@@ -86,4 +92,13 @@ if __name__ == "__main__":
                 print("\t\tbinning: ", variable.config_reader_cpp_variable.binEdgesString())
             print("\n")
 
+    samples = config_reader.samples
+    print("\n\nSamples block:\n")
+    for sample_name,sample in samples.items():
+        print("\tname: ", sample.cpp_class.name())
+        print("\tregions: ", sample.regions)
+        print("\tselection: ", sample.selection)
+        print("\tsystematic: ", sample.systematic)
+        print("\tselection: ", sample.selection)
+        print("\n")
 
