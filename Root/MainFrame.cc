@@ -12,9 +12,14 @@
 #include <exception>
 
 void MainFrame::init() {
+    ROOT::EnableImplicitMT(m_config->numCPU());
     m_metadataManager.readFileList( m_config->inputFilelistPath() );
     m_metadataManager.readSumWeights( m_config->inputSumWeightsPath() );
-    ROOT::EnableImplicitMT(m_config->numCPU());
+
+    // propagate luminosity information fomr config
+    for (const auto& ilumi : m_config->luminosityMap()) {
+        m_metadataManager.addLuminosity(ilumi.first, ilumi.second);
+    }
 }
 
 void MainFrame::executeHistograms() {

@@ -4,16 +4,37 @@
 
 class ConfigSetting;
 
+/**
+ * @brief Wrapper class that calls MainFrame or the inherited class
+ *
+ */
 class FastFramesExecutor {
 
 public:
 
-  explicit FastFramesExecutor(const std::shared_ptr<ConfigSetting>& config);
+  /**
+   * @brief Construct a new FastFramesExecutor object
+   *
+   * @param config The config
+   */
+  explicit FastFramesExecutor(const std::shared_ptr<ConfigSetting>& config) noexcept;
 
+  /**
+   * @brief Deleted default constructor
+   *
+   */
   FastFramesExecutor() = delete;
 
+  /**
+   * @brief Destroy the Fast Frames Executor object
+   *
+   */
   ~FastFramesExecutor() = default;
 
+  /**
+   * @brief Main method that does all the work
+   *
+   */
   void runFastFrames() const;
 
 private:

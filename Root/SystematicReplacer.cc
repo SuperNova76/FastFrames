@@ -132,19 +132,19 @@ bool SystematicReplacer::branchExists(const std::string& name) const {
     return itr != m_allBranches.end();
 }
 
-std::vector<std::string> SystematicReplacer::getListOfEffectiveSystematics(const std::vector<std::string>& variables) const {
+std::vector<std::string> SystematicReplacer::getListOfEffectiveSystematics(const std::vector<std::string>& columns) const {
 
     std::vector<std::string> result;
 
-    for (const auto& ivariable : variables) {
-        if (ivariable.find("NOSYS") == std::string::npos) {
+    for (const auto& icolumn : columns) {
+        if (icolumn.find("NOSYS") == std::string::npos) {
             return result;
         }
 
         // get the variables from the map and then take the unique ones
-        auto itr = m_branchesAffectedBySyst.find(ivariable);
+        auto itr = m_branchesAffectedBySyst.find(icolumn);
         if (itr == m_branchesAffectedBySyst.end()) {
-            LOG(ERROR) << "Cannot find branch: " << ivariable << ", in the branch map\n";
+            LOG(ERROR) << "Cannot find branch: " << icolumn << ", in the branch map\n";
             throw std::invalid_argument("");
         }
 

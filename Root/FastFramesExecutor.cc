@@ -11,7 +11,7 @@
 #include <exception>
 #include <string>
 
-FastFramesExecutor::FastFramesExecutor(const std::shared_ptr<ConfigSetting>& config) :
+FastFramesExecutor::FastFramesExecutor(const std::shared_ptr<ConfigSetting>& config) noexcept :
 m_config(config)
 {
 }
