@@ -34,8 +34,8 @@ make_doxygen:
      - cmake -DBUILD_DOC=ON .. | tee cmake.log
      - make doc_doxygen
      - ls
-  #only:
-  #  - main
+  only:
+    - main
   artifacts:
      paths:
       - doc_build/docs/
