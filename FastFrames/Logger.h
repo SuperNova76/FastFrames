@@ -1,3 +1,9 @@
+/**
+ * @file Logger.h
+ * @brief Logging class
+ *
+ */
+
 #pragma once
 
 #include <chrono>
@@ -17,7 +23,8 @@ enum class LoggingLevel {
   ERROR = 0,
   WARNING = 1,
   INFO = 2,
-  DEBUG = 3
+  DEBUG = 3,
+  VERBOSE = 4
 };
 
 /**
@@ -124,7 +131,9 @@ private:
       case LoggingLevel::INFO:
         return "\033[1;32m[ INFO    ]\033[0;0m ";
       case LoggingLevel::DEBUG:
-        return "[ DEBUG   ] ";
+        return "\033[1;36m[ DEBUG   ]\033[0;0m ";
+      case LoggingLevel::VERBOSE:
+        return "[ VERBOSE ] ";
       default:
         return "";
     }

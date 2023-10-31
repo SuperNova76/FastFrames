@@ -1,3 +1,9 @@
+/**
+ * @file DefineHelpers.h
+ * @brief Helper functions to allow easier processing of the ntuple format
+ *
+ */
+
 #pragma once
 
 #include "Math/Vector4D.h"

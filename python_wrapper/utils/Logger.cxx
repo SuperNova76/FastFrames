@@ -14,14 +14,16 @@ static const map<int, LoggingLevel>  mapIntToLoggingLevel = {
     {0, LoggingLevel::ERROR},
     {1, LoggingLevel::WARNING},
     {2, LoggingLevel::INFO},
-    {3, LoggingLevel::DEBUG}
+    {3, LoggingLevel::DEBUG},
+    {4, LoggingLevel::VERBOSE}
 };
 
 static const map<LoggingLevel, int>  mapLoggingLevelToInt = {
     {LoggingLevel::ERROR,   0},
     {LoggingLevel::WARNING, 1},
     {LoggingLevel::INFO,    2},
-    {LoggingLevel::DEBUG,   3}
+    {LoggingLevel::DEBUG,   3},
+    {LoggingLevel::VERBOSE, 4}
 };
 
 static PyObject *setLogLevel([[__maybe_unused__]]PyObject *self, PyObject *args) {

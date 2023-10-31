@@ -1,3 +1,9 @@
+/**
+ * @file SystematicReplacer.h
+ * @brief Management of the string replacements for systematics
+ *
+ */
+
 #pragma once
 
 #include <map>

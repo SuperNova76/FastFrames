@@ -1,3 +1,9 @@
+/**
+ * @file SystematicReplacer.cc
+ * @brief Management of the string replacements for systematics
+ *
+ */
+
 #include "FastFrames/SystematicReplacer.h"
 
 #include "FastFrames/Logger.h"
@@ -79,19 +85,19 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
         }
     }
 
-    LOG(DEBUG) << "List of branches and systematics that affect them\n";
+    LOG(VERBOSE) << "List of branches and systematics that affect them\n";
     for (const auto& ibranch : m_branchesAffectedBySyst) {
-        LOG(DEBUG) << "branch: " << ibranch.first << "\n";
+        LOG(VERBOSE) << "branch: " << ibranch.first << "\n";
         for (const auto& isyst : ibranch.second) {
-            LOG(DEBUG) << "\t systematic: " << isyst << "\n";
+            LOG(VERBOSE) << "\t systematic: " << isyst << "\n";
         }
     }
 
-    LOG(DEBUG) << "\nList of systematics and which branches they affect\n";
+    LOG(VERBOSE) << "\nList of systematics and which branches they affect\n";
     for (const auto& isyst : m_systImpactsBranches) {
-        LOG(DEBUG) << "systematic: " << isyst.first << "\n";
+        LOG(VERBOSE) << "systematic: " << isyst.first << "\n";
         for (const auto& ibranch : isyst.second) {
-            LOG(DEBUG) << "\t branch: " << ibranch << "\n";
+            LOG(VERBOSE) << "\t branch: " << ibranch << "\n";
         }
     }
 }

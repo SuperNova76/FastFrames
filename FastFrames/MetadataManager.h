@@ -1,3 +1,9 @@
+/**
+ * @file MetadataManager.h
+ * @brief Processing of metadata for a sample
+ *
+ */
+
 #pragma once
 
 #include "FastFrames/UniqueSampleID.h"
