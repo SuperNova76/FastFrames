@@ -29,6 +29,8 @@ int main (int /*argc*/, const char** /*argv*/) {
 
   auto config = std::make_shared<ConfigSetting>();
 
+  config->setTestingValues();
+
   FastFramesExecutor executor(config);
 
   executor.runFastFrames();

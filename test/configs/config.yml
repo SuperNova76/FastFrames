@@ -68,16 +68,14 @@ samples:
     regions: ["Electron", "Muon"]
 
 systematics:
-  - name: "JES_BJES"
-    samples: ["ttbar_FS", "Wjets_FS"]
+  - samples: ["ttbar_FS", "Wjets_FS"]
     campaigns: ["mc20e"]
     regions: ["Electron", "Muon"]
     variation:
       up: "JET_BJES_Response__1up"
       down: "JET_BJES_Response__1down"
 
-  - name: "ttbar_mur0p5_muf0p5"
-    samples: ["ttbar_FS"]
+  - samples: ["ttbar_FS"]
     campaigns: ["mc20e"]
     regions: ["Electron", "Muon"]
     variation:

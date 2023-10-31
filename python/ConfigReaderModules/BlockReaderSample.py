@@ -98,9 +98,10 @@ class BlockReaderSample:
                     if self.name not in systematic.samples:
                         continue
 
+                self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
                 self.systematic.append(systematic_name)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
-            Logger.log_message("WARNING", "Key {} used in region block is not supported!".format(unused))
+            Logger.log_message("WARNING", "Key {} used in  sample block is not supported!".format(unused))

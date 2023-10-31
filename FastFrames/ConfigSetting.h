@@ -35,6 +35,13 @@ public:
    */
   ~ConfigSetting() = default;
 
+
+  /**
+   * @brief Set some regions, systematics and samples for testing
+   */
+  void setTestingValues();
+
+
   /**
    * @brief Path the output folder
    *
@@ -157,11 +164,30 @@ public:
   std::vector<std::shared_ptr<Sample> >& samples() {return m_samples;}
 
   /**
+   * @brief Add sample
+   *
+   * @param sample
+   */
+  void addSample(const std::shared_ptr<Sample> &samples)  {
+    m_samples.push_back(samples);
+  };
+
+
+  /**
    * @brief Get list of all Systematics
    *
    * @return const std::vector<std::shared_ptr<Systematic> >&
    */
   const std::vector<std::shared_ptr<Systematic> >& systematics() const {return m_systematics;}
+
+  /**
+   * @brief Add systematic uncertainty
+   *
+   * @param systematic
+   */
+  void addSystematic(const std::shared_ptr<Systematic> &systematic) {
+    m_systematics.push_back(systematic);
+  };
 
   /**
    * @brief Set to true to only use nominal systematics
