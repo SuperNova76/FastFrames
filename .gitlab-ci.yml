@@ -16,6 +16,7 @@ stages:
   - build
   - check
   - run
+  - webpage
 
 cmake:
   stage: build
@@ -35,7 +36,7 @@ make_doxygen:
      - make doc_doxygen
      - ls
   only:
-    - main
+    - main@atlas-amglab/fastframes
   artifacts:
      paths:
       - doc_build/docs/
@@ -151,3 +152,26 @@ run_python:
       - ttbar_FS.root
      expire_in: 1d
   allow_failure: true
+
+doxygen_webpage:
+  stage: webpage
+  needs:
+    - make_doxygen
+  before_script:
+    - date
+    - echo "${EOS_ACCOUNT_PASSWORD}" | kinit ${EOS_ACCOUNT_USERNAME}@CERN.CH
+    - klist
+    - cp docs/custom_krb5.conf /etc/krb5.conf
+    - cp docs/custom_ssh.conf /etc/ssh/ssh_config
+    - mkdir ~/.ssh
+    - ls ~/.ssh
+    - echo -e "Host lxplus.cern.ch\n\tUser ${EOS_ACCOUNT_USERNAME}\n\tStrictHostKeyChecking no\n\tGSSAPIAuthentication yes\n\tGSSAPIDelegateCredentials yes\n\tProtocol 2\n\tForwardX11 no\n\tIdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+    - cat ~/.ssh/config
+    - date
+  script:
+    - ls doc_build/
+    - ls doc_build/docs
+    - ls doc_build/docs/html
+    - tar cvzf - -C doc_build/docs/html/ . | ssh ${EOS_ACCOUNT_USERNAME}@lxplus.cern.ch tar xzf - -C /eos/user/t/topreco/www/fastframesdocumentation
+  only:
+    - main@atlas-amglab/fastframes
