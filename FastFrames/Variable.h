@@ -1,3 +1,9 @@
+/**
+ * @file Variable.h
+ * @brief Variable
+ *
+ */
+
 #pragma once
 
 #include "FastFrames/Binning.h"

@@ -1,3 +1,9 @@
+/**
+ * @file FastFramesExecutor.cc
+ * @brief Main executor wrapper
+ *
+ */
+
 #include "FastFrames/FastFramesExecutor.h"
 
 #include "FastFrames/ConfigSetting.h"

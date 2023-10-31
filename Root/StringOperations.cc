@@ -1,3 +1,9 @@
+/**
+ * @file StringOperations.cc
+ * @brief Helper functions for string operations
+ *
+ */
+
 #include "FastFrames/StringOperations.h"
 
 #include <algorithm>

@@ -1,3 +1,9 @@
+/**
+ * @file Sample.h
+ * @brief Sample
+ *
+ */
+
 #pragma once
 
 #include "FastFrames/UniqueSampleID.h"

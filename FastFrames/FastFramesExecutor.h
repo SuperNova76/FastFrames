@@ -1,3 +1,9 @@
+/**
+ * @file FastFramesExecutor.h
+ * @brief Main executor wrapper
+ *
+ */
+
 #pragma once
 
 #include <memory>

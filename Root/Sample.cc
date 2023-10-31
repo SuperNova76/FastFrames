@@ -1,3 +1,9 @@
+/**
+ * @file Sample.cc
+ * @brief Sample
+ *
+ */
+
 #include "FastFrames/Sample.h"
 
 #include "FastFrames/Systematic.h"
@@ -10,7 +16,7 @@ Sample::Sample(const std::string& name) noexcept :
   m_recoTreeName("reco")
 {
 }
-  
+
 bool Sample::skipSystematicRegionCombination(const std::shared_ptr<Systematic>& syst,
                                              const std::shared_ptr<Region>& reg) const {
 

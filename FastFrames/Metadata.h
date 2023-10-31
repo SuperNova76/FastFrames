@@ -1,3 +1,9 @@
+/**
+ * @file Metadata.h
+ * @brief Metadata information for a sample
+ *
+ */
+
 #pragma once
 
 #include <string>

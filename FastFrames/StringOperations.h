@@ -1,3 +1,9 @@
+/**
+ * @file StringOperations.h
+ * @brief Helper functions for string operations
+ *
+ */
+
 #pragma once
 
 #include <string>
@@ -7,12 +13,12 @@
 namespace StringOperations  {
 
     /**
-     * @brief Replaces all occurances of substring with another string 
-     * 
+     * @brief Replaces all occurances of substring with another string
+     *
      * @param original input string
      * @param from string to be replaced
      * @param to replace with
-     * @return std::string 
+     * @return std::string
      */
     std::string replaceString(const std::string& original,
                               const std::string& from,
@@ -20,11 +26,11 @@ namespace StringOperations  {
 
     /**
      * @brief calls replaceString on each element of a string vector
-     * 
-     * @param input input string vector 
+     *
+     * @param input input string vector
      * @param from string to be replaced in each element
      * @param to replace with
-     * @return std::vector<std::string> 
+     * @return std::vector<std::string>
      */
     std::vector<std::string> replaceVector(const std::vector<std::string>& input,
                                            const std::string& from,
