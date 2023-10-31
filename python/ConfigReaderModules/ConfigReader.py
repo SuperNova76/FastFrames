@@ -3,6 +3,7 @@ from sys import argv
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
+from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 
 from python_wrapper.python.logger import Logger
 
@@ -32,6 +33,17 @@ class ConfigReader:
                     Logger.log_message("ERROR", "Duplicate sample name: {}".format(sample_name))
                     exit(1)
                 self.samples[sample_name] = sample
+
+            self.systematics = {}
+            for systematic_dict in data["systematics"]:
+                systematic_list = read_systematics_variations(systematic_dict, self.block_general)
+                for systematic in systematic_list:
+                    systematic.adjust_regions(self.regions)
+                    systematic_name = systematic.name
+                    if systematic_name in self.systematics:
+                        Logger.log_message("ERROR", "Duplicate systematic name: {}".format(systematic_name))
+                        exit(1)
+                    self.systematics[systematic_name] = systematic
 
 
 if __name__ == "__main__":

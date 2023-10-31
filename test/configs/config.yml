@@ -1,5 +1,5 @@
 general:
-  debug_level: 0
+  debug_level: DEBUG
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path: ""
