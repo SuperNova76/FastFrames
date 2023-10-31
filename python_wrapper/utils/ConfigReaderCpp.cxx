@@ -64,9 +64,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("numCPU",      &ConfigSettingWrapper::numCPU)
         .def("setNumCPU",   &ConfigSettingWrapper::setNumCPU)
 
-        // addLuminosityInformation
+        // Luminosity
         .def("setLuminosity", &ConfigSettingWrapper::addLuminosityInformation)
         .def("getLuminosity", &ConfigSettingWrapper::getLuminosity)
+        .def("campaignIsDefined", &ConfigSettingWrapper::campaignIsDefined)
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)

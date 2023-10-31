@@ -31,6 +31,13 @@ class BlockReaderSample:
             Logger.log_message("ERROR", "No campaigns specified for sample {}".format(self.name))
             exit(1)
 
+        # check if all campaigns are defined in general block
+        if not self.is_data and self.campaigns != None and block_reader_general != None:
+            for campaign in self.campaigns:
+                if not block_reader_general.config_reader_cpp_general.campaignIsDefined(campaign):
+                    Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self.name))
+                    exit(1)
+
         self.selection = input_dict.get("selection","true")
 
         self.regions = input_dict.get("regions",None)
