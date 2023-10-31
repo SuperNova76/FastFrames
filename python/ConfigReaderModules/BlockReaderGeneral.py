@@ -26,7 +26,6 @@ class BlockReaderGeneral:
             self.luminosity_map[key] = float(value)
 
     def __set_config_reader_cpp(self):
-        self.config_reader_cpp_general.setInputPath(self.input_filelist_path)
         self.config_reader_cpp_general.setInputSumWeightsPath(self.input_sumweights_path)
         self.config_reader_cpp_general.setOutputPath(self.output_path)
         self.config_reader_cpp_general.setInputFilelistPath(self.input_filelist_path)

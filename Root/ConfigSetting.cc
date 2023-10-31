@@ -1,3 +1,9 @@
+/**
+ * @file ConfigSetting.cc
+ * @brief Config class
+ *
+ */
+
 #include "FastFrames/ConfigSetting.h"
 
 #include "FastFrames/Region.h"

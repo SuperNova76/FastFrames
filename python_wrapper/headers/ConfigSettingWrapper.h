@@ -31,15 +31,6 @@ class ConfigSettingWrapper {
         };
 
 
-        std::string inputPath() const   {
-            return m_configSetting->inputPath();
-        };
-
-        void setInputPath(const std::string &inputPath) {
-            m_configSetting->setInputPath(inputPath);
-        };
-
-
         std::string inputFilelistPath() const   {
             return m_configSetting->inputFilelistPath();
         };

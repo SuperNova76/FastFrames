@@ -44,10 +44,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // getPtr
         .def("getPtr",          &ConfigSettingWrapper::getPtr)
 
-        // inputPath
-        .def("inputPath",       &ConfigSettingWrapper::inputPath)
-        .def("setInputPath",    &ConfigSettingWrapper::setInputPath)
-
         // outputPath
         .def("outputPath",      &ConfigSettingWrapper::outputPath)
         .def("setOutputPath",   &ConfigSettingWrapper::setOutputPath)
