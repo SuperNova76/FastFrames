@@ -56,7 +56,6 @@ if __name__ == "__main__":
     block_general = config_reader.block_general
 
     print("\nGeneral block:")
-    print("\tinputPath: ", block_general.config_reader_cpp_general.inputPath())
     print("\tinputSumWeightsPath: ", block_general.config_reader_cpp_general.inputSumWeightsPath())
     print("\toutputPath: ", block_general.config_reader_cpp_general.outputPath())
     print("\tinputFilelistPath: ", block_general.config_reader_cpp_general.inputFilelistPath())

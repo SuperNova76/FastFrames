@@ -1,3 +1,9 @@
+/**
+ * @file DefineHelpers.cc
+ * @brief Helper functions to allow easier processing of the ntuple format
+ *
+ */
+
 #include "FastFrames/DefineHelpers.h"
 #include "FastFrames/Logger.h"
 
