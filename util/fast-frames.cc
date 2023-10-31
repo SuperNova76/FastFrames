@@ -1,7 +1,6 @@
 /**
  * @file fast-frames.cc
  * @brief main c++ executable
- * @version 0.1
  *
  */
 

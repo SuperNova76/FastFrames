@@ -1,3 +1,9 @@
+/**
+ * @file MetadataManager.cc
+ * @brief Pocessing of sample metadata information
+ *
+ */
+
 #include "FastFrames/MetadataManager.h"
 
 #include "FastFrames/Logger.h"
@@ -47,11 +53,11 @@ void MetadataManager::readSumWeights(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open() || !file.good()) {
         LOG(ERROR) << "Cannot open file with sumWeights list at: " << path << "\n";
-        throw std::invalid_argument(""); 
+        throw std::invalid_argument("");
     }
-    
+
     LOG(DEBUG) << "Reading sumWeights from: " << path << "\n";
-    
+
     int dsid;
     std::string campaign;
     std::string simulation;
@@ -71,7 +77,7 @@ void MetadataManager::readSumWeights(const std::string& path) {
     }
 
     file.close();
-    
+
 }
 
 void MetadataManager::addLuminosity(const std::string& campaign, const double lumi) {
@@ -135,7 +141,7 @@ const std::vector<std::string>& MetadataManager::filePaths(const UniqueSampleID&
     if (itr == m_metadata.end()) {
         LOG(ERROR) << "Cannot find ID " << id << " in the map! Please, fix\n";
         throw std::invalid_argument("");
-    } 
+    }
 
     return itr->second.filePaths();
 }
