@@ -82,4 +82,4 @@ systematics:
     regions: ["Electron", "Muon"]
     variation:
       up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
-      sumweights: "0p5muF_0p5muR_NNPDF31_NLO_0118"
+      sum_weights_up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
