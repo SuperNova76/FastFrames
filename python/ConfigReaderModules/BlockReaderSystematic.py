@@ -5,12 +5,15 @@ from python_wrapper.python.logger import Logger
 
 from ConfigReaderCpp    import SystematicWrapper
 from BlockReaderGeneral import BlockReaderGeneral
+from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderSystematic:
     def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):
-        self.name = input_dict.get("name", None)
+        self.options_getter = BlockOptionsGetter(input_dict)
+
+        self.name = self.options_getter.get("name", None)
         if self.name is None:
-            Logger.log_message("ERROR", "No name specified for systematic: " + str(input_dict))
+            Logger.log_message("ERROR", "No name specified for systematic: " + str(self.options_getter))
             exit(1)
 
         self.variation_type = variation_type.lower()
@@ -20,11 +23,11 @@ class BlockReaderSystematic:
 
         self.name += "_" + self.variation_type
 
-        self.samples    = input_dict.get("samples",None)
-        self.campaigns  = input_dict.get("campaigns",None)
-        self.regions    = input_dict.get("regions",None)
+        self.samples    = self.options_getter.get("samples",None)
+        self.campaigns  = self.options_getter.get("campaigns",None)
+        self.regions    = self.options_getter.get("regions",None)
 
-        variations_dict = input_dict.get("variation",None)
+        variations_dict = self.options_getter.get("variation",None)
         if variations_dict is None:
             Logger.log_message("ERROR", "No variations specified for systematic {}".format(self.name))
             exit(1)
@@ -38,7 +41,9 @@ class BlockReaderSystematic:
         if self.sum_weights is None:
             self.sum_weights = block_reader_general.default_sumweights
 
-    def adjust_regions(self, regions : dict):
+        self._check_unused_options()
+
+    def adjust_regions(self, regions : dict) -> None:
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
             for region in regions:
@@ -49,6 +54,19 @@ class BlockReaderSystematic:
                     Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self.name))
                     exit(1)
 
+    def check_samples_existence(self, sample_dict : dict) -> None:
+        """
+        Check if all samples specified for the systematic exist
+        """
+        for sample in self.samples:
+            if sample not in sample_dict:
+                Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                exit(1)
+
+    def _check_unused_options(self):
+        unused = self.options_getter.get_unused_options()
+        if len(unused) > 0:
+            Logger.log_message("WARNING", "Key {} used in region block is not supported!".format(unused))
 
 def read_systematics_variations(input_dict : dict, block_reader_general : BlockReaderGeneral = None) -> list:
     """

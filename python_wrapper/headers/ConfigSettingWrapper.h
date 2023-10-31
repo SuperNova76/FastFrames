@@ -3,6 +3,8 @@
 #include "FastFrames/ConfigSetting.h"
 
 #include <memory>
+#include <map>
+#include <string>
 
 
 /**
@@ -75,6 +77,10 @@ class ConfigSettingWrapper {
             return m_configSetting->getLuminosity(campaign);
         };
 
+        bool campaignIsDefined(const std::string& campaign) const {
+            const std::map<std::string, float> luminosity_map = m_configSetting->luminosityMap();
+            return luminosity_map.find(campaign) != luminosity_map.end();
+        };
 
         // regions
         void addRegion(long long int region_shared_ptr_int) {
