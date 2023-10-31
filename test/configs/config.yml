@@ -6,7 +6,7 @@ general:
   default_sumweights: "NOSYS"
   default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
   default_reco_tree_name: "reco"
-  #custom_frame_name: "my_custom_frame_name.so"
+  custom_frame_name: "my_custom_frame_name.so"
   number_of_cpus: 4
   luminosity:
     mc20a: 123456
