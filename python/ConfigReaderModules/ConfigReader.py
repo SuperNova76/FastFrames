@@ -62,34 +62,34 @@ if __name__ == "__main__":
     block_general = config_reader.block_general
 
     print("\nGeneral block:")
-    print("\tinputSumWeightsPath: ", block_general.config_reader_cpp_general.inputSumWeightsPath())
-    print("\toutputPath: ", block_general.config_reader_cpp_general.outputPath())
-    print("\tinputFilelistPath: ", block_general.config_reader_cpp_general.inputFilelistPath())
-    print("\tnumCPU: ", block_general.config_reader_cpp_general.numCPU())
-    print("\tcustomFrameName: ", block_general.config_reader_cpp_general.customFrameName())
-    print("\tluminosity, mc20a: ", block_general.config_reader_cpp_general.getLuminosity("mc20a"))
-    print("\tluminosity, mc23c: ", block_general.config_reader_cpp_general.getLuminosity("mc23c"))
+    print("\tinputSumWeightsPath: ", block_general.cpp_class.inputSumWeightsPath())
+    print("\toutputPath: ", block_general.cpp_class.outputPath())
+    print("\tinputFilelistPath: ", block_general.cpp_class.inputFilelistPath())
+    print("\tnumCPU: ", block_general.cpp_class.numCPU())
+    print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
+    print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
+    print("\tluminosity, mc23c: ", block_general.cpp_class.getLuminosity("mc23c"))
 
     regions = config_reader.regions
 
     print("\n\nRegions block:\n")
     for region_name,region in regions.items():
-        print("\tname: ", region.config_reader_cpp_region.name())
-        print("\tselection: ", region.config_reader_cpp_region.selection())
+        print("\tname: ", region.cpp_class.name())
+        print("\tselection: ", region.cpp_class.selection())
         print("\tvariables:")
         variables = region.variables
         for variable in variables:
-            print("\t\tname: ", variable.config_reader_cpp_variable.name())
-            print("\t\ttitle: ", variable.config_reader_cpp_variable.title())
-            print("\t\tdefinition: ", variable.config_reader_cpp_variable.definition())
-            #print("\t\tbinning: ", variable.config_reader_cpp_variable.binning())
-            if variable.config_reader_cpp_variable.hasRegularBinning():
+            print("\t\tname: ", variable.cpp_class.name())
+            print("\t\ttitle: ", variable.cpp_class.title())
+            print("\t\tdefinition: ", variable.cpp_class.definition())
+            #print("\t\tbinning: ", variable.cpp_class.binning())
+            if variable.cpp_class.hasRegularBinning():
                 print(  "\t\tbinning: ",
-                        variable.config_reader_cpp_variable.axisNbins(), ", ",
-                        variable.config_reader_cpp_variable.axisMin(), ", ",
-                        variable.config_reader_cpp_variable.axisMax())
+                        variable.cpp_class.axisNbins(), ", ",
+                        variable.cpp_class.axisMin(), ", ",
+                        variable.cpp_class.axisMax())
             else:
-                print("\t\tbinning: ", variable.config_reader_cpp_variable.binEdgesString())
+                print("\t\tbinning: ", variable.cpp_class.binEdgesString())
             print("\n")
 
     samples = config_reader.samples

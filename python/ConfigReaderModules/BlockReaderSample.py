@@ -34,7 +34,7 @@ class BlockReaderSample:
         # check if all campaigns are defined in general block
         if not self.is_data and self.campaigns != None and block_reader_general != None:
             for campaign in self.campaigns:
-                if not block_reader_general.config_reader_cpp_general.campaignIsDefined(campaign):
+                if not block_reader_general.cpp_class.campaignIsDefined(campaign):
                     Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self.name))
                     exit(1)
 
@@ -79,7 +79,7 @@ class BlockReaderSample:
 
         for region_name in self.regions:
             region_object = regions[region_name]
-            self.cpp_class.addRegion(region_object.config_reader_cpp_region.getPtr())
+            self.cpp_class.addRegion(region_object.cpp_class.getPtr())
 
 
     def adjust_systematics(self, systematics_all : dict):

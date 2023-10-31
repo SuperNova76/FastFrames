@@ -17,7 +17,7 @@ class BlockReaderGeneral:
         self.number_of_cpus = input_dict.get("number_of_cpus", 1)
         self.__set_luminosity_map(input_dict.get("luminosity"))
         Logger.set_log_level(self.debug_level)
-        self.config_reader_cpp_general = ConfigReaderCppGeneral()
+        self.cpp_class = ConfigReaderCppGeneral()
         self.__set_config_reader_cpp()
 
     def __set_luminosity_map(self, luminosity_map : dict) -> None:
@@ -26,14 +26,14 @@ class BlockReaderGeneral:
             self.luminosity_map[key] = float(value)
 
     def __set_config_reader_cpp(self):
-        self.config_reader_cpp_general.setInputSumWeightsPath(self.input_sumweights_path)
-        self.config_reader_cpp_general.setOutputPath(self.output_path)
-        self.config_reader_cpp_general.setInputFilelistPath(self.input_filelist_path)
-        self.config_reader_cpp_general.setNumCPU(self.number_of_cpus)
-        self.config_reader_cpp_general.setCustomFrameName(self.custom_frame_name)
+        self.cpp_class.setInputSumWeightsPath(self.input_sumweights_path)
+        self.cpp_class.setOutputPath(self.output_path)
+        self.cpp_class.setInputFilelistPath(self.input_filelist_path)
+        self.cpp_class.setNumCPU(self.number_of_cpus)
+        self.cpp_class.setCustomFrameName(self.custom_frame_name)
 
         for campaign, lumi_value in self.luminosity_map.items():
-            self.config_reader_cpp_general.setLuminosity(campaign, lumi_value)
+            self.cpp_class.setLuminosity(campaign, lumi_value)
 
     def add_region(self, region):
-        self.config_reader_cpp_general.addRegion(region.config_reader_cpp_region.getPtr())
+        self.cpp_class.addRegion(region.cpp_class.getPtr())

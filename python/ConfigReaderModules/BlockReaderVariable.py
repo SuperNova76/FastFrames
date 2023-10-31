@@ -8,14 +8,14 @@ class BlockReaderVariable:
         self.name = variable_dict.get("name")
         self.title = variable_dict.get("title", "")
         self.definition = variable_dict.get("definition")
-        self.config_reader_cpp_variable = None
-        self.__set_config_reader_cpp_variable()
+        self.cpp_class = None
+        self.__set_cpp_class()
         self.__read_binning(variable_dict.get("binning"))
 
-    def __set_config_reader_cpp_variable(self):
-        self.config_reader_cpp_variable = ConfigReaderCppVariable(self.name)
-        self.config_reader_cpp_variable.setDefinition(self.definition)
-        self.config_reader_cpp_variable.setTitle(self.title)
+    def __set_cpp_class(self):
+        self.cpp_class = ConfigReaderCppVariable(self.name)
+        self.cpp_class.setDefinition(self.definition)
+        self.cpp_class.setTitle(self.title)
 
     def __read_binning(self, binning_dict : dict):
         binning_min = binning_dict.get("min", 0)
@@ -29,7 +29,7 @@ class BlockReaderVariable:
 
         if len(binning_bin_edges) != 0:
             bin_edges_str = ",".join([str(x) for x in binning_bin_edges])
-            self.config_reader_cpp_variable.setBinningIrregular(bin_edges_str)
+            self.cpp_class.setBinningIrregular(bin_edges_str)
         else:
-            self.config_reader_cpp_variable.setBinningRegular(binning_min, binning_max, binning_nbins)
+            self.cpp_class.setBinningRegular(binning_min, binning_max, binning_nbins)
 
