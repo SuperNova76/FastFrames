@@ -14,6 +14,7 @@
 #include "TSystem.h"
 
 #include "Math/Vector4D.h"
+#include "ROOT/RDFHelpers.hxx"
 
 #include <iostream>
 #include <exception>
@@ -27,9 +28,26 @@ void MainFrame::init() {
     for (const auto& ilumi : m_config->luminosityMap()) {
         m_metadataManager.addLuminosity(ilumi.first, ilumi.second);
     }
+
+    if (m_config->nominalOnly() && m_config->automaticSystematics()) {
+        LOG(ERROR) << "Nominal only and automatically read systematics from a file are both set to true, please fix!\n";
+        throw std::invalid_argument("");
+    }
+
+    // check systematics need to be cleared
+    if (m_config->nominalOnly() || m_config->automaticSystematics()) {
+        m_config->clearSystematics();
+    }
 }
 
 void MainFrame::executeHistograms() {
+
+    if (m_config->nominalOnly() || m_config->automaticSystematics()) {
+        for (auto& isample : m_config->samples()) {
+            this->readAutomaticSystematics(isample, m_config->nominalOnly());
+        }
+    }
+
     LOG(INFO) << "Started the main histogram processing\n";
     std::size_t sampleN(1);
     for (const auto& isample : m_config->samples()) {
@@ -76,6 +94,7 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
     ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
 
     ROOT::RDF::RNode mainNode = df;
+    //ROOT::RDF::Experimental::AddProgressBar(mainNode);
 
     mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
 
@@ -166,7 +185,7 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
 
     const std::string& systName = "weight_total_" + systematic->name();
     const std::string formula = m_systReplacer.replaceString(nominalWeight, systematic) + "*" + ss.str();
-    LOG(DEBUG) << "Unique sample: " << id << ", systematic: " << systematic->name() << ", weight formula: " << formula << ", new weight name: " << systName << "\n";
+    LOG(VERBOSE) << "Unique sample: " << id << ", systematic: " << systematic->name() << ", weight formula: " << formula << ", new weight name: " << systName << "\n";
 
     auto node = mainNode.Define(systName, formula);
     return node;
@@ -301,4 +320,74 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
     }
 
     out->Close();
+}
+
+void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const bool isNominalOnly) const {
+
+    // clear current systematics
+    sample->clearSystematics();
+
+    // add nominal "systematic"
+    auto nominal = std::make_shared<Systematic>("NOSYS");
+    nominal->setSumWeights("NOSYS");
+    for (const auto& ireg : m_config->regions()) {
+        nominal->addRegion(ireg);
+    }
+    sample->addSystematic(nominal);
+
+    m_config->addUniqueSystematic(nominal);
+
+    if (isNominalOnly) return;
+
+    // add systematics now
+    for (const auto& iuniqueSample : sample->uniqueSampleIDs()) {
+        if (iuniqueSample.simulation() == "data") return; // nothing to add for data
+        const auto fileList = m_metadataManager.filePaths(iuniqueSample);
+        if (fileList.empty()) continue;
+
+        const std::vector<std::string> listOfSystematics = this->automaticSystematicNames(fileList.at(0));
+        // now add the systematics
+        for (const auto& isyst : listOfSystematics) {
+            auto syst = std::make_shared<Systematic>(isyst);
+            if (m_metadataManager.sumWeightsExist(iuniqueSample, syst)) {
+                syst->setSumWeights(isyst);
+            } else {
+                syst->setSumWeights("NOSYS");
+            }
+            for (const auto& ireg : m_config->regions()) {
+                syst->addRegion(ireg);
+            }
+            sample->addSystematic(syst);
+            m_config->addUniqueSystematic(syst);
+        }
+
+        break;
+    }
+}
+
+std::vector<std::string> MainFrame::automaticSystematicNames(const std::string& path) const {
+    std::unique_ptr<TFile> in(TFile::Open(path.c_str(), "READ"));
+    if (!in) {
+        LOG(ERROR) << "Cannot open ROOT file at: " << path << "\n";
+        throw std::invalid_argument("");
+    }
+
+    std::unique_ptr<TH1F> hist(in->Get<TH1F>("listOfSystematics"));
+    if (!hist) {
+        LOG(ERROR) << "Cannot read histogram: listOfSystematics\n";
+        throw std::invalid_argument("");
+    }
+    hist->SetDirectory(nullptr);
+
+    std::vector<std::string> result;
+
+    for (int ibin = 1; ibin < hist->GetNbinsX(); ++ibin) {
+        const std::string name = hist->GetXaxis()->GetBinLabel(ibin);
+        if (name == "NOSYS") continue;
+
+        LOG(VERBOSE) << "Adding systematic from histogram: " << name << "\n";
+        result.emplace_back(name);
+    }
+
+    return result;
 }

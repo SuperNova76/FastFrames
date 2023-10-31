@@ -105,6 +105,16 @@ double MetadataManager::sumWeights(const UniqueSampleID& id, const std::shared_p
     return itr->second.sumWeight(systematic->sumWeights());
 }
 
+bool MetadataManager::sumWeightsExist(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const {
+    auto itr = m_metadata.find(id);
+    if (itr == m_metadata.end()) {
+        LOG(ERROR) << "Cannot find the correct sample in the map for the sumweights\n";
+        throw std::invalid_argument("");
+    }
+
+    return itr->second.sumWeightExist(systematic->name());
+}
+
 double MetadataManager::luminosity(const std::string& campaign) const {
     auto itr = m_luminosity.find(campaign);
     if (itr == m_luminosity.end()) {

@@ -10,6 +10,8 @@
 #include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
 
+#include <algorithm>
+
 ConfigSetting::ConfigSetting() :
 m_outputPath(""),
 m_inputSumWeightsPath("test/input/sum_of_weights.txt"),
@@ -20,6 +22,7 @@ m_systematics({})
 {
     std::shared_ptr<Region> reg = std::make_shared<Region>("Electron");
     reg->setSelection("el_pt_NOSYS[0] > 30000");
+    m_regions.emplace_back(reg);
     std::shared_ptr<Systematic> nominal = std::make_shared<Systematic>("NOSYS");
     nominal->setSumWeights("NOSYS");
     nominal->addRegion(reg);
@@ -64,4 +67,12 @@ float ConfigSetting::getLuminosity(const std::string& campaign) const  {
 void ConfigSetting::addRegion(const std::shared_ptr<Region>& region) {
     LOG(INFO) << "Adding region " << region->name() << "\n";
     m_regions.emplace_back(region);
+}
+
+void ConfigSetting::addUniqueSystematic(const std::shared_ptr<Systematic>& syst) {
+    auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [&syst](const auto& element){return element->name() == syst->name();});
+
+    if (itr == m_systematics.end()) {
+        m_systematics.emplace_back(syst);
+    }
 }

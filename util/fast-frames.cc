@@ -25,7 +25,7 @@
  */
 int main (int /*argc*/, const char** /*argv*/) {
 
-  Logger::get().setLogLevel(LoggingLevel::DEBUG);
+  Logger::get().setLogLevel(LoggingLevel::VERBOSE);
 
   auto config = std::make_shared<ConfigSetting>();
 

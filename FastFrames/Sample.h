@@ -123,6 +123,12 @@ public:
   bool skipSystematicRegionCombination(const std::shared_ptr<Systematic>& syst,
                                        const std::shared_ptr<Region>& reg) const;
 
+  /**
+   * @brief Remove all systematics
+   *
+   */
+  inline void clearSystematics() {m_systematics.clear();}
+
 private:
   std::string m_name;
 

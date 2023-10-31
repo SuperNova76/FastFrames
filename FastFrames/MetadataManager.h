@@ -66,6 +66,16 @@ public:
   double sumWeights(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const;
 
   /**
+   * @brief Tells you if a systematic weight exists
+   *
+   * @param id
+   * @param systematic
+   * @return true
+   * @return false
+   */
+  bool sumWeightsExist(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const;
+
+  /**
    * @brief Get luminosity for a given campaign
    *
    * @param campaign

@@ -93,7 +93,8 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
         }
     }
 
-    LOG(VERBOSE) << "\nList of systematics and which branches they affect\n";
+    LOG(VERBOSE) << "\n";
+    LOG(VERBOSE) << "List of systematics and which branches they affect\n";
     for (const auto& isyst : m_systImpactsBranches) {
         LOG(VERBOSE) << "systematic: " << isyst.first << "\n";
         for (const auto& ibranch : isyst.second) {

@@ -230,6 +230,22 @@ private:
   void writeHistosToFile(const std::vector<SystematicHisto>& histos,
                          const std::shared_ptr<Sample>& sample) const;
 
+  /**
+   * @brief Add systematics from a file
+   *
+   * @param sample Sample to be added
+   * @param isNominalOnly Flag to tell the code to only add nominal or all systematics
+   */
+  void readAutomaticSystematics(std::shared_ptr<Sample>& sample, const bool isNominalOnly) const;
+
+  /**
+   * @brief Read all systematics from a ROOT file (stored in listOfSystematics histogram)
+   *
+   * @param filePath Path to the ROOT file
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> automaticSystematicNames(const std::string& filePath) const;
+
 protected:
 
   /**
