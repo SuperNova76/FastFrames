@@ -2,6 +2,10 @@ import yaml
 from sys import argv
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderRegion import BlockReaderRegion
+from BlockReaderSample import BlockReaderSample
+from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
+
+from python_wrapper.python.logger import Logger
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
@@ -10,10 +14,36 @@ class ConfigReader:
 
             self.block_general = BlockReaderGeneral(data["general"])
 
-            self.regions = []
-            for region in data["regions"]:
-                self.regions.append(BlockReaderRegion(region, self.block_general))
-                self.block_general.add_region(self.regions[-1])
+            self.regions = {}
+            for region_dict in data["regions"]:
+                region = BlockReaderRegion(region_dict, self.block_general)
+                region_name = region.name
+                if region_name in self.regions:
+                    Logger.log_message("ERROR", "Duplicate region name: {}".format(region_name))
+                    exit(1)
+                self.regions[region_name] = region
+                self.block_general.add_region(region)
+
+            self.samples = {}
+            for sample_dict in data["samples"]:
+                sample = BlockReaderSample(sample_dict, self.block_general)
+                sample.adjust_regions(self.regions)
+                sample_name = sample.name
+                if sample_name in self.samples:
+                    Logger.log_message("ERROR", "Duplicate sample name: {}".format(sample_name))
+                    exit(1)
+                self.samples[sample_name] = sample
+
+            self.systematics = {}
+            for systematic_dict in data["systematics"]:
+                systematic_list = read_systematics_variations(systematic_dict, self.block_general)
+                for systematic in systematic_list:
+                    systematic.adjust_regions(self.regions)
+                    systematic_name = systematic.name
+                    if systematic_name in self.systematics:
+                        Logger.log_message("ERROR", "Duplicate systematic name: {}".format(systematic_name))
+                        exit(1)
+                    self.systematics[systematic_name] = systematic
 
 
 if __name__ == "__main__":
@@ -38,7 +68,7 @@ if __name__ == "__main__":
     regions = config_reader.regions
 
     print("\n\nRegions block:\n")
-    for region in regions:
+    for region_name,region in regions.items():
         print("\tname: ", region.config_reader_cpp_region.name())
         print("\tselection: ", region.config_reader_cpp_region.selection())
         print("\tvariables:")

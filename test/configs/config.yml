@@ -1,5 +1,5 @@
 general:
-  debug_level: 0
+  debug_level: DEBUG
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path: ""
@@ -63,6 +63,7 @@ samples:
 
   - name: "Data"
     campaigns: ["2018"]
+    simulation_type: "data"
     event_weights: "1"
     regions: ["Electron", "Muon"]
 
@@ -81,4 +82,4 @@ systematics:
     regions: ["Electron", "Muon"]
     variation:
       up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
-      sumweights: "0p5muF_0p5muR_NNPDF31_NLO_0118"
+      sum_weights_up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
