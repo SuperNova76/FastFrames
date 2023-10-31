@@ -27,16 +27,18 @@ cmake:
       - build
      expire_in: 1d
 
-cmake_doxygen:
+make_doxygen:
   stage: build
   script:
-     - mkdir -p build && cd build
+     - mkdir -p doc_build && cd doc_build
      - cmake -DBUILD_DOC=ON .. | tee cmake.log
-  only:
-    - main
+     - make doc_doxygen
+     - ls
+  #only:
+  #  - main
   artifacts:
      paths:
-      - build/docs/
+      - doc_build/docs/
      expire_in: 1d
 
 compile:
