@@ -63,6 +63,7 @@ samples:
 
   - name: "Data"
     campaigns: ["2018"]
+    simulation_type: "data"
     event_weights: "1"
     regions: ["Electron", "Muon"]
 

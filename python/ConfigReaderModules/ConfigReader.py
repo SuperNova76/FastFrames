@@ -2,6 +2,9 @@ import yaml
 from sys import argv
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderRegion import BlockReaderRegion
+from BlockReaderSample import BlockReaderSample
+
+from python_wrapper.python.logger import Logger
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
@@ -14,6 +17,15 @@ class ConfigReader:
             for region in data["regions"]:
                 self.regions.append(BlockReaderRegion(region, self.block_general))
                 self.block_general.add_region(self.regions[-1])
+
+            self.samples = {}
+            for sample_dict in data["samples"]:
+                sample = BlockReaderSample(sample_dict, self.block_general)
+                sample_name = sample.name
+                if sample_name in self.samples:
+                    Logger.log_message("ERROR", "Duplicate sample name: {}".format(sample_name))
+                    exit(1)
+                self.samples[sample_name] = sample
 
 
 if __name__ == "__main__":
