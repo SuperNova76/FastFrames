@@ -71,14 +71,14 @@ class BlockReaderSample:
                     self.cpp_class.addUniqueSampleID(dsid, campaign, self.simulation_type)
 
 
-    def adjust_regions(self, regions : list):
+    def adjust_regions(self, regions : dict):
         """
         Set regions for the sample. If no regions are specified, take all regions.
         """
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
-            for region in regions:
-                self.regions.append(region.name)
+            for region_name in regions:
+                self.regions.append(region_name)
         else:   # if regions are specified, check if they exist
             for region in self.regions:
                 if region not in regions:
