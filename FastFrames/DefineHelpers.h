@@ -59,4 +59,17 @@ namespace DefineHelpers {
   std::vector<std::size_t> sortedPassedIndices(const std::vector<TLV>& tlv,
                                                const std::vector<char>& selection1,
                                                const std::vector<char>& selection2);
+
+
+  template<typename T>
+  std::vector<T> vectorFromIndices(const std::vector<T>& vector,
+                                   const std::vector<std::size_t>& indices) {
+
+    std::vector<T> result;
+    for (const std::size_t index : indices) {
+      result.emplace_back(vector.at(index));
+    }
+
+    return result;
+  }
 }
