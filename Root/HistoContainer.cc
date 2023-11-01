@@ -10,8 +10,8 @@
 
 #include <exception>
 
-void VariableHisto::mergeHisto(const TH1D* h) {
-    m_histo->Add(h);
+void VariableHisto::mergeHisto(ROOT::RDF::RResultPtr<TH1D> h) {
+    m_histo->Add(h.GetPtr());
 }
 
 void SystematicHisto::merge(const SystematicHisto& other) {
