@@ -72,8 +72,8 @@ class ConfigSettingWrapper {
         };
 
 
-        void addLuminosityInformation(const std::string& campaign, const float luminosity) {
-            m_configSetting->addLuminosityInformation(campaign, luminosity);
+        void addLuminosityInformation(const std::string& campaign, const float luminosity, const bool force) {
+            m_configSetting->addLuminosityInformation(campaign, luminosity, force);
         };
 
         float getLuminosity(const std::string& campaign) const {

@@ -25,6 +25,9 @@ class BlockReaderGeneral:
 
     def __set_luminosity_map(self, luminosity_map : dict) -> None:
         self.luminosity_map = {}
+        if luminosity_map is None:
+            Logger.log_message("INFO", "No campaigns and luminosities defined in config. Using default values.")
+            return
         for key, value in luminosity_map.items():
             self.luminosity_map[key] = float(value)
 
@@ -36,7 +39,7 @@ class BlockReaderGeneral:
         self.cpp_class.setCustomFrameName(self.custom_frame_name)
 
         for campaign, lumi_value in self.luminosity_map.items():
-            self.cpp_class.setLuminosity(campaign, lumi_value)
+            self.cpp_class.setLuminosity(campaign, lumi_value, True)
 
     def add_region(self, region):
         self.cpp_class.addRegion(region.cpp_class.getPtr())
