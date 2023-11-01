@@ -67,9 +67,18 @@ public:
    */
   inline const std::vector<std::shared_ptr<Region> >& regions() const {return m_regions;}
 
+  /**
+   * @brief Returns true if systematic is nominal, i.e. its name is "NOSYS"
+   *
+   * @return true
+   * @return false
+   */
+  inline bool isNominal() const {return m_isNominal;}
+
 private:
 
   std::string m_name;
   std::string m_sumWeights;
   std::vector<std::shared_ptr<Region> > m_regions;
+  bool m_isNominal;
 };

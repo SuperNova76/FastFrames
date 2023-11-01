@@ -92,6 +92,13 @@ public:
   std::vector<std::string> replaceVector(const std::vector<std::string>& originalVector, const std::string& systematicName) const;
 
   /**
+   * @brief Add a branch to the list of available branches
+   *
+   * @param name Name of the branch
+   */
+  void addBranch(const std::string& name) {m_allBranches.emplace_back(name);}
+
+  /**
    * @brief Get list of all branches
    *
    * @return const std::vector<std::string>&
