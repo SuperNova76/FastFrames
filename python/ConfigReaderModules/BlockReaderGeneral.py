@@ -9,6 +9,7 @@ class BlockReaderGeneral:
     def __init__(self, input_dict : dict):
         self.options_getter = BlockOptionsGetter(input_dict)
         self.debug_level = self.options_getter.get("debug_level", "WARNING")
+        Logger.set_log_level(self.debug_level)
         self.input_filelist_path = self.options_getter.get("input_filelist_path")
         self.input_sumweights_path = self.options_getter.get("input_sumweights_path")
         self.output_path = self.options_getter.get("output_path")
@@ -18,7 +19,6 @@ class BlockReaderGeneral:
         self.custom_frame_name = self.options_getter.get("custom_frame_name", "")
         self.number_of_cpus = self.options_getter.get("number_of_cpus", 1)
         self.__set_luminosity_map(self.options_getter.get("luminosity"))
-        Logger.set_log_level(self.debug_level)
         self.cpp_class = ConfigReaderCppGeneral()
         self.__set_config_reader_cpp()
         self._check_unused_options()

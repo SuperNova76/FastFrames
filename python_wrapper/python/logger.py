@@ -21,9 +21,9 @@ class Logger:
         )
 
     def set_log_level(log_level) -> None:
-        if log_level is int:
+        if type(log_level) == int:
             cppLogger.set_log_level(log_level)
-        if log_level is str:
+        if type(log_level) == str:
             cppLogger.set_log_level(
                 Logger._convert_level_str_to_int(log_level)
             )
@@ -44,6 +44,8 @@ class Logger:
             return 2
         elif (log_level.upper() == "DEBUG"):
             return 3
+        elif (log_level.upper() == "VERBOSE"):
+            return 4
         else:
             raise Exception("Unknown log level: {}".format(log_level))
 
@@ -56,6 +58,8 @@ class Logger:
             return "INFO"
         elif (log_level == 3):
             return "DEBUG"
+        elif (log_level == 4):
+            return "VERBOSE"
         else:
             raise Exception("Unknown log level: {}".format(log_level))
 
