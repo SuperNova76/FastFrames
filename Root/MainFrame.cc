@@ -275,7 +275,7 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
                 } else {
                     const std::vector<double> binEdges = ivariable.binEdges();
                     histogram = filters.at(systIndex).at(regIndex).
-                                    Histo1D({"", ivariable.title().c_str(), (int)binEdges.size(), binEdges.data()},
+                                    Histo1D({"", ivariable.title().c_str(), (int)(binEdges.size()-1), binEdges.data()},
                                     this->systematicVariable(ivariable, isyst), this->systematicWeight(isyst));
                 }
 
