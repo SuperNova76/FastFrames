@@ -30,6 +30,7 @@ static PyObject *setLogLevel([[__maybe_unused__]]PyObject *self, PyObject *args)
     int logLevelVar;
     if (!PyArg_ParseTuple(args, "i", &logLevelVar))    {
         const std::string errorMessage = "Could not parse input as integer";
+        LOG(ERROR) << errorMessage << "\n";
         return Py_BuildValue("s", errorMessage.c_str());
     };
 

@@ -1,3 +1,8 @@
+"""
+The main script for running the whole framework from python.
+It takes the path to the config file as the first argument.
+"""
+
 import os
 import sys
 
