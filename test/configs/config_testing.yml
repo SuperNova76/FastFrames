@@ -42,6 +42,31 @@ regions:
           max: 3.2
           number_of_bins: 16
 
+  - name: "Muon"
+    selection: "mu_pt_NOSYS[0] > 30000"
+    variables:
+      - name: "jet_pt_NOSYS"
+        #title : "histo title;X axis title;Y axis title"
+        definition: "jet_pt_NOSYS"
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 10
+      - name: "met_met"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,60000,80000,140000,250000]
+      - name: "met_phi"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_phi_NOSYS"
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 16
 samples:
   - name: "ttbar_FS"
     dsids: [410470]
