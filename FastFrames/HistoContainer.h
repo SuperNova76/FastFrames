@@ -79,25 +79,25 @@ public:
    *
    * @param h
    */
-  void setHisto(ROOT::RDF::RResultPtr<TH1D>& h) {m_histo.reset(dynamic_cast<TH1D*>(h->Clone()));}
+  void setHisto(ROOT::RDF::RResultPtr<TH1D>& h) {m_histo = std::move(h);}
 
   /**
    * @brief Get the histogram
    *
-   * @return const TH1D*
+   * @return ROOT::RDF::RResultPtr<TH1D>
    */
-  inline const TH1D* histo() const {return m_histo.get();}
+  inline ROOT::RDF::RResultPtr<TH1D> histo() const {return m_histo;}
 
   /**
    * @brief Merge histograms (add them)
    *
    * @param h Other histogram
    */
-  void mergeHisto(const TH1D* h);
+  void mergeHisto(ROOT::RDF::RResultPtr<TH1D> h);
 
 private:
   std::string m_name;
-  std::unique_ptr<TH1D> m_histo;
+  ROOT::RDF::RResultPtr<TH1D> m_histo;
 
 };
 

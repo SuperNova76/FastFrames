@@ -119,12 +119,14 @@ private:
 
   /**
    * @brief Process one UniqueSample (dsid, campaign, simulation type)
+   * This stil ldoes not trigger the event loop as the histograms just contain the pointers.
    *
    * @param sample
    * @param uniqueSampleID
-   * @return std::vector<SystematicHisto>
+   * @return std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> The histograms and the main RDF node for logging
    */
-  std::vector<SystematicHisto> processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID);
+  std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> processUniqueSample(const std::shared_ptr<Sample>& sample,
+                                                                                const UniqueSampleID& uniqueSampleID);
 
   /**
    * @brief Get name of a filter after applying the systematic replacements
@@ -226,12 +228,18 @@ private:
 
   /**
    * @brief Write histogram container to a ROOT file
+   * This triggers event loop in case of just one UniqueSampleID per Sample!
    *
    * @param histos histogram container
    * @param sample current sample
+   * @param node Main RDF node - needed for printouts
+   * @param printEventLoopCount Print event loop count? This is interesting only when just one UniqueSampleID was processed per Sample
+   * @param
    */
   void writeHistosToFile(const std::vector<SystematicHisto>& histos,
-                         const std::shared_ptr<Sample>& sample) const;
+                         const std::shared_ptr<Sample>& samplei,
+                         const ROOT::RDF::RNode* node,
+                         const bool printEventLoopCount) const;
 
   /**
    * @brief Add systematics from a file

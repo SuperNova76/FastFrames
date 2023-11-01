@@ -54,44 +54,50 @@ void MainFrame::executeHistograms() {
         LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
         std::vector<SystematicHisto> systHistos;
         std::size_t uniqueSampleN(1);
+        ROOT::RDF::RNode* node(nullptr);
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
             LOG(INFO) << "Processing unique sample: " << iUniqueSampleID << ", " << uniqueSampleN << " out of " << isample->uniqueSampleIDs().size() << " unique samples\n";
 
             auto currentHistos = this->processUniqueSample(isample, iUniqueSampleID);
             // this happens when there are no files provided
-            if (currentHistos.empty()) continue;
+            if (currentHistos.first.empty()) continue;
+            node = &currentHistos.second;
 
             // merge the histograms or take them if it is the first set
             if (systHistos.empty())  {
-                systHistos = std::move(currentHistos);
+                LOG(DEBUG) << "First set of histograms for this sample, this will NOT trigger event loop\n";
+                systHistos = std::move(currentHistos.first);
             } else {
-                if (currentHistos.size() != systHistos.size()) {
+                if (currentHistos.first.size() != systHistos.size()) {
                     LOG(ERROR) << "Number of the systematic histograms do not match\n";
-                    LOG(ERROR) << "Size of the current histograms: " << currentHistos.size() << ", final histograms: " << systHistos.size() << "\n";
+                    LOG(ERROR) << "Size of the current histograms: " << currentHistos.first.size() << ", final histograms: " << systHistos.size() << "\n";
                     throw std::runtime_error("");
                 }
 
-                LOG(INFO) << "Merging samples\n";
+                LOG(INFO) << "Merging samples, triggers event loop!\n";
                 for (std::size_t isyst = 0; isyst < systHistos.size(); ++isyst) {
-                    systHistos.at(isyst).merge(currentHistos.at(isyst));
+                    systHistos.at(isyst).merge(currentHistos.first.at(isyst));
                 }
+                LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
             }
-
             ++uniqueSampleN;
         }
-        this->writeHistosToFile(systHistos, isample);
+
+        bool printEventLoop = isample->uniqueSampleIDs().size() == 1;
+        this->writeHistosToFile(systHistos, isample, node, printEventLoop && node);
         ++sampleN;
     }
 }
 
-std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample, const UniqueSampleID& uniqueSampleID) {
+std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
+                                                                                         const UniqueSampleID& uniqueSampleID) {
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
-    if (filePaths.empty()) return std::vector<SystematicHisto>{};
+
+    ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
+    if (filePaths.empty()) return std::make_pair(std::vector<SystematicHisto>{}, df);
 
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), m_config->systematics());
-
-    ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
 
     ROOT::RDF::RNode mainNode = df;
     //ROOT::RDF::Experimental::AddProgressBar(mainNode);
@@ -106,12 +112,10 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
 
     std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample);
 
-    LOG(INFO) << "Triggering event loop!\n";
     // retrieve the histograms;
     std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
-    LOG(INFO) << "Number of event loops: " << df.GetNRuns() << "\n";
 
-    return histoContainer;
+    return std::make_pair(std::move(histoContainer), mainNode);
 }
 
 std::string MainFrame::systematicFilter(/*const std::shared_ptr<Sample>& sample,*/
@@ -301,7 +305,9 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 }
 
 void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
-                                  const std::shared_ptr<Sample>& sample) const {
+                                  const std::shared_ptr<Sample>& sample,
+                                  const ROOT::RDF::RNode* node,
+                                  const bool printEventLoopCount) const {
 
     if (histos.empty()) {
         LOG(WARNING) << "No histograms available for sample: " << sample->name() << "\n";
@@ -318,6 +324,9 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
     }
 
     LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
+    if (printEventLoopCount) {
+        LOG(INFO) << "Triggering event loop!\n";
+    }
 
     for (const auto& isystHist : histos) {
         if (isystHist.regionHistos().empty()) {
@@ -332,6 +341,9 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
                 ivariableHist.histo()->Write(histoName.c_str());
             }
         }
+    }
+    if (printEventLoopCount) {
+        LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
     }
 
     out->Close();
