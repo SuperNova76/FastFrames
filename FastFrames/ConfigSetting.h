@@ -117,8 +117,9 @@ public:
    *
    * @param campaign
    * @param luminosity
+   * @param force if true, overwrite existing value, if false, throw error if already defined
    */
-  void addLuminosityInformation(const std::string& campaign, const float luminosity);
+  void addLuminosityInformation(const std::string& campaign, const float luminosity, const bool force = false);
 
   /**
    * @brief Get the from a campaign

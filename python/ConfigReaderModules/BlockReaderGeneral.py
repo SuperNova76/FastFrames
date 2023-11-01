@@ -17,6 +17,8 @@ class BlockReaderGeneral:
         self.default_event_weights = self.options_getter.get("default_event_weights")
         self.default_reco_tree_name = self.options_getter.get("default_reco_tree_name")
         self.custom_frame_name = self.options_getter.get("custom_frame_name", "")
+        self.automatic_systematics = self.options_getter.get("automatic_systematics", False)
+        self.nominal_only = self.options_getter.get("nominal_only", False)
         self.number_of_cpus = self.options_getter.get("number_of_cpus", 1)
         self.__set_luminosity_map(self.options_getter.get("luminosity"))
         self.cpp_class = ConfigReaderCppGeneral()
@@ -25,6 +27,9 @@ class BlockReaderGeneral:
 
     def __set_luminosity_map(self, luminosity_map : dict) -> None:
         self.luminosity_map = {}
+        if luminosity_map is None:
+            Logger.log_message("INFO", "No campaigns and luminosities defined in config. Using default values.")
+            return
         for key, value in luminosity_map.items():
             self.luminosity_map[key] = float(value)
 
@@ -34,9 +39,11 @@ class BlockReaderGeneral:
         self.cpp_class.setInputFilelistPath(self.input_filelist_path)
         self.cpp_class.setNumCPU(self.number_of_cpus)
         self.cpp_class.setCustomFrameName(self.custom_frame_name)
+        self.cpp_class.setAutomaticSystematics(self.automatic_systematics)
+        self.cpp_class.setNominalOnly(self.nominal_only)
 
         for campaign, lumi_value in self.luminosity_map.items():
-            self.cpp_class.setLuminosity(campaign, lumi_value)
+            self.cpp_class.setLuminosity(campaign, lumi_value, True)
 
     def add_region(self, region):
         self.cpp_class.addRegion(region.cpp_class.getPtr())

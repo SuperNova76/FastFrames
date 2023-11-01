@@ -20,6 +20,11 @@ m_regions({}),
 m_samples({}),
 m_systematics({})
 {
+    m_luminosity_map.insert({"mc20a", 3244.54+33402.2});
+    m_luminosity_map.insert({"mc20d", 44630.6});
+    m_luminosity_map.insert({"mc20e", 58791.6});
+    m_luminosity_map.insert({"mc23a", 29049.3});
+    m_luminosity_map.insert({"mc23c", 1});
 };
 
 void ConfigSetting::setTestingValues()  {
@@ -50,8 +55,8 @@ void ConfigSetting::setTestingValues()  {
     m_samples.emplace_back(sample);
 };
 
-void ConfigSetting::addLuminosityInformation(const std::string& campaign, const float luminosity)   {
-    if (m_luminosity_map.find(campaign) != m_luminosity_map.end()) {
+void ConfigSetting::addLuminosityInformation(const std::string& campaign, const float luminosity, const bool force)   {
+    if (m_luminosity_map.find(campaign) != m_luminosity_map.end() && !force) {
         throw std::runtime_error("Campaign " + campaign + " already exists in the luminosity map");
     }
     m_luminosity_map[campaign] = luminosity;

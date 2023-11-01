@@ -14,11 +14,7 @@
 
 MetadataManager::MetadataManager() noexcept
 {
-    m_luminosity.insert({"mc20a", 3244.54+33402.2});
-    m_luminosity.insert({"mc20d", 44630.6});
-    m_luminosity.insert({"mc20e", 58791.6});
-    m_luminosity.insert({"mc23a", 29049.3});
-    m_luminosity.insert({"mc23c", 1});
+
 }
 
 void MetadataManager::readFileList(const std::string& path) {
