@@ -71,6 +71,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
+
+        // addSample
+        .def("addSample",   &ConfigSettingWrapper::addSample)
+
+        // addSystematic
+        .def("addSystematic",   &ConfigSettingWrapper::addSystematic)
     ;
 
     class_<UniqueSampleIDWrapper>("ConfigReaderCppUniqueSampleID",

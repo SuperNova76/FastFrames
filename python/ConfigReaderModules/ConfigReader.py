@@ -35,6 +35,13 @@ class ConfigReader:
                 self.samples[sample_name] = sample
 
             self.systematics = {}
+            # nominal
+            nominal_dict = {"variation": {"up": "NOSYS"}}
+            nominal = BlockReaderSystematic(nominal_dict, "up", self.block_general)
+            nominal.adjust_regions(self.regions)
+            self.systematics[nominal.name] = nominal
+
+
             for systematic_dict in data["systematics"]:
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general)
                 for systematic in systematic_list:
@@ -47,9 +54,12 @@ class ConfigReader:
 
             for systematic_name,systematic in self.systematics.items():
                 systematic.check_samples_existence(self.samples)
+                self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
 
             for sample_name,sample in self.samples.items():
+                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.regions)))
                 sample.adjust_systematics(self.systematics)
+                self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
 
 if __name__ == "__main__":

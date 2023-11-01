@@ -17,16 +17,16 @@ general:
 
 regions:
   - name: "Electron"
-    selection: "el_pt_NOSYS > 30000 && el_select_tight_NOSYS && el_select_or_NOSYS"
+    selection: "el_pt_NOSYS > 30000"
     variables:
       - name: "leading_jet_pt"
         title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
         binning:
-          #min: 0
-          #max: 1000
-          #number_of_bins: 100
-          bin_edges: [0, 30, 50, 100, 200, 400, 1000, 9999999]
+          min: 0
+          max: 1000
+          number_of_bins: 100
+          #bin_edges: [0, 30, 50, 100, 200, 400, 1000, 9999999]
       - name: "subleading_jet_pt"
         title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
@@ -37,7 +37,7 @@ regions:
           #bin_edges: [0, 30, 50, 100, 200, 400, 1000, 9999999]
 
   - name: "Muon"
-    selection: "mu_pt_NOSYS > 30000 && mu_select_tight_NOSYS && mu_select_or_NOSYS"
+    selection: "mu_pt_NOSYS > 30000"
     variables:
       - name: "leading_jet_pt"
         title : "histo title;X axis title;Y axis title"
@@ -68,16 +68,14 @@ samples:
     regions: ["Electron", "Muon"]
 
 systematics:
-  - name: "JES_BJES"
-    samples: ["ttbar_FS", "Wjets_FS"]
+  - samples: ["ttbar_FS", "Wjets_FS"]
     campaigns: ["mc20e"]
     regions: ["Electron", "Muon"]
     variation:
       up: "JET_BJES_Response__1up"
       down: "JET_BJES_Response__1down"
 
-  - name: "ttbar_mur0p5_muf0p5"
-    samples: ["ttbar_FS"]
+  - samples: ["ttbar_FS"]
     campaigns: ["mc20e"]
     regions: ["Electron", "Muon"]
     variation:

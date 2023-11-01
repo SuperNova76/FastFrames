@@ -20,6 +20,9 @@ m_regions({}),
 m_samples({}),
 m_systematics({})
 {
+};
+
+void ConfigSetting::setTestingValues()  {
     std::shared_ptr<Region> reg = std::make_shared<Region>("Electron");
     reg->setSelection("el_pt_NOSYS[0] > 30000");
     m_regions.emplace_back(reg);
@@ -45,8 +48,7 @@ m_systematics({})
 
     sample->addRegion(reg);
     m_samples.emplace_back(sample);
-}
-
+};
 
 void ConfigSetting::addLuminosityInformation(const std::string& campaign, const float luminosity)   {
     if (m_luminosity_map.find(campaign) != m_luminosity_map.end()) {

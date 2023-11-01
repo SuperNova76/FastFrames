@@ -1,6 +1,9 @@
 #pragma once
 
 #include "FastFrames/ConfigSetting.h"
+#include "FastFrames/Systematic.h"
+#include "FastFrames/Region.h"
+#include "FastFrames/Sample.h"
 
 #include <memory>
 #include <map>
@@ -86,6 +89,16 @@ class ConfigSettingWrapper {
         void addRegion(long long int region_shared_ptr_int) {
             const std::shared_ptr<Region> *region = reinterpret_cast<std::shared_ptr<Region> *>(region_shared_ptr_int);
             m_configSetting->addRegion(*region);
+        };
+
+        void addSample(long long int sample_shared_ptr_int) {
+            const std::shared_ptr<Sample> *sample = reinterpret_cast<std::shared_ptr<Sample> *>(sample_shared_ptr_int);
+            m_configSetting->addSample(*sample);
+        };
+
+        void addSystematic(long long int systematic_shared_ptr_int) {
+            const std::shared_ptr<Systematic> *systematic = reinterpret_cast<std::shared_ptr<Systematic> *>(systematic_shared_ptr_int);
+            m_configSetting->addSystematic(*systematic);
         };
 
 

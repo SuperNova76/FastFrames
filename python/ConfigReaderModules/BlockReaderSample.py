@@ -47,11 +47,13 @@ class BlockReaderSample:
 
         self.systematic = self.options_getter.get("systematic",None)
 
-        self.event_weights = self.options_getter.get("event_weights",None)
+        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights)
 
         self.cpp_class = SampleWrapper(self.name)
 
         self._set_unique_samples_IDs()
+
+        self._set_cpp_class()
 
         self._check_unused_options()
 
@@ -69,14 +71,14 @@ class BlockReaderSample:
                     self.cpp_class.addUniqueSampleID(dsid, campaign, self.simulation_type)
 
 
-    def adjust_regions(self, regions : list):
+    def adjust_regions(self, regions : dict):
         """
         Set regions for the sample. If no regions are specified, take all regions.
         """
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
-            for region in regions:
-                self.regions.append(region.name)
+            for region_name in regions:
+                self.regions.append(region_name)
         else:   # if regions are specified, check if they exist
             for region in self.regions:
                 if region not in regions:
@@ -98,9 +100,17 @@ class BlockReaderSample:
                     if self.name not in systematic.samples:
                         continue
 
+                self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
                 self.systematic.append(systematic_name)
+
+    def _set_cpp_class(self) -> None:
+        """
+        Set the cpp class for the sample.
+        """
+        #self.cpp_class.setSelection(self.selection) # TODO: implement
+        self.cpp_class.setEventWeight(self.event_weights)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
-            Logger.log_message("WARNING", "Key {} used in region block is not supported!".format(unused))
+            Logger.log_message("WARNING", "Key {} used in  sample block is not supported!".format(unused))
