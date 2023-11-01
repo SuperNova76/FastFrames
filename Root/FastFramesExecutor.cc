@@ -28,11 +28,11 @@ void FastFramesExecutor::runFastFrames() const {
     TClass* c(nullptr);
     std::unique_ptr<MainFrame> baseFrame(nullptr);
 
-    //const std::string name = "CustomFrame";
-    const std::string name = "";
+    const std::string& name = m_config->customFrameName();
 
     if (!name.empty()) {
       // read the custom code for adding variables
+      LOG(INFO) << "Using custom class: " << name << "\n";
       const std::string libName = "lib" + name + ".so";
       gSystem->Load(libName.c_str());
 

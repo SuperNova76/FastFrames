@@ -60,7 +60,14 @@ namespace DefineHelpers {
                                                const std::vector<char>& selection1,
                                                const std::vector<char>& selection2);
 
-
+  /**
+   * @brief Get vector based on given set of indices
+   *
+   * @tparam T
+   * @param vector original vector
+   * @param indices insides
+   * @return std::vector<T>
+   */
   template<typename T>
   std::vector<T> vectorFromIndices(const std::vector<T>& vector,
                                    const std::vector<std::size_t>& indices) {

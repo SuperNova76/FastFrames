@@ -30,6 +30,7 @@ m_systematics({})
 void ConfigSetting::setTestingValues()  {
     std::shared_ptr<Region> reg = std::make_shared<Region>("Electron");
     reg->setSelection("el_pt_NOSYS[0] > 30000");
+    //reg->setSelection("passed_4j50GeV_1btag_NOSYS");
     m_regions.emplace_back(reg);
     std::shared_ptr<Systematic> nominal = std::make_shared<Systematic>("NOSYS");
     nominal->setSumWeights("NOSYS");
