@@ -102,6 +102,27 @@ class ConfigSettingWrapper {
         };
 
 
+        void setNominalOnly(bool nominalOnly) {
+            m_configSetting->setNominalOnly(nominalOnly);
+        };
+
+        bool nominalOnly() const {
+            return m_configSetting->nominalOnly();
+        };
+
+
+        void setAutomaticSystematics(bool automaticSystematics) {
+            m_configSetting->setAutomaticSystematics(automaticSystematics);
+        };
+
+        bool automaticSystematics() const {
+            return m_configSetting->automaticSystematics();
+        };
+
+        void clearSystematics() {
+            m_configSetting->clearSystematics();
+        };
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };

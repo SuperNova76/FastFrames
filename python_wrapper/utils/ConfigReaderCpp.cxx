@@ -77,6 +77,14 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addSystematic
         .def("addSystematic",   &ConfigSettingWrapper::addSystematic)
+
+        .def("setNominalOnly",  &ConfigSettingWrapper::setNominalOnly)
+        .def("nominalOnly",     &ConfigSettingWrapper::nominalOnly)
+
+        .def("setAutomaticSystematics",  &ConfigSettingWrapper::setAutomaticSystematics)
+        .def("automaticSystematics",     &ConfigSettingWrapper::automaticSystematics)
+
+        .def("clearSystematics",  &ConfigSettingWrapper::clearSystematics)
     ;
 
     class_<UniqueSampleIDWrapper>("ConfigReaderCppUniqueSampleID",
