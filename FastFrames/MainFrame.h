@@ -148,6 +148,8 @@ private:
 
   /**
    * @brief Get name of a systematic weight after applying the systematic replacements
+   * The name is "weight_total_<SUFFIX>". If this does not exist for a given systematic,
+   * uses "weigt_total_NOSYS"
    *
    * @param systematic Systematic to be used for the replacement
    * @return std::string
@@ -174,13 +176,14 @@ private:
    */
   ROOT::RDF::RNode addWeightColumns(ROOT::RDF::RNode mainNode,
                                     const std::shared_ptr<Sample>& sample,
-                                    const UniqueSampleID& id) const;
+                                    const UniqueSampleID& id);
 
   /**
    * @brief Add one systematic weight to the RDF nodes
    * The weight contains all event weights as well as normalisation
    * (luminosity * cross_section / sumWeights)
    * The new column is called "weight_total_<SYSTSUFFIX>"
+   * Adds the new colum to the list of the available variables/columns
    *
    * @param mainNode current ROOT node
    * @param sample current sample
@@ -191,7 +194,7 @@ private:
   ROOT::RDF::RNode addSingleWeightColumn(ROOT::RDF::RNode mainNode,
                                          const std::shared_ptr<Sample>& sample,
                                          const std::shared_ptr<Systematic>& systematic,
-                                         const UniqueSampleID& id) const;
+                                         const UniqueSampleID& id);
 
   /**
    * @brief Adds ROOT::Math::PtEtaPhiEVector for provided objects to RDF

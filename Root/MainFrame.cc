@@ -109,6 +109,7 @@ std::vector<SystematicHisto> MainFrame::processUniqueSample(const std::shared_pt
     LOG(INFO) << "Triggering event loop!\n";
     // retrieve the histograms;
     std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
+    LOG(INFO) << "Number of event loops: " << df.GetNRuns() << "\n";
 
     return histoContainer;
 }
@@ -134,7 +135,13 @@ std::string MainFrame::systematicVariable(const Variable& variable,
 
 std::string MainFrame::systematicWeight(const std::shared_ptr<Systematic>& systematic) const {
 
-    return "weight_total_" + systematic->name();
+    const std::string branchName = "weight_total_" + systematic->name();
+
+    if (!m_systReplacer.branchExists(branchName)) {
+        return "weight_total_NOSYS";
+    }
+
+    return branchName;
 }
 
 std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::RNode mainNode,
@@ -162,7 +169,7 @@ std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::R
 
 ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode node,
                                              const std::shared_ptr<Sample>& sample,
-                                             const UniqueSampleID& id) const {
+                                             const UniqueSampleID& id) {
 
     for (const auto& isyst : sample->systematics()) {
         node = this->addSingleWeightColumn(node, sample, isyst, id);
@@ -174,7 +181,7 @@ ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode node,
 ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
                                                   const std::shared_ptr<Sample>& sample,
                                                   const std::shared_ptr<Systematic>& systematic,
-                                                  const UniqueSampleID& id) const {
+                                                  const UniqueSampleID& id) {
 
     const std::string& nominalWeight = sample->weight();
     const float normalisation = m_metadataManager.normalisation(id, systematic);
@@ -185,7 +192,15 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
 
     const std::string& systName = "weight_total_" + systematic->name();
     const std::string formula = m_systReplacer.replaceString(nominalWeight, systematic) + "*" + ss.str();
+    const std::string nominalTotalWeight = nominalWeight + "*" + ss.str();
+    if (!systematic->isNominal() && formula == nominalTotalWeight) {
+        LOG(DEBUG) << "Sample: " << id << ", systematic: " << systematic->name() << ", does not impact the weight\n";
+        return mainNode;
+    }
     LOG(VERBOSE) << "Unique sample: " << id << ", systematic: " << systematic->name() << ", weight formula: " << formula << ", new weight name: " << systName << "\n";
+
+    // add it to the list of branches
+    m_systReplacer.addBranch(systName);
 
     auto node = mainNode.Define(systName, formula);
     return node;
@@ -313,7 +328,7 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         out->cd(isystHist.name().c_str());
         for (const auto& iregionHist : isystHist.regionHistos()) {
             for (const auto& ivariableHist : iregionHist.variableHistos()) {
-                const std::string histoName = ivariableHist.name() + "_" + iregionHist.name();
+                const std::string histoName = StringOperations::replaceString(ivariableHist.name(), "_NOSYS", "") + "_" + iregionHist.name();
                 ivariableHist.histo()->Write(histoName.c_str());
             }
         }
