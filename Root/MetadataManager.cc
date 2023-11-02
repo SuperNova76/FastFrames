@@ -80,10 +80,10 @@ void MetadataManager::readSumWeights(const std::string& path) {
 void MetadataManager::readXSectionFiles(const std::vector<std::string>& xSectionFiles)  {
     XSectionManager xSectionManger(xSectionFiles);
 
-    for (std::map<UniqueSampleID, Metadata>::iterator m_mapPair = m_metadata.begin(); m_mapPair != m_metadata.end(); m_mapPair++)    {
-        const UniqueSampleID &uniqueSampleId = m_mapPair->first;
+    for (auto &m_mapPair : m_metadata)    {
+        const UniqueSampleID &uniqueSampleId = m_mapPair.first;
         if (!uniqueSampleId.isData()) {
-            Metadata &metadata = m_mapPair->second;
+            Metadata &metadata = m_mapPair.second;
             metadata.setCrossSection(xSectionManger.xSection(uniqueSampleId.dsid()));
         }
     }

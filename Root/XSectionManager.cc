@@ -61,9 +61,9 @@ void XSectionManager::processLine(const std::string &line)  {
         throw std::runtime_error("");
     }
 
-    const int   dsid = std::stoi(elements.at(0));
-    const float xsec = std::stod(elements.at(1));
-    const float kfac = std::stod(elements.at(2));
+    const int       dsid = std::stoi(elements.at(0));
+    const double    xsec = std::stod(elements.at(1));
+    const double    kfac = std::stod(elements.at(2));
 
     // Check if the sample is not defined multiple times in the x-section text file
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {

@@ -27,7 +27,7 @@ class XSectionManager {
          *
          * @param xSectionFiles
          */
-        XSectionManager(const std::vector<std::string> &xSectionFiles);
+        explicit XSectionManager(const std::vector<std::string> &xSectionFiles);
 
         /**
          * @brief Destroy the XSectionManager object
