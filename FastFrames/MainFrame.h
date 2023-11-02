@@ -131,6 +131,7 @@ private:
   /**
    * @brief Get name of a filter after applying the systematic replacements
    *
+   * @param sample Sample for which the replacement happens (needed for selection suffix)
    * @param systematic Systematic to be used for the replacement
    * @param region Region to be used for the replacement
    * @return std::string

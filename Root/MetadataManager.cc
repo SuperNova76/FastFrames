@@ -82,10 +82,13 @@ void MetadataManager::readXSectionFiles(const std::vector<std::string>& xSection
 
     for (auto &m_mapPair : m_metadata)    {
         const UniqueSampleID &uniqueSampleId = m_mapPair.first;
-        if (!uniqueSampleId.isData()) {
-            Metadata &metadata = m_mapPair.second;
-            metadata.setCrossSection(xSectionManger.xSection(uniqueSampleId.dsid()));
+        if (uniqueSampleId.isData()) continue;
+        Metadata &metadata = m_mapPair.second;
+        const double xSec = xSectionManger.xSection(uniqueSampleId.dsid());
+        if (xSec <= 0) {
+            LOG(WARNING) << "Cross-section for UniqueSample: " << uniqueSampleId << " is <= 0. Please check!";
         }
+        metadata.setCrossSection(xSec);
     }
 };
 
@@ -105,6 +108,10 @@ void MetadataManager::addLuminosity(const std::string& campaign, const double lu
 }
 
 double MetadataManager::sumWeights(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const {
+    if (id.isData()) {
+        LOG(DEBUG) << "UniqueSample: " << id << " is data, returning sum weights = 0";
+        return 0;
+    }
     auto itr = m_metadata.find(id);
     if (itr == m_metadata.end()) {
         LOG(ERROR) << "Cannot find the correct sample in the map for the sumweights\n";
@@ -135,6 +142,10 @@ double MetadataManager::luminosity(const std::string& campaign) const {
 }
 
 double MetadataManager::crossSection(const UniqueSampleID& id) const {
+    if (id.isData()) {
+        LOG(DEBUG) << "UniqueSample: " << id << " is data, returning cross-section 0\n";
+        return 0;
+    }
 
     auto itr = m_metadata.find(id);
     if (itr == m_metadata.end()) {
@@ -144,14 +155,16 @@ double MetadataManager::crossSection(const UniqueSampleID& id) const {
 
     const double crossSection = itr->second.crossSection();
 
-    if (crossSection <= 0) {
-        LOG(WARNING) << "Cross-section for sample: " << id << " is <= 0, this is suspicious\n";
-    }
-
     return crossSection;
 }
 
 double MetadataManager::normalisation(const UniqueSampleID& id, const std::shared_ptr<Systematic>& systematic) const {
+
+    if (id.isData()) {
+        LOG(DEBUG) << "UniqueSample: " << id << " is data, returning normalisation = 1\n";
+        return 1;
+    }
+
     return this->crossSection(id) * this->luminosity(id.campaign()) / this->sumWeights(id, systematic);
 }
 
