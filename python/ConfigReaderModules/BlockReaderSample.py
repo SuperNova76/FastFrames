@@ -49,6 +49,10 @@ class BlockReaderSample:
 
         self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights)
 
+        self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name)
+
+        self.selection = self.options_getter.get("selection", "")
+
         self.cpp_class = SampleWrapper(self.name)
 
         self._set_unique_samples_IDs()
@@ -109,6 +113,8 @@ class BlockReaderSample:
         """
         #self.cpp_class.setSelection(self.selection) # TODO: implement
         self.cpp_class.setEventWeight(self.event_weights)
+        self.cpp_class.setRecoTreeName(self.reco_tree_name)
+        self.cpp_class.setSelection(self.selection)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()

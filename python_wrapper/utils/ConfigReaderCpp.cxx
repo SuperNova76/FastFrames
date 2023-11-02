@@ -157,7 +157,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("name",            &SampleWrapper::name)
 
         // recoTreeName
-        .def("recoTreeName",    &SampleWrapper::recoTreeName)
+        .def("setRecoTreeName",     &SampleWrapper::setRecoTreeName)
+        .def("recoTreeName",        &SampleWrapper::recoTreeName)
+
+        // selection
+        .def("setSelection",     &SampleWrapper::setSelection)
+        .def("selection",        &SampleWrapper::selection)
 
         // addUniqueSampleID
         .def("addUniqueSampleID",   &SampleWrapper::addUniqueSampleID)
