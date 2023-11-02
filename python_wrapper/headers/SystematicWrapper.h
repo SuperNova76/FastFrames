@@ -20,6 +20,10 @@ class SystematicWrapper {
 
         std::string sumWeights() const {return m_systematic->sumWeights();};
 
+        void setWeightSuffix(const std::string& weightSuffix) {m_systematic->setWeightSuffix(weightSuffix);};
+
+        std::string weightSuffix() const {return m_systematic->weightSuffix();};
+
         void addRegion(unsigned long long int reg_shared_ptr_int) {
             const std::shared_ptr<Region> *reg = reinterpret_cast<std::shared_ptr<Region> *>(reg_shared_ptr_int);
             m_systematic->addRegion(*reg);

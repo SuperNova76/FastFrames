@@ -76,6 +76,8 @@ samples:
     dsids: [410470]
     campaigns: ["mc20e"]
     simulation_type: "mc" # mc is full sim
+    #weight_suffix: "something" # this is an additional weight to be applied (multiplication) to the sample
+    #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
 
 systematics:
@@ -84,6 +86,7 @@ systematics:
     #regions: ["Electron", "Muon"]
     variation:
       up: "JET_BJES_Response__1up"
+      #weight_suffix_up: "bootstrap_weight" # additional weight to be applied (multiplication) to the sample
       down: "JET_BJES_Response__1down"
 
   - samples: ["ttbar_FS"]

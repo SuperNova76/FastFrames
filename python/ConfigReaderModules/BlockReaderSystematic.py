@@ -26,6 +26,8 @@ class BlockReaderSystematic:
             Logger.log_message("ERROR", "{} variation specified for systematic {}".format(self.variation_type, self.options_getter))
             exit(1)
 
+        self.weight_suffix = variations_dict.get("weight_suffix_" + self.variation_type,"")
+
         self.sum_weights = variations_dict.get("sum_weights_" + self.name,None)
         if self.sum_weights is None:
             self.sum_weights = block_reader_general.default_sumweights
@@ -39,6 +41,7 @@ class BlockReaderSystematic:
 
         self.cpp_class = SystematicWrapper(self.name)
         self.cpp_class.setSumWeights(self.sum_weights)
+        self.cpp_class.setWeightSuffix(self.weight_suffix)
 
     def adjust_regions(self, regions : dict) -> None:
         if self.regions is None: # if no regions are specified, take all regions

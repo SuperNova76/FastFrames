@@ -200,6 +200,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setSumWeights",   &SystematicWrapper::setSumWeights)
         .def("sumWeights",      &SystematicWrapper::sumWeights)
 
+        // setWeightSuffix
+        .def("setWeightSuffix", &SystematicWrapper::setWeightSuffix)
+        .def("weightSuffix",    &SystematicWrapper::weightSuffix)
+
         // addRegion
         .def("addRegion",       &SystematicWrapper::addRegion)
     ;

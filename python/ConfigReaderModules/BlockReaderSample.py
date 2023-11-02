@@ -47,7 +47,8 @@ class BlockReaderSample:
 
         self.systematic = self.options_getter.get("systematic",None)
 
-        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights)
+        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1")
+        self.weight_suffix = self.options_getter.get("weight_suffix", None)
 
         self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name)
 
@@ -111,7 +112,11 @@ class BlockReaderSample:
         """
         Set the cpp class for the sample.
         """
-        self.cpp_class.setEventWeight(self.event_weights)
+        total_weight = self.event_weights
+        if self.weight_suffix is not None:
+            total_weight =  "(" + total_weight + ")*(" + self.weight_suffix + ")"
+        self.cpp_class.setEventWeight(total_weight)
+
         self.cpp_class.setRecoTreeName(self.reco_tree_name)
         self.cpp_class.setSelectionSuffix(self.selection_suffix)
 
