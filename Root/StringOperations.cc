@@ -59,7 +59,7 @@ bool StringOperations::stringIsInt(const std::string &input_string) {
 
 bool StringOperations::stringIsFloat(const std::string &input_string)   {
     try {
-        // cppcheck-suppress <unreadVariable>
+        // cppcheck-suppress unreadVariable
         [[__maybe_unused__]]float a = std::stof(input_string);
     }
     catch (const std::invalid_argument& ia) {
