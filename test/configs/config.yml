@@ -1,12 +1,15 @@
 general:
-  debug_level: DEBUG
+  debug_level: VERBOSE
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path: ""
   default_sumweights: "NOSYS"
   default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
   default_reco_tree_name: "reco"
-  custom_frame_name: "my_custom_frame_name.so"
+  xsection_files: ["data/XSection-MC16-13TeV.data"]
+#  custom_frame_name: "my_custom_frame_name.so"
+  automatic_systematics: True
+  nominal_only: False
   number_of_cpus: 4
   luminosity:
     mc20a: 123456
@@ -17,67 +20,78 @@ general:
 
 regions:
   - name: "Electron"
-    selection: "el_pt_NOSYS > 30000"
+    selection: "el_pt_NOSYS[0] > 30000"
     variables:
-      - name: "leading_jet_pt"
-        title : "histo title;X axis title;Y axis title"
+      - name: "jet_pt_NOSYS"
+        #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
         binning:
           min: 0
-          max: 1000
-          number_of_bins: 100
-          #bin_edges: [0, 30, 50, 100, 200, 400, 1000, 9999999]
-      - name: "subleading_jet_pt"
+          max: 300000
+          number_of_bins: 10
+      - name: "met_met"
         title : "histo title;X axis title;Y axis title"
-        definition: "jet_pt_NOSYS"
+        definition: "met_met_NOSYS"
         binning:
-          min: 0
-          max: 1000
-          number_of_bins: 100
-          #bin_edges: [0, 30, 50, 100, 200, 400, 1000, 9999999]
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,60000,80000,140000,250000]
+      - name: "met_phi"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_phi_NOSYS"
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 16
 
   - name: "Muon"
-    selection: "mu_pt_NOSYS > 30000"
+    selection: "mu_pt_NOSYS[0] > 30000"
     variables:
-      - name: "leading_jet_pt"
-        title : "histo title;X axis title;Y axis title"
-        definition:  "jet_pt_NOSYS"
+      - name: "jet_pt_NOSYS"
+        #title : "histo title;X axis title;Y axis title"
+        definition: "jet_pt_NOSYS"
         binning:
           min: 0
-          max: 1000
-          number_of_bins: 100
-          #bin_edges: [0, 30, 50, 100, 200, 400, 1000, 9999999]
+          max: 300000
+          number_of_bins: 10
+      - name: "met_met"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,60000,80000,140000,250000]
+      - name: "met_phi"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_phi_NOSYS"
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 16
 
 samples:
   - name: "ttbar_FS"
     dsids: [410470]
     campaigns: ["mc20e"]
     simulation_type: "mc" # mc is full sim
-    regions: ["Electron", "Muon"] # if not provided, use all regions?
-
-  - name: "Wjets_FS"
-    dsids: [700341]
-    campaigns: ["mc20e"]
-    simulation_type: "mc"
-    regions: ["Electron", "Muon"]
-
-  - name: "Data"
-    campaigns: ["2018"]
-    simulation_type: "data"
-    event_weights: "1"
-    regions: ["Electron", "Muon"]
+    #weight_suffix: "something" # this is an additional weight to be applied (multiplication) to the sample
+    #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
+    #regions: ["Electron", "Muon"] # if not provided, use all regions?
 
 systematics:
-  - samples: ["ttbar_FS", "Wjets_FS"]
+  - samples: ["ttbar_FS"]
     campaigns: ["mc20e"]
-    regions: ["Electron", "Muon"]
+    #regions: ["Electron", "Muon"]
     variation:
       up: "JET_BJES_Response__1up"
+      #weight_suffix_up: "bootstrap_weight" # additional weight to be applied (multiplication) to the sample
       down: "JET_BJES_Response__1down"
 
   - samples: ["ttbar_FS"]
     campaigns: ["mc20e"]
-    regions: ["Electron", "Muon"]
+    #regions: ["Electron", "Muon"]
     variation:
       up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
       sum_weights_up: "0p5muF_0p5muR_NNPDF31_NLO_0118"

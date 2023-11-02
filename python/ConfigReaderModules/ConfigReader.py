@@ -108,7 +108,17 @@ if __name__ == "__main__":
     for sample_name,sample in samples.items():
         print("\tname: ", sample.cpp_class.name())
         print("\tregions: ", sample.regions)
+        print("\tweight: ", sample.cpp_class.weight())
         print("\tsystematic: ", sample.systematic)
         print("\tselection_suffix: \"" + sample.selection_suffix + "\"")
+        print("\n")
+
+    systematics = config_reader.systematics
+    print("\n\nSystematics block:\n")
+    for systematic_name,systematic in systematics.items():
+        print("\tname: ", systematic.cpp_class.name())
+        print("\tregions: ", systematic.regions)
+        print("\tweight_suffix: ", systematic.cpp_class.weightSuffix())
+        print("\tsum_weights: ", systematic.cpp_class.sumWeights())
         print("\n")
 

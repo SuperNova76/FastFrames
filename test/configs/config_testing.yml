@@ -1,3 +1,7 @@
+#######################################################################################################################################
+#### This config should not be used for any real analysis, it is just for testing all implemented features in CI tests !!!  ###########
+#######################################################################################################################################
+
 general:
   debug_level: VERBOSE
   input_filelist_path: "test/input/filelist.txt"
@@ -76,14 +80,35 @@ samples:
     dsids: [410470]
     campaigns: ["mc20e"]
     simulation_type: "mc" # mc is full sim
-    #weight_suffix: "something" # this is an additional weight to be applied (multiplication) to the sample
+    weight_suffix: "my_suffix_weight_for_ttbar" # this is an additional weight to be applied (multiplication) to the sample
     #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
+
+  - name: "Zjets_light"
+    dsids: [364100,364101]
+    campaigns: ["mc20e"]
+    event_weights: "weight_mc_NOSYS"
+    selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
+    simulation_type: "mc"
+    regions: ["Electron", "Muon"]
+
+  - name: "Wjets_FS"
+    dsids: [700341]
+    campaigns: ["mc20e"]
+    simulation_type: "mc"
+    regions: ["Electron", "Muon"]
+
+  - name: "Data"
+    simulation_type: "data"
+    campaigns: ["2018"]
+    regions: ["Electron", "Muon"]
+
+
 
 systematics:
   - samples: ["ttbar_FS"]
     campaigns: ["mc20e"]
-    #regions: ["Electron", "Muon"]
+    regions: ["Electron"]
     variation:
       up: "JET_BJES_Response__1up"
       #weight_suffix_up: "bootstrap_weight" # additional weight to be applied (multiplication) to the sample
@@ -95,3 +120,14 @@ systematics:
     variation:
       up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
       sum_weights_up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
+
+  - variation:
+      up: "btag_B_1__up"
+      down: "btag_B_1__down"
+
+  - samples: ["Data"]
+    #campaigns: ["mc20e"]
+    #regions: ["Electron", "Muon"]
+    variation:
+      up: "bootstraps"
+      weight_suffix_up: "bootstrap_weight"
