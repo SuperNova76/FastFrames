@@ -135,7 +135,7 @@ private:
    * @param region Region to be used for the replacement
    * @return std::string
    */
-  std::string systematicFilter(/*const std::shared_ptr<Sample>& sample,*/
+  std::string systematicFilter(const std::shared_ptr<Sample>& sample,
                                const std::shared_ptr<Systematic>& systematic,
                                const std::shared_ptr<Region>& region) const;
 
