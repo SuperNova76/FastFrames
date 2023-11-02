@@ -54,6 +54,20 @@ public:
   inline const std::string& sumWeights() const {return m_sumWeights;}
 
   /**
+   * @brief Set the weight suffix for this sample
+   *
+   * @param weightSuffix
+   */
+  inline void setWeightSuffix(const std::string& weightSuffix) {m_weightSuffix = weightSuffix;};
+
+  /**
+   * @brief Get the weight suffix for this sample
+   *
+   * @return const std::string&
+   */
+  inline const std::string& weightSuffix() const {return m_weightSuffix;}
+
+  /**
    * @brief Add Region for this sample
    *
    * @param reg
@@ -79,6 +93,7 @@ private:
 
   std::string m_name;
   std::string m_sumWeights;
+  std::string m_weightSuffix;
   std::vector<std::shared_ptr<Region> > m_regions;
   bool m_isNominal;
 };

@@ -47,7 +47,8 @@ class BlockReaderSample:
 
         self.systematic = self.options_getter.get("systematic",None)
 
-        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights)
+        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1")
+        self.weight_suffix = self.options_getter.get("weight_suffix", None)
 
         self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name)
 
@@ -95,7 +96,7 @@ class BlockReaderSample:
 
 
     def adjust_systematics(self, systematics_all : dict):
-        # if systematic list is not specified, add all systematics
+        # if systematic list is not specified, add all systematics for MC samples, and add only explictelly mentioned systematics for data samples
         if self.systematic is None:
             self.systematic = []
             for systematic_name, systematic in systematics_all.items():
@@ -104,14 +105,28 @@ class BlockReaderSample:
                     if self.name not in systematic.samples:
                         continue
 
+                # for data samples, we do not want to add systematics by default
+                if systematic.samples is None and self.is_data:
+                    continue
+
                 self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
                 self.systematic.append(systematic_name)
+        else:
+            for systematic_name in self.systematic:
+                if systematic_name not in systematics_all:
+                    Logger.log_message("ERROR", "Systematic {} specified for sample {} does not exist".format(systematic_name, self.name))
+                    exit(1)
+                self.cpp_class.addSystematic(systematics_all[systematic_name].cpp_class.getPtr())
 
     def _set_cpp_class(self) -> None:
         """
         Set the cpp class for the sample.
         """
-        self.cpp_class.setEventWeight(self.event_weights)
+        total_weight = self.event_weights
+        if self.weight_suffix is not None:
+            total_weight =  "(" + total_weight + ")*(" + self.weight_suffix + ")"
+        self.cpp_class.setEventWeight(total_weight)
+
         self.cpp_class.setRecoTreeName(self.reco_tree_name)
         self.cpp_class.setSelectionSuffix(self.selection_suffix)
 
