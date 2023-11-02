@@ -54,6 +54,8 @@ void ConfigSetting::setTestingValues()  {
 
     sample->addRegion(reg);
     m_samples.emplace_back(sample);
+
+    addXsectionFile("data/XSection-MC16-13TeV.data");
 };
 
 void ConfigSetting::addLuminosityInformation(const std::string& campaign, const float luminosity, const bool force)   {

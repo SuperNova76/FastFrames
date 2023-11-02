@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 
+#include "FastFrames/StringOperations.h"
+
 /**
  * @brief Class that allows to identify unique samples (DSID, campaign, simulation type)
  *
@@ -91,6 +93,8 @@ public:
    * @return const std::string&
    */
   const std::string& simulation() const {return m_simulation;}
+
+  bool isData() const {return StringOperations::compare_case_insensitive(m_simulation, "data");}
 
 private:
   int m_dsid;

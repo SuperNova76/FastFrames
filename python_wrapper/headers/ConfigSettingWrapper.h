@@ -85,6 +85,19 @@ class ConfigSettingWrapper {
             return luminosity_map.find(campaign) != luminosity_map.end();
         };
 
+        void addXsectionFile(const std::string& xsectionFile) {
+            m_configSetting->addXsectionFile(xsectionFile);
+        };
+
+        unsigned int getNumberOfXsectionFiles() const {
+            return (m_configSetting->xSectionFiles()).size();
+        };
+
+        std::string getXsectionFile(unsigned int i_file) const  {
+            return (m_configSetting->xSectionFiles()).at(i_file);
+        }
+
+
         // regions
         void addRegion(long long int region_shared_ptr_int) {
             const std::shared_ptr<Region> *region = reinterpret_cast<std::shared_ptr<Region> *>(region_shared_ptr_int);

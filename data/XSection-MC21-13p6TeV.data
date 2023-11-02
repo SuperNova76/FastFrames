@@ -1,0 +1,202 @@
+# ANALYSISTO-1223: 13.6TeV W/Z+jets and ttbar samples
+# ANALYSISTO-1238: Updated k-factors
+# ANALYSISTO-1272: Z+jets Updates due to more precision in theory calculation
+601183   11912.0   1.0070      pythia8
+601184   11910.0   1.0070      pythia8
+601185   11902.0   1.0070      pythia8
+601186   8766.4    0.9996      pythia8
+601187   8765.3    0.9996      pythia8
+601188   8757.2    0.9996      pythia8
+601189	 1998.8	   1.0124      pythia8
+601190	 1998.8	   1.0124      pythia8
+601191	 1996.7	   1.0124      pythia8
+
+# ANALYSISTO-1241: Sherpa 2.2.12 ttbar
+# Sherpa 2.2.12 ttbar
+700659 390.77 1.0786 sherpa2210
+700660 90.199 1.0786 sherpa2210
+700661 187.8  1.0786 sherpa2210
+700662 187.8  1.0786 sherpa2210
+
+# ANALYSISTO-1234: ttbar and singletop samples
+# NOTE: ttbar samples removed from above and updated
+
+# ANALYSISTO-1241: Update 601230 XSection 
+# Powheg+Pythia8 ttbar
+601229 355.63972 1.1381 pythia8
+601230 85.482 1.1381 pythia8
+601237 369.95387 1.1381 pythia8
+
+# Powheg+pythia8 t-channel
+601350 24.203 1.0858 pythia8
+601351 39.936 1.1066 pythia8
+
+# Powheg+Pythia8 s-channel
+601348 1.3525 1.0872 pythia8
+601349 2.1455 1.0963 pythia8
+
+# Powheg+Pythia8 tW-channel inclusive
+# ANALYSISTO-1272: updated to the most recent approximate N^3LO prediction
+# Updated based on ANALYSISTO-1299
+601352 39.839 1.10269 pythia8
+601355 39.876 1.10269 pythia8
+
+# Powheg+Pythia8 tW-channel dilepton
+# ANALYSISTO-1272: updated to the most recent approximate N^3LO prediction
+# Updated based on ANALYSISTO-1299
+601353 4.1974 1.10269 pythia8
+601354 4.2013 1.10269 pythia8
+
+# Powheg+Pythia8 tW-channel DS inclusive
+# ANALYSISTO-1272: updated to the most recent approximate N^3LO prediction
+# Updated based on ANALYSISTO-1299
+601459 41.482 1.0701 pythia8
+601461 40.669 1.0701 pythia8
+
+# Powheg+Pythia8 tW-channel DS dilepton
+# ANALYSISTO-1272: updated to the most recent approximate N^3LO prediction
+# Updated based on ANALYSISTO-1299
+601455 4.3708 1.0701 pythia8
+601457 4.2837 1.0701 pythia8
+
+# ANALYSISTO-1236: ttbar systematic variation samples
+# Powheg + Herwig 7.1.6 ttbar - should be identical to herwig 7.1.3 for MC/MC
+601414 355.704 1.1387 herwigpp713
+601415 85.54 1.1387 herwigpp713
+# Powheg+Pythia8 ttbar hdamp = 3 times top mass
+601398 355.605 1.1390 pythia8
+601399 85.46 1.1390 pythia8
+
+# ANALYSISTO-1237: sherpa 2.2.12 V(V)+jets
+# ANALYSISTO-1238: Updated k-factors
+# ANALYSISTO-1249: sherpa 2.2.12 V+jets low m_ll (removed 700575, 700576 and 700577)
+# ANALYSISTO-1272: Z+jets Updates due to more precision in theory calculation
+# Note: waiting for the theory cross-sections, so the k-factors are all set to 1 for now.
+# W(->e nu)+jets sherpa 2.2.12 
+700606 220.132 0.9059 sherpa2210
+700607 3402.25 0.9059 sherpa2210
+700608 19290.2 0.9059 sherpa2210
+# W(->mu nu)+jets sherpa 2.2.12
+700609 218.007 0.9059 sherpa2210
+700610 3411.47 0.9059 sherpa2210
+700611 19326.7 0.9059 sherpa2210
+# W(->tau nu)+jets sherpa 2.2.12
+700612 220.519 0.9059 sherpa2210
+700613 3411.31 0.9059 sherpa2210
+700614 19337.6 0.9059 sherpa2210
+# Z(ee)+jets sherpa 2.2.12
+700615 59.841 0.9340 sherpa2210
+700616 303.25 0.9340 sherpa2210
+700617 1974.0 0.9340 sherpa2210
+# Z(mumu)+jets sherpa 2.2.12
+700618 58.688 0.9340 sherpa2210
+700619 304.48 0.9340 sherpa2210
+700620 1974.2 0.9340 sherpa2210
+# Z(tautau)+jets sherpa 2.2.12
+700621 59.655 0.9340 sherpa2210
+700622 302.53 0.9340 sherpa2210
+700623 1971.0 0.9340 sherpa2210
+# Z(nunu)+jets sherpa 2.2.12
+700624 41.121 1.0 sherpa2210
+700625 97.944 1.0 sherpa2210
+700626 342.52 1.0 sherpa2210
+# "Semileptonic" VV sherpa 2.2.12 - not really semileptonic...
+700566 51.226 0.91 sherpa2210
+700567 2.5961 0.91 sherpa2210
+700568 9.2309 0.91 sherpa2210
+700569 3.5549 0.91 sherpa2210
+700570 7.0361 0.91 sherpa2210
+700571 0.4986 0.91 sherpa2210
+700572 1.7741 0.91 sherpa2210
+700573 0.9876 0.91 sherpa2210
+700574 3.5125 0.91 sherpa2210
+# Multilepton+neutrino VV sherpa 2.2.12
+700600 1.3351 0.91 sherpa2210
+700601 4.8181 0.91 sherpa2210
+700602 12.618 0.91 sherpa2210
+700603 0.0241 0.91 sherpa2210
+700604 3.289 0.91 sherpa2210
+700605 0.61379 0.91 sherpa2210
+
+# ANALYSISTO-1249: sherpa 2.2.12 V+jets low m_ll
+# Z+jets 10 < m_ll < 40 sherpa 2.2.12
+# Note: checking differences in filter efficiences with PMG
+700697 16.289 0.9340 sherpa2210
+700698 298.76 0.9340 sherpa2210
+700699 2558.7 0.9340 sherpa2210
+700700 15.702 0.9340 sherpa2210
+700701 311.77 0.9340 sherpa2210
+700702 2668.1 0.9340 sherpa2210
+700703 6.3489 0.9340 sherpa2210
+700704 76.715 0.9340 sherpa2210
+700705 496.17 0.9340 sherpa2210
+
+# ANALYSISTO-1272
+# new samples for aMC@NLO+Pythia FxFx
+513105 53.382 0.9156 amcatnlopythia8
+513106 297.11 0.9156 amcatnlopythia8
+513107 2045.7 0.9156 amcatnlopythia8
+513108 53.382 0.9156 amcatnlopythia8
+513109 297.11 0.9156 amcatnlopythia8
+513110 2045.7 0.9156 amcatnlopythia8
+513111 53.382 0.9156 amcatnlopythia8
+513112 297.11 0.9156 amcatnlopythia8
+513113 2045.7 0.9156 amcatnlopythia8
+
+# ANALYSISTO-1282
+# Updated based on ANALYSISTO-1299
+# ttbar dilepton top-quark mass variations
+601673 87.824 1.13826 pythia8
+601674 83.208 1.13800 pythia8
+# tW dilepton top-qaurk mass variations
+601675 4.2617 1.10216 pythia8
+601676 4.2652 1.10216 pythia8
+601677 4.1343 1.10298 pythia8
+601678 4.1379 1.10298 pythia8
+
+#ANALYSISTO-1299
+# ttW sherpa 2.2.12, 0L, 1L, >=2L
+700578 0.129914 1.0 sherpa2210
+700579 0.241235 1.0 sherpa2210
+700706 0.277440 1.0 sherpa2210
+
+#ANALYSISTO-1299
+# ttZ sherpa 2.2.12 2L, 3L, 4L
+700757 0.0383159 1.0 sherpa2210
+700758 0.0429128 1.0 sherpa2210
+700759 0.0294619 1.0 sherpa2210
+
+# ANALYSISTO-1345
+# W(->e nu)+jets, mW>105GeV, sherpa 2.2.12
+700627  1.944   1.0 sherpa2210
+700628  23.989  1.0 sherpa2210
+700629  133.783 1.0 sherpa2210
+# W(->mu nu)+jets, mW>105GeV, sherpa 2.2.12
+700630  1.899   1.0 sherpa2210
+700631  24.001  1.0 sherpa2210
+700632  133.857 1.0 sherpa2210
+# W(->tau nu)+jets, mW>105GeV, sherpa 2.2.12
+700633  1.927   1.0 sherpa2210
+700634  24.013  1.0 sherpa2210
+700635  133.827 1.0 sherpa2210
+# Z(ee)+jets, mZ>105GeV, sherpa 2.2.12
+700636  1.458   1.0 sherpa2210
+700637  7.473   1.0 sherpa2210
+700638  46.869  1.0 sherpa2210
+# Z(mumu)+jets, mZ>105GeV, sherpa 2.2.12
+700639  1.424   1.0 sherpa2210
+700640  7.453   1.0 sherpa2210
+700641  46.877  1.0 sherpa2210
+# Z(tautau)+jets, mZ>105GeV, sherpa 2.2.12
+700642  1.420   1.0 sherpa2210
+700643  7.412   1.0 sherpa2210
+700644  46.787  1.0 sherpa2210
+
+# W' and Z' samples
+# ANALYSISTO-1352
+800025  117.44  1   pythia8
+801975  0.030435    1   pythia8
+801976  1.2465  1   pythia8
+801977  0.00040843  1   pythia8
+801978  0.011409    1   pythia8
+801979  2.536   1   pythia8

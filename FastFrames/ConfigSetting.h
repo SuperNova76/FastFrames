@@ -137,6 +137,19 @@ public:
   const std::map<std::string, float>& luminosityMap() const {return m_luminosity_map;}
 
   /**
+   * @brief Add x-section file
+   *
+   */
+  void addXsectionFile(const std::string& xSectionFile)  { m_xSectionFiles.push_back(xSectionFile); };
+
+  /**
+   * @brief Get x-section files
+   *
+   * @return const std::vector<std::string>&
+   */
+  const std::vector<std::string>& xSectionFiles() const {return m_xSectionFiles;};
+
+  /**
    * @brief Add one Region
    *
    * @param region
@@ -244,6 +257,7 @@ private:
   bool        m_automaticSystematics = false;
 
   std::map<std::string, float> m_luminosity_map;
+  std::vector<std::string>     m_xSectionFiles ;
 
   std::vector<std::shared_ptr<Region> > m_regions;
   std::vector<std::shared_ptr<Sample> > m_samples;
