@@ -41,7 +41,7 @@ class BlockReaderSample:
                     Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self.name))
                     exit(1)
 
-        self.selection = self.options_getter.get("selection","true")
+        self.selection_suffix = self.options_getter.get("selection","true")
 
         self.regions = self.options_getter.get("regions",None)
 
@@ -51,7 +51,7 @@ class BlockReaderSample:
 
         self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name)
 
-        self.selection = self.options_getter.get("selection", "")
+        self.selection_suffix = self.options_getter.get("selection_suffix", "")
 
         self.cpp_class = SampleWrapper(self.name)
 
@@ -111,10 +111,9 @@ class BlockReaderSample:
         """
         Set the cpp class for the sample.
         """
-        #self.cpp_class.setSelection(self.selection) # TODO: implement
         self.cpp_class.setEventWeight(self.event_weights)
         self.cpp_class.setRecoTreeName(self.reco_tree_name)
-        self.cpp_class.setSelection(self.selection)
+        self.cpp_class.setSelectionSuffix(self.selection_suffix)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()

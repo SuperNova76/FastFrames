@@ -57,18 +57,18 @@ public:
   inline const std::string& recoTreeName() const {return m_recoTreeName;}
 
   /**
-   * @brief Set the selection
+   * @brief Set the selectionSuffix
    *
-   * @param selection
+   * @param selectionSuffix
    */
-  inline void setSelection(const std::string& selection) {m_selection = selection;};
+  inline void setSelectionSuffix(const std::string& selectionSuffix) {m_selectionSuffix = selectionSuffix;};
 
   /**
-   * @brief Get the selection
+   * @brief Get the selectionSuffix
    *
    * @return const std::string&
    */
-  inline const std::string& selection() const {return m_selection;};
+  inline const std::string& selectionSuffix() const {return m_selectionSuffix;};
 
   /**
    * @brief Get all UniqueSampleIDs for this Sample
@@ -148,7 +148,7 @@ private:
 
   std::string m_recoTreeName;
 
-  std::string m_selection;
+  std::string m_selectionSuffix;
 
   std::vector<std::shared_ptr<Region> > m_regions;
 

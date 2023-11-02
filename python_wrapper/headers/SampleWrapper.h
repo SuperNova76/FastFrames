@@ -21,9 +21,9 @@ class SampleWrapper {
         std::string recoTreeName() const {return m_sample->recoTreeName();};
 
 
-        void setSelection(const std::string& selection) {m_sample->setSelection(selection);};
+        void setSelectionSuffix(const std::string& selectionSuffix) {m_sample->setSelectionSuffix(selectionSuffix);};
 
-        std::string selection() const {return m_sample->selection();};
+        std::string selectionSuffix() const {return m_sample->selectionSuffix();};
 
 
         void addUniqueSampleID(const unsigned int dsid, const std::string& campaign, const std::string& simulation) {
