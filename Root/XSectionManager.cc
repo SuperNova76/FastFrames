@@ -1,3 +1,9 @@
+/**
+ * @file XSectionManager.cc
+ * @brief Code for extracting cross-sections
+ *
+ */
+
 #include "FastFrames/XSectionManager.h"
 #include "FastFrames/Logger.h"
 #include "FastFrames/StringOperations.h"

@@ -374,7 +374,7 @@ void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const 
 
     // add systematics now
     for (const auto& iuniqueSample : sample->uniqueSampleIDs()) {
-        if (iuniqueSample.simulation() == "data") return; // nothing to add for data
+        if (iuniqueSample.isData()) return; // nothing to add for data
         const auto fileList = m_metadataManager.filePaths(iuniqueSample);
         if (fileList.empty()) continue;
 
