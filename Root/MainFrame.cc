@@ -118,12 +118,17 @@ std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniq
     return std::make_pair(std::move(histoContainer), mainNode);
 }
 
-std::string MainFrame::systematicFilter(/*const std::shared_ptr<Sample>& sample,*/
+std::string MainFrame::systematicFilter(const std::shared_ptr<Sample>& sample,
                                         const std::shared_ptr<Systematic>& systematic,
                                         const std::shared_ptr<Region>& region) const {
 
-    const std::string& nominalSelection = region->selection();
+    std::string nominalSelection = region->selection();
+    if (!sample->selectionSuffix().empty()) {
+        nominalSelection = "(" + nominalSelection + ") && (" + sample->selectionSuffix() + ")";
+    }
     const std::string systSelection = m_systReplacer.replaceString(nominalSelection, systematic);
+    LOG(VERBOSE) << "Sample: " << sample->name() << ", region: " << region->name() << ", systematic: "
+                 << systematic->name() << ", original selection: " << nominalSelection << ", systematic selection: " << systSelection << "\n";
 
     return systSelection;
 }
@@ -162,7 +167,7 @@ std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::R
                 continue;
             }
 
-            auto filter = mainNode.Filter(this->systematicFilter(/*sample,*/ isyst, ireg));
+            auto filter = mainNode.Filter(this->systematicFilter(sample, isyst, ireg));
             perSystFilter.emplace_back(std::move(filter));
         }
         result.emplace_back(std::move(perSystFilter));
