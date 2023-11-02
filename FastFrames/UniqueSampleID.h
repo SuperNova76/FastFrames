@@ -94,6 +94,12 @@ public:
    */
   const std::string& simulation() const {return m_simulation;}
 
+  /**
+   * @brief Is sample data?
+   *
+   * @return true
+   * @return false
+   */
   bool isData() const {return StringOperations::compare_case_insensitive(m_simulation, "data");}
 
 private:
