@@ -49,6 +49,13 @@ public:
   void readSumWeights(const std::string& path);
 
   /**
+   * @brief Reads x-section files
+   *
+   * @param xSectionFiles
+   */
+  void readXSectionFiles(const std::vector<std::string>& xSectionFiles);
+
+  /**
    * @brief Adds luminosity value for a given campaign
    *
    * @param campaign

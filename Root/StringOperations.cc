@@ -52,6 +52,21 @@ bool StringOperations::stringEndsWith(const string &main_string, const string &s
     return suffix == main_string.substr(string_lenght-suffix_lenght, string_lenght);
 };
 
+
+bool StringOperations::stringIsInt(const std::string &input_string) {
+    return !input_string.empty() && input_string.find_first_not_of("0123456789") == std::string::npos;
+};
+
+bool StringOperations::stringIsFloat(const std::string &input_string)   {
+    try {
+        [[__maybe_unused__]]float a = std::stof(input_string);
+    }
+    catch (const std::invalid_argument& ia) {
+        return false;
+    }
+    return true;
+};
+
 vector<string> StringOperations::splitAndStripString(const string &input_string, const string &separator) {
     vector<string> result = splitString(input_string, separator);
     for (string &x : result)    {

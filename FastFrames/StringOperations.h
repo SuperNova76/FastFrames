@@ -44,6 +44,10 @@ namespace StringOperations  {
 
     bool stringEndsWith(const std::string &main_string, const std::string &suffix);
 
+    bool stringIsInt(const std::string &input_string);
+
+    bool stringIsFloat(const std::string &input_string);
+
     std::vector<std::string> splitAndStripString(const std::string &input_string, const std::string &separator);
 
     std::vector<std::string> splitString(std::string input_string, const std::string &separator);
