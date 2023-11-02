@@ -16,7 +16,15 @@ class SampleWrapper {
 
         std::string name() const {return m_sample->name();};
 
+        void setRecoTreeName(const std::string& treeName) {m_sample->setRecoTreeName(treeName);};
+
         std::string recoTreeName() const {return m_sample->recoTreeName();};
+
+
+        void setSelection(const std::string& selection) {m_sample->setSelection(selection);};
+
+        std::string selection() const {return m_sample->selection();};
+
 
         void addUniqueSampleID(const unsigned int dsid, const std::string& campaign, const std::string& simulation) {
             m_sample->addUniqueSampleID(UniqueSampleID(dsid, campaign, simulation));

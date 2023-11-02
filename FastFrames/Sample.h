@@ -57,6 +57,20 @@ public:
   inline const std::string& recoTreeName() const {return m_recoTreeName;}
 
   /**
+   * @brief Set the selection
+   *
+   * @param selection
+   */
+  inline void setSelection(const std::string& selection) {m_selection = selection;};
+
+  /**
+   * @brief Get the selection
+   *
+   * @return const std::string&
+   */
+  inline const std::string& selection() const {return m_selection;};
+
+  /**
    * @brief Get all UniqueSampleIDs for this Sample
    *
    * @return const std::vector<UniqueSampleID>&
@@ -133,6 +147,8 @@ private:
   std::string m_name;
 
   std::string m_recoTreeName;
+
+  std::string m_selection;
 
   std::vector<std::shared_ptr<Region> > m_regions;
 
