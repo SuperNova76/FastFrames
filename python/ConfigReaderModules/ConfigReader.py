@@ -108,8 +108,7 @@ if __name__ == "__main__":
     for sample_name,sample in samples.items():
         print("\tname: ", sample.cpp_class.name())
         print("\tregions: ", sample.regions)
-        print("\tselection: ", sample.selection)
         print("\tsystematic: ", sample.systematic)
-        print("\tselection: ", sample.selection)
+        print("\tselection_suffix: \"" + sample.selection_suffix + "\"")
         print("\n")
 
