@@ -96,7 +96,7 @@ class BlockReaderSample:
 
 
     def adjust_systematics(self, systematics_all : dict):
-        # if systematic list is not specified, add all systematics
+        # if systematic list is not specified, add all systematics for MC samples, and add only explictelly mentioned systematics for data samples
         if self.systematic is None:
             self.systematic = []
             for systematic_name, systematic in systematics_all.items():
@@ -105,8 +105,18 @@ class BlockReaderSample:
                     if self.name not in systematic.samples:
                         continue
 
+                # for data samples, we do not want to add systematics by default
+                if systematic.samples is None and self.is_data:
+                    continue
+
                 self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
                 self.systematic.append(systematic_name)
+        else:
+            for systematic_name in self.systematic:
+                if systematic_name not in systematics_all:
+                    Logger.log_message("ERROR", "Systematic {} specified for sample {} does not exist".format(systematic_name, self.name))
+                    exit(1)
+                self.cpp_class.addSystematic(systematics_all[systematic_name].cpp_class.getPtr())
 
     def _set_cpp_class(self) -> None:
         """
