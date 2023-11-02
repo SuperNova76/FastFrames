@@ -20,6 +20,7 @@ class BlockReaderGeneral:
         self.automatic_systematics = self.options_getter.get("automatic_systematics", False)
         self.nominal_only = self.options_getter.get("nominal_only", False)
         self.number_of_cpus = self.options_getter.get("number_of_cpus", 1)
+        self.xsection_files = self.options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data", "XSection-MC21-13p6TeV.data"])
         self.__set_luminosity_map(self.options_getter.get("luminosity"))
         self.cpp_class = ConfigReaderCppGeneral()
         self.__set_config_reader_cpp()
@@ -44,6 +45,9 @@ class BlockReaderGeneral:
 
         for campaign, lumi_value in self.luminosity_map.items():
             self.cpp_class.setLuminosity(campaign, lumi_value, True)
+
+        for xsection_file in self.xsection_files:
+            self.cpp_class.addXsectionFile(xsection_file)
 
     def add_region(self, region):
         self.cpp_class.addRegion(region.cpp_class.getPtr())

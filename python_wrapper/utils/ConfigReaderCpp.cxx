@@ -69,6 +69,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getLuminosity", &ConfigSettingWrapper::getLuminosity)
         .def("campaignIsDefined", &ConfigSettingWrapper::campaignIsDefined)
 
+        // x-section files
+        .def("addXsectionFile",             &ConfigSettingWrapper::addXsectionFile)
+        .def("getNumberOfXsectionFiles",    &ConfigSettingWrapper::getNumberOfXsectionFiles)
+        .def("getXsectionFile",             &ConfigSettingWrapper::getXsectionFile)
+
+
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
 
@@ -197,4 +203,5 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addRegion
         .def("addRegion",       &SystematicWrapper::addRegion)
     ;
+
 }
