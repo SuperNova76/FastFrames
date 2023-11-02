@@ -68,20 +68,6 @@ install:
       - install
      expire_in: 1d
 
-compile_root_latest:
-  stage: build
-  before_script:
-    - set +e # overwrite default, do nothing
-  script:
-     - export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
-     - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh --quiet
-     - asetup main,StatAnalysis,latest
-     - mkdir -p build && cd build
-     - cmake .. | tee cmake.log
-     - make clean #make sure we don't have residual compilation results
-     - make -j4 2>&1 | tee -a cmake.log  #dump the log files
-  allow_failure: true
-
 cppcheck:
   stage: check
   # image is from https://hub.docker.com/r/neszt/cppcheck-docker
@@ -114,7 +100,6 @@ python_config_reader_test:
   script:
      - cd python/ConfigReaderModules/
      - python3 ConfigReader.py ../../test/configs/config.yml
-  allow_failure: true
 
 run_filelist:
   stage: run
@@ -124,7 +109,6 @@ run_filelist:
      paths:
       - test/input/
      expire_in: 1d
-  allow_failure: true
 
 run_cpp:
   stage: run
@@ -137,7 +121,6 @@ run_cpp:
      paths:
       - ttbar_FS.root
      expire_in: 1d
-  allow_failure: true
 
 run_python:
   stage: run
@@ -150,7 +133,6 @@ run_python:
      paths:
       - ttbar_FS.root
      expire_in: 1d
-  allow_failure: true
 
 doxygen_webpage:
   stage: webpage
