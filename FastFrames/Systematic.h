@@ -40,42 +40,42 @@ public:
   inline const std::string& name() const {return m_name;}
 
   /**
-   * @brief Set the nominal sum weights for this sample
+   * @brief Set the nominal sum weights for this systematic
    *
    * @param sumWeights
    */
   inline void setSumWeights(const std::string& sumWeights) {m_sumWeights = sumWeights;};
 
   /**
-   * @brief Get the nominal sum weights for this sample
+   * @brief Get the nominal sum weights for this systematic
    *
    * @return const std::string&
    */
   inline const std::string& sumWeights() const {return m_sumWeights;}
 
   /**
-   * @brief Set the weight suffix for this sample
+   * @brief Set the weight suffix for this systematic
    *
    * @param weightSuffix
    */
   inline void setWeightSuffix(const std::string& weightSuffix) {m_weightSuffix = weightSuffix;};
 
   /**
-   * @brief Get the weight suffix for this sample
+   * @brief Get the weight suffix for this systematic
    *
    * @return const std::string&
    */
   inline const std::string& weightSuffix() const {return m_weightSuffix;}
 
   /**
-   * @brief Add Region for this sample
+   * @brief Add Region for this systematic
    *
    * @param reg
    */
   inline void addRegion(const std::shared_ptr<Region>& reg) {m_regions.emplace_back(reg);}
 
   /**
-   * @brief Get all Regions for this sample
+   * @brief Get all Regions for this systematic
    *
    * @return const std::vector<std::shared_ptr<Region> >&
    */

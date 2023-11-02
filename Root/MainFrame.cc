@@ -201,8 +201,11 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
     ss << normalisation;
 
     const std::string systName = "weight_total_" + systematic->name();
-    const std::string formula = m_systReplacer.replaceString(nominalWeight, systematic) + "*" + ss.str();
-    const std::string nominalTotalWeight = nominalWeight + "*" + ss.str();
+    const std::string nominalTotalWeight = "(" + nominalWeight + ")*(" + ss.str() +")";
+    std::string formula = m_systReplacer.replaceString("("+nominalWeight, systematic) + ")*(" + ss.str() + ")";
+    if (!systematic->weightSuffix().empty()) {
+        formula = "(" + formula + ")*(" + systematic->weightSuffix() + ")";
+    }
     if (!systematic->isNominal() && formula == nominalTotalWeight) {
         LOG(DEBUG) << "Sample: " << id << ", systematic: " << systematic->name() << ", does not impact the weight\n";
         return mainNode;
