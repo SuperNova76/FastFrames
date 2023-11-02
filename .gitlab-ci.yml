@@ -145,7 +145,7 @@ run_python:
     - compile
     - run_filelist
   script:
-     - python3 python/FastFrame.py test/configs/config.yml
+     - python3 python/FastFrames.py test/configs/config.yml
   artifacts:
      paths:
       - ttbar_FS.root

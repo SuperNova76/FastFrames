@@ -25,8 +25,6 @@ if __name__ == "__main__":
     config_file_path = sys.argv[1]
     config_reader = ConfigReader(config_file_path)
     Logger.set_log_level(config_reader.block_general.debug_level)
-    Logger.log_message("INFO", "Config file path: " + config_file_path)
-
 
     fast_frames_executor = FastFramesExecutor(config_reader.block_general.cpp_class.getPtr())
     fast_frames_executor.runFastFrames()
