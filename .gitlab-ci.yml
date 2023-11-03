@@ -16,6 +16,7 @@ stages:
   - build
   - check
   - run
+  - compare_results
   - webpage
 
 cmake:
@@ -133,6 +134,14 @@ run_python:
      paths:
       - ttbar_FS.root
      expire_in: 1d
+
+config_reader_comparison:
+  stage: compare_results
+  needs:
+    - compile
+  script:
+     - python3 python/ConfigReaderModules/ConfigReader.py test/configs/config_testing.yml > log.txt
+     - python3 test/python/compare_two_files.py log.txt test/reference_files/config_reading/reference_log.txt
 
 doxygen_webpage:
   stage: webpage

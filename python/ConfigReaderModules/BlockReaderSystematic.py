@@ -5,13 +5,14 @@ from python_wrapper.python.logger import Logger
 
 from ConfigReaderCpp    import SystematicWrapper
 from BlockReaderGeneral import BlockReaderGeneral
-from BlockOptionsGetter import BlockOptionsGetter
+from BlockOptionsGetter import BlockOptionsGetter, VariationsOptionsGetter
 
 class BlockReaderSystematic:
     def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):
         self.options_getter = BlockOptionsGetter(input_dict)
 
         variations_dict = self.options_getter.get("variation",None)
+        variations_opts_getter = VariationsOptionsGetter(variations_dict)
         if variations_dict is None:
             Logger.log_message("ERROR", "No variations specified for systematic {}".format(self.options_getter))
             exit(1)
@@ -21,17 +22,18 @@ class BlockReaderSystematic:
             Logger.log_message("ERROR", "Unknown variation type: {}".format(self.variation_type))
             exit(1)
 
-        self.name = variations_dict.get(self.variation_type,None)
+        self.name = variations_opts_getter.get("", self.variation_type,None)
         if self.name is None:
             Logger.log_message("ERROR", "{} variation specified for systematic {}".format(self.variation_type, self.options_getter))
             exit(1)
 
-        self.weight_suffix = variations_dict.get("weight_suffix_" + self.variation_type,"")
+        self.weight_suffix = variations_opts_getter.get("weight_suffix", self.variation_type,"")
 
-        self.sum_weights = variations_dict.get("sum_weights_" + self.name,None)
+        self.sum_weights = variations_opts_getter.get("sum_weights", self.variation_type,None)
         if self.sum_weights is None:
             self.sum_weights = block_reader_general.default_sumweights
 
+        BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
         self.samples    = self.options_getter.get("samples",None)
         self.campaigns  = self.options_getter.get("campaigns",None)
@@ -67,6 +69,11 @@ class BlockReaderSystematic:
             if sample not in sample_dict:
                 Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
                 exit(1)
+
+    def _check_unused_variation_options(variations_opts_getter : VariationsOptionsGetter) -> None:
+        unused = variations_opts_getter.get_unused_options()
+        if len(unused) > 0:
+            Logger.log_message("WARNING", "Key {} used in systematic variation block is not supported!".format(unused))
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()

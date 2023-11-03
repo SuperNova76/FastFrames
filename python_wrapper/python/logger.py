@@ -47,7 +47,9 @@ class Logger:
         elif (log_level.upper() == "VERBOSE"):
             return 4
         else:
-            raise Exception("Unknown log level: {}".format(log_level))
+            error_message = "Unknown log level: {}".format(log_level)
+            Logger.log_message("ERROR", error_message)
+            raise Exception(error_message)
 
     def _convert_level_int_to_str(log_level : int) -> str:
         if (log_level == 0):
@@ -61,6 +63,9 @@ class Logger:
         elif (log_level == 4):
             return "VERBOSE"
         else:
-            raise Exception("Unknown log level: {}".format(log_level))
+            error_message = "Unknown log level: {}".format(log_level)
+            Logger.log_message("ERROR", error_message)
+            raise Exception(error_message)
+
 
 

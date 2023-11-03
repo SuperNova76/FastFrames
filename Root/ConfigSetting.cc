@@ -9,6 +9,7 @@
 #include "FastFrames/Region.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
+#include "FastFrames/Logger.h"
 
 #include <algorithm>
 
@@ -60,7 +61,8 @@ void ConfigSetting::setTestingValues()  {
 
 void ConfigSetting::addLuminosityInformation(const std::string& campaign, const float luminosity, const bool force)   {
     if (m_luminosity_map.find(campaign) != m_luminosity_map.end() && !force) {
-        throw std::runtime_error("Campaign " + campaign + " already exists in the luminosity map");
+        LOG(ERROR) << "Campaign " + campaign + " already exists in the luminosity map\n";
+        throw std::runtime_error("");
     }
     m_luminosity_map[campaign] = luminosity;
 };
@@ -68,7 +70,8 @@ void ConfigSetting::addLuminosityInformation(const std::string& campaign, const 
 
 float ConfigSetting::getLuminosity(const std::string& campaign) const  {
     if (m_luminosity_map.find(campaign) == m_luminosity_map.end()) {
-        throw std::runtime_error("Campaign " + campaign + " does not exist in the luminosity map");
+        LOG(ERROR) << "Campaign " << campaign << " does not exist in the luminosity map\n";
+        throw std::runtime_error("");
     }
     return m_luminosity_map.at(campaign);
 };

@@ -9,7 +9,6 @@ from python_wrapper.python.logger import Logger
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
-        Logger.log_message("INFO", "Going to read the config: " + config_file_path)
         with open(config_file_path, "r") as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -77,9 +76,11 @@ if __name__ == "__main__":
     print("\toutputPath: ", block_general.cpp_class.outputPath())
     print("\tinputFilelistPath: ", block_general.cpp_class.inputFilelistPath())
     print("\tnumCPU: ", block_general.cpp_class.numCPU())
+    print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
+    print("\tnominalOnly: ", block_general.cpp_class.nominalOnly())
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
-    print("\tluminosity, mc23c: ", block_general.cpp_class.getLuminosity("mc23c"))
+    print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 
     regions = config_reader.regions
 
