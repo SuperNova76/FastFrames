@@ -23,10 +23,11 @@ public:
 
   virtual void init() override final {MainFrame::init();}
 
-  virtual void executeHistograms() override final {MainFrame::executeHistograms();}
-
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
                                            const UniqueSampleID& id) override final;
+  
+  virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode mainNode,
+                                                 const UniqueSampleID& id) override final;
 
 private:
 

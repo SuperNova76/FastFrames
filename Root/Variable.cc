@@ -13,3 +13,12 @@ Variable::Variable(const std::string& name) noexcept :
   m_binning(Binning())
 {
 }
+
+ROOT::RDF::TH1DModel Variable::histoModel1D() const {
+  if (m_binning.hasRegularBinning()) {
+    return ROOT::RDF::TH1DModel("", m_title.c_str(), axisNbins(), axisMin(), axisMax());
+  } else {
+    const auto& edges = binEdges();
+    return ROOT::RDF::TH1DModel("", m_title.c_str(), edges.size() - 1, edges.data());
+  }
+}

@@ -84,23 +84,6 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
             }
         }
     }
-
-    LOG(VERBOSE) << "List of branches and systematics that affect them\n";
-    for (const auto& ibranch : m_branchesAffectedBySyst) {
-        LOG(VERBOSE) << "branch: " << ibranch.first << "\n";
-        for (const auto& isyst : ibranch.second) {
-            LOG(VERBOSE) << "\t systematic: " << isyst << "\n";
-        }
-    }
-
-    LOG(VERBOSE) << "\n";
-    LOG(VERBOSE) << "List of systematics and which branches they affect\n";
-    for (const auto& isyst : m_systImpactsBranches) {
-        LOG(VERBOSE) << "systematic: " << isyst.first << "\n";
-        for (const auto& ibranch : isyst.second) {
-            LOG(VERBOSE) << "\t branch: " << ibranch << "\n";
-        }
-    }
 }
 
 std::string SystematicReplacer::replaceString(const std::string& original, const std::shared_ptr<Systematic>& systematic) const {
@@ -191,5 +174,29 @@ void SystematicReplacer::addVariableAndEffectiveSystematics(const std::string& v
             throw std::invalid_argument("");
         }
         itr->second.emplace_back(variable);
+
+        const std::string systName = this->replaceString(variable, isystematic);
+        if (systName == variable) continue;
+        m_allBranches.emplace_back(systName);
+    }
+}
+
+void SystematicReplacer::printMaps() const {
+
+    LOG(VERBOSE) << "List of branches and systematics that affect them\n";
+    for (const auto& ibranch : m_branchesAffectedBySyst) {
+        LOG(VERBOSE) << "branch: " << ibranch.first << "\n";
+        for (const auto& isyst : ibranch.second) {
+            LOG(VERBOSE) << "\t systematic: " << isyst << "\n";
+        }
+    }
+
+    LOG(VERBOSE) << "\n";
+    LOG(VERBOSE) << "List of systematics and which branches they affect\n";
+    for (const auto& isyst : m_systImpactsBranches) {
+        LOG(VERBOSE) << "systematic: " << isyst.first << "\n";
+        for (const auto& ibranch : isyst.second) {
+            LOG(VERBOSE) << "\t branch: " << ibranch << "\n";
+        }
     }
 }
