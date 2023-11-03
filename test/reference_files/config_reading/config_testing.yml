@@ -1,0 +1,141 @@
+##########################################################################################################################################
+#### This config should not be used for any real analysis, it is just for testing of all implemented features in CI tests !!!  ###########
+##########################################################################################################################################
+
+general:
+  debug_level: WARNING
+  input_filelist_path: "test/input/filelist.txt"
+  input_sumweights_path: "test/input/sum_of_weights.txt"
+  output_path: ""
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
+  default_reco_tree_name: "reco"
+  xsection_files: ["data/XSection-MC16-13TeV.data"]
+#  custom_frame_name: "my_custom_frame_name.so"
+  #automatic_systematics: True
+  nominal_only: False
+  number_of_cpus: 4
+  luminosity:
+    mc20a: 123456
+    #mc20d: 111111 #default one from C++ part
+    mc20e: 654321
+    mc23a: 456677
+    mc23c: 545676
+
+regions:
+  - name: "Electron"
+    selection: "el_pt_NOSYS[0] > 30000"
+    variables:
+      - name: "jet_pt_NOSYS"
+        #title : "histo title;X axis title;Y axis title"
+        definition: "jet_pt_NOSYS"
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 10
+      - name: "met_met"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,60000,80000,140000,250000]
+      - name: "met_phi"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_phi_NOSYS"
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 16
+
+  - name: "Muon"
+    selection: "mu_pt_NOSYS[0] > 30000"
+    variables:
+      - name: "jet_pt_NOSYS"
+        #title : "histo title;X axis title;Y axis title"
+        definition: "jet_pt_NOSYS"
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 10
+      - name: "met_met"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,60000,80000,140000,250000]
+      - name: "met_phi"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_phi_NOSYS"
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 16
+
+samples:
+  - name: "ttbar_FS"
+    dsids: [410470]
+    campaigns: ["mc20e"]
+    simulation_type: "mc" # mc is full sim
+    weight_suffix: "my_suffix_weight_for_ttbar" # this is an additional weight to be applied (multiplication) to the sample
+    #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
+    #regions: ["Electron", "Muon"] # if not provided, use all regions?
+
+  - name: "Zjets_light"
+    dsids: [364100,364101]
+    campaigns: ["mc20e"]
+    event_weights: "weight_mc_NOSYS"
+    selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
+    simulation_type: "mc"
+    regions: ["Electron", "Muon"]
+
+  - name: "Wjets_FS"
+    dsids: [700341]
+    campaigns: ["mc20e"]
+    simulation_type: "mc"
+    regions: ["Electron"]
+
+  - name: "Data"
+    simulation_type: "data"
+    campaigns: ["2018"]
+    systematic:  ["bootstraps"]
+    regions: ["Electron", "Muon"]
+
+
+
+systematics:
+  - samples: ["ttbar_FS"]
+    campaigns: ["mc20e"]
+    regions: ["Electron"]
+    variation:
+      up: "JET_BJES_Response__1up"
+      #weight_suffix_up: "bootstrap_weight" # additional weight to be applied (multiplication) to the sample
+      down: "JET_BJES_Response__1down"
+
+  - samples: ["ttbar_FS"]
+    campaigns: ["mc20e"]
+    #regions: ["Electron", "Muon"]
+    variation:
+      up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
+      sum_weights_up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
+
+  - variation:
+      up: "btag_B_1__up"
+      down: "btag_B_1__down"
+
+  - samples: []
+    #campaigns: ["mc20e"]
+    #regions: ["Electron", "Muon"]
+    variation:
+      up: "bootstraps"
+      weight_suffix_up: "bootstrap_weight"
+
+  - samples: ["Data"]
+    #campaigns: ["mc20e"]
+    #regions: ["Electron", "Muon"]
+    variation:
+      up: "bootstraps1"
+      weight_suffix_up: "bootstrap_weight1"
