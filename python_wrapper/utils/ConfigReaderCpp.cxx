@@ -25,6 +25,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         init<long long unsigned int>())
         // runFastFrames
         .def("runFastFrames",   &FastFramesExecutorWrapper::runFastFrames)
+
+        // setRunNtuples
+        .def("setRunNtuples",   &FastFramesExecutorWrapper::setRunNtuples)
+        .def("runNtuples",      &FastFramesExecutorWrapper::runNtuples)
     ;
 
 
