@@ -55,9 +55,9 @@ ROOT::RDF::RNode CustomFrame::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
     return sortedElectrons.at(0).pt();    
   };
 
-  LOG(INFO) << "Adding variable: leading_electron_pt_NOSYS\n";
+  LOG(INFO) << "Adding variable: leading_tight_electron_pt_NOSYS\n";
   mainNode = MainFrame::systematicDefine(mainNode,
-                                         "leading_electron_pt_NOSYS", // name of the new column
+                                         "leading_tight_electron_pt_NOSYS", // name of the new column
                                          LeadingElectronPtTight, // functor (function that is called)
                                          {"el_TLV_NOSYS", "el_select_or_NOSYS", "el_select_tight_NOSYS"}); // what it depends on
 
