@@ -55,4 +55,5 @@ class BlockReaderGeneral:
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
-            Logger.log_message("WARNING", "Key {} used in general block is not supported!".format(unused))
+            Logger.log_message("ERROR", "Key {} used in general block is not supported!".format(unused))
+            exit(1)

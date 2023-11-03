@@ -95,7 +95,7 @@ Samples block:
 	name:  Data
 	regions:  ['Electron', 'Muon']
 	weight:  1
-	systematic:  ['bootstraps']
+	systematic:  ['bootstraps1']
 	selection_suffix: ""
 	Unique samples:
 		 (0,2018,data)
@@ -138,12 +138,6 @@ Systematics block:
 	name:  btag_B_1__down
 	regions:  ['Electron', 'Muon']
 	weight_suffix:  
-	sum_weights:  NOSYS
-
-
-	name:  bootstraps
-	regions:  ['Electron', 'Muon']
-	weight_suffix:  bootstrap_weight
 	sum_weights:  NOSYS
 
 

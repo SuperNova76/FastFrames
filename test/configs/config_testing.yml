@@ -101,7 +101,6 @@ samples:
   - name: "Data"
     simulation_type: "data"
     campaigns: ["2018"]
-    systematic:  ["bootstraps"]
     regions: ["Electron", "Muon"]
 
 
@@ -125,13 +124,6 @@ systematics:
   - variation:
       up: "btag_B_1__up"
       down: "btag_B_1__down"
-
-  - samples: []
-    #campaigns: ["mc20e"]
-    #regions: ["Electron", "Muon"]
-    variation:
-      up: "bootstraps"
-      weight_suffix_up: "bootstrap_weight"
 
   - samples: ["Data"]
     #campaigns: ["mc20e"]

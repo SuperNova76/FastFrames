@@ -170,13 +170,15 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setSelectionSuffix",  &SampleWrapper::setSelectionSuffix)
         .def("selectionSuffix",     &SampleWrapper::selectionSuffix)
 
-        // addUniqueSampleID
+        // uniqueSampleID
         .def("addUniqueSampleID",   &SampleWrapper::addUniqueSampleID)
         .def("nUniqueSampleIDs",    &SampleWrapper::nUniqueSampleIDs)
         .def("uniqueSampleIDstring",&SampleWrapper::uniqueSampleIDstring)
 
-        // addSystematic
+        // systematic
         .def("addSystematic",       &SampleWrapper::addSystematic)
+        .def("nSystematics",        &SampleWrapper::nSystematics)
+        .def("getSystematicPtr",    &SampleWrapper::getSystematicPtr)
 
         // addRegion
         .def("addRegion",           &SampleWrapper::addRegion)
