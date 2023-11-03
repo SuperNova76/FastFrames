@@ -8,15 +8,11 @@ general:
   default_reco_tree_name: "reco"
   xsection_files: ["data/XSection-MC16-13TeV.data"]
 #  custom_frame_name: "my_custom_frame_name.so"
-  automatic_systematics: True
+#  automatic_systematics: True
   nominal_only: False
   number_of_cpus: 4
   luminosity:
-    mc20a: 123456
-    mc20d: 111111
-    mc20e: 654321
-    mc23a: 456677
-    mc23c: 545676
+    mc23c: 1
 
 regions:
   - name: "Electron"
@@ -80,9 +76,18 @@ samples:
     #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
 
+  - name: "Wjets"
+    dsids: [700341]
+    campaigns: ["mc20a"]
+    simulation_type: "mc" # mc is full sim
+
+  - name: "Data"
+    dsids: [0]
+    campaigns: ["2018"]
+    simulation_type: "data"
+
 systematics:
-  - samples: ["ttbar_FS"]
-    campaigns: ["mc20e"]
+  - campaigns: ["mc20e"]
     #regions: ["Electron", "Muon"]
     variation:
       up: "JET_BJES_Response__1up"
@@ -93,5 +98,5 @@ systematics:
     campaigns: ["mc20e"]
     #regions: ["Electron", "Muon"]
     variation:
-      up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
-      sum_weights_up: "0p5muF_0p5muR_NNPDF31_NLO_0118"
+      up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"
+      sum_weights_up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"

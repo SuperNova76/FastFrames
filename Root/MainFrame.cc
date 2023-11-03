@@ -49,14 +49,18 @@ void MainFrame::executeHistograms() {
         }
     }
 
+    LOG(INFO) << "-------------------------------------\n";
     LOG(INFO) << "Started the main histogram processing\n";
+    LOG(INFO) << "-------------------------------------\n";
     std::size_t sampleN(1);
     for (const auto& isample : m_config->samples()) {
+        LOG(INFO) << "\n";
         LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
         std::vector<SystematicHisto> systHistos;
         std::size_t uniqueSampleN(1);
         ROOT::RDF::RNode* node(nullptr);
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
+            LOG(INFO) << "\n";
             LOG(INFO) << "Processing unique sample: " << iUniqueSampleID << ", " << uniqueSampleN << " out of " << isample->uniqueSampleIDs().size() << " unique samples\n";
 
             auto currentHistos = this->processUniqueSample(isample, iUniqueSampleID);
@@ -98,7 +102,7 @@ std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniq
     if (filePaths.empty()) return std::make_pair(std::vector<SystematicHisto>{}, df);
 
     // we could use any file from the list, use the first one
-    m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), m_config->systematics());
+    m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
 
     ROOT::RDF::RNode mainNode = df;
     //ROOT::RDF::Experimental::AddProgressBar(mainNode);
