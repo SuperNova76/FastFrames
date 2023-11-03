@@ -27,12 +27,21 @@ class ConfigSettingWrapper {
         }
 
 
-        std::string outputPath() const  {
-            return m_configSetting->outputPath();
+        std::string outputPathHistograms() const  {
+            return m_configSetting->outputPathHistograms();
         };
 
-        void setOutputPath(const std::string& outputPath) {
-            m_configSetting->setOutputPath(outputPath);
+        void setOutputPathHistograms(const std::string& outputPathHistograms) {
+            m_configSetting->setOutputPathHistograms(outputPathHistograms);
+        };
+
+
+        std::string outputPathNtuples() const  {
+            return m_configSetting->outputPathNtuples();
+        };
+
+        void setOutputPathNtuples(const std::string& outputPathNtuples) {
+            m_configSetting->setOutputPathNtuples(outputPathNtuples);
         };
 
 

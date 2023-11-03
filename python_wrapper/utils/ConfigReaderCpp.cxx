@@ -44,9 +44,13 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // getPtr
         .def("getPtr",          &ConfigSettingWrapper::getPtr)
 
-        // outputPath
-        .def("outputPath",      &ConfigSettingWrapper::outputPath)
-        .def("setOutputPath",   &ConfigSettingWrapper::setOutputPath)
+        // outputPathHistograms
+        .def("outputPathHistograms",      &ConfigSettingWrapper::outputPathHistograms)
+        .def("setOutputPathHistograms",   &ConfigSettingWrapper::setOutputPathHistograms)
+
+        // outputPathNtuples
+        .def("outputPathNtuples",      &ConfigSettingWrapper::outputPathNtuples)
+        .def("setOutputPathNtuples",   &ConfigSettingWrapper::setOutputPathNtuples)
 
         // inputSumWeightsPath
         .def("inputSumWeightsPath",    &ConfigSettingWrapper::inputSumWeightsPath)

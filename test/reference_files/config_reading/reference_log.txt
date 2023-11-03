@@ -1,7 +1,8 @@
 
 General block:
 	inputSumWeightsPath:  test/input/sum_of_weights.txt
-	outputPath:  
+	outputPathHistograms:  
+	outputPathNtuples:  
 	inputFilelistPath:  test/input/filelist.txt
 	numCPU:  4
 	automaticSystematics:  False

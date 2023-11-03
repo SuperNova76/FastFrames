@@ -12,7 +12,8 @@ class BlockReaderGeneral:
         Logger.set_log_level(self.debug_level)
         self.input_filelist_path = self.options_getter.get("input_filelist_path")
         self.input_sumweights_path = self.options_getter.get("input_sumweights_path")
-        self.output_path = self.options_getter.get("output_path")
+        self.output_path_histograms = self.options_getter.get("output_path_histograms", "")
+        self.output_path_ntuples    = self.options_getter.get("output_path_ntuples", "")
         self.default_sumweights = self.options_getter.get("default_sumweights", "NOSYS")
         self.default_event_weights = self.options_getter.get("default_event_weights")
         self.default_reco_tree_name = self.options_getter.get("default_reco_tree_name")
@@ -36,7 +37,8 @@ class BlockReaderGeneral:
 
     def __set_config_reader_cpp(self):
         self.cpp_class.setInputSumWeightsPath(self.input_sumweights_path)
-        self.cpp_class.setOutputPath(self.output_path)
+        self.cpp_class.setOutputPathHistograms(self.output_path_histograms)
+        self.cpp_class.setOutputPathNtuples(self.output_path_ntuples)
         self.cpp_class.setInputFilelistPath(self.input_filelist_path)
         self.cpp_class.setNumCPU(self.number_of_cpus)
         self.cpp_class.setCustomFrameName(self.custom_frame_name)

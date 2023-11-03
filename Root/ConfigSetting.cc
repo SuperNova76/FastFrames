@@ -14,7 +14,8 @@
 #include <algorithm>
 
 ConfigSetting::ConfigSetting() :
-m_outputPath(""),
+m_outputPathHistograms(""),
+m_outputPathNtuples(""),
 m_inputSumWeightsPath("test/input/sum_of_weights.txt"),
 m_inputFilelistPath("test/input/filelist.txt"),
 m_regions({}),

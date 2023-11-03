@@ -73,7 +73,8 @@ if __name__ == "__main__":
 
     print("\nGeneral block:")
     print("\tinputSumWeightsPath: ", block_general.cpp_class.inputSumWeightsPath())
-    print("\toutputPath: ", block_general.cpp_class.outputPath())
+    print("\toutputPathHistograms: ", block_general.cpp_class.outputPathHistograms())
+    print("\toutputPathNtuples: ", block_general.cpp_class.outputPathNtuples())
     print("\tinputFilelistPath: ", block_general.cpp_class.inputFilelistPath())
     print("\tnumCPU: ", block_general.cpp_class.numCPU())
     print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
