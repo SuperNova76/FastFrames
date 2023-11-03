@@ -59,6 +59,22 @@ public:
   virtual void executeHistograms();
 
   /**
+   * @brief Method to produce ntuples
+   *
+   */
+  virtual void executeNtuples();
+
+  /**
+   * @brief Allows to define new observables for ntupling
+   * Users can override this and add their own variables
+   *
+   * @param node The input RDF node
+   * @return ROOT::RDF::RNode the output node containg the new columns
+   */
+  virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode node,
+                                                 const UniqueSampleID& /*sampleID*/) {return node;}
+
+  /**
    * @brief Allows to define new observables
    * Users can override this and add their own variables
    *
@@ -115,21 +131,6 @@ public:
     return node;
   }
 
-  /**
-   * @brief Set run ntuples
-   *
-   * @param flag
-   */
-  void setRunNtuples(const bool flag) {m_runNtuples = flag;}
-
-  /**
-   * @brief runNtuples
-   *
-   * @return true
-   * @return false
-   */
-  bool runNtuples() const {return m_runNtuples;}
-
 private:
 
   /**
@@ -143,6 +144,15 @@ private:
   std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> processUniqueSample(const std::shared_ptr<Sample>& sample,
                                                                                 const UniqueSampleID& uniqueSampleID);
 
+
+  /**
+   * @brief Main processing function for ntuples
+   *
+   * @param sample
+   * @param id
+   */
+  void processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
+                                 const UniqueSampleID& id);
   /**
    * @brief Get name of a filter after applying the systematic replacements
    *
@@ -154,6 +164,15 @@ private:
   std::string systematicFilter(const std::shared_ptr<Sample>& sample,
                                const std::shared_ptr<Systematic>& systematic,
                                const std::shared_ptr<Region>& region) const;
+
+  /**
+   * @brief Returns OR for all systematic variation for a given nominal selection
+   * This is needed for apply filters on ntuples
+   *
+   * @param sample
+   * @return std::string
+   */
+  std::string systematicOrFilter(const std::shared_ptr<Sample>& sample) const;
 
   /**
    * @brief Get name of a variable after applying the systematic replacements
@@ -292,12 +311,6 @@ protected:
    *
    */
   SystematicReplacer m_systReplacer;
-
-  /**
-   * @brief run ntuples?
-   *
-   */
-  bool m_runNtuples = false;
 
   /**
    * @brief Needed for ROOT to generate the dictionary
