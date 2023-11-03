@@ -172,6 +172,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addUniqueSampleID
         .def("addUniqueSampleID",   &SampleWrapper::addUniqueSampleID)
+        .def("nUniqueSampleIDs",    &SampleWrapper::nUniqueSampleIDs)
+        .def("uniqueSampleIDstring",&SampleWrapper::uniqueSampleIDstring)
 
         // addSystematic
         .def("addSystematic",       &SampleWrapper::addSystematic)

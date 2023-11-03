@@ -112,6 +112,10 @@ if __name__ == "__main__":
         print("\tweight: ", sample.cpp_class.weight())
         print("\tsystematic: ", sample.systematic)
         print("\tselection_suffix: \"" + sample.selection_suffix + "\"")
+        print("\tUnique samples:")
+        n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
+        for i_unique_id in range(n_unique_samples):
+            print("\t\t", sample.cpp_class.uniqueSampleIDstring(i_unique_id))
         print("\n")
 
     systematics = config_reader.systematics

@@ -93,8 +93,8 @@ samples:
     regions: ["Electron", "Muon"]
 
   - name: "Wjets_FS"
-    dsids: [700341]
-    campaigns: ["mc20e"]
+    dsids: [700341,700342,700344]
+    campaigns: ["mc20a","mc20e"]
     simulation_type: "mc"
     regions: ["Electron"]
 

@@ -50,6 +50,15 @@ class SampleWrapper {
             return m_sample->skipSystematicRegionCombination(*syst, *reg);
         };
 
+
+        unsigned int nUniqueSampleIDs() const {return (m_sample->uniqueSampleIDs()).size();};
+
+        std::string uniqueSampleIDstring(unsigned int i) const {
+            const std::vector<UniqueSampleID> &uniqueSamples = m_sample->uniqueSampleIDs();
+            const UniqueSampleID &id = uniqueSamples.at(i);
+            return "(" + std::to_string(id.dsid()) + "," + id.campaign() + "," + id.simulation() + ")";
+        };
+
     private:
         std::shared_ptr<Sample> m_sample;
 

@@ -64,6 +64,8 @@ Samples block:
 	weight:  (weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS)*(my_suffix_weight_for_ttbar)
 	systematic:  ['NOSYS', 'JET_BJES_Response__1up', 'JET_BJES_Response__1down', '0p5muF_0p5muR_NNPDF31_NLO_0118', 'btag_B_1__up', 'btag_B_1__down']
 	selection_suffix: ""
+	Unique samples:
+		 (410470,mc20e,mc)
 
 
 	name:  Zjets_light
@@ -71,6 +73,9 @@ Samples block:
 	weight:  weight_mc_NOSYS
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down']
 	selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
+	Unique samples:
+		 (364100,mc20e,mc)
+		 (364101,mc20e,mc)
 
 
 	name:  Wjets_FS
@@ -78,6 +83,13 @@ Samples block:
 	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down']
 	selection_suffix: ""
+	Unique samples:
+		 (700341,mc20a,mc)
+		 (700342,mc20a,mc)
+		 (700344,mc20a,mc)
+		 (700341,mc20e,mc)
+		 (700342,mc20e,mc)
+		 (700344,mc20e,mc)
 
 
 	name:  Data
@@ -85,6 +97,8 @@ Samples block:
 	weight:  1
 	systematic:  ['bootstraps']
 	selection_suffix: ""
+	Unique samples:
+		 (0,2018,data)
 
 
 
