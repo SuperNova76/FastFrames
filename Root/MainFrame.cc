@@ -94,6 +94,23 @@ void MainFrame::executeHistograms() {
     }
 }
 
+void MainFrame::executeNtuples() {
+    LOG(INFO) << "----------------------------------\n";
+    LOG(INFO) << "Started the main ntuple processing\n";
+    LOG(INFO) << "----------------------------------\n";
+    std::size_t sampleN(1);
+    for (const auto& isample : m_config->ntuple()->samples()) {
+        LOG(INFO) << "\n";
+        LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
+        std::size_t uniqueSampleN(1);
+        for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
+            LOG(INFO) << "\n";
+            LOG(INFO) << "Processing unique sample: " << iUniqueSampleID << ", " << uniqueSampleN << " out of " << isample->uniqueSampleIDs().size() << " unique samples\n";
+            this->processUniqueSampleNtuple(isample, iUniqueSampleID);
+        }
+    }
+}
+
 std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
                                                                                          const UniqueSampleID& uniqueSampleID) {
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
@@ -123,6 +140,43 @@ std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniq
     return std::make_pair(std::move(histoContainer), mainNode);
 }
 
+void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
+                                          const UniqueSampleID& id) {
+
+    const std::vector<std::string>& filePaths = m_metadataManager.filePaths(id);
+
+    ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
+    if (filePaths.empty()) return;
+
+    // we could use any file from the list, use the first one
+    m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
+
+    ROOT::RDF::RNode mainNode = df;
+    //ROOT::RDF::Experimental::AddProgressBar(mainNode);
+
+    mainNode = this->addWeightColumns(mainNode, sample, id);
+
+    // add TLorentzVectors for objects
+    mainNode = this->addTLorentzVectors(mainNode);
+
+    // this is the method users will be able to override
+    mainNode = this->defineVariablesNtuple(mainNode, id);
+
+    // apply filter
+    mainNode.Filter(this->systematicOrFilter(sample));
+
+    //store the file
+    const std::string fileName = sample->name() + "_" + std::to_string(id.dsid())+"_" + id.campaign() + "_"+id.simulation() + ".root";
+    const std::vector<std::string> selectedBranches = m_config->ntuple()->listOfSelectedBranches(m_systReplacer.allBranches());
+    LOG(VERBOSE) << "List of selected branches:\n";
+    for (const auto& iselected : selectedBranches) {
+        LOG(VERBOSE) << "\t" << iselected << "\n";
+    }
+    LOG(INFO) << "Triggering event loop!\n";
+    mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
+    LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
+}
+
 std::string MainFrame::systematicFilter(const std::shared_ptr<Sample>& sample,
                                         const std::shared_ptr<Systematic>& systematic,
                                         const std::shared_ptr<Region>& region) const {
@@ -136,6 +190,22 @@ std::string MainFrame::systematicFilter(const std::shared_ptr<Sample>& sample,
                  << systematic->name() << ", original selection: " << nominalSelection << ", systematic selection: " << systSelection << "\n";
 
     return systSelection;
+}
+
+std::string MainFrame::systematicOrFilter(const std::shared_ptr<Sample>& sample) const {
+    const std::string& nominalSelection = m_config->ntuple()->selection();
+
+    std::string result = "(" + nominalSelection + ")";
+    for (const auto& isyst : sample->systematics()) {
+        const std::string systSelection = m_systReplacer.replaceString(nominalSelection, isyst);
+        if (systSelection == nominalSelection) continue;
+
+        result += "||(" + systSelection + ")";
+    }
+
+    LOG(DEBUG) << "Final selection used for filtering ntuples: " << result << "\n";
+
+    return result;
 }
 
 std::string MainFrame::systematicVariable(const Variable& variable,
@@ -216,6 +286,11 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
     }
     LOG(VERBOSE) << "Unique sample: " << id << ", systematic: " << systematic->name() << ", weight formula: " << formula << ", new weight name: " << systName << "\n";
 
+    if (m_systReplacer.branchExists(systName)) {
+        LOG(DEBUG) << "Branch: " << systName << " already exists, not adding it\n";
+        return mainNode;
+    }
+
     // add it to the list of branches
     m_systReplacer.addBranch(systName);
 
@@ -259,6 +334,10 @@ ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
     }
 
     const std::string vectorName = object + "_TLV_NOSYS";
+    if (m_systReplacer.branchExists(vectorName)) {
+        LOG(DEBUG) << "Branch: " << vectorName << " already exists, not adding it (nor its uncertainty variations)\n";
+        return mainNode;
+    }
     mainNode = this->systematicDefine(mainNode, vectorName, createTLV, objectColumns);
 
     return mainNode;

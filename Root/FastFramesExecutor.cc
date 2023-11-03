@@ -52,11 +52,13 @@ void FastFramesExecutor::runFastFrames() const {
 
     baseFrame->setConfig(m_config);
 
-    baseFrame->setRunNtuples(m_runNtuples);
-
     baseFrame->init();
 
-    baseFrame->executeHistograms();
+    if (m_runNtuples) {
+      baseFrame->executeNtuples();
+    } else {
+      baseFrame->executeHistograms();
+    }
 
     LOG(INFO) << "Finished running the code\n";
 }
