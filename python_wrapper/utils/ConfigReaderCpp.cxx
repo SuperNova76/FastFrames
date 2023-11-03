@@ -10,6 +10,7 @@
 #include "python_wrapper/headers/UniqueSampleIDWrapper.h"
 #include "python_wrapper/headers/SampleWrapper.h"
 #include "python_wrapper/headers/SystematicWrapper.h"
+#include "python_wrapper/headers/NtupleWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -24,6 +25,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         init<long long unsigned int>())
         // runFastFrames
         .def("runFastFrames",   &FastFramesExecutorWrapper::runFastFrames)
+
+        // setRunNtuples
+        .def("setRunNtuples",   &FastFramesExecutorWrapper::setRunNtuples)
+        .def("runNtuples",      &FastFramesExecutorWrapper::runNtuples)
     ;
 
 
@@ -44,9 +49,13 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // getPtr
         .def("getPtr",          &ConfigSettingWrapper::getPtr)
 
-        // outputPath
-        .def("outputPath",      &ConfigSettingWrapper::outputPath)
-        .def("setOutputPath",   &ConfigSettingWrapper::setOutputPath)
+        // outputPathHistograms
+        .def("outputPathHistograms",      &ConfigSettingWrapper::outputPathHistograms)
+        .def("setOutputPathHistograms",   &ConfigSettingWrapper::setOutputPathHistograms)
+
+        // outputPathNtuples
+        .def("outputPathNtuples",      &ConfigSettingWrapper::outputPathNtuples)
+        .def("setOutputPathNtuples",   &ConfigSettingWrapper::setOutputPathNtuples)
 
         // inputSumWeightsPath
         .def("inputSumWeightsPath",    &ConfigSettingWrapper::inputSumWeightsPath)
@@ -74,6 +83,11 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getNumberOfXsectionFiles",    &ConfigSettingWrapper::getNumberOfXsectionFiles)
         .def("getXsectionFile",             &ConfigSettingWrapper::getXsectionFile)
 
+        // TLorentzVectors
+        .def("addTLorentzVector",           &ConfigSettingWrapper::addTLorentzVector)
+        .def("getNumberOfTLorentzVectors",  &ConfigSettingWrapper::getNumberOfTLorentzVectors)
+        .def("getTLorentzVector",           &ConfigSettingWrapper::getTLorentzVector)
+
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
@@ -91,6 +105,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("automaticSystematics",     &ConfigSettingWrapper::automaticSystematics)
 
         .def("clearSystematics",  &ConfigSettingWrapper::clearSystematics)
+
+        .def("setNtuple",   &ConfigSettingWrapper::setNtuple)
     ;
 
     class_<UniqueSampleIDWrapper>("ConfigReaderCppUniqueSampleID",
@@ -213,6 +229,32 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // isNominal
         .def("isNominal",       &SystematicWrapper::isNominal)
+    ;
+
+    class_<NtupleWrapper>("NtupleWrapper",
+        init<>())
+
+        // getPtr
+        .def("getPtr",          &NtupleWrapper::getPtr)
+
+        // addSample
+        .def("addSample",       &NtupleWrapper::addSample)
+        .def("nSamples",        &NtupleWrapper::nSamples)
+        .def("sampleName",      &NtupleWrapper::sampleName)
+
+        // setSelection
+        .def("setSelection",    &NtupleWrapper::setSelection)
+        .def("selection",       &NtupleWrapper::selection)
+
+        // addBranch
+        .def("addBranch",       &NtupleWrapper::addBranch)
+        .def("nBranches",       &NtupleWrapper::nBranches)
+        .def("branchName",      &NtupleWrapper::branchName)
+
+        // addExcludedBranch
+        .def("addExcludedBranch",   &NtupleWrapper::addExcludedBranch)
+        .def("nExcludedBranches",   &NtupleWrapper::nExcludedBranches)
+        .def("excludedBranchName",  &NtupleWrapper::excludedBranchName)
     ;
 
 }

@@ -12,13 +12,15 @@ class BlockReaderGeneral:
         Logger.set_log_level(self.debug_level)
         self.input_filelist_path = self.options_getter.get("input_filelist_path")
         self.input_sumweights_path = self.options_getter.get("input_sumweights_path")
-        self.output_path = self.options_getter.get("output_path")
+        self.output_path_histograms = self.options_getter.get("output_path_histograms", "")
+        self.output_path_ntuples    = self.options_getter.get("output_path_ntuples", "")
         self.default_sumweights = self.options_getter.get("default_sumweights", "NOSYS")
         self.default_event_weights = self.options_getter.get("default_event_weights")
         self.default_reco_tree_name = self.options_getter.get("default_reco_tree_name")
         self.custom_frame_name = self.options_getter.get("custom_frame_name", "")
         self.automatic_systematics = self.options_getter.get("automatic_systematics", False)
         self.nominal_only = self.options_getter.get("nominal_only", False)
+        self.create_tlorentz_vectors_for = self.options_getter.get("create_tlorentz_vectors_for", [])
         self.number_of_cpus = self.options_getter.get("number_of_cpus", 1)
         self.xsection_files = self.options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"])
         self.__set_luminosity_map(self.options_getter.get("luminosity"))
@@ -36,7 +38,8 @@ class BlockReaderGeneral:
 
     def __set_config_reader_cpp(self):
         self.cpp_class.setInputSumWeightsPath(self.input_sumweights_path)
-        self.cpp_class.setOutputPath(self.output_path)
+        self.cpp_class.setOutputPathHistograms(self.output_path_histograms)
+        self.cpp_class.setOutputPathNtuples(self.output_path_ntuples)
         self.cpp_class.setInputFilelistPath(self.input_filelist_path)
         self.cpp_class.setNumCPU(self.number_of_cpus)
         self.cpp_class.setCustomFrameName(self.custom_frame_name)
@@ -48,6 +51,9 @@ class BlockReaderGeneral:
 
         for xsection_file in self.xsection_files:
             self.cpp_class.addXsectionFile(xsection_file)
+
+        for tlorentz_vector in self.create_tlorentz_vectors_for:
+            self.cpp_class.addTLorentzVector(tlorentz_vector)
 
     def add_region(self, region):
         self.cpp_class.addRegion(region.cpp_class.getPtr())

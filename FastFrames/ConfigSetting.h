@@ -44,18 +44,33 @@ public:
 
 
   /**
-   * @brief Path the output folder
+   * @brief Path the output folder for histogram option
    *
    * @return std::string
    */
-  std::string outputPath() const {return m_outputPath;}
+  std::string outputPathHistograms() const {return m_outputPathHistograms;}
 
   /**
-   * @brief Set path to the output folder
+   * @brief Set path to the output folder for histogram option
    *
-   * @param outputPath
+   * @param outputPathHistograms
    */
-  void setOutputPath(const std::string& outputPath) {m_outputPath = outputPath;}
+  void setOutputPathHistograms(const std::string& outputPathHistograms) {m_outputPathHistograms = outputPathHistograms;}
+
+  /**
+   * @brief Path the output folder for Ntuple option
+   *
+   * @return std::string
+   */
+  std::string outputPathNtuples() const {return m_outputPathNtuples;}
+
+  /**
+   * @brief Set path to the output folder for Ntuple option
+   *
+   * @param outputPathNtuples
+   */
+  void setOutputPathNtuples(const std::string& outputPathNtuples) {m_outputPathNtuples = outputPathNtuples;}
+
 
   /**
    * @brief Path to the sum weights file
@@ -149,6 +164,20 @@ public:
    * @return const std::vector<std::string>&
    */
   const std::vector<std::string>& xSectionFiles() const {return m_xSectionFiles;};
+
+  /**
+   * @brief Add TlorentzVector to create
+   *
+   * @param tlorentz_vector_to_create
+   */
+  void addTLorentzVector(const std::string& tlorentz_vector_to_create)  { m_tLorentzVectors.push_back(tlorentz_vector_to_create); };
+
+  /**
+   * @brief Get TlorentzVector to create
+   *
+   * @return const std::vector<std::string>&
+   */
+  const std::vector<std::string>& tLorentzVectors() const {return m_tLorentzVectors;};
 
   /**
    * @brief Add one Region
@@ -262,7 +291,8 @@ public:
   const std::shared_ptr<Ntuple>& ntuple() const {return m_ntuple;}
 
 private:
-  std::string m_outputPath;
+  std::string m_outputPathHistograms;
+  std::string m_outputPathNtuples;
   std::string m_inputSumWeightsPath;
   std::string m_inputFilelistPath;
   std::string m_customFrameName;
@@ -273,6 +303,7 @@ private:
 
   std::map<std::string, float> m_luminosity_map;
   std::vector<std::string>     m_xSectionFiles ;
+  std::vector<std::string>     m_tLorentzVectors;
 
   std::vector<std::shared_ptr<Region> > m_regions;
   std::vector<std::shared_ptr<Sample> > m_samples;

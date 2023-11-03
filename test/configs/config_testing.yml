@@ -6,14 +6,13 @@ general:
   debug_level: WARNING
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
-  output_path: ""
-  #output_path_histo: ""
-  #output_path_ntuples: ""
+  output_path_histograms: ""
+  output_path_ntuples: ""
   default_sumweights: "NOSYS"
   default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
   default_reco_tree_name: "reco"
   xsection_files: ["data/XSection-MC16-13TeV.data"]
-#  create_tlorententz_vectors_for: [] # optional
+  create_tlorentz_vectors_for: ["jet"]
 #  custom_frame_name: "my_custom_frame_name.so"
   #automatic_systematics: True
   nominal_only: False
@@ -25,13 +24,13 @@ general:
     mc23a: 456677
     mc23c: 545676
 
-#ntuples:
-#  samples: [] # optional, if not provided, use all samples
-#  exclude_samples: []
-#  selection: "el_pt_NOSYS[0] > 30000" # optional
-#  branches: [] # optional, if not provided, use all branches
-#  #exclude_branches: [] # optional, if not provided, use all branches
-#  regions: [] # optional
+ntuples:
+  samples: ["ttbar_FS", "Zjets_b"] # optional, if not provided, use all samples
+  #exclude_samples: []
+  #selection: "el_pt_NOSYS[4] > 30000" # optional
+  branches: ["my_first_branch", "my_second_branch"] # optional, if not provided, use all branches
+  exclude_branches: ["my_first_excluded_branch", "my_second_excluded_branch"] # optional, if not provided, use all branches
+  regions: [ "Electron", "Muon"] # optional
 
 
 regions:

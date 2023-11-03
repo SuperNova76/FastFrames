@@ -418,7 +418,7 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         LOG(WARNING) << "No histograms available for sample: " << sample->name() << "\n";
     }
 
-    std::string fileName = m_config->outputPath();
+    std::string fileName = m_config->outputPathHistograms();
     fileName += fileName.empty() ? "" : "/";
     fileName += sample->name() + ".root";
 

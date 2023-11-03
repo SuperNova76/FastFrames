@@ -19,6 +19,9 @@ class FastFramesExecutorWrapper {
 
         void runFastFrames() const  { m_executor->runFastFrames(); };
 
+        void setRunNtuples(const bool flag) {m_executor->setRunNtuples(flag);};
+        bool runNtuples() const {return m_executor->runNtuples();};
+
     private:
         std::shared_ptr<FastFramesExecutor> m_executor;
 

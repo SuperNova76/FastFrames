@@ -27,12 +27,21 @@ class ConfigSettingWrapper {
         }
 
 
-        std::string outputPath() const  {
-            return m_configSetting->outputPath();
+        std::string outputPathHistograms() const  {
+            return m_configSetting->outputPathHistograms();
         };
 
-        void setOutputPath(const std::string& outputPath) {
-            m_configSetting->setOutputPath(outputPath);
+        void setOutputPathHistograms(const std::string& outputPathHistograms) {
+            m_configSetting->setOutputPathHistograms(outputPathHistograms);
+        };
+
+
+        std::string outputPathNtuples() const  {
+            return m_configSetting->outputPathNtuples();
+        };
+
+        void setOutputPathNtuples(const std::string& outputPathNtuples) {
+            m_configSetting->setOutputPathNtuples(outputPathNtuples);
         };
 
 
@@ -97,6 +106,18 @@ class ConfigSettingWrapper {
             return (m_configSetting->xSectionFiles()).at(i_file);
         }
 
+        // TLorentz vectors to create
+        void addTLorentzVector(const std::string& name) {
+            m_configSetting->addTLorentzVector(name);
+        };
+
+        unsigned int getNumberOfTLorentzVectors() const {
+            return (m_configSetting->tLorentzVectors()).size();
+        };
+
+        std::string getTLorentzVector(unsigned int i_vector) const  {
+            return (m_configSetting->tLorentzVectors()).at(i_vector);
+        }
 
         // regions
         void addRegion(long long int region_shared_ptr_int) {
@@ -134,6 +155,11 @@ class ConfigSettingWrapper {
 
         void clearSystematics() {
             m_configSetting->clearSystematics();
+        };
+
+        void setNtuple(long long int ntuple_shared_ptr_int) {
+            const std::shared_ptr<Ntuple> *ntuple = reinterpret_cast<std::shared_ptr<Ntuple> *>(ntuple_shared_ptr_int);
+            m_configSetting->setNtuple(*ntuple);
         };
 
     private:

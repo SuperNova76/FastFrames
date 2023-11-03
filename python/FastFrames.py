@@ -28,4 +28,9 @@ if __name__ == "__main__":
     Logger.set_log_level(config_reader.block_general.debug_level)
 
     fast_frames_executor = FastFramesExecutor(config_reader.block_general.cpp_class.getPtr())
+
+    if len(sys.argv) > 3:
+        step = sys.argv[2].lower()
+        if step == "ntuple" or step == "ntuples":
+            fast_frames_executor.setRunNtuple(True)
     fast_frames_executor.runFastFrames()
