@@ -114,7 +114,9 @@ void MainFrame::executeNtuples() {
             LOG(INFO) << "\n";
             LOG(INFO) << "Processing unique sample: " << iUniqueSampleID << ", " << uniqueSampleN << " out of " << isample->uniqueSampleIDs().size() << " unique samples\n";
             this->processUniqueSampleNtuple(isample, iUniqueSampleID);
+            ++uniqueSampleN;
         }
+        ++sampleN;
     }
 }
 
