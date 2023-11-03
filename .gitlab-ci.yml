@@ -136,7 +136,7 @@ run_python:
      expire_in: 1d
 
 config_reader_comparison:
-  stage: run
+  stage: compare_results
   needs:
     - compile
   script:
