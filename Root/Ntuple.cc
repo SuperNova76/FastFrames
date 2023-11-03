@@ -14,6 +14,10 @@ Ntuple::Ntuple() noexcept {
 std::vector<std::string> Ntuple::listOfSelectedBranches(const std::vector<std::string>& allBranches) const {
     std::vector<std::string> result;
 
+    if (m_branches.empty() && m_excludedBrances.empty()) {
+        return allBranches;
+    }
+
     for (const auto& ibranch : allBranches) {
         bool selected(false);
         for (const auto& imatch : m_branches) {

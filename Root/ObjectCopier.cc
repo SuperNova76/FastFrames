@@ -40,11 +40,13 @@ void ObjectCopier::readObjectInfo() {
         TClass *cl = gROOT->GetClass(classname.c_str());
         if (!cl) continue;
         if (cl->InheritsFrom("TTree")) continue; // skip trees
-        if (cl->InheritsFrom("TH1")) {
+        if (cl->InheritsFrom("TH1F")) {
             m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Histogram));
+            continue;
         }
         if (cl->InheritsFrom("TNamed")) {
             m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Named));
+            continue;
         }
     }
 }

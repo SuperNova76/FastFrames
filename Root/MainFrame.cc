@@ -96,6 +96,12 @@ void MainFrame::executeHistograms() {
 }
 
 void MainFrame::executeNtuples() {
+    if (m_config->nominalOnly() || m_config->automaticSystematics()) {
+        for (auto& isample : m_config->ntuple()->samples()) {
+            this->readAutomaticSystematics(isample, m_config->nominalOnly());
+        }
+    }
+
     LOG(INFO) << "----------------------------------\n";
     LOG(INFO) << "Started the main ntuple processing\n";
     LOG(INFO) << "----------------------------------\n";
@@ -173,7 +179,8 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     mainNode.Filter(this->systematicOrFilter(sample));
 
     //store the file
-    const std::string fileName = sample->name() + "_" + std::to_string(id.dsid())+"_" + id.campaign() + "_"+id.simulation() + ".root";
+    const std::string folder = m_config->outputPathNtuples().empty() ? "" : m_config->outputPathNtuples() + "/";
+    const std::string fileName = folder + sample->name() + "_" + std::to_string(id.dsid())+"_" + id.campaign() + "_"+id.simulation() + ".root";
     const std::vector<std::string> selectedBranches = m_config->ntuple()->listOfSelectedBranches(m_systReplacer.allBranches());
     LOG(VERBOSE) << "List of selected branches:\n";
     for (const auto& iselected : selectedBranches) {
@@ -186,7 +193,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     LOG(INFO) << "Copying metadata from the original files\n";
     ObjectCopier copier(filePaths);
     copier.readObjectInfo();
-    copier.copyObjectsTo("");
+    copier.copyObjectsTo(fileName);
     LOG(INFO) << "Finished copying metadata from the original files\n";
 }
 
@@ -312,7 +319,7 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
 }
 
 ROOT::RDF::RNode MainFrame::addTLorentzVectors(ROOT::RDF::RNode mainNode) {
-    std::vector<std::string> objects = {"jet", "el"};
+    const std::vector<std::string>& objects = m_config->tLorentzVectors();
     for (const auto& iobject : objects) {
         mainNode = this->addSingleTLorentzVector(mainNode, iobject);
     }

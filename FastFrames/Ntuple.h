@@ -43,7 +43,14 @@ public:
    *
    * @return const std::vector<std::shared_ptr<Sample> >&
    */
-  const std::vector<std::shared_ptr<Sample> >& samples() {return m_samples;}
+  const std::vector<std::shared_ptr<Sample> >& samples() const {return m_samples;}
+
+  /**
+   * @brief Return samples (non const)
+   *
+   * @return std::vector<std::shared_ptr<Sample> >&
+   */
+  std::vector<std::shared_ptr<Sample> >& samples() {return m_samples;}
 
   /**
    * @brief Set selection

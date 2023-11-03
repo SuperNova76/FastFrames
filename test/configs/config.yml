@@ -9,11 +9,16 @@ general:
   default_reco_tree_name: "reco"
   xsection_files: ["data/XSection-MC16-13TeV.data"]
 #  custom_frame_name: "my_custom_frame_name.so"
-#  automatic_systematics: True
+  automatic_systematics: True
   nominal_only: False
+  create_tlorentz_vectors_for: ["jet", "el"]
   number_of_cpus: 4
   luminosity:
     mc23c: 1
+
+ntuples:
+  selection: "el_pt_NOSYS[0] > 30000" # optional
+  branches: ["weight_total_.*", "jet_pt_.*"] # optional, if not provided, use all branches
 
 regions:
   - name: "Electron"
