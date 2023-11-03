@@ -210,6 +210,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addRegion
         .def("addRegion",       &SystematicWrapper::addRegion)
+
+        // isNominal
+        .def("isNominal",       &SystematicWrapper::isNominal)
     ;
 
 }

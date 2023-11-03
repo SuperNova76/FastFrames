@@ -103,8 +103,8 @@ class BlockReaderSample:
                 if self.name not in systematic.samples:
                     continue
 
-            # for data samples, we do not want to add systematics by default
-            if systematic.samples is None and self.is_data:
+            # for data samples, we do not want to add systematics by default (other than nominal)
+            if systematic.samples is None and self.is_data and not systematic.cpp_class.isNominal():
                 continue
 
             self.cpp_class.addSystematic(systematic.cpp_class.getPtr())

@@ -95,7 +95,7 @@ Samples block:
 	name:  Data
 	regions:  ['Electron', 'Muon']
 	weight:  1
-	systematic:  ['bootstraps1']
+	systematic:  ['NOSYS', 'bootstraps1']
 	selection_suffix: ""
 	Unique samples:
 		 (0,2018,data)
