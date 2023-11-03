@@ -35,9 +35,20 @@ class BlockReaderSystematic:
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
-        self.samples    = self.options_getter.get("samples",None)
+        self.samples         = self.options_getter.get("samples",None)
+        self.exclude_samples = self.options_getter.get("exclude_samples",None)
+        if not self.samples is None and not self.exclude_samples is None:
+            Logger.log_message("ERROR", "Both samples and exclude_samples specified for systematic {}".format(self.name))
+            exit(1)
+
+
         self.campaigns  = self.options_getter.get("campaigns",None)
+
         self.regions    = self.options_getter.get("regions",None)
+        self.exclude_regions = self.options_getter.get("exclude_regions",None)
+        if not self.regions is None and not self.exclude_regions is None:
+            Logger.log_message("ERROR", "Both regions and exclude_regions specified for systematic {}".format(self.name))
+            exit(1)
 
         self._check_unused_options()
 
@@ -49,7 +60,8 @@ class BlockReaderSystematic:
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
             for region_name in regions:
-                self.regions.append(region_name)
+                if self.exclude_regions is None or region_name not in self.exclude_regions:
+                    self.regions.append(region_name)
         else:   # if regions are specified, check if they exist
             for region in self.regions:
                 if region not in regions:
@@ -63,12 +75,16 @@ class BlockReaderSystematic:
         """
         Check if all samples specified for the systematic exist
         """
-        if self.samples is None:
-            return
-        for sample in self.samples:
-            if sample not in sample_dict:
-                Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
-                exit(1)
+        if not self.samples is None:
+            for sample in self.samples:
+                if sample not in sample_dict:
+                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                    exit(1)
+        if not self.exclude_samples is None:
+            for sample in self.exclude_samples:
+                if sample not in sample_dict:
+                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                    exit(1)
 
     def _check_unused_variation_options(variations_opts_getter : VariationsOptionsGetter) -> None:
         unused = variations_opts_getter.get_unused_options()

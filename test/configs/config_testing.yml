@@ -7,10 +7,13 @@ general:
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path: ""
+  #output_path_histo: ""
+  #output_path_ntuples: ""
   default_sumweights: "NOSYS"
   default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
   default_reco_tree_name: "reco"
   xsection_files: ["data/XSection-MC16-13TeV.data"]
+#  create_tlorententz_vectors_for: [] # optional
 #  custom_frame_name: "my_custom_frame_name.so"
   #automatic_systematics: True
   nominal_only: False
@@ -21,6 +24,15 @@ general:
     mc20e: 654321
     mc23a: 456677
     mc23c: 545676
+
+#ntuples:
+#  samples: [] # optional, if not provided, use all samples
+#  exclude_samples: []
+#  selection: "el_pt_NOSYS[0] > 30000" # optional
+#  branches: [] # optional, if not provided, use all branches
+#  #exclude_branches: [] # optional, if not provided, use all branches
+#  regions: [] # optional
+
 
 regions:
   - name: "Electron"
@@ -92,6 +104,14 @@ samples:
     simulation_type: "mc"
     regions: ["Electron", "Muon"]
 
+  - name: "Zjets_b"
+    dsids: [364100,364101]
+    campaigns: ["mc20e"]
+    event_weights: "weight_mc_NOSYS"
+    selection_suffix: "n_bjets_truth > 0"
+    simulation_type: "mc"
+    exclude_regions: ["Muon"]
+
   - name: "Wjets_FS"
     dsids: [700341,700342,700344]
     campaigns: ["mc20a","mc20e"]
@@ -124,6 +144,12 @@ systematics:
   - variation:
       up: "btag_B_1__up"
       down: "btag_B_1__down"
+
+  - exclude_samples: ["Zjets_light"]
+    exclude_regions: ["Muon"]
+    variation:
+      up: "btag_C_1__up"
+      down: "btag_C_1__down"
 
   - samples: ["Data"]
     #campaigns: ["mc20e"]
