@@ -3,7 +3,7 @@
 ##########################################################################################################################################
 
 general:
-  debug_level: VERBOSE
+  debug_level: WARNING
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path: ""
@@ -12,15 +12,15 @@ general:
   default_reco_tree_name: "reco"
   xsection_files: ["data/XSection-MC16-13TeV.data"]
 #  custom_frame_name: "my_custom_frame_name.so"
-  automatic_systematics: True
+  #automatic_systematics: True
   nominal_only: False
   number_of_cpus: 4
   luminosity:
     mc20a: 123456
-    mc20d: 111111
+    #mc20d: 111111 #default one from C++ part
     mc20e: 654321
     mc23a: 456677
-    #mc23c: 545676 #default one from C++ part
+    mc23c: 545676
 
 regions:
   - name: "Electron"
@@ -96,7 +96,7 @@ samples:
     dsids: [700341]
     campaigns: ["mc20e"]
     simulation_type: "mc"
-    regions: ["Electron", "Muon"]
+    regions: ["Electron"]
 
   - name: "Data"
     simulation_type: "data"
