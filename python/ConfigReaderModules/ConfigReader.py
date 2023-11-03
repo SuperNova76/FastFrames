@@ -3,6 +3,7 @@ from sys import argv
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
+from BlockReaderNtuple import BlockReaderNtuple
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 
 from python_wrapper.python.logger import Logger
@@ -41,7 +42,6 @@ class ConfigReader:
             nominal.adjust_regions(self.regions)
             self.systematics[nominal.name] = nominal
 
-
             for systematic_dict in data["systematics"]:
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general)
                 for systematic in systematic_list:
@@ -60,6 +60,14 @@ class ConfigReader:
                 Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.regions)))
                 sample.adjust_systematics(self.systematics)
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
+
+            self.block_ntuple = BlockReaderNtuple([])
+            self.has_ntuple_block = "ntuples" in data
+            if self.has_ntuple_block:
+                self.block_ntuple = BlockReaderNtuple(data["ntuples"])
+                self.block_ntuple.adjust_regions(self.regions)
+                self.block_ntuple.adjust_samples(self.samples)
+            self.block_general.cpp_class.setNtuple(self.block_ntuple.cpp_class.getPtr())
 
 
 if __name__ == "__main__":
@@ -87,6 +95,23 @@ if __name__ == "__main__":
     ntlorentz_vectors = block_general.cpp_class.getNumberOfTLorentzVectors()
     for i_tlorentz_vector in range(ntlorentz_vectors):
         print("\t\t", block_general.cpp_class.getTLorentzVector(i_tlorentz_vector))
+
+    if config_reader.has_ntuple_block:
+        print("\nNtuple block:")
+        print("\tselection: ", config_reader.block_ntuple.cpp_class.selection())
+        n_samples = config_reader.block_ntuple.cpp_class.nSamples()
+        samples = [config_reader.block_ntuple.cpp_class.sampleName(i_sample) for i_sample in range(n_samples)]
+        print("\tsamples: [", ",".join(samples), "]")
+
+        n_branches = config_reader.block_ntuple.cpp_class.nBranches()
+        branches = [config_reader.block_ntuple.cpp_class.branchName(i_branch) for i_branch in range(n_branches)]
+        print("\tbranches: [", ",".join(branches), "]")
+
+        n_excluded_branches = config_reader.block_ntuple.cpp_class.nExcludedBranches()
+        excluded_branches = [config_reader.block_ntuple.cpp_class.excludedBranchName(i_branch) for i_branch in range(n_excluded_branches)]
+        print("\texcluded_branches: [", ",".join(excluded_branches), "]")
+
+
 
     regions = config_reader.regions
 

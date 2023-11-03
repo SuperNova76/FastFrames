@@ -24,13 +24,13 @@ general:
     mc23a: 456677
     mc23c: 545676
 
-#ntuples:
-#  samples: [] # optional, if not provided, use all samples
-#  exclude_samples: []
-#  selection: "el_pt_NOSYS[0] > 30000" # optional
-#  branches: [] # optional, if not provided, use all branches
-#  #exclude_branches: [] # optional, if not provided, use all branches
-#  regions: [] # optional
+ntuples:
+  samples: ["ttbar_FS", "Zjets_b"] # optional, if not provided, use all samples
+  #exclude_samples: []
+  #selection: "el_pt_NOSYS[4] > 30000" # optional
+  branches: ["my_first_branch", "my_second_branch"] # optional, if not provided, use all branches
+  exclude_branches: ["my_first_excluded_branch", "my_second_excluded_branch"] # optional, if not provided, use all branches
+  regions: [ "Electron", "Muon"] # optional
 
 
 regions:

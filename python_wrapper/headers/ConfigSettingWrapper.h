@@ -157,6 +157,11 @@ class ConfigSettingWrapper {
             m_configSetting->clearSystematics();
         };
 
+        void setNtuple(long long int ntuple_shared_ptr_int) {
+            const std::shared_ptr<Ntuple> *ntuple = reinterpret_cast<std::shared_ptr<Ntuple> *>(ntuple_shared_ptr_int);
+            m_configSetting->setNtuple(*ntuple);
+        };
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };

@@ -10,6 +10,7 @@
 #include "python_wrapper/headers/UniqueSampleIDWrapper.h"
 #include "python_wrapper/headers/SampleWrapper.h"
 #include "python_wrapper/headers/SystematicWrapper.h"
+#include "python_wrapper/headers/NtupleWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -100,6 +101,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("automaticSystematics",     &ConfigSettingWrapper::automaticSystematics)
 
         .def("clearSystematics",  &ConfigSettingWrapper::clearSystematics)
+
+        .def("setNtuple",   &ConfigSettingWrapper::setNtuple)
     ;
 
     class_<UniqueSampleIDWrapper>("ConfigReaderCppUniqueSampleID",
@@ -222,6 +225,32 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // isNominal
         .def("isNominal",       &SystematicWrapper::isNominal)
+    ;
+
+    class_<NtupleWrapper>("NtupleWrapper",
+        init<>())
+
+        // getPtr
+        .def("getPtr",          &NtupleWrapper::getPtr)
+
+        // addSample
+        .def("addSample",       &NtupleWrapper::addSample)
+        .def("nSamples",        &NtupleWrapper::nSamples)
+        .def("sampleName",      &NtupleWrapper::sampleName)
+
+        // setSelection
+        .def("setSelection",    &NtupleWrapper::setSelection)
+        .def("selection",       &NtupleWrapper::selection)
+
+        // addBranch
+        .def("addBranch",       &NtupleWrapper::addBranch)
+        .def("nBranches",       &NtupleWrapper::nBranches)
+        .def("branchName",      &NtupleWrapper::branchName)
+
+        // addExcludedBranch
+        .def("addExcludedBranch",   &NtupleWrapper::addExcludedBranch)
+        .def("nExcludedBranches",   &NtupleWrapper::nExcludedBranches)
+        .def("excludedBranchName",  &NtupleWrapper::excludedBranchName)
     ;
 
 }

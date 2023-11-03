@@ -13,6 +13,12 @@ General block:
 	create_tlorentz_vectors_for:
 		 jet
 
+Ntuple block:
+	selection:  ((el_pt_NOSYS[0] > 30000) || (mu_pt_NOSYS[0] > 30000))
+	samples: [ ttbar_FS,Zjets_b ]
+	branches: [ my_first_branch,my_second_branch ]
+	excluded_branches: [ my_first_excluded_branch,my_second_excluded_branch ]
+
 
 Regions block:
 
