@@ -166,6 +166,20 @@ public:
   const std::vector<std::string>& xSectionFiles() const {return m_xSectionFiles;};
 
   /**
+   * @brief Add TlorentzVector to create
+   *
+   * @param tlorentz_vector_to_create
+   */
+  void addTLorentzVector(const std::string& tlorentz_vector_to_create)  { m_tLorentzVectors.push_back(tlorentz_vector_to_create); };
+
+  /**
+   * @brief Get TlorentzVector to create
+   *
+   * @return const std::vector<std::string>&
+   */
+  const std::vector<std::string>& tLorentzVectors() const {return m_tLorentzVectors;};
+
+  /**
    * @brief Add one Region
    *
    * @param region
@@ -289,6 +303,7 @@ private:
 
   std::map<std::string, float> m_luminosity_map;
   std::vector<std::string>     m_xSectionFiles ;
+  std::vector<std::string>     m_tLorentzVectors;
 
   std::vector<std::shared_ptr<Region> > m_regions;
   std::vector<std::shared_ptr<Sample> > m_samples;

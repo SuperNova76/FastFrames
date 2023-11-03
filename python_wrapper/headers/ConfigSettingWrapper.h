@@ -106,6 +106,18 @@ class ConfigSettingWrapper {
             return (m_configSetting->xSectionFiles()).at(i_file);
         }
 
+        // TLorentz vectors to create
+        void addTLorentzVector(const std::string& name) {
+            m_configSetting->addTLorentzVector(name);
+        };
+
+        unsigned int getNumberOfTLorentzVectors() const {
+            return (m_configSetting->tLorentzVectors()).size();
+        };
+
+        std::string getTLorentzVector(unsigned int i_vector) const  {
+            return (m_configSetting->tLorentzVectors()).at(i_vector);
+        }
 
         // regions
         void addRegion(long long int region_shared_ptr_int) {

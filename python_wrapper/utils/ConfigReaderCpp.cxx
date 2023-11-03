@@ -78,6 +78,11 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getNumberOfXsectionFiles",    &ConfigSettingWrapper::getNumberOfXsectionFiles)
         .def("getXsectionFile",             &ConfigSettingWrapper::getXsectionFile)
 
+        // TLorentzVectors
+        .def("addTLorentzVector",           &ConfigSettingWrapper::addTLorentzVector)
+        .def("getNumberOfTLorentzVectors",  &ConfigSettingWrapper::getNumberOfTLorentzVectors)
+        .def("getTLorentzVector",           &ConfigSettingWrapper::getTLorentzVector)
+
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)

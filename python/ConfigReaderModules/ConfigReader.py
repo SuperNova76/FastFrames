@@ -83,6 +83,11 @@ if __name__ == "__main__":
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 
+    print("\tcreate_tlorentz_vectors_for:")
+    ntlorentz_vectors = block_general.cpp_class.getNumberOfTLorentzVectors()
+    for i_tlorentz_vector in range(ntlorentz_vectors):
+        print("\t\t", block_general.cpp_class.getTLorentzVector(i_tlorentz_vector))
+
     regions = config_reader.regions
 
     print("\n\nRegions block:\n")
