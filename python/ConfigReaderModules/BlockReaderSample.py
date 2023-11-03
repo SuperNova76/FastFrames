@@ -104,9 +104,14 @@ class BlockReaderSample:
     def adjust_systematics(self, systematics_all : dict):
         self.systematic = []
         for systematic_name, systematic in systematics_all.items():
-            # check if system has explicit list of samples. If so, does it contain this sample?
+            # check if systematics has explicit list of samples. If so, does it contain this sample?
             if systematic.samples is not None:
                 if self.name not in systematic.samples:
+                    continue
+
+            # check if systematics has explicit list of exclude_samples. If so, does it contain this sample?
+            if systematic.exclude_samples is not None:
+                if self.name in systematic.exclude_samples:
                     continue
 
             # for data samples, we do not want to add systematics by default (other than nominal)

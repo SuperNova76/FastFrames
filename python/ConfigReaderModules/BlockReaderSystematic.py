@@ -35,7 +35,13 @@ class BlockReaderSystematic:
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
-        self.samples    = self.options_getter.get("samples",None)
+        self.samples         = self.options_getter.get("samples",None)
+        self.exclude_samples = self.options_getter.get("exclude_samples",None)
+        if not self.samples is None and not self.exclude_samples is None:
+            Logger.log_message("ERROR", "Both samples and exclude_samples specified for systematic {}".format(self.name))
+            exit(1)
+
+
         self.campaigns  = self.options_getter.get("campaigns",None)
         self.regions    = self.options_getter.get("regions",None)
 
@@ -63,12 +69,16 @@ class BlockReaderSystematic:
         """
         Check if all samples specified for the systematic exist
         """
-        if self.samples is None:
-            return
-        for sample in self.samples:
-            if sample not in sample_dict:
-                Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
-                exit(1)
+        if not self.samples is None:
+            for sample in self.samples:
+                if sample not in sample_dict:
+                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                    exit(1)
+        if not self.exclude_samples is None:
+            for sample in self.exclude_samples:
+                if sample not in sample_dict:
+                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                    exit(1)
 
     def _check_unused_variation_options(variations_opts_getter : VariationsOptionsGetter) -> None:
         unused = variations_opts_getter.get_unused_options()
