@@ -146,6 +146,7 @@ systematics:
       down: "btag_B_1__down"
 
   - exclude_samples: ["Zjets_light"]
+    exclude_regions: ["Muon"]
     variation:
       up: "btag_C_1__up"
       down: "btag_C_1__down"

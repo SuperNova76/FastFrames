@@ -152,13 +152,13 @@ Systematics block:
 
 
 	name:  btag_C_1__up
-	regions:  ['Electron', 'Muon']
+	regions:  ['Electron']
 	weight_suffix:  
 	sum_weights:  NOSYS
 
 
 	name:  btag_C_1__down
-	regions:  ['Electron', 'Muon']
+	regions:  ['Electron']
 	weight_suffix:  
 	sum_weights:  NOSYS
 
