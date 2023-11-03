@@ -44,6 +44,10 @@ class BlockReaderSample:
         self.selection_suffix = self.options_getter.get("selection","true")
 
         self.regions = self.options_getter.get("regions",None)
+        self.exclude_regions = self.options_getter.get("exclude_regions",None)
+        if not self.regions is None and not self.exclude_regions is None:
+            Logger.log_message("ERROR", "Both regions and exclude_regions specified for sample {}".format(self.name))
+            exit(1)
 
         self.systematic = []
 
@@ -83,6 +87,8 @@ class BlockReaderSample:
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
             for region_name in regions:
+                if self.exclude_regions is not None and region_name in self.exclude_regions:
+                    continue
                 self.regions.append(region_name)
         else:   # if regions are specified, check if they exist
             for region in self.regions:
