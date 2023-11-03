@@ -144,6 +144,8 @@ std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniq
     // this is the method users will be able to override
     mainNode = this->defineVariables(mainNode, uniqueSampleID);
 
+    m_systReplacer.printMaps();
+
     std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample);
 
     // retrieve the histograms;
@@ -176,6 +178,8 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
 
     // this is the method users will be able to override
     mainNode = this->defineVariablesNtuple(mainNode, id);
+
+    m_systReplacer.printMaps();
 
     // apply filter
     mainNode.Filter(this->systematicOrFilter(sample));
@@ -385,17 +389,11 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
             for (const auto& ivariable : ireg->variables()) {
                 VariableHisto variableHisto(ivariable.name());
 
-                ROOT::RDF::RResultPtr<TH1D> histogram;
-                if (ivariable.hasRegularBinning()) {
-                    histogram = filters.at(systIndex).at(regIndex).
-                                    Histo1D({"", ivariable.title().c_str(), ivariable.axisNbins(), ivariable.axisMin(), ivariable.axisMax()},
-                                    this->systematicVariable(ivariable, isyst), this->systematicWeight(isyst));
-                } else {
-                    const std::vector<double> binEdges = ivariable.binEdges();
-                    histogram = filters.at(systIndex).at(regIndex).
-                                    Histo1D({"", ivariable.title().c_str(), (int)(binEdges.size()-1), binEdges.data()},
-                                    this->systematicVariable(ivariable, isyst), this->systematicWeight(isyst));
-                }
+                ROOT::RDF::RResultPtr<TH1D> histogram = filters.at(systIndex).at(regIndex).Histo1D(
+                                                            ivariable.histoModel1D(),
+                                                            this->systematicVariable(ivariable, isyst),
+                                                            this->systematicWeight(isyst)
+                                                        );
 
                 if (!histogram) {
                     LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "

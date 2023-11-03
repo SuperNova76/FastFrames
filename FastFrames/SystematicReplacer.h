@@ -131,6 +131,12 @@ public:
    */
   void addVariableAndEffectiveSystematics(const std::string& variable, const std::vector<std::string>& systematics);
 
+  /**
+   * @brief Print the contents of the maps for systematic matching
+   *
+   */
+  void printMaps() const;
+
 private:
   /**
    * @brief map where the key is the name of the systematic

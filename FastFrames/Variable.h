@@ -8,6 +8,8 @@
 
 #include "FastFrames/Binning.h"
 
+#include "ROOT/RDFHelpers.hxx"
+
 #include <string>
 
 /**
@@ -126,6 +128,13 @@ public:
    * @return int
    */
   inline int axisNbins() const {return m_binning.nbins();}
+
+  /**
+   * @brief Get the 1D histogram model that is needed by RDataFrame
+   *
+   * @return ROOT::RDF::TH1DModel
+   */
+  ROOT::RDF::TH1DModel histoModel1D() const;
 
 private:
   std::string m_name;
