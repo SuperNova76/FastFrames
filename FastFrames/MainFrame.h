@@ -115,6 +115,21 @@ public:
     return node;
   }
 
+  /**
+   * @brief Set run ntuples
+   *
+   * @param flag
+   */
+  void setRunNtuples(const bool flag) {m_runNtuples = flag;}
+
+  /**
+   * @brief runNtuples
+   *
+   * @return true
+   * @return false
+   */
+  bool runNtuples() const {return m_runNtuples;}
+
 private:
 
   /**
@@ -278,6 +293,11 @@ protected:
    */
   SystematicReplacer m_systReplacer;
 
+  /**
+   * @brief run ntuples?
+   *
+   */
+  bool m_runNtuples = false;
 
   /**
    * @brief Needed for ROOT to generate the dictionary

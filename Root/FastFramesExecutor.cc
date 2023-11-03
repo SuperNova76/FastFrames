@@ -52,6 +52,8 @@ void FastFramesExecutor::runFastFrames() const {
 
     baseFrame->setConfig(m_config);
 
+    baseFrame->setRunNtuples(m_runNtuples);
+
     baseFrame->init();
 
     baseFrame->executeHistograms();

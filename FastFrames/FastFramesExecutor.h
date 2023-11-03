@@ -43,8 +43,24 @@ public:
    */
   void runFastFrames() const;
 
+  /**
+   * @brief Set the run ntuples flag
+   *
+   * @param flag
+   */
+  void setRunNtuples(const bool flag) {m_runNtuples = flag;}
+
+  /**
+   * @brief Run ntuples?
+   *
+   * @return true
+   * @return false
+   */
+  bool runNtuples() const {return m_runNtuples;}
+
 private:
 
   std::shared_ptr<ConfigSetting> m_config;
+  bool m_runNtuples = false;
 
 };
