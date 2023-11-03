@@ -25,14 +25,31 @@ class SampleWrapper {
 
         std::string selectionSuffix() const {return m_sample->selectionSuffix();};
 
-
+        // unique samples
         void addUniqueSampleID(const unsigned int dsid, const std::string& campaign, const std::string& simulation) {
             m_sample->addUniqueSampleID(UniqueSampleID(dsid, campaign, simulation));
         };
 
+        unsigned int nUniqueSampleIDs() const {return (m_sample->uniqueSampleIDs()).size();};
+
+        std::string uniqueSampleIDstring(unsigned int i) const {
+            const std::vector<UniqueSampleID> &uniqueSamples = m_sample->uniqueSampleIDs();
+            const UniqueSampleID &id = uniqueSamples.at(i);
+            return "(" + std::to_string(id.dsid()) + "," + id.campaign() + "," + id.simulation() + ")";
+        };
+
+        // systematics
         void addSystematic(unsigned long long int syst_shared_ptr_int) {
             const std::shared_ptr<Systematic> *syst = reinterpret_cast<std::shared_ptr<Systematic> *>(syst_shared_ptr_int);
             m_sample->addSystematic(*syst);
+        };
+
+        unsigned int nSystematics() const {return (m_sample->systematics()).size();};
+
+        unsigned long long getSystematicPtr(unsigned int i) const {
+            const std::vector<std::shared_ptr<Systematic>> &systematics = m_sample->systematics();
+            const std::shared_ptr<Systematic> &syst = systematics.at(i);
+            return reinterpret_cast<unsigned long long int>(&syst);
         };
 
         void addRegion(unsigned long long int reg_shared_ptr_int) {
@@ -49,6 +66,7 @@ class SampleWrapper {
             const std::shared_ptr<Region> *reg = reinterpret_cast<std::shared_ptr<Region> *>(reg_shared_ptr_int);
             return m_sample->skipSystematicRegionCombination(*syst, *reg);
         };
+
 
     private:
         std::shared_ptr<Sample> m_sample;

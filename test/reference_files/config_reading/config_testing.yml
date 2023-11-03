@@ -93,15 +93,14 @@ samples:
     regions: ["Electron", "Muon"]
 
   - name: "Wjets_FS"
-    dsids: [700341]
-    campaigns: ["mc20e"]
+    dsids: [700341,700342,700344]
+    campaigns: ["mc20a","mc20e"]
     simulation_type: "mc"
     regions: ["Electron"]
 
   - name: "Data"
     simulation_type: "data"
     campaigns: ["2018"]
-    systematic:  ["bootstraps"]
     regions: ["Electron", "Muon"]
 
 
@@ -125,13 +124,6 @@ systematics:
   - variation:
       up: "btag_B_1__up"
       down: "btag_B_1__down"
-
-  - samples: []
-    #campaigns: ["mc20e"]
-    #regions: ["Electron", "Muon"]
-    variation:
-      up: "bootstraps"
-      weight_suffix_up: "bootstrap_weight"
 
   - samples: ["Data"]
     #campaigns: ["mc20e"]

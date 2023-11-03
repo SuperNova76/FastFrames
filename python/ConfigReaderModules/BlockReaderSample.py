@@ -45,7 +45,7 @@ class BlockReaderSample:
 
         self.regions = self.options_getter.get("regions",None)
 
-        self.systematic = self.options_getter.get("systematic",None)
+        self.systematic = []
 
         self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1")
         self.weight_suffix = self.options_getter.get("weight_suffix", None)
@@ -96,27 +96,20 @@ class BlockReaderSample:
 
 
     def adjust_systematics(self, systematics_all : dict):
-        # if systematic list is not specified, add all systematics for MC samples, and add only explictelly mentioned systematics for data samples
-        if self.systematic is None:
-            self.systematic = []
-            for systematic_name, systematic in systematics_all.items():
-                # check if system has explicit list of samples. If so, does it contain this sample?
-                if systematic.samples is not None:
-                    if self.name not in systematic.samples:
-                        continue
-
-                # for data samples, we do not want to add systematics by default
-                if systematic.samples is None and self.is_data:
+        self.systematic = []
+        for systematic_name, systematic in systematics_all.items():
+            # check if system has explicit list of samples. If so, does it contain this sample?
+            if systematic.samples is not None:
+                if self.name not in systematic.samples:
                     continue
 
-                self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
-                self.systematic.append(systematic_name)
-        else:
-            for systematic_name in self.systematic:
-                if systematic_name not in systematics_all:
-                    Logger.log_message("ERROR", "Systematic {} specified for sample {} does not exist".format(systematic_name, self.name))
-                    exit(1)
-                self.cpp_class.addSystematic(systematics_all[systematic_name].cpp_class.getPtr())
+            # for data samples, we do not want to add systematics by default (other than nominal)
+            if systematic.samples is None and self.is_data and not systematic.cpp_class.isNominal():
+                continue
+
+            self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
+            self.systematic.append(systematic_name)
+
 
     def _set_cpp_class(self) -> None:
         """
@@ -133,4 +126,5 @@ class BlockReaderSample:
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
-            Logger.log_message("WARNING", "Key {} used in  sample block is not supported!".format(unused))
+            Logger.log_message("ERROR", "Key {} used in  sample block is not supported!".format(unused))
+            exit(1)

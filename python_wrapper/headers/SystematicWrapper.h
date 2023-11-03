@@ -29,6 +29,8 @@ class SystematicWrapper {
             m_systematic->addRegion(*reg);
         };
 
+        bool isNominal() const {return m_systematic->isNominal();};
+
 
     private:
         std::shared_ptr<Systematic> m_systematic;

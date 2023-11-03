@@ -73,12 +73,14 @@ class BlockReaderSystematic:
     def _check_unused_variation_options(variations_opts_getter : VariationsOptionsGetter) -> None:
         unused = variations_opts_getter.get_unused_options()
         if len(unused) > 0:
-            Logger.log_message("WARNING", "Key {} used in systematic variation block is not supported!".format(unused))
+            Logger.log_message("ERROR", "Key {} used in systematic variation block is not supported!".format(unused))
+            exit(1)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
-            Logger.log_message("WARNING", "Key {} used in systematic block is not supported!".format(unused))
+            Logger.log_message("ERROR", "Key {} used in systematic block is not supported!".format(unused))
+            exit(1)
 
 def read_systematics_variations(input_dict : dict, block_reader_general : BlockReaderGeneral = None) -> list:
     """

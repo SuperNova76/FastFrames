@@ -23,6 +23,10 @@ class BlockReaderVariable:
         self.cpp_class.setTitle(self.title)
 
     def __read_binning(self, binning_dict : dict):
+        if binning_dict is None:
+            Logger.log_message("ERROR", "No binning specified for variable {}".format(self.name))
+            exit(1)
+
         binning_options_getter = BlockOptionsGetter(binning_dict)
         binning_min = binning_options_getter.get("min", 0)
         binning_max = binning_options_getter.get("max", 0)
@@ -35,15 +39,26 @@ class BlockReaderVariable:
 
         regular_binning = binning_min < binning_max and binning_nbins > 0
         if not ((len(binning_bin_edges) != 0)  ^ regular_binning):
-            raise ValueError("Could not read the binning, please specify only bin edges, or only range and nbins: " + str(binning_dict))
+            Logger.log_message("ERROR","Could not read the binning, please specify only bin edges, or only range and nbins: " + str(binning_dict))
+            exit(1)
 
         if len(binning_bin_edges) != 0:
+            if len(binning_bin_edges) < 2:
+                Logger.log_message("ERROR", "Binning for variable {} has less than 2 bin edges".format(self.name))
+                exit(1)
             bin_edges_str = ",".join([str(x) for x in binning_bin_edges])
             self.cpp_class.setBinningIrregular(bin_edges_str)
         else:
+            if binning_nbins < 1:
+                Logger.log_message("ERROR", "Binning for variable {} has less than 1 bin".format(self.name))
+                exit(1)
+            if binning_min >= binning_max:
+                Logger.log_message("ERROR", "Binning for variable {} has min >= max".format(self.name))
+                exit(1)
             self.cpp_class.setBinningRegular(binning_min, binning_max, binning_nbins)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
-            Logger.log_message("WARNING", "Key {} used in variable block is not supported!".format(unused))
+            Logger.log_message("ERROR", "Key {} used in variable block is not supported!".format(unused))
+            exit(1)
