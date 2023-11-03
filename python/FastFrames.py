@@ -23,6 +23,7 @@ if __name__ == "__main__":
         raise ValueError("Please specify the path to the config file as the first argument")
 
     config_file_path = sys.argv[1]
+    Logger.log_message("INFO", "Going to read the config: " + config_file_path)
     config_reader = ConfigReader(config_file_path)
     Logger.set_log_level(config_reader.block_general.debug_level)
 

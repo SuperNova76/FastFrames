@@ -9,7 +9,6 @@ from python_wrapper.python.logger import Logger
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
-        Logger.log_message("INFO", "Going to read the config: " + config_file_path)
         with open(config_file_path, "r") as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
 
