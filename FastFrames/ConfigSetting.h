@@ -7,6 +7,7 @@
 #pragma once
 
 #include "FastFrames/Logger.h"
+#include "FastFrames/Ntuple.h"
 #include "FastFrames/Region.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
@@ -246,6 +247,20 @@ public:
    */
   void addUniqueSystematic(const std::shared_ptr<Systematic>& syst);
 
+  /**
+   * @brief Set ntuple
+   *
+   * @param ntuple
+   */
+  void setNtuple(const std::shared_ptr<Ntuple>& ntuple) {m_ntuple = ntuple;}
+
+  /**
+   * @brief Get ntuple
+   *
+   * @return const std::shared_ptr<Ntuple>&
+   */
+  const std::shared_ptr<Ntuple>& ntuple() const {return m_ntuple;}
+
 private:
   std::string m_outputPath;
   std::string m_inputSumWeightsPath;
@@ -262,5 +277,6 @@ private:
   std::vector<std::shared_ptr<Region> > m_regions;
   std::vector<std::shared_ptr<Sample> > m_samples;
   std::vector<std::shared_ptr<Systematic> > m_systematics;
+  std::shared_ptr<Ntuple> m_ntuple;
 
 };
