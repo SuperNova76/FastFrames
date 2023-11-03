@@ -8,6 +8,7 @@
 #include "FastFrames/MainFrame.h"
 
 #include "FastFrames/Logger.h"
+#include "FastFrames/ObjectCopier.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/UniqueSampleID.h"
 
@@ -116,7 +117,10 @@ std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniq
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
 
     ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
-    if (filePaths.empty()) return std::make_pair(std::vector<SystematicHisto>{}, df);
+    if (filePaths.empty()) {
+        LOG(WARNING) << "UniqueSample: " << uniqueSampleID << " has no files, will not produce histograms\n";
+        return std::make_pair(std::vector<SystematicHisto>{}, df);
+    }
 
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
@@ -146,7 +150,10 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(id);
 
     ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
-    if (filePaths.empty()) return;
+    if (filePaths.empty()) {
+        LOG(WARNING) << "UniqueSample: " << id << " has no files, will not produce output ntuple\n";
+        return;
+    }
 
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
@@ -175,6 +182,12 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     LOG(INFO) << "Triggering event loop!\n";
     mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
     LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
+
+    LOG(INFO) << "Copying metadata from the original files\n";
+    ObjectCopier copier(filePaths);
+    copier.readObjectInfo();
+    copier.copyObjectsTo("");
+    LOG(INFO) << "Finished copying metadata from the original files\n";
 }
 
 std::string MainFrame::systematicFilter(const std::shared_ptr<Sample>& sample,
