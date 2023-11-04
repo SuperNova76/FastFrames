@@ -72,9 +72,33 @@ public:
    */
   inline const std::vector<Variable>& variables() const {return m_variables;}
 
+  /**
+   * @brief Add variable combination for 2D histograms
+   *
+   * @param v1
+   * @param v2
+   */
+  void addVariableCombination(const std::string& v1, const std::string& v2) {m_variableCombinations.emplace_back(std::make_pair(v1, v2));}
+
+  /**
+   * @brief Get variable combinations
+   *
+   * @return const std::vector<std::pair<std::string, std::string> >&
+   */
+  inline const std::vector<std::pair<std::string, std::string> >& variableCombinations() const {return m_variableCombinations;}
+
+  /**
+   * @brief Retrieve variable by its name
+   *
+   * @param name
+   * @return const Variable&
+   */
+  const Variable& variableByName(const std::string& name) const;
+
 private:
 
   std::string m_name;
   std::string m_selection;
   std::vector<Variable> m_variables;
+  std::vector<std::pair<std::string, std::string> > m_variableCombinations;
 };
