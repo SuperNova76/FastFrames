@@ -1,7 +1,5 @@
-# FastFrames [![build status](https://gitlab.cern.ch/atlas-amglab/fastframes/badges/main/pipeline.svg "build status")](https://gitlab.cern.ch/atlas-amglab/fastframes/commits/main)
+# FastFrames
 
-
-[__Doxygen documentation__](https://atlas-project-topreconstruction.web.cern.ch/fastframesdocumentation/index.html)
 
 ## Install requirements (locally)
 
