@@ -4,16 +4,16 @@
  *
  */
 
-
 #include "FastFrames/MainFrame.h"
 
 #include "FastFrames/Logger.h"
 #include "FastFrames/ObjectCopier.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/UniqueSampleID.h"
+#include "FastFrames/Utils.h"
 
+#include "TChain.h"
 #include "TSystem.h"
-
 #include "Math/Vector4D.h"
 #include "ROOT/RDFHelpers.hxx"
 
@@ -123,12 +123,15 @@ void MainFrame::executeNtuples() {
 std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
                                                                                          const UniqueSampleID& uniqueSampleID) {
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
-
-    ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
     if (filePaths.empty()) {
         LOG(WARNING) << "UniqueSample: " << uniqueSampleID << " has no files, will not produce histograms\n";
-        return std::make_pair(std::vector<SystematicHisto>{}, df);
+        ROOT::RDataFrame tmp("", {});
+        return std::make_pair(std::vector<SystematicHisto>{}, tmp);
     }
+
+    std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), filePaths);
+
+    ROOT::RDataFrame df(*recoChain.release());
 
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
