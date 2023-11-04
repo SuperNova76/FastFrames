@@ -409,6 +409,32 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
                 regionHisto.addVariableHisto(std::move(variableHisto));
             }
 
+            for (const auto& combinations : ireg->variableCombinations()) {
+                const Variable& v1 = ireg->variableByName(combinations.first);
+                const Variable& v2 = ireg->variableByName(combinations.second);
+
+                const std::string name = v1.name() + "_vs_" + v2.name();
+
+                VariableHisto2D variableHisto2D(name);
+                ROOT::RDF::RResultPtr<TH2D> histogram2D = filters.at(systIndex).at(regIndex).Histo2D(
+                                                            Utils::histoModel2D(v1, v2),
+                                                            this->systematicVariable(v1, isyst),
+                                                            this->systematicVariable(v2, isyst),
+                                                            this->systematicWeight(isyst)
+                                                        );
+
+                if (!histogram2D) {
+                    LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
+                               << isyst->name() << ", region: " << ireg->name() << " and variable combination: " << v1.name() << " & " << v2.name() << " is empty!\n";
+                    throw std::runtime_error("");
+
+                }
+
+                variableHisto2D.setHisto(histogram2D);
+
+                regionHisto.addVariableHisto2D(std::move(variableHisto2D));
+            }
+
             systematicHisto.addRegionHisto(std::move(regionHisto));
             ++regIndex;
         }
@@ -451,9 +477,17 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         out->mkdir(isystHist.name().c_str());
         out->cd(isystHist.name().c_str());
         for (const auto& iregionHist : isystHist.regionHistos()) {
+
+            // 1D histograms
             for (const auto& ivariableHist : iregionHist.variableHistos()) {
                 const std::string histoName = StringOperations::replaceString(ivariableHist.name(), "_NOSYS", "") + "_" + iregionHist.name();
                 ivariableHist.histo()->Write(histoName.c_str());
+            }
+
+            // 2D histograms
+            for (const auto& ivariableHist2D : iregionHist.variableHistos2D()) {
+                const std::string histoName = StringOperations::replaceString(ivariableHist2D.name(), "_NOSYS", "") + "_" + iregionHist.name();
+                ivariableHist2D.histo()->Write(histoName.c_str());
             }
         }
     }
