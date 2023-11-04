@@ -389,51 +389,11 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
             }
             RegionHisto regionHisto(ireg->name());
 
-            for (const auto& ivariable : ireg->variables()) {
-                VariableHisto variableHisto(ivariable.name());
+            ROOT::RDF::RNode& node = filters.at(systIndex).at(regIndex);
 
-                ROOT::RDF::RResultPtr<TH1D> histogram = filters.at(systIndex).at(regIndex).Histo1D(
-                                                            ivariable.histoModel1D(),
-                                                            this->systematicVariable(ivariable, isyst),
-                                                            this->systematicWeight(isyst)
-                                                        );
+            this->processHistograms1D(&regionHisto, node, sample, ireg, isyst);
 
-                if (!histogram) {
-                    LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
-                               << isyst->name() << ", region: " << ireg->name() << " and variable: " << ivariable.name() << " is empty!\n";
-                    throw std::runtime_error("");
-
-                }
-                variableHisto.setHisto(histogram);
-
-                regionHisto.addVariableHisto(std::move(variableHisto));
-            }
-
-            for (const auto& combinations : ireg->variableCombinations()) {
-                const Variable& v1 = ireg->variableByName(combinations.first);
-                const Variable& v2 = ireg->variableByName(combinations.second);
-
-                const std::string name = v1.name() + "_vs_" + v2.name();
-
-                VariableHisto2D variableHisto2D(name);
-                ROOT::RDF::RResultPtr<TH2D> histogram2D = filters.at(systIndex).at(regIndex).Histo2D(
-                                                            Utils::histoModel2D(v1, v2),
-                                                            this->systematicVariable(v1, isyst),
-                                                            this->systematicVariable(v2, isyst),
-                                                            this->systematicWeight(isyst)
-                                                        );
-
-                if (!histogram2D) {
-                    LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
-                               << isyst->name() << ", region: " << ireg->name() << " and variable combination: " << v1.name() << " & " << v2.name() << " is empty!\n";
-                    throw std::runtime_error("");
-
-                }
-
-                variableHisto2D.setHisto(histogram2D);
-
-                regionHisto.addVariableHisto2D(std::move(variableHisto2D));
-            }
+            this->processHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
             systematicHisto.addRegionHisto(std::move(regionHisto));
             ++regIndex;
@@ -566,4 +526,64 @@ std::vector<std::string> MainFrame::automaticSystematicNames(const std::string& 
     }
 
     return result;
+}
+
+void MainFrame::processHistograms1D(RegionHisto* regionHisto,
+                                    ROOT::RDF::RNode& node,
+                                    const std::shared_ptr<Sample>& sample,
+                                    const std::shared_ptr<Region>& region,
+                                    const std::shared_ptr<Systematic>& systematic) const {
+
+    for (const auto& ivariable : region->variables()) {
+        VariableHisto variableHisto(ivariable.name());
+
+        ROOT::RDF::RResultPtr<TH1D> histogram = node.Histo1D(
+                                                    ivariable.histoModel1D(),
+                                                    this->systematicVariable(ivariable, systematic),
+                                                    this->systematicWeight(systematic)
+                                                );
+
+        if (!histogram) {
+            LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
+                       << systematic->name() << ", region: " << region->name() << " and variable: " << ivariable.name() << " is empty!\n";
+            throw std::runtime_error("");
+
+        }
+        variableHisto.setHisto(histogram);
+
+        regionHisto->addVariableHisto(std::move(variableHisto));
+    }
+}
+
+void MainFrame::processHistograms2D(RegionHisto* regionHisto,
+                                    ROOT::RDF::RNode& node,
+                                    const std::shared_ptr<Sample>& sample,
+                                    const std::shared_ptr<Region>& region,
+                                    const std::shared_ptr<Systematic>& systematic) const {
+
+    for (const auto& combinations : region->variableCombinations()) {
+        const Variable& v1 = region->variableByName(combinations.first);
+        const Variable& v2 = region->variableByName(combinations.second);
+
+        const std::string name = v1.name() + "_vs_" + v2.name();
+
+        VariableHisto2D variableHisto2D(name);
+        ROOT::RDF::RResultPtr<TH2D> histogram2D = node.Histo2D(
+                                                    Utils::histoModel2D(v1, v2),
+                                                    this->systematicVariable(v1, systematic),
+                                                    this->systematicVariable(v2, systematic),
+                                                    this->systematicWeight(systematic)
+                                                );
+
+        if (!histogram2D) {
+            LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
+                       << systematic->name() << ", region: " << region->name() << " and variable combination: " << v1.name() << " & " << v2.name() << " is empty!\n";
+            throw std::runtime_error("");
+
+        }
+
+        variableHisto2D.setHisto(histogram2D);
+
+        regionHisto->addVariableHisto2D(std::move(variableHisto2D));
+    }
 }

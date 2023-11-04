@@ -261,6 +261,37 @@ private:
   std::vector<SystematicHisto> processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,
                                                  const std::shared_ptr<Sample>& sample) const;
 
+
+  /**
+   * @brief Define 1D histograms with variables and systematics
+   *
+   * @param regionHisto RegionHisto to be filled
+   * @param node Filtered node
+   * @param sample Sample
+   * @param region Region
+   * @param systematic Systematic
+   */
+  void processHistograms1D(RegionHisto* regionHisto,
+                           ROOT::RDF::RNode& node,
+                           const std::shared_ptr<Sample>& sample,
+                           const std::shared_ptr<Region>& region,
+                           const std::shared_ptr<Systematic>& systematic) const;
+
+  /**
+   * @brief Define 2D histograms with variables and systematics
+   *
+   * @param regionHisto RegionHisto to be filled
+   * @param node Filtered node
+   * @param sample Sample
+   * @param region Region
+   * @param systematic Systematic
+   */
+  void processHistograms2D(RegionHisto* regionHisto,
+                           ROOT::RDF::RNode& node,
+                           const std::shared_ptr<Sample>& sample,
+                           const std::shared_ptr<Region>& region,
+                           const std::shared_ptr<Systematic>& systematic) const;
+
   /**
    * @brief Write histogram container to a ROOT file
    * This triggers event loop in case of just one UniqueSampleID per Sample!
