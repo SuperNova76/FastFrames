@@ -11,6 +11,7 @@
 #include "FastFrames/MetadataManager.h"
 #include "FastFrames/StringOperations.h"
 #include "FastFrames/SystematicReplacer.h"
+#include "FastFrames/Truth.h"
 
 #include "ROOT/RDataFrame.hxx"
 #include "TClass.h"
@@ -85,6 +86,16 @@ public:
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode node,
                                            const UniqueSampleID& /*sampleID*/) {return node;}
 
+  /**
+   * @brief Allows to define new obserbables for truth trees
+   *
+   * @param node The input RDF node
+   *
+   * @return ROOT::RDF::RNode the otput node containing the new columns
+   */
+  virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
+                                                const std::shared_ptr<Truth>& /*truth*/,
+                                                const UniqueSampleID& /*sampleID*/) {return node;}
   /**
    * @brief A helper method that make systematic copies of a provided nominal column
    * Name of the new varaible has to contain _NOSYS
@@ -259,11 +270,12 @@ private:
    *
    * @param filters List of nodes, each node represents per region, per systematic filter
    * @param sample current sample
+   * @param id UniqueSampleID
    * @return std::vector<SystematicHisto> container of the histograms
    */
   std::vector<SystematicHisto> processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,
-                                                 const std::shared_ptr<Sample>& sample) const;
-
+                                                 const std::shared_ptr<Sample>& sample,
+                                                 const UniqueSampleID& id);
 
   /**
    * @brief Define 1D histograms with variables and systematics
@@ -294,6 +306,40 @@ private:
                            const std::shared_ptr<Sample>& sample,
                            const std::shared_ptr<Region>& region,
                            const std::shared_ptr<Systematic>& systematic) const;
+
+  /**
+   * @brief Define 1D histograms with variables and systematics for unfolding
+   *
+   * @param regionHisto RegionHisto to be filled
+   * @param node Filtered node
+   * @param sample Sample
+   * @param id UniqueSampleID
+   * @param region Region
+   * @param systematic Systematic
+   */
+  void processTruthHistograms1D(RegionHisto* regionHisto,
+                                ROOT::RDF::RNode& node,
+                                const std::shared_ptr<Sample>& sample,
+                                const UniqueSampleID& id,
+                                const std::shared_ptr<Region>& region,
+                                const std::shared_ptr<Systematic>& systematic);
+
+  /**
+   * @brief Define 2D histograms with variables and systematics for unfolding
+   *
+   * @param regionHisto RegionHisto to be filled
+   * @param node Filtered node
+   * @param sample Sample
+   * @param id UniqueSampleID
+   * @param region Region
+   * @param systematic Systematic
+   */
+  void processTruthHistograms2D(RegionHisto* regionHisto,
+                                ROOT::RDF::RNode& node,
+                                const std::shared_ptr<Sample>& sample,
+                                const UniqueSampleID& id,
+                                const std::shared_ptr<Region>& region,
+                                const std::shared_ptr<Systematic>& systematic);
 
   /**
    * @brief Write histogram container to a ROOT file
@@ -349,7 +395,7 @@ private:
    */
   std::vector<VariableHisto> processTruthHistos(ROOT::RDF::RNode mainNode,
                                                 const std::shared_ptr<Sample>& sample,
-                                                const UniqueSampleID& id) const;
+                                                const UniqueSampleID& id);
 
 protected:
 
