@@ -7,6 +7,7 @@ from ConfigReaderCpp    import SampleWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
+from BlockReaderSampleTruth import BlockReaderSampleTruth
 
 
 class BlockReaderSample:
@@ -57,6 +58,12 @@ class BlockReaderSample:
         self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name)
 
         self.selection_suffix = self.options_getter.get("selection_suffix", "")
+
+        self.truth_dicts = self.options_getter.get("truth", None)
+        self.truths = []
+        if self.truth_dicts is not None:
+            for truth_dict in self.truth_dicts:
+                self.truths.append(BlockReaderSampleTruth(truth_dict))
 
         self.cpp_class = SampleWrapper(self.name)
 
