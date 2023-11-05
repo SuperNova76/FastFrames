@@ -26,7 +26,7 @@ void MainFrame::init() {
     m_metadataManager.readSumWeights( m_config->inputSumWeightsPath() );
     m_metadataManager.readXSectionFiles( m_config->xSectionFiles() );
 
-    // propagate luminosity information fomr config
+    // propagate luminosity information from config
     for (const auto& ilumi : m_config->luminosityMap()) {
         m_metadataManager.addLuminosity(ilumi.first, ilumi.second);
     }
@@ -180,7 +180,7 @@ std::tuple<std::vector<SystematicHisto>,
     std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample);
 
     // retrieve the histograms;
-    std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample, uniqueSampleID);
+    std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
 
     return std::make_tuple(std::move(histoContainer), std::move(truthHistos), mainNode);
 }
@@ -401,8 +401,7 @@ ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
 }
 
 std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,
-                                                          const std::shared_ptr<Sample>& sample,
-                                                          const UniqueSampleID& id) {
+                                                          const std::shared_ptr<Sample>& sample) {
 
     std::vector<SystematicHisto> result;
 
@@ -425,10 +424,10 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
             this->processHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
             if (sample->hasTruth()) {
-                this->processTruthHistograms1D(&regionHisto, node, sample, id, ireg, isyst);
+                this->processTruthHistograms1D(&regionHisto, node, sample, ireg, isyst);
             }
 
-            this->processTruthHistograms2D(&regionHisto, node, sample, id, ireg, isyst);
+            this->processTruthHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
             systematicHisto.addRegionHisto(std::move(regionHisto));
             ++regIndex;
@@ -636,16 +635,14 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
 void MainFrame::processTruthHistograms1D(RegionHisto* regionHisto,
                                          ROOT::RDF::RNode& node,
                                          const std::shared_ptr<Sample>& sample,
-                                         const UniqueSampleID& id,
                                          const std::shared_ptr<Region>& region,
                                          const std::shared_ptr<Systematic>& systematic) {
 
     for (const auto& itruth : sample->truths()) {
         if (!itruth->produceUnfolding()) continue;
-        auto customNode = this->defineVariablesTruth(node, itruth, id);
-        auto passedNode = customNode.Filter(itruth->selection());
+        auto passedNode = node.Filter(itruth->selection());
         const std::string failedSelection = "!(" + itruth->selection() + ")";
-        auto failedNode = customNode.Filter(failedSelection);
+        auto failedNode = node.Filter(failedSelection);
         for (const auto& imatch : itruth->matchedVariables()) {
             const Variable& truthVariable = itruth->variableByName(imatch.second);
 
@@ -681,13 +678,11 @@ void MainFrame::processTruthHistograms1D(RegionHisto* regionHisto,
 void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
                                          ROOT::RDF::RNode& node,
                                          const std::shared_ptr<Sample>& sample,
-                                         const UniqueSampleID& id,
                                          const std::shared_ptr<Region>& region,
                                          const std::shared_ptr<Systematic>& systematic) {
 
     for (const auto& itruth : sample->truths()) {
-        auto customNode = this->defineVariablesTruth(node, itruth, id);
-        auto passedNode = customNode.Filter(itruth->selection());
+        auto passedNode = node.Filter(itruth->selection());
         for (const auto& imatch : itruth->matchedVariables()) {
             const Variable& recoVariable  = region->variableByName(imatch.second);
             const Variable& truthVariable = itruth->variableByName(imatch.second);
