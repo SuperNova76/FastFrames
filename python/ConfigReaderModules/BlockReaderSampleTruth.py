@@ -3,7 +3,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-#from ConfigReaderCpp    import TruthWrapper
+from ConfigReaderCpp    import TruthWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
@@ -41,13 +41,32 @@ class BlockReaderSampleTruth:
             Logger.log_message("ERROR", "No variables specified for truth block {}".format(self.name))
             exit(1)
 
+        self.cpp_class = TruthWrapper(self.name)
+
         self._check_unused_options()
         self._read_variables()
+        self._read_match_variables()
+
+
+    def _set_cpp_class(self):
+        self.cpp_class.setTruthTreeName(self.truth_tree_name)
+        self.cpp_class.setSelection(self.selection)
+        self.cpp_class.setEventWeight(self.event_weight)
 
     def _read_variables(self) -> None:
         for variable_dict in self.variables:
             variable = BlockReaderVariable(variable_dict)
-            # TODO : Add variable object to C++ class
+            self.cpp_class.addVariable(variable.cpp_class.getPtr())
+
+    def _read_match_variables(self) -> None:
+        for match_variable_dict in self.match_variables:
+            options_getter = BlockOptionsGetter(match_variable_dict)
+            reco = options_getter.get("reco", None, [str])
+            truth = options_getter.get("truth", None, [str])
+            if reco is None or truth is None:
+                Logger.log_message("ERROR", "No reco or truth specified for match variable in truth block {}".format(self.name))
+                exit(1)
+            self.cpp_class.addMatchVariables(reco, truth)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()

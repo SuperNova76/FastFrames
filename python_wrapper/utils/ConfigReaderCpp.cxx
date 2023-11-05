@@ -11,6 +11,7 @@
 #include "python_wrapper/headers/SampleWrapper.h"
 #include "python_wrapper/headers/SystematicWrapper.h"
 #include "python_wrapper/headers/NtupleWrapper.h"
+#include "python_wrapper/headers/TruthWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -255,6 +256,39 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addExcludedBranch",   &NtupleWrapper::addExcludedBranch)
         .def("nExcludedBranches",   &NtupleWrapper::nExcludedBranches)
         .def("excludedBranchName",  &NtupleWrapper::excludedBranchName)
+    ;
+
+    class_<TruthWrapper>("TruthWrapper",
+        init<std::string> ())
+
+        // getPtr
+        .def("getPtr",          &TruthWrapper::getPtr)
+
+        // name
+        .def("name",            &TruthWrapper::name)
+
+        // setTruthTreeName
+        .def("setTruthTreeName",    &TruthWrapper::setTruthTreeName)
+        .def("truthTreeName",       &TruthWrapper::truthTreeName)
+
+        // setSelection
+        .def("setSelection",        &TruthWrapper::setSelection)
+        .def("selection",           &TruthWrapper::selection)
+
+        // setEventWeight
+        .def("setEventWeight",      &TruthWrapper::setEventWeight)
+        .def("eventWeight",         &TruthWrapper::eventWeight)
+
+        // addMatchVariables
+        .def("addMatchVariables",   &TruthWrapper::addMatchVariables)
+        .def("nMatchedVariables",   &TruthWrapper::nMatchedVariables)
+        .def("matchedVariables",    &TruthWrapper::matchedVariables)
+
+        // addVariable
+        .def("addVariable",         &TruthWrapper::addVariable)
+        .def("nVariables",          &TruthWrapper::nVariables)
+        .def("variableName",        &TruthWrapper::variableName)
+
     ;
 
 }
