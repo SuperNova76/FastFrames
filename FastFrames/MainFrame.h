@@ -359,6 +359,19 @@ private:
                          const bool printEventLoopCount) const;
 
   /**
+   * @brief Store efficiency and acceptance histograms
+   *
+   * @param outputFile
+   * @param histos
+   * @param truthHistos
+   * @param sample
+   */
+  void writeUnfoldingHistos(TFile* outputFile,
+                            const std::vector<SystematicHisto>& histos,
+                            const std::vector<VariableHisto>& truthHistos,
+                            const std::shared_ptr<Sample>& sample) const;
+
+  /**
    * @brief Add systematics from a file
    *
    * @param sample Sample to be added
