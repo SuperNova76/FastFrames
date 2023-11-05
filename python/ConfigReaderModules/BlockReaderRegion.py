@@ -12,14 +12,14 @@ from python_wrapper.python.logger import Logger
 class BlockReaderRegion:
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):
         self.options_getter = BlockOptionsGetter(input_dict)
-        self.name = self.options_getter.get("name")
-        self.selection = self.options_getter.get("selection")
+        self.name = self.options_getter.get("name", None, [str])
+        self.selection = self.options_getter.get("selection", None, [str])
         self.variables = []
 
         if block_reader_general is not None:
             self.__merge_settings(block_reader_general)
 
-        for variable_dict in self.options_getter.get("variables"):
+        for variable_dict in self.options_getter.get("variables", [], [list]):
             variable = BlockReaderVariable(variable_dict)
             self.variables.append(variable)
 

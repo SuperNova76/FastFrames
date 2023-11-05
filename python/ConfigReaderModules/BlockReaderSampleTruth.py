@@ -14,29 +14,29 @@ class BlockReaderSampleTruth:
     def __init__(self, input_dict : dict):
         self.options_getter = BlockOptionsGetter(input_dict)
 
-        self.name = self.options_getter.get("name", None)
+        self.name = self.options_getter.get("name", None, [str])
         if self.name is None:
             Logger.log_message("ERROR", "No name specified for truth block: " + str(self.options_getter))
             exit(1)
 
-        self.truth_tree_name = self.options_getter.get("truth_tree_name", None)
+        self.truth_tree_name = self.options_getter.get("truth_tree_name", None, [str])
         if self.truth_tree_name is None:
             Logger.log_message("ERROR", "No truth_tree_name specified for truth block {}".format(self.name))
             exit(1)
 
         self.selection = self.options_getter.get("selection", "")
 
-        self.event_weight = self.options_getter.get("event_weight", None)
+        self.event_weight = self.options_getter.get("event_weight", None, [str])
         if self.event_weight is None:
             Logger.log_message("ERROR", "No event_weight specified for truth block {}".format(self.name))
             exit(1)
 
-        self.match_variables = self.options_getter.get("match_variables", None)
+        self.match_variables = self.options_getter.get("match_variables", None, [list])
         if self.match_variables is None:
             Logger.log_message("ERROR", "No match_variables specified for truth block {}".format(self.name))
             exit(1)
 
-        self.variables = self.options_getter.get("variables", [])
+        self.variables = self.options_getter.get("variables", [], [list])
         if self.variables == []:
             Logger.log_message("ERROR", "No variables specified for truth block {}".format(self.name))
             exit(1)

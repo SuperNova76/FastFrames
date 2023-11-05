@@ -13,10 +13,14 @@ class BlockOptionsGetter:
             self.option_used[option] = False
 
 
-    def get(self, option : str, default_value = None):
+    def get(self, option : str, default_value = None, allowed_types = None):
         if option not in self.config:
             return default_value
         self.option_used[option] = True
+        return_value = self.config[option]
+        if allowed_types is not None and type(return_value) not in allowed_types:
+            Logger.log_message("ERROR", "Option {} has invalid type: {} (allowed types: {})".format(option, type(return_value), allowed_types))
+            exit(1)
         return self.config[option]
 
     def get_unused_options(self):
@@ -61,11 +65,16 @@ class VariationsOptionsGetter:
                 continue
             self.option_used[option_wo_variation_suffix] = False
 
-    def get(self, option : str, variation : str, default_value = None):
+    def get(self, option : str, variation : str, default_value = None, allowed_types = None):
         key = option + "_"*(len(option) != 0) + variation
-        if option in self.option_used:
-            self.option_used[option] = True
-        return self.config.get(key, default_value)
+        if key not in self.config:
+            return default_value
+        self.option_used[option] = True
+        return_value = self.config.get(key, default_value)
+        if allowed_types is not None and type(return_value) not in allowed_types:
+            Logger.log_message("ERROR", "Option {} has invalid type: {} (allowed types: {})".format(option, type(return_value), allowed_types))
+            exit(1)
+        return return_value
 
     def get_unused_options(self):
         result = []

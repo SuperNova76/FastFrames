@@ -11,7 +11,7 @@ class BlockReaderSystematic:
     def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):
         self.options_getter = BlockOptionsGetter(input_dict)
 
-        variations_dict = self.options_getter.get("variation",None)
+        variations_dict = self.options_getter.get("variation",None, [dict])
         variations_opts_getter = VariationsOptionsGetter(variations_dict)
         if variations_dict is None:
             Logger.log_message("ERROR", "No variations specified for systematic {}".format(self.options_getter))
@@ -22,30 +22,30 @@ class BlockReaderSystematic:
             Logger.log_message("ERROR", "Unknown variation type: {}".format(self.variation_type))
             exit(1)
 
-        self.name = variations_opts_getter.get("", self.variation_type,None)
+        self.name = variations_opts_getter.get("", self.variation_type,None, [str])
         if self.name is None:
             Logger.log_message("ERROR", "{} variation specified for systematic {}".format(self.variation_type, self.options_getter))
             exit(1)
 
-        self.weight_suffix = variations_opts_getter.get("weight_suffix", self.variation_type,"")
+        self.weight_suffix = variations_opts_getter.get("weight_suffix", self.variation_type,"", [str])
 
-        self.sum_weights = variations_opts_getter.get("sum_weights", self.variation_type,None)
+        self.sum_weights = variations_opts_getter.get("sum_weights", self.variation_type,None, [str])
         if self.sum_weights is None:
             self.sum_weights = block_reader_general.default_sumweights
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
-        self.samples         = self.options_getter.get("samples",None)
-        self.exclude_samples = self.options_getter.get("exclude_samples",None)
+        self.samples         = self.options_getter.get("samples",None, [list])
+        self.exclude_samples = self.options_getter.get("exclude_samples",None, [list])
         if not self.samples is None and not self.exclude_samples is None:
             Logger.log_message("ERROR", "Both samples and exclude_samples specified for systematic {}".format(self.name))
             exit(1)
 
 
-        self.campaigns  = self.options_getter.get("campaigns",None)
+        self.campaigns  = self.options_getter.get("campaigns",None, [list])
 
-        self.regions    = self.options_getter.get("regions",None)
-        self.exclude_regions = self.options_getter.get("exclude_regions",None)
+        self.regions    = self.options_getter.get("regions",None, [list])
+        self.exclude_regions = self.options_getter.get("exclude_regions",None, [list])
         if not self.regions is None and not self.exclude_regions is None:
             Logger.log_message("ERROR", "Both regions and exclude_regions specified for systematic {}".format(self.name))
             exit(1)

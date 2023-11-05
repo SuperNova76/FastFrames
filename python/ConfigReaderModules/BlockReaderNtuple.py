@@ -13,20 +13,20 @@ class BlockReaderNtuple:
     def __init__(self, input_dict : dict):
         self.options_getter = BlockOptionsGetter(input_dict)
 
-        self.samples = self.options_getter.get("samples",None)
-        self.exclude_samples = self.options_getter.get("exclude_samples",None)
+        self.samples = self.options_getter.get("samples",None, [list])
+        self.exclude_samples = self.options_getter.get("exclude_samples",None, [list])
         if not self.samples is None and not self.exclude_samples is None:
             Logger.log_message("ERROR", "Both samples and exclude_samples specified for ntuple block")
             exit(1)
 
-        self.selection = self.options_getter.get("selection",None)
-        self.regions = self.options_getter.get("regions",None)
+        self.selection = self.options_getter.get("selection",None, [str])
+        self.regions = self.options_getter.get("regions",None, [list])
         if self.regions is not None and self.selection is not None:
             Logger.log_message("ERROR", "Both regions and selection specified for ntuple block")
             exit(1)
 
-        self.branches = self.options_getter.get("branches",[])
-        self.exclude_branches = self.options_getter.get("exclude_branches",[])
+        self.branches = self.options_getter.get("branches",[], [list])
+        self.exclude_branches = self.options_getter.get("exclude_branches",[], [list])
 
         self._check_unused_options()
 
