@@ -64,9 +64,11 @@ class BlockReaderSample:
         self.truth_dicts = self.options_getter.get("truth", None, [list])
         self.truths = []
         if self.truth_dicts is not None:
+            reco_variables_from_regions = block_reader_general.cpp_class.getVariableNames()
             for truth_dict in self.truth_dicts:
                 truth_object = BlockReaderSampleTruth(truth_dict)
                 self.truths.append(truth_object)
+                truth_object.check_reco_variables_existence(reco_variables_from_regions)
                 self.cpp_class.addTruth(truth_object.cpp_class.getPtr())
 
         self._set_unique_samples_IDs()

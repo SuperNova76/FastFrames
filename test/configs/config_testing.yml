@@ -100,7 +100,7 @@ samples:
         selection: "particle_jet_pt[0] > 10000" #optional
         event_weight: "mc_gen"
         match_variables:
-          - reco: "jet_pt"
+          - reco: "jet_pt_NOSYS"
             truth: "truth_jet_pt"
         variables:
           - name: "truth_jet_pt"

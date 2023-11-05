@@ -26,6 +26,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     boost::python::class_<std::vector<unsigned long long int>>("ptrVector")
     .def(boost::python::vector_indexing_suite<std::vector<unsigned long long int>>());
 
+    boost::python::class_<std::vector<std::string>>("StringVector")
+    .def(boost::python::vector_indexing_suite<std::vector<std::string>>());
 
     class_<FastFramesExecutorWrapper>("FastFramesExecutor",
         init<long long unsigned int>())
@@ -97,6 +99,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
+        .def("getVariableNames",   &ConfigSettingWrapper::getVariableNames)
 
         // addSample
         .def("addSample",   &ConfigSettingWrapper::addSample)

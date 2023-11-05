@@ -125,6 +125,20 @@ class ConfigSettingWrapper {
             m_configSetting->addRegion(*region);
         };
 
+        std::vector<std::string> getVariableNames() const {
+            std::vector<std::string> variable_names;
+            const std::vector<std::shared_ptr<Region>> regions = m_configSetting->regions();
+            for (const auto& region : regions) {
+                const std::vector<Variable> variables = region->variables();
+                for (const auto& variable : variables) {
+                    if (std::find(variable_names.begin(), variable_names.end(), variable.name()) == variable_names.end())  {
+                        variable_names.push_back(variable.name());
+                    }
+                }
+            }
+            return variable_names;
+        };
+
         void addSample(long long int sample_shared_ptr_int) {
             const std::shared_ptr<Sample> *sample = reinterpret_cast<std::shared_ptr<Sample> *>(sample_shared_ptr_int);
             m_configSetting->addSample(*sample);

@@ -48,6 +48,12 @@ class BlockReaderSampleTruth:
         self._read_variables()
         self._read_match_variables()
 
+    def check_reco_variables_existence(self, reco_variables : list) -> None:
+        for match_variable_dict in self.match_variables:
+            reco = match_variable_dict.get("reco")
+            if reco not in reco_variables:
+                Logger.log_message("ERROR", "Reco variable {} specified in truth block {} does not exist".format(reco, self.name))
+                exit(1)
 
     def _set_cpp_class(self):
         self.cpp_class.setTruthTreeName(self.truth_tree_name)

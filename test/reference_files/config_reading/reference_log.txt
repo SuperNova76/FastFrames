@@ -81,7 +81,7 @@ Samples block:
 		selection:  particle_jet_pt[0] > 10000
 		event_weight:  mc_gen
 		match_variables:
-			 ('jet_pt', 'truth_jet_pt')
+			 ('jet_pt_NOSYS', 'truth_jet_pt')
 		variables:
 			name:  truth_jet_pt
 			title:  
