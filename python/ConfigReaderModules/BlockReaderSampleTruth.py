@@ -3,7 +3,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp    import TruthWrapper
+from ConfigReaderCpp    import TruthWrapper, ConfigReaderCppRegion
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
@@ -74,3 +74,12 @@ class BlockReaderSampleTruth:
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in truth block is not supported!".format(unused))
             exit(1)
+
+    def get_variable_cpp_objects(self):
+        variable_ptrs = self.cpp_class.getVariablePtrs()
+        result = []
+        for variable_ptr in variable_ptrs:
+            variable_cpp_object =ConfigReaderCppRegion("")
+            variable_cpp_object.constructFromPtr(variable_ptr)
+            result.append(variable_cpp_object)
+        return result

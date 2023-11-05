@@ -57,9 +57,14 @@ class TruthWrapper  {
             m_truth->addVariable(*(*variable));
         };
 
-        unsigned int nVariables() const {return m_truth->variables().size();};
-
-        std::string variableName(unsigned int i) const {return m_truth->variables().at(i).name();};
+        std::vector<unsigned long long int> getVariableRawPtrs()   const {
+            const std::vector<Variable> &variables = m_truth->variables();
+            std::vector<unsigned long long int> variable_ptrs;
+            for (const auto &variable : variables) {
+                variable_ptrs.push_back(reinterpret_cast<unsigned long long int>(&variable));
+            }
+            return variable_ptrs;
+        };
 
     private:
         std::shared_ptr<Truth> m_truth;

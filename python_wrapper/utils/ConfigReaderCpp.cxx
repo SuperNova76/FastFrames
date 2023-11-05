@@ -150,7 +150,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     class_<VariableWrapper>("ConfigReaderCppVariable",
         init<std::string>())
         // getPtr
-        .def("getPtr",          &VariableWrapper::getPtr)
+        .def("getPtr",                  &VariableWrapper::getPtr)
+        .def("constructFromSharedPtr",  &VariableWrapper::constructFromSharedPtr)
+        .def("constructFromRawPtr",     &VariableWrapper::constructFromRawPtr)
 
         // name
         .def("name",            &VariableWrapper::name)
@@ -295,10 +297,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addVariable
         .def("addVariable",         &TruthWrapper::addVariable)
-        .def("nVariables",          &TruthWrapper::nVariables)
-        .def("variableName",        &TruthWrapper::variableName)
-
-
+        .def("getVariableRawPtrs",  &TruthWrapper::getVariableRawPtrs)
     ;
 
 }

@@ -7,6 +7,7 @@ from BlockReaderNtuple import BlockReaderNtuple
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 
 from python_wrapper.python.logger import Logger
+from ConfigReaderCpp import ConfigReaderCppVariable
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
@@ -150,16 +151,31 @@ if __name__ == "__main__":
         truth_objects = sample.get_truth_cpp_objects()
         if len(truth_objects) > 0:
             print("\tTruth objects:")
-            for truth_object in truth_objects:
-                print("\t\tname: ", truth_object.name())
-                print("\t\ttruth_tree_name: ", truth_object.truthTreeName())
-                print("\t\tselection: ", truth_object.selection())
-                print("\t\tevent_weight: ", truth_object.eventWeight())
+            for cpp_truth_object in truth_objects:
+                print("\t\tname: ", cpp_truth_object.name())
+                print("\t\ttruth_tree_name: ", cpp_truth_object.truthTreeName())
+                print("\t\tselection: ", cpp_truth_object.selection())
+                print("\t\tevent_weight: ", cpp_truth_object.eventWeight())
                 print("\t\tmatch_variables:")
-                n_matched_variables = truth_object.nMatchedVariables()
+                n_matched_variables = cpp_truth_object.nMatchedVariables()
                 for i_match_variable in range(n_matched_variables):
-                    print("\t\t\t", truth_object.matchedVariables(i_match_variable))
-                print("\n")
+                    print("\t\t\t", cpp_truth_object.matchedVariables(i_match_variable))
+                variable_raw_ptrs = cpp_truth_object.getVariableRawPtrs()
+                print("\t\tvariables:")
+                for variable_ptr in variable_raw_ptrs:
+                    variable = ConfigReaderCppVariable("")
+                    variable.constructFromRawPtr(variable_ptr)
+                    print("\t\t\tname: ", variable.name())
+                    print("\t\t\ttitle: ", variable.title())
+                    print("\t\t\tdefinition: ", variable.definition())
+                    if variable.hasRegularBinning():
+                        print(  "\t\t\tbinning: ",
+                                variable.axisNbins(), ", ",
+                                variable.axisMin(), ", ",
+                                variable.axisMax())
+                    else:
+                        print("\t\t\tbinning: ", variable.binEdgesString())
+                    print("\n")
 
         print("\n")
 

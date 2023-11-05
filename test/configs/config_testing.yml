@@ -112,9 +112,7 @@ samples:
           - name: "truth_el_pt"
             definition:  "particle_el_pt"
             binning:
-              min: 0
-              max: 10
-              number_of_bins: 10
+              bin_edges: [0,2,5,7,8,10,15]
 
   - name: "Zjets_light"
     dsids: [364100,364101]
