@@ -57,7 +57,8 @@ void MainFrame::executeHistograms() {
     for (const auto& isample : m_config->samples()) {
         LOG(INFO) << "\n";
         LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
-        std::vector<SystematicHisto> systHistos;
+        std::vector<SystematicHisto> finalSystHistos;
+        std::vector<VariableHisto> finalTruthHistos;
         std::size_t uniqueSampleN(1);
         ROOT::RDF::RNode* node(nullptr);
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
@@ -65,32 +66,47 @@ void MainFrame::executeHistograms() {
             LOG(INFO) << "Processing unique sample: " << iUniqueSampleID << ", " << uniqueSampleN << " out of " << isample->uniqueSampleIDs().size() << " unique samples\n";
 
             auto currentHistos = this->processUniqueSample(isample, iUniqueSampleID);
+            auto& systematicHistos = std::get<0>(currentHistos);
+            auto& truthHistos      = std::get<1>(currentHistos);
+            node                   = &std::get<2>(currentHistos);
             // this happens when there are no files provided
-            if (currentHistos.first.empty()) continue;
-            node = &currentHistos.second;
+            if (systematicHistos.empty()) continue;
 
             // merge the histograms or take them if it is the first set
-            if (systHistos.empty())  {
+            if (finalSystHistos.empty())  {
                 LOG(DEBUG) << "First set of histograms for this sample, this will NOT trigger event loop\n";
-                systHistos = std::move(currentHistos.first);
+                finalSystHistos = std::move(systematicHistos);
             } else {
-                if (currentHistos.first.size() != systHistos.size()) {
+                if (systematicHistos.size() != finalSystHistos.size()) {
                     LOG(ERROR) << "Number of the systematic histograms do not match\n";
-                    LOG(ERROR) << "Size of the current histograms: " << currentHistos.first.size() << ", final histograms: " << systHistos.size() << "\n";
+                    LOG(ERROR) << "Size of the current histograms: " << systematicHistos.size() << ", final histograms: " << finalSystHistos.size() << "\n";
                     throw std::runtime_error("");
                 }
 
                 LOG(INFO) << "Merging samples, triggers event loop!\n";
-                for (std::size_t isyst = 0; isyst < systHistos.size(); ++isyst) {
-                    systHistos.at(isyst).merge(currentHistos.first.at(isyst));
+                for (std::size_t isyst = 0; isyst < finalSystHistos.size(); ++isyst) {
+                    finalSystHistos.at(isyst).merge(systematicHistos.at(isyst));
                 }
                 LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
+            }
+            if (!truthHistos.empty()) {
+                if (finalTruthHistos.empty()) {
+                    finalTruthHistos = std::move(truthHistos);
+                } else {
+                    if (finalTruthHistos.size() != truthHistos.size()) {
+                        LOG(ERROR) << "Sizes of truth histograms do not match!\n";
+                        throw std::runtime_error("");
+                    }
+                    for (std::size_t ihist = 0; ihist < truthHistos.size(); ++ihist) {
+                        finalTruthHistos.at(ihist).mergeHisto(truthHistos.at(ihist).histo());
+                    }
+                }
             }
             ++uniqueSampleN;
         }
 
         bool printEventLoop = isample->uniqueSampleIDs().size() == 1;
-        this->writeHistosToFile(systHistos, isample, node, printEventLoop && node);
+        this->writeHistosToFile(finalSystHistos, finalTruthHistos, isample, node, printEventLoop && node);
         ++sampleN;
     }
 }
@@ -120,23 +136,35 @@ void MainFrame::executeNtuples() {
     }
 }
 
-std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
-                                                                                         const UniqueSampleID& uniqueSampleID) {
+std::tuple<std::vector<SystematicHisto>,
+           std::vector<VariableHisto>,
+           ROOT::RDF::RNode> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
+                                                            const UniqueSampleID& uniqueSampleID) {
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
     if (filePaths.empty()) {
         LOG(WARNING) << "UniqueSample: " << uniqueSampleID << " has no files, will not produce histograms\n";
         ROOT::RDataFrame tmp("", {});
-        return std::make_pair(std::vector<SystematicHisto>{}, tmp);
+        return std::make_tuple(std::vector<SystematicHisto>{}, std::vector<VariableHisto>{}, tmp);
     }
 
     std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), filePaths);
 
+    if (sample->hasTruth()) {
+        this->connectTruthTrees(recoChain, sample, filePaths);
+    }
+
     ROOT::RDataFrame df(*recoChain.release());
+    ROOT::RDF::RNode mainNode = df;
+
+    std::vector<VariableHisto> truthHistos;
+
+    if (sample->hasTruth()) {
+        truthHistos = std::move(this->processTruthHistos(mainNode, sample, uniqueSampleID));
+    }
 
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
 
-    ROOT::RDF::RNode mainNode = df;
     //ROOT::RDF::Experimental::AddProgressBar(mainNode);
 
     mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
@@ -154,7 +182,7 @@ std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> MainFrame::processUniq
     // retrieve the histograms;
     std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
 
-    return std::make_pair(std::move(histoContainer), mainNode);
+    return std::make_tuple(std::move(histoContainer), std::move(truthHistos), mainNode);
 }
 
 void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
@@ -406,6 +434,7 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 }
 
 void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
+                                  const std::vector<VariableHisto>& truthHistos,
                                   const std::shared_ptr<Sample>& sample,
                                   const ROOT::RDF::RNode* node,
                                   const bool printEventLoopCount) const {
@@ -446,10 +475,17 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
 
             // 2D histograms
             for (const auto& ivariableHist2D : iregionHist.variableHistos2D()) {
-                const std::string histoName = StringOperations::replaceString(ivariableHist2D.name(), "_NOSYS", "") + "_" + iregionHist.name();
-                ivariableHist2D.histo()->Write(histoName.c_str());
+                const std::string histo2DName = StringOperations::replaceString(ivariableHist2D.name(), "_NOSYS", "") + "_" + iregionHist.name();
+                ivariableHist2D.histo()->Write(histo2DName.c_str());
             }
         }
+    }
+
+    // Write truth histograms
+    out->cd();
+    for (const auto& itruthHist : truthHistos) {
+        const std::string truthHistoName = StringOperations::replaceString(itruthHist.name(), "_NOSYS", "");
+        itruthHist.histo()->Write(truthHistoName.c_str());
     }
     if (printEventLoopCount) {
         LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
@@ -586,4 +622,49 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
 
         regionHisto->addVariableHisto2D(std::move(variableHisto2D));
     }
+}
+
+void MainFrame::connectTruthTrees(std::unique_ptr<TChain>& chain,
+                                  const std::shared_ptr<Sample>& sample,
+                                  const std::vector<std::string>& filePaths) const {
+
+    for (const auto& itruth : sample->truths()) {
+        TChain* truthChain = Utils::chainFromFiles(itruth->truthTreeName(), filePaths).release();
+        chain->AddFriend(truthChain);
+    }
+}
+
+std::vector<VariableHisto> MainFrame::processTruthHistos(ROOT::RDF::RNode mainNode,
+                                                         const std::shared_ptr<Sample>& sample,
+                                                         const UniqueSampleID& id) const {
+
+    std::vector<VariableHisto> result;
+
+    for (const auto& itruth : sample->truths()) {
+        // add MC weight
+        const float normalisation = m_metadataManager.normalisation(id, sample->nominalSystematic());
+
+        // to not cut very small numbers to zero
+        std::ostringstream ss;
+        ss << normalisation;
+        const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + ss.str() +")";
+        mainNode.Define("weight_truth_TOTAL", totalWeight);
+
+        // apply truth filter
+        mainNode.Filter(itruth->selection());
+
+        // add histograms
+        for (const auto& ivariable : itruth->variables()) {
+            // get histograms (will NOT trigger event loop)
+            const std::string name = itruth->name() + "_" + ivariable.name();
+            VariableHisto hist(name);
+            auto rdfHist = mainNode.Histo1D(ivariable.histoModel1D(), ivariable.definition(), totalWeight);
+
+            hist.setHisto(rdfHist);
+
+            result.emplace_back(std::move(hist));
+        }
+    }
+
+    return result;
 }

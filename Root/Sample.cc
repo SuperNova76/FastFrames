@@ -6,10 +6,12 @@
 
 #include "FastFrames/Sample.h"
 
-#include "FastFrames/Systematic.h"
+#include "FastFrames/Logger.h"
 #include "FastFrames/Region.h"
+#include "FastFrames/Systematic.h"
 
 #include <algorithm>
+#include <exception>
 
 Sample::Sample(const std::string& name) noexcept :
   m_name(name),
@@ -24,4 +26,29 @@ bool Sample::skipSystematicRegionCombination(const std::shared_ptr<Systematic>& 
             [&reg](const auto& element){return reg->name() == element->name();});
 
   return itr == syst->regions().end();
+}
+
+std::vector<std::string> Sample::uniqueTruthTreeNames() const {
+
+  std::vector<std::string> result;
+
+  for (const auto& itruth : m_truths) {
+    const std::string& treeName = itruth->truthTreeName();
+    auto itr = std::find(result.begin(), result.end(), treeName);
+    if (itr == result.end()) {
+      result.emplace_back(treeName);
+    }
+  }
+
+  return result;
+}
+
+const std::shared_ptr<Systematic>& Sample::nominalSystematic() const {
+  auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [](const auto& element){return element->name() == "NOSYS";});
+  if (itr == m_systematics.end()) {
+    LOG(ERROR) << "Cannot find nominal systematic in the list of systematics for sample: " << m_name << "\n";
+    throw std::runtime_error("");
+  }
+
+  return *itr;
 }

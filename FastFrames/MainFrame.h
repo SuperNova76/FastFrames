@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 class Variable;
 
@@ -139,10 +140,12 @@ private:
    *
    * @param sample
    * @param uniqueSampleID
-   * @return std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> The histograms and the main RDF node for logging
+   * @return std::tuple<std::vector<SystematicHisto>, std::vector<VariableHisto>, ROOT::RDF::RNode> The histograms, truth histograms and the main RDF node for logging
    */
-  std::pair<std::vector<SystematicHisto>, ROOT::RDF::RNode> processUniqueSample(const std::shared_ptr<Sample>& sample,
-                                                                                const UniqueSampleID& uniqueSampleID);
+  std::tuple<std::vector<SystematicHisto>,
+             std::vector<VariableHisto>,
+             ROOT::RDF::RNode> processUniqueSample(const std::shared_ptr<Sample>& sample,
+                                                   const UniqueSampleID& uniqueSampleID);
 
 
   /**
@@ -297,13 +300,15 @@ private:
    * This triggers event loop in case of just one UniqueSampleID per Sample!
    *
    * @param histos histogram container
+   * @param truthHistos truth histogram container
    * @param sample current sample
    * @param node Main RDF node - needed for printouts
    * @param printEventLoopCount Print event loop count? This is interesting only when just one UniqueSampleID was processed per Sample
    * @param
    */
   void writeHistosToFile(const std::vector<SystematicHisto>& histos,
-                         const std::shared_ptr<Sample>& samplei,
+                         const std::vector<VariableHisto>& truthHistos,
+                         const std::shared_ptr<Sample>& sample,
                          const ROOT::RDF::RNode* node,
                          const bool printEventLoopCount) const;
 
@@ -322,6 +327,29 @@ private:
    * @return std::vector<std::string>
    */
   std::vector<std::string> automaticSystematicNames(const std::string& filePath) const;
+
+  /**
+   * @brief Connect truth trees to the reco tree
+   *
+   * @param chain The reco chain
+   * @param sample Current Sample
+   * @param filePaths Paths to the files
+   */
+  void connectTruthTrees(std::unique_ptr<TChain>& chain,
+                         const std::shared_ptr<Sample>& sample,
+                         const std::vector<std::string>& filePaths) const;
+
+  /**
+   * @brief Process truth histograms
+   *
+   * @param mainNode Main RDF node
+   * @param sample Current sample
+   * @param id current UniqueSampleID
+   * @return std::vector<VariableHisto>
+   */
+  std::vector<VariableHisto> processTruthHistos(ROOT::RDF::RNode mainNode,
+                                                const std::shared_ptr<Sample>& sample,
+                                                const UniqueSampleID& id) const;
 
 protected:
 

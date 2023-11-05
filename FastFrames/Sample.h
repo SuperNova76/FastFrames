@@ -166,6 +166,20 @@ public:
    */
   inline bool hasTruth() const {return !m_truths.empty();}
 
+  /**
+   * @brief Get the list of unqiue truth tree names for this sample
+   *
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> uniqueTruthTreeNames() const;
+
+  /**
+   * @brief Get nominal (i.e. name == "NOSYS") systematic
+   *
+   * @return const std::shared_ptr<Systematic>&
+   */
+  const std::shared_ptr<Systematic>& nominalSystematic() const;
+
 private:
   std::string m_name;
 

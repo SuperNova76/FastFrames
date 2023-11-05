@@ -116,6 +116,21 @@ public:
    */
   inline const std::vector<Variable>& variables() const {return m_variables;}
 
+  /**
+   * @brief Tell the code to produce unfolding histograms
+   *
+   * @param flag
+   */
+  inline void setProduceUnfolding(const bool flag) {m_produceUnfolding = flag;}
+
+  /**
+   * @brief Produce unfolding histograms?
+   *
+   * @return true
+   * @return false
+   */
+  inline bool produceUnfolding() const {return m_produceUnfolding;}
+
 private:
 
   std::string m_name;
@@ -124,4 +139,5 @@ private:
   std::string m_eventWeight;
   std::vector<std::pair<std::string, std::string> > m_matchedVariables;
   std::vector<Variable> m_variables;
+  bool m_produceUnfolding;
 };
