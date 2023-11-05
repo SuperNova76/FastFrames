@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "FastFrames/Truth.h"
 #include "FastFrames/UniqueSampleID.h"
 
 #include <memory>
@@ -143,6 +144,28 @@ public:
    */
   inline void clearSystematics() {m_systematics.clear();}
 
+  /**
+   * @brief Add Truth object
+   *
+   * @param truth
+   */
+  inline void addTruth(const std::shared_ptr<Truth>& truth) {m_truths.emplace_back(truth);}
+
+  /**
+   * @brief Get Truth objects
+   *
+   * @return const std::vector<std::shared_ptr<Truth> >&
+   */
+  inline const std::vector<std::shared_ptr<Truth> >& truths() const {return m_truths;}
+
+  /**
+   * @brief Has truths defined?
+   *
+   * @return true
+   * @return false
+   */
+  inline bool hasTruth() const {return !m_truths.empty();}
+
 private:
   std::string m_name;
 
@@ -155,6 +178,8 @@ private:
   std::vector<std::shared_ptr<Systematic> > m_systematics;
 
   std::vector<UniqueSampleID> m_uniqueSampleIDs;
+
+  std::vector<std::shared_ptr<Truth> > m_truths;
 
   std::string m_eventWeight;
 };
