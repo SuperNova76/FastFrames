@@ -42,6 +42,7 @@ class BlockReaderSampleTruth:
             exit(1)
 
         self.cpp_class = TruthWrapper(self.name)
+        self._set_cpp_class()
 
         self._check_unused_options()
         self._read_variables()
@@ -68,7 +69,7 @@ class BlockReaderSampleTruth:
                 exit(1)
             self.cpp_class.addMatchVariables(reco, truth)
 
-    def _check_unused_options(self):
+    def _check_unused_options(self) -> None:
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in truth block is not supported!".format(unused))

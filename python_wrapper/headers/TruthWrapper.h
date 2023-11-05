@@ -17,6 +17,10 @@ class TruthWrapper  {
 
         unsigned long long int getPtr() const   {return reinterpret_cast<unsigned long long int>(&m_truth);};
 
+        void constructFromPtr(unsigned long long int truth_shared_ptr_int) {
+            m_truth = *reinterpret_cast<std::shared_ptr<Truth> *>(truth_shared_ptr_int);
+        };
+
 
         std::string name() const {return m_truth->name();};
 
@@ -42,9 +46,9 @@ class TruthWrapper  {
 
         unsigned int nMatchedVariables() const {return m_truth->matchedVariables().size();};
 
-        std::tuple<std::string, std::string> matchedVariables(unsigned int i) const {
+        boost::python::tuple matchedVariables(unsigned int i) const {
             const std::pair<std::string, std::string> &matchedPair = m_truth->matchedVariables().at(i);
-            return std::make_tuple(matchedPair.first, matchedPair.second);
+            return boost::python::make_tuple(matchedPair.first, matchedPair.second);
         };
 
 

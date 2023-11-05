@@ -67,6 +67,19 @@ class SampleWrapper {
             return m_sample->skipSystematicRegionCombination(*syst, *reg);
         };
 
+        void addTruth(unsigned long long int truth_shared_ptr_int) {
+            const std::shared_ptr<Truth> *truth = reinterpret_cast<std::shared_ptr<Truth> *>(truth_shared_ptr_int);
+            m_sample->addTruth(*truth);
+        };
+
+        std::vector<unsigned long long int> getTruthPtrs() const {
+            const std::vector<std::shared_ptr<Truth>> &truths = m_sample->truths();
+            std::vector<unsigned long long int> truth_ptrs;
+            for (const std::shared_ptr<Truth> &truth : truths) {
+                truth_ptrs.emplace_back(reinterpret_cast<unsigned long long int>(&truth));
+            }
+            return truth_ptrs;
+        };
 
     private:
         std::shared_ptr<Sample> m_sample;

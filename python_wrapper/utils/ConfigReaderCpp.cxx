@@ -1,5 +1,6 @@
 
 #include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <string>
 
 #include "python_wrapper/headers/ConfigSettingWrapper.h"
@@ -21,6 +22,10 @@ using namespace std;
 BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
+
+    boost::python::class_<std::vector<unsigned long long int>>("ptrVector")
+    .def(boost::python::vector_indexing_suite<std::vector<unsigned long long int>>());
+
 
     class_<FastFramesExecutorWrapper>("FastFramesExecutor",
         init<long long unsigned int>())
@@ -206,6 +211,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // skipSystematicRegionCombination
         .def("skipSystematicRegionCombination", &SampleWrapper::skipSystematicRegionCombination)
+
+        .def("addTruth",            &SampleWrapper::addTruth)
+        .def("getTruthPtrs",        &SampleWrapper::getTruthPtrs)
     ;
 
     class_<SystematicWrapper>("SystematicWrapper",
@@ -263,6 +271,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // getPtr
         .def("getPtr",          &TruthWrapper::getPtr)
+        .def("constructFromPtr", &TruthWrapper::constructFromPtr)
 
         // name
         .def("name",            &TruthWrapper::name)
@@ -288,6 +297,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addVariable",         &TruthWrapper::addVariable)
         .def("nVariables",          &TruthWrapper::nVariables)
         .def("variableName",        &TruthWrapper::variableName)
+
 
     ;
 

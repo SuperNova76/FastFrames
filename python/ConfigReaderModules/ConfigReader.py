@@ -147,6 +147,20 @@ if __name__ == "__main__":
         n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):
             print("\t\t", sample.cpp_class.uniqueSampleIDstring(i_unique_id))
+        truth_objects = sample.get_truth_cpp_objects()
+        if len(truth_objects) > 0:
+            print("\tTruth objects:")
+            for truth_object in truth_objects:
+                print("\t\tname: ", truth_object.name())
+                print("\t\ttruth_tree_name: ", truth_object.truthTreeName())
+                print("\t\tselection: ", truth_object.selection())
+                print("\t\tevent_weight: ", truth_object.eventWeight())
+                print("\t\tmatch_variables:")
+                n_matched_variables = truth_object.nMatchedVariables()
+                for i_match_variable in range(n_matched_variables):
+                    print("\t\t\t", truth_object.matchedVariables(i_match_variable))
+                print("\n")
+
         print("\n")
 
     systematics = config_reader.systematics

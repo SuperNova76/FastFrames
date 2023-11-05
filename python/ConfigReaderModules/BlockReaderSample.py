@@ -3,7 +3,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp    import SampleWrapper
+from ConfigReaderCpp    import SampleWrapper, TruthWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
@@ -59,13 +59,15 @@ class BlockReaderSample:
 
         self.selection_suffix = self.options_getter.get("selection_suffix", "", [str])
 
+        self.cpp_class = SampleWrapper(self.name)
+
         self.truth_dicts = self.options_getter.get("truth", None, [list])
         self.truths = []
         if self.truth_dicts is not None:
             for truth_dict in self.truth_dicts:
-                self.truths.append(BlockReaderSampleTruth(truth_dict))
-
-        self.cpp_class = SampleWrapper(self.name)
+                truth_object = BlockReaderSampleTruth(truth_dict)
+                self.truths.append(truth_object)
+                self.cpp_class.addTruth(truth_object.cpp_class.getPtr())
 
         self._set_unique_samples_IDs()
 
@@ -146,3 +148,13 @@ class BlockReaderSample:
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in  sample block is not supported!".format(unused))
             exit(1)
+
+    def get_truth_cpp_objects(self):
+        #return [truth.cpp_class for truth in self.truths]
+        vector_shared_ptr = self.cpp_class.getTruthPtrs()
+        result = []
+        for ptr in vector_shared_ptr:
+            truth_cpp_object = TruthWrapper("")
+            truth_cpp_object.constructFromPtr(ptr)
+            result.append(truth_cpp_object)
+        return result
