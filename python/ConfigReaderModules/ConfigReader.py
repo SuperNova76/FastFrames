@@ -121,19 +121,19 @@ if __name__ == "__main__":
         print("\tname: ", region.cpp_class.name())
         print("\tselection: ", region.cpp_class.selection())
         print("\tvariables:")
-        variables = region.variables
-        for variable in variables:
-            print("\t\tname: ", variable.cpp_class.name())
-            print("\t\ttitle: ", variable.cpp_class.title())
-            print("\t\tdefinition: ", variable.cpp_class.definition())
-            #print("\t\tbinning: ", variable.cpp_class.binning())
-            if variable.cpp_class.hasRegularBinning():
+        variable_cpp_objects = region.get_variable_cpp_objects()
+        for variable_cpp_object in variable_cpp_objects:
+            print("\t\tname: ", variable_cpp_object.name())
+            print("\t\ttitle: ", variable_cpp_object.title())
+            print("\t\tdefinition: ", variable_cpp_object.definition())
+            #print("\t\tbinning: ", variable_cpp_object.binning())
+            if variable_cpp_object.hasRegularBinning():
                 print(  "\t\tbinning: ",
-                        variable.cpp_class.axisNbins(), ", ",
-                        variable.cpp_class.axisMin(), ", ",
-                        variable.cpp_class.axisMax())
+                        variable_cpp_object.axisNbins(), ", ",
+                        variable_cpp_object.axisMin(), ", ",
+                        variable_cpp_object.axisMax())
             else:
-                print("\t\tbinning: ", variable.cpp_class.binEdgesString())
+                print("\t\tbinning: ", variable_cpp_object.binEdgesString())
             print("\n")
 
     samples = config_reader.samples

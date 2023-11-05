@@ -1,7 +1,7 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigReaderCppRegion
+from ConfigReaderCpp import ConfigReaderCppRegion, ConfigReaderCppVariable
 
 from BlockReaderVariable import BlockReaderVariable
 from BlockReaderGeneral import BlockReaderGeneral
@@ -45,3 +45,12 @@ class BlockReaderRegion:
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in region block is not supported!".format(unused))
             exit(1)
+
+    def get_variable_cpp_objects(self):
+        variable_ptrs = self.cpp_class.getVariableRawPtrs()
+        result = []
+        for variable_ptr in variable_ptrs:
+            variable_cpp_object = ConfigReaderCppVariable("")
+            variable_cpp_object.constructFromRawPtr(variable_ptr)
+            result.append(variable_cpp_object)
+        return result

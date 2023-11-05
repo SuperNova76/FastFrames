@@ -143,8 +143,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setSelection",    &RegionWrapper::setSelection)
 
         // addVariable
-        .def("addVariable",     &RegionWrapper::addVariable)
-        .def("variables",       &RegionWrapper::variables)
+        .def("addVariable",         &RegionWrapper::addVariable)
+        .def("getVariableRawPtrs",  &RegionWrapper::getVariableRawPtrs)
     ;
 
     class_<VariableWrapper>("ConfigReaderCppVariable",
@@ -273,7 +273,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // getPtr
         .def("getPtr",          &TruthWrapper::getPtr)
-        .def("constructFromPtr", &TruthWrapper::constructFromPtr)
+        .def("constructFromSharedPtr", &TruthWrapper::constructFromSharedPtr)
 
         // name
         .def("name",            &TruthWrapper::name)

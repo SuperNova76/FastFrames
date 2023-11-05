@@ -17,7 +17,7 @@ class TruthWrapper  {
 
         unsigned long long int getPtr() const   {return reinterpret_cast<unsigned long long int>(&m_truth);};
 
-        void constructFromPtr(unsigned long long int truth_shared_ptr_int) {
+        void constructFromSharedPtr(unsigned long long int truth_shared_ptr_int) {
             m_truth = *reinterpret_cast<std::shared_ptr<Truth> *>(truth_shared_ptr_int);
         };
 

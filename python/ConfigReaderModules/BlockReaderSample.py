@@ -155,6 +155,6 @@ class BlockReaderSample:
         result = []
         for ptr in vector_shared_ptr:
             truth_cpp_object = TruthWrapper("")
-            truth_cpp_object.constructFromPtr(ptr)
+            truth_cpp_object.constructFromSharedPtr(ptr)
             result.append(truth_cpp_object)
         return result
