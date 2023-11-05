@@ -465,6 +465,8 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         LOG(INFO) << "Triggering event loop!\n";
     }
 
+    this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
+
     for (const auto& isystHist : histos) {
         if (isystHist.regionHistos().empty()) {
             LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
@@ -760,4 +762,50 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(ROOT::RDF::RNode mainNo
     }
 
     return result;
+}
+
+void MainFrame::writeUnfoldingHistos(TFile* outputFile,
+                                     const std::vector<SystematicHisto>& histos,
+                                     const std::vector<VariableHisto>& truthHistos,
+                                     const std::shared_ptr<Sample>& sample) const {
+
+    for (const auto& itruth : sample->truths()) {
+        if (!itruth->produceUnfolding()) continue;
+        for (const auto& imatch : itruth->matchedVariables()) {
+            const std::string& truthName = itruth->name() + "_" + imatch.second;
+            const std::string& selectionPassed = imatch.first + "_passed";
+            const std::string& selectionFailed = imatch.first + "_failed";
+
+            std::unique_ptr<TH1D> truth = Utils::copyHistoFromVariableHistos(truthHistos, truthName);
+            for (const auto& isystHist : histos) {
+                if (isystHist.regionHistos().empty()) {
+                    LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
+                    continue;
+                }
+                outputFile->mkdir(isystHist.name().c_str());
+                outputFile->cd(isystHist.name().c_str());
+                for (const auto& iregionHist : isystHist.regionHistos()) {
+                    std::unique_ptr<TH1D> passed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionPassed);
+                    std::unique_ptr<TH1D> failed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionFailed);
+
+                    std::unique_ptr<TH1D> selectionEff(static_cast<TH1D*>(passed->Clone()));
+                    // selection eff = truth events passing reco selection/all
+                    selectionEff->Divide(truth.get());
+
+                    // acceptance = events passing reco and truth selection / events passing reco (failed truth + passed truth)
+                    std::unique_ptr<TH1D> total(static_cast<TH1D*>(passed->Clone()));
+                    total->Add(failed.get());
+
+                    // this is now the acceptance
+                    passed->Divide(total.get());
+
+                    const std::string selectionEffName = "selection_eff_" + itruth->name() + "_" + truthName + "_" + iregionHist.name();
+                    const std::string acceptanceName   = "acceptance_"    + itruth->name() + "_" + truthName + "_" + iregionHist.name();
+
+                    selectionEff->Write(selectionEffName.c_str());
+                    passed->Write(acceptanceName.c_str());
+                }
+            }
+        }
+    }
 }

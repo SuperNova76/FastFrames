@@ -8,6 +8,9 @@
 
 #include "FastFrames/Logger.h"
 
+#include <algorithm>
+#include <exception>
+
 std::unique_ptr<TChain> Utils::chainFromFiles(const std::string& treeName,
                                               const std::vector<std::string>& files) {
 
@@ -35,4 +38,19 @@ ROOT::RDF::TH2DModel Utils::histoModel2D(const Variable& v1, const Variable& v2)
     const std::vector<double>& binEdges1 = v1.binEdges();
     const std::vector<double>& binEdges2 = v2.binEdges();
     return ROOT::RDF::TH2DModel("", "", binEdges1.size() -1, binEdges1.data(), binEdges2.size() - 1, binEdges2.data());
+}
+
+std::unique_ptr<TH1D> Utils::copyHistoFromVariableHistos(const std::vector<VariableHisto>& histos,
+                                                         const std::string& name) {
+
+    auto itr = std::find_if(histos.begin(), histos.end(), [&name](const auto& element){return element.name() == name;});
+    if (itr == histos.end()) {
+        LOG(ERROR) << "Cannot find histogram: " << name << "\n";
+        throw std::runtime_error("");
+    }
+
+    std::unique_ptr<TH1D> result(static_cast<TH1D*>(itr->histo()->Clone()));
+    result->SetDirectory(nullptr);
+
+    return result;
 }
