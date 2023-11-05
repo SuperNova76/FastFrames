@@ -44,8 +44,13 @@ class RegionWrapper {
             m_region->addVariable(*(*variable));
         };
 
-        std::vector<Variable> variables() const {
-            return m_region->variables();
+        std::vector<unsigned long long int> getVariableRawPtrs()   const {
+            const std::vector<Variable> &variables = m_region->variables();
+            std::vector<unsigned long long int> variable_ptrs;
+            for (const auto &variable : variables) {
+                variable_ptrs.push_back(reinterpret_cast<unsigned long long int>(&variable));
+            }
+            return variable_ptrs;
         };
 
 

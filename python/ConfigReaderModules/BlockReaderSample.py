@@ -3,33 +3,34 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp    import SampleWrapper
+from ConfigReaderCpp    import SampleWrapper, TruthWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
+from BlockReaderSampleTruth import BlockReaderSampleTruth
 
 
 class BlockReaderSample:
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):
         self.options_getter = BlockOptionsGetter(input_dict)
 
-        self.name = self.options_getter.get("name", None)
+        self.name = self.options_getter.get("name", None, [str])
         if self.name is None:
             Logger.log_message("ERROR", "No name specified for sample: " + str(self.options_getter))
             exit(1)
 
-        self.simulation_type = self.options_getter.get("simulation_type",None)
+        self.simulation_type = self.options_getter.get("simulation_type",None, [str])
         if self.simulation_type is None:
             Logger.log_message("ERROR", "No simulation_type specified for sample {}".format(self.name))
             exit(1)
         self.is_data = (self.simulation_type.upper() == "DATA")
 
-        self.dsids = self.options_getter.get("dsids",None)
+        self.dsids = self.options_getter.get("dsids",None, [list])
         if self.dsids is None and not self.is_data:
             Logger.log_message("ERROR", "No dsids specified for sample {}".format(self.name))
             exit(1)
 
-        self.campaigns = self.options_getter.get("campaigns",None)
+        self.campaigns = self.options_getter.get("campaigns",None, [list])
         if self.campaigns is None:
             Logger.log_message("ERROR", "No campaigns specified for sample {}".format(self.name))
             exit(1)
@@ -41,24 +42,34 @@ class BlockReaderSample:
                     Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self.name))
                     exit(1)
 
-        self.selection_suffix = self.options_getter.get("selection","true")
+        self.selection_suffix = self.options_getter.get("selection","true", [str])
 
-        self.regions = self.options_getter.get("regions",None)
-        self.exclude_regions = self.options_getter.get("exclude_regions",None)
+        self.regions = self.options_getter.get("regions",None, [list])
+        self.exclude_regions = self.options_getter.get("exclude_regions",None, [list])
         if not self.regions is None and not self.exclude_regions is None:
             Logger.log_message("ERROR", "Both regions and exclude_regions specified for sample {}".format(self.name))
             exit(1)
 
         self.systematic = []
 
-        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1")
-        self.weight_suffix = self.options_getter.get("weight_suffix", None)
+        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1", [str])
+        self.weight_suffix = self.options_getter.get("weight_suffix", None, [str])
 
-        self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name)
+        self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name, [str])
 
-        self.selection_suffix = self.options_getter.get("selection_suffix", "")
+        self.selection_suffix = self.options_getter.get("selection_suffix", "", [str])
 
         self.cpp_class = SampleWrapper(self.name)
+
+        self.truth_dicts = self.options_getter.get("truth", None, [list])
+        self.truths = []
+        if self.truth_dicts is not None:
+            reco_variables_from_regions = block_reader_general.cpp_class.getVariableNames()
+            for truth_dict in self.truth_dicts:
+                truth_object = BlockReaderSampleTruth(truth_dict)
+                self.truths.append(truth_object)
+                truth_object.check_reco_variables_existence(reco_variables_from_regions)
+                self.cpp_class.addTruth(truth_object.cpp_class.getPtr())
 
         self._set_unique_samples_IDs()
 
@@ -139,3 +150,13 @@ class BlockReaderSample:
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in  sample block is not supported!".format(unused))
             exit(1)
+
+    def get_truth_cpp_objects(self):
+        #return [truth.cpp_class for truth in self.truths]
+        vector_shared_ptr = self.cpp_class.getTruthPtrs()
+        result = []
+        for ptr in vector_shared_ptr:
+            truth_cpp_object = TruthWrapper("")
+            truth_cpp_object.constructFromSharedPtr(ptr)
+            result.append(truth_cpp_object)
+        return result

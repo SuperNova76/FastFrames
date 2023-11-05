@@ -9,12 +9,12 @@ from BlockOptionsGetter import BlockOptionsGetter
 class BlockReaderVariable:
     def __init__(self, variable_dict : dict):
         self.options_getter = BlockOptionsGetter(variable_dict)
-        self.name = self.options_getter.get("name")
-        self.title = self.options_getter.get("title", "")
-        self.definition = self.options_getter.get("definition")
+        self.name = self.options_getter.get("name", None, [str])
+        self.title = self.options_getter.get("title", "", [str])
+        self.definition = self.options_getter.get("definition", None, [str])
         self.cpp_class = None
         self.__set_cpp_class()
-        self.__read_binning(self.options_getter.get("binning"))
+        self.__read_binning(self.options_getter.get("binning", None, [dict]))
         self._check_unused_options()
 
     def __set_cpp_class(self):
@@ -28,10 +28,10 @@ class BlockReaderVariable:
             exit(1)
 
         binning_options_getter = BlockOptionsGetter(binning_dict)
-        binning_min = binning_options_getter.get("min", 0)
-        binning_max = binning_options_getter.get("max", 0)
-        binning_nbins = binning_options_getter.get("number_of_bins", 0)
-        binning_bin_edges = binning_options_getter.get("bin_edges", [])
+        binning_min = binning_options_getter.get("min", 0, [int, float]  )
+        binning_max = binning_options_getter.get("max", 0, [int, float])
+        binning_nbins = binning_options_getter.get("number_of_bins", 0, [int])
+        binning_bin_edges = binning_options_getter.get("bin_edges", [], [list])
 
         unused = binning_options_getter.get_unused_options()
         if len(unused) > 0:

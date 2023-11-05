@@ -1,5 +1,6 @@
 
 #include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <string>
 
 #include "python_wrapper/headers/ConfigSettingWrapper.h"
@@ -11,6 +12,7 @@
 #include "python_wrapper/headers/SampleWrapper.h"
 #include "python_wrapper/headers/SystematicWrapper.h"
 #include "python_wrapper/headers/NtupleWrapper.h"
+#include "python_wrapper/headers/TruthWrapper.h"
 
 #include "FastFrames/Binning.h"
 
@@ -20,6 +22,12 @@ using namespace std;
 BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
+
+    boost::python::class_<std::vector<unsigned long long int>>("ptrVector")
+    .def(boost::python::vector_indexing_suite<std::vector<unsigned long long int>>());
+
+    boost::python::class_<std::vector<std::string>>("StringVector")
+    .def(boost::python::vector_indexing_suite<std::vector<std::string>>());
 
     class_<FastFramesExecutorWrapper>("FastFramesExecutor",
         init<long long unsigned int>())
@@ -91,6 +99,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
+        .def("getVariableNames",   &ConfigSettingWrapper::getVariableNames)
 
         // addSample
         .def("addSample",   &ConfigSettingWrapper::addSample)
@@ -137,14 +146,16 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setSelection",    &RegionWrapper::setSelection)
 
         // addVariable
-        .def("addVariable",     &RegionWrapper::addVariable)
-        .def("variables",       &RegionWrapper::variables)
+        .def("addVariable",         &RegionWrapper::addVariable)
+        .def("getVariableRawPtrs",  &RegionWrapper::getVariableRawPtrs)
     ;
 
     class_<VariableWrapper>("ConfigReaderCppVariable",
         init<std::string>())
         // getPtr
-        .def("getPtr",          &VariableWrapper::getPtr)
+        .def("getPtr",                  &VariableWrapper::getPtr)
+        .def("constructFromSharedPtr",  &VariableWrapper::constructFromSharedPtr)
+        .def("constructFromRawPtr",     &VariableWrapper::constructFromRawPtr)
 
         // name
         .def("name",            &VariableWrapper::name)
@@ -205,6 +216,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // skipSystematicRegionCombination
         .def("skipSystematicRegionCombination", &SampleWrapper::skipSystematicRegionCombination)
+
+        .def("addTruth",            &SampleWrapper::addTruth)
+        .def("getTruthPtrs",        &SampleWrapper::getTruthPtrs)
     ;
 
     class_<SystematicWrapper>("SystematicWrapper",
@@ -255,6 +269,38 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addExcludedBranch",   &NtupleWrapper::addExcludedBranch)
         .def("nExcludedBranches",   &NtupleWrapper::nExcludedBranches)
         .def("excludedBranchName",  &NtupleWrapper::excludedBranchName)
+    ;
+
+    class_<TruthWrapper>("TruthWrapper",
+        init<std::string> ())
+
+        // getPtr
+        .def("getPtr",          &TruthWrapper::getPtr)
+        .def("constructFromSharedPtr", &TruthWrapper::constructFromSharedPtr)
+
+        // name
+        .def("name",            &TruthWrapper::name)
+
+        // setTruthTreeName
+        .def("setTruthTreeName",    &TruthWrapper::setTruthTreeName)
+        .def("truthTreeName",       &TruthWrapper::truthTreeName)
+
+        // setSelection
+        .def("setSelection",        &TruthWrapper::setSelection)
+        .def("selection",           &TruthWrapper::selection)
+
+        // setEventWeight
+        .def("setEventWeight",      &TruthWrapper::setEventWeight)
+        .def("eventWeight",         &TruthWrapper::eventWeight)
+
+        // addMatchVariables
+        .def("addMatchVariables",   &TruthWrapper::addMatchVariables)
+        .def("nMatchedVariables",   &TruthWrapper::nMatchedVariables)
+        .def("matchedVariables",    &TruthWrapper::matchedVariables)
+
+        // addVariable
+        .def("addVariable",         &TruthWrapper::addVariable)
+        .def("getVariableRawPtrs",  &TruthWrapper::getVariableRawPtrs)
     ;
 
 }

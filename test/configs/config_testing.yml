@@ -94,6 +94,25 @@ samples:
     weight_suffix: "my_suffix_weight_for_ttbar" # this is an additional weight to be applied (multiplication) to the sample
     #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
+    truth:
+      - name: particle
+        truth_tree_name: "truth"
+        selection: "particle_jet_pt[0] > 10000" #optional
+        event_weight: "mc_gen"
+        match_variables:
+          - reco: "jet_pt_NOSYS"
+            truth: "truth_jet_pt"
+        variables:
+          - name: "truth_jet_pt"
+            definition:  "particle_jet_pt"
+            binning:
+              min: 0
+              max: 10
+              number_of_bins: 10
+          - name: "truth_el_pt"
+            definition:  "particle_el_pt"
+            binning:
+              bin_edges: [0,2,5,7,8,10,15]
 
   - name: "Zjets_light"
     dsids: [364100,364101]

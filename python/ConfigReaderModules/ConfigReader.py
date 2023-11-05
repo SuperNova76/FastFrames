@@ -7,6 +7,7 @@ from BlockReaderNtuple import BlockReaderNtuple
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 
 from python_wrapper.python.logger import Logger
+from ConfigReaderCpp import ConfigReaderCppVariable
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
@@ -120,19 +121,19 @@ if __name__ == "__main__":
         print("\tname: ", region.cpp_class.name())
         print("\tselection: ", region.cpp_class.selection())
         print("\tvariables:")
-        variables = region.variables
-        for variable in variables:
-            print("\t\tname: ", variable.cpp_class.name())
-            print("\t\ttitle: ", variable.cpp_class.title())
-            print("\t\tdefinition: ", variable.cpp_class.definition())
-            #print("\t\tbinning: ", variable.cpp_class.binning())
-            if variable.cpp_class.hasRegularBinning():
+        variable_cpp_objects = region.get_variable_cpp_objects()
+        for variable_cpp_object in variable_cpp_objects:
+            print("\t\tname: ", variable_cpp_object.name())
+            print("\t\ttitle: ", variable_cpp_object.title())
+            print("\t\tdefinition: ", variable_cpp_object.definition())
+            #print("\t\tbinning: ", variable_cpp_object.binning())
+            if variable_cpp_object.hasRegularBinning():
                 print(  "\t\tbinning: ",
-                        variable.cpp_class.axisNbins(), ", ",
-                        variable.cpp_class.axisMin(), ", ",
-                        variable.cpp_class.axisMax())
+                        variable_cpp_object.axisNbins(), ", ",
+                        variable_cpp_object.axisMin(), ", ",
+                        variable_cpp_object.axisMax())
             else:
-                print("\t\tbinning: ", variable.cpp_class.binEdgesString())
+                print("\t\tbinning: ", variable_cpp_object.binEdgesString())
             print("\n")
 
     samples = config_reader.samples
@@ -147,6 +148,35 @@ if __name__ == "__main__":
         n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):
             print("\t\t", sample.cpp_class.uniqueSampleIDstring(i_unique_id))
+        truth_objects = sample.get_truth_cpp_objects()
+        if len(truth_objects) > 0:
+            print("\tTruth objects:")
+            for cpp_truth_object in truth_objects:
+                print("\t\tname: ", cpp_truth_object.name())
+                print("\t\ttruth_tree_name: ", cpp_truth_object.truthTreeName())
+                print("\t\tselection: ", cpp_truth_object.selection())
+                print("\t\tevent_weight: ", cpp_truth_object.eventWeight())
+                print("\t\tmatch_variables:")
+                n_matched_variables = cpp_truth_object.nMatchedVariables()
+                for i_match_variable in range(n_matched_variables):
+                    print("\t\t\t", cpp_truth_object.matchedVariables(i_match_variable))
+                variable_raw_ptrs = cpp_truth_object.getVariableRawPtrs()
+                print("\t\tvariables:")
+                for variable_ptr in variable_raw_ptrs:
+                    variable = ConfigReaderCppVariable("")
+                    variable.constructFromRawPtr(variable_ptr)
+                    print("\t\t\tname: ", variable.name())
+                    print("\t\t\ttitle: ", variable.title())
+                    print("\t\t\tdefinition: ", variable.definition())
+                    if variable.hasRegularBinning():
+                        print(  "\t\t\tbinning: ",
+                                variable.axisNbins(), ", ",
+                                variable.axisMin(), ", ",
+                                variable.axisMax())
+                    else:
+                        print("\t\t\tbinning: ", variable.binEdgesString())
+                    print("\n")
+
         print("\n")
 
     systematics = config_reader.systematics

@@ -25,6 +25,14 @@ class VariableWrapper   {
             return reinterpret_cast<unsigned long long int>(&m_variable);
         }
 
+        void constructFromSharedPtr(unsigned long long int variable_shared_ptr_int) {
+            m_variable = *reinterpret_cast<std::shared_ptr<Variable> *>(variable_shared_ptr_int);
+        };
+
+        void constructFromRawPtr(unsigned long long int variable_raw_ptr_int) {
+            Variable *variable = reinterpret_cast<Variable *>(variable_raw_ptr_int);
+            m_variable = std::make_shared<Variable>(*variable);
+        };
 
         std::string name() const {
             return m_variable->name();
