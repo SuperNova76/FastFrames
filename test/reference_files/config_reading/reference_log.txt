@@ -75,6 +75,26 @@ Samples block:
 	selection_suffix: ""
 	Unique samples:
 		 (410470,mc20e,mc)
+	Truth objects:
+		name:  particle
+		truth_tree_name:  truth
+		selection:  particle_jet_pt[0] > 10000
+		event_weight:  mc_gen
+		match_variables:
+			 ('jet_pt', 'truth_jet_pt')
+		variables:
+			name:  truth_jet_pt
+			title:  
+			definition:  particle_jet_pt
+			binning:  10 ,  0.0 ,  10.0
+
+
+			name:  truth_el_pt
+			title:  
+			definition:  particle_el_pt
+			binning:  0.000000,2.000000,5.000000,7.000000,8.000000,10.000000,15.000000
+
+
 
 
 	name:  Zjets_light
