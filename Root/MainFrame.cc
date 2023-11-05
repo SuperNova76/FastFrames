@@ -180,7 +180,7 @@ std::tuple<std::vector<SystematicHisto>,
     std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample);
 
     // retrieve the histograms;
-    std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
+    std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample, uniqueSampleID);
 
     return std::make_tuple(std::move(histoContainer), std::move(truthHistos), mainNode);
 }
@@ -401,7 +401,8 @@ ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
 }
 
 std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,
-                                                          const std::shared_ptr<Sample>& sample) const {
+                                                          const std::shared_ptr<Sample>& sample,
+                                                          const UniqueSampleID& id) {
 
     std::vector<SystematicHisto> result;
 
@@ -422,6 +423,12 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
             this->processHistograms1D(&regionHisto, node, sample, ireg, isyst);
 
             this->processHistograms2D(&regionHisto, node, sample, ireg, isyst);
+
+            if (sample->hasTruth()) {
+                this->processTruthHistograms1D(&regionHisto, node, sample, id, ireg, isyst);
+            }
+
+            this->processTruthHistograms2D(&regionHisto, node, sample, id, ireg, isyst);
 
             systematicHisto.addRegionHisto(std::move(regionHisto));
             ++regIndex;
@@ -624,19 +631,103 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
     }
 }
 
+void MainFrame::processTruthHistograms1D(RegionHisto* regionHisto,
+                                         ROOT::RDF::RNode& node,
+                                         const std::shared_ptr<Sample>& sample,
+                                         const UniqueSampleID& id,
+                                         const std::shared_ptr<Region>& region,
+                                         const std::shared_ptr<Systematic>& systematic) {
+
+    for (const auto& itruth : sample->truths()) {
+        if (!itruth->produceUnfolding()) continue;
+        auto customNode = this->defineVariablesTruth(node, itruth, id);
+        auto passedNode = customNode.Filter(itruth->selection());
+        const std::string failedSelection = "!(" + itruth->selection() + ")";
+        auto failedNode = customNode.Filter(failedSelection);
+        for (const auto& imatch : itruth->matchedVariables()) {
+            const Variable& truthVariable = itruth->variableByName(imatch.second);
+
+            VariableHisto variableHistoPassed(truthVariable.name() + "_passed");
+            VariableHisto variableHistoFailed(truthVariable.name() + "_failed");
+
+            ROOT::RDF::RResultPtr<TH1D> histogramPassed = passedNode.Histo1D(
+                                                            truthVariable.histoModel1D(),
+                                                            this->systematicVariable(truthVariable, systematic),
+                                                            this->systematicWeight(systematic)
+                                                          );
+            ROOT::RDF::RResultPtr<TH1D> histogramFailed = failedNode.Histo1D(
+                                                            truthVariable.histoModel1D(),
+                                                            this->systematicVariable(truthVariable, systematic),
+                                                            this->systematicWeight(systematic)
+                                                          );
+
+            if (!histogramPassed || !histogramFailed) {
+                LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
+                           << systematic->name() << ", region: " << region->name() << " and variable: " << truthVariable.name() << " is empty!\n";
+                throw std::runtime_error("");
+
+            }
+            variableHistoPassed.setHisto(histogramPassed);
+            variableHistoFailed.setHisto(histogramFailed);
+
+            regionHisto->addVariableHisto(std::move(variableHistoPassed));
+            regionHisto->addVariableHisto(std::move(variableHistoFailed));
+        }
+    }
+}
+
+void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
+                                         ROOT::RDF::RNode& node,
+                                         const std::shared_ptr<Sample>& sample,
+                                         const UniqueSampleID& id,
+                                         const std::shared_ptr<Region>& region,
+                                         const std::shared_ptr<Systematic>& systematic) {
+
+    for (const auto& itruth : sample->truths()) {
+        auto customNode = this->defineVariablesTruth(node, itruth, id);
+        auto passedNode = customNode.Filter(itruth->selection());
+        for (const auto& imatch : itruth->matchedVariables()) {
+            const Variable& recoVariable  = region->variableByName(imatch.second);
+            const Variable& truthVariable = itruth->variableByName(imatch.second);
+
+            const std::string name = recoVariable.name() + "_vs_" + truthVariable.name();
+            VariableHisto2D variableHistoPassed(name);
+
+            ROOT::RDF::RResultPtr<TH2D> histogramPassed = passedNode.Histo2D(
+                                                            Utils::histoModel2D(truthVariable, recoVariable),
+                                                            this->systematicVariable(truthVariable, systematic),
+                                                            this->systematicVariable(recoVariable, systematic),
+                                                            this->systematicWeight(systematic)
+                                                          );
+
+            if (!histogramPassed) {
+                LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
+                           << systematic->name() << ", region: " << region->name() << " and variable: " << truthVariable.name() << " is empty!\n";
+                throw std::runtime_error("");
+
+            }
+            variableHistoPassed.setHisto(histogramPassed);
+
+            regionHisto->addVariableHisto2D(std::move(variableHistoPassed));
+        }
+    }
+}
+
 void MainFrame::connectTruthTrees(std::unique_ptr<TChain>& chain,
                                   const std::shared_ptr<Sample>& sample,
                                   const std::vector<std::string>& filePaths) const {
 
-    for (const auto& itruth : sample->truths()) {
-        TChain* truthChain = Utils::chainFromFiles(itruth->truthTreeName(), filePaths).release();
+    for (const auto& itruth : sample->uniqueTruthTreeNames()) {
+        LOG(INFO) << "Attaching tree: " << itruth << " to the reco tree\n";
+        TChain* truthChain = Utils::chainFromFiles(itruth, filePaths).release();
+        truthChain->BuildIndex("");
         chain->AddFriend(truthChain);
     }
 }
 
 std::vector<VariableHisto> MainFrame::processTruthHistos(ROOT::RDF::RNode mainNode,
                                                          const std::shared_ptr<Sample>& sample,
-                                                         const UniqueSampleID& id) const {
+                                                         const UniqueSampleID& id) {
 
     std::vector<VariableHisto> result;
 
@@ -650,15 +741,17 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(ROOT::RDF::RNode mainNo
         const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + ss.str() +")";
         mainNode.Define("weight_truth_TOTAL", totalWeight);
 
+        auto customNode = this->defineVariablesTruth(mainNode, itruth, id);
+
         // apply truth filter
-        mainNode.Filter(itruth->selection());
+        customNode.Filter(itruth->selection());
 
         // add histograms
         for (const auto& ivariable : itruth->variables()) {
             // get histograms (will NOT trigger event loop)
             const std::string name = itruth->name() + "_" + ivariable.name();
             VariableHisto hist(name);
-            auto rdfHist = mainNode.Histo1D(ivariable.histoModel1D(), ivariable.definition(), totalWeight);
+            auto rdfHist = customNode.Histo1D(ivariable.histoModel1D(), ivariable.definition(), totalWeight);
 
             hist.setHisto(rdfHist);
 

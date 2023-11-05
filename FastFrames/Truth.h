@@ -131,6 +131,14 @@ public:
    */
   inline bool produceUnfolding() const {return m_produceUnfolding;}
 
+  /**
+   * @brief Get Variable from Truth by name
+   *
+   * @param name
+   * @return const Variable&
+   */
+  const Variable& variableByName(const std::string& name) const;
+
 private:
 
   std::string m_name;
