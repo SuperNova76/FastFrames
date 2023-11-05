@@ -270,12 +270,10 @@ private:
    *
    * @param filters List of nodes, each node represents per region, per systematic filter
    * @param sample current sample
-   * @param id UniqueSampleID
    * @return std::vector<SystematicHisto> container of the histograms
    */
   std::vector<SystematicHisto> processHistograms(std::vector<std::vector<ROOT::RDF::RNode> >& filters,
-                                                 const std::shared_ptr<Sample>& sample,
-                                                 const UniqueSampleID& id);
+                                                 const std::shared_ptr<Sample>& sample);
 
   /**
    * @brief Define 1D histograms with variables and systematics
@@ -313,14 +311,12 @@ private:
    * @param regionHisto RegionHisto to be filled
    * @param node Filtered node
    * @param sample Sample
-   * @param id UniqueSampleID
    * @param region Region
    * @param systematic Systematic
    */
   void processTruthHistograms1D(RegionHisto* regionHisto,
                                 ROOT::RDF::RNode& node,
                                 const std::shared_ptr<Sample>& sample,
-                                const UniqueSampleID& id,
                                 const std::shared_ptr<Region>& region,
                                 const std::shared_ptr<Systematic>& systematic);
 
@@ -330,14 +326,12 @@ private:
    * @param regionHisto RegionHisto to be filled
    * @param node Filtered node
    * @param sample Sample
-   * @param id UniqueSampleID
    * @param region Region
    * @param systematic Systematic
    */
   void processTruthHistograms2D(RegionHisto* regionHisto,
                                 ROOT::RDF::RNode& node,
                                 const std::shared_ptr<Sample>& sample,
-                                const UniqueSampleID& id,
                                 const std::shared_ptr<Region>& region,
                                 const std::shared_ptr<Systematic>& systematic);
 
