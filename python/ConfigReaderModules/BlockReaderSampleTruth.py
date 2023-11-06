@@ -41,6 +41,8 @@ class BlockReaderSampleTruth:
             Logger.log_message("ERROR", "No variables specified for truth block {}".format(self.name))
             exit(1)
 
+        self.produce_unfolding = self.options_getter.get("produce_unfolding", False, [bool])
+
         self.cpp_class = TruthWrapper(self.name)
         self._set_cpp_class()
 
@@ -59,6 +61,7 @@ class BlockReaderSampleTruth:
         self.cpp_class.setTruthTreeName(self.truth_tree_name)
         self.cpp_class.setSelection(self.selection)
         self.cpp_class.setEventWeight(self.event_weight)
+        self.cpp_class.setProduceUnfolding(self.produce_unfolding)
 
     def _read_variables(self) -> None:
         for variable_dict in self.variables:

@@ -66,6 +66,10 @@ class TruthWrapper  {
             return variable_ptrs;
         };
 
+        void setProduceUnfolding(const bool flag)   {m_truth->setProduceUnfolding(flag);};
+
+        bool produceUnfolding() const {return m_truth->produceUnfolding();};
+
     private:
         std::shared_ptr<Truth> m_truth;
 

@@ -8,6 +8,7 @@ General block:
 	automaticSystematics:  False
 	nominalOnly:  False
 	customFrameName:  
+	xSectionFiles:  ['data/XSection-MC16-13TeV.data']
 	luminosity, mc20a:  123456.0
 	luminosity, mc20d:  44630.6015625
 	create_tlorentz_vectors_for:
@@ -82,6 +83,7 @@ Samples block:
 		 (410470,mc20e,mc)
 	Truth objects:
 		name:  particle
+		produce_unfolding:  True
 		truth_tree_name:  truth
 		selection:  particle_jet_pt[0] > 10000
 		event_weight:  mc_gen

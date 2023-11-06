@@ -91,13 +91,11 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // x-section files
         .def("addXsectionFile",             &ConfigSettingWrapper::addXsectionFile)
-        .def("getNumberOfXsectionFiles",    &ConfigSettingWrapper::getNumberOfXsectionFiles)
-        .def("getXsectionFile",             &ConfigSettingWrapper::getXsectionFile)
+        .def("xSectionFiles",               &ConfigSettingWrapper::xSectionFiles)
 
         // TLorentzVectors
         .def("addTLorentzVector",           &ConfigSettingWrapper::addTLorentzVector)
-        .def("getNumberOfTLorentzVectors",  &ConfigSettingWrapper::getNumberOfTLorentzVectors)
-        .def("getTLorentzVector",           &ConfigSettingWrapper::getTLorentzVector)
+        .def("tLorentzVectors",             &ConfigSettingWrapper::tLorentzVectors)
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
@@ -311,6 +309,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addVariable
         .def("addVariable",         &TruthWrapper::addVariable)
         .def("getVariableRawPtrs",  &TruthWrapper::getVariableRawPtrs)
+
+        // produceUnfolding
+        .def("setProduceUnfolding", &TruthWrapper::setProduceUnfolding)
+        .def("produceUnfolding",    &TruthWrapper::produceUnfolding)
     ;
 
 }

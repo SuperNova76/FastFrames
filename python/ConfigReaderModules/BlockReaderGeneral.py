@@ -65,3 +65,9 @@ class BlockReaderGeneral:
             Logger.log_message("ERROR", "Key {} used in general block is not supported!".format(unused))
             exit(1)
 
+    def get_xsection_files(self):
+        result = []
+        vector_xsection_files = self.cpp_class.xSectionFiles()
+        for xsection_file in vector_xsection_files:
+            result.append(xsection_file)
+        return result
