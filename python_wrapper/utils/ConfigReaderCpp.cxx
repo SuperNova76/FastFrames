@@ -29,6 +29,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     boost::python::class_<std::vector<std::string>>("StringVector")
     .def(boost::python::vector_indexing_suite<std::vector<std::string>>());
 
+    boost::python::class_<std::vector<boost::python::tuple>>("StringPairVector")
+    .def(boost::python::vector_indexing_suite<std::vector<boost::python::tuple>>());
+
     class_<FastFramesExecutorWrapper>("FastFramesExecutor",
         init<long long unsigned int>())
         // runFastFrames
@@ -52,7 +55,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("executeHistograms",   &MainFrameWrapper::executeHistograms)
     ;
 
-    class_<ConfigSettingWrapper>("ConfigReaderCppGeneral",
+    class_<ConfigSettingWrapper>("ConfigSettingWrapper",
         init<>())
         // getPtr
         .def("getPtr",          &ConfigSettingWrapper::getPtr)
@@ -96,10 +99,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getNumberOfTLorentzVectors",  &ConfigSettingWrapper::getNumberOfTLorentzVectors)
         .def("getTLorentzVector",           &ConfigSettingWrapper::getTLorentzVector)
 
-        // RecoToTruthPairingIndex
-        .def("setRecoToTruthPairingIndices",  &ConfigSettingWrapper::setRecoToTruthPairingIndices)
-        .def("recoToTruthPairingIndices",     &ConfigSettingWrapper::recoToTruthPairingIndices)
-
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
         .def("getVariableNames",   &ConfigSettingWrapper::getVariableNames)
@@ -136,7 +135,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("simulation",      &UniqueSampleIDWrapper::simulation)
     ;
 
-    class_<RegionWrapper>("ConfigReaderCppRegion",
+    class_<RegionWrapper>("RegionWrapper",
         init<std::string>())
         // getPtr
         .def("getPtr",          &RegionWrapper::getPtr)
@@ -151,9 +150,13 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addVariable
         .def("addVariable",         &RegionWrapper::addVariable)
         .def("getVariableRawPtrs",  &RegionWrapper::getVariableRawPtrs)
+
+        // addVariableCombination
+        .def("addVariableCombination",   &RegionWrapper::addVariableCombination)
+        .def("variableCombinations",    &RegionWrapper::variableCombinations)
     ;
 
-    class_<VariableWrapper>("ConfigReaderCppVariable",
+    class_<VariableWrapper>("VariableWrapper",
         init<std::string>())
         // getPtr
         .def("getPtr",                  &VariableWrapper::getPtr)
@@ -212,6 +215,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addRegion
         .def("addRegion",           &SampleWrapper::addRegion)
+
+        // RecoToTruthPairingIndex
+        .def("setRecoToTruthPairingIndices",  &SampleWrapper::setRecoToTruthPairingIndices)
+        .def("recoToTruthPairingIndices",     &SampleWrapper::recoToTruthPairingIndices)
 
         // setEventWeight
         .def("setEventWeight",      &SampleWrapper::setEventWeight)

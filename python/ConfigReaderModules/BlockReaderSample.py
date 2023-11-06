@@ -3,7 +3,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp    import SampleWrapper, TruthWrapper
+from ConfigReaderCpp    import SampleWrapper, TruthWrapper, StringVector
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
@@ -58,6 +58,8 @@ class BlockReaderSample:
         self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name, [str])
 
         self.selection_suffix = self.options_getter.get("selection_suffix", "", [str])
+
+        self.reco_to_truth_pairing_indices = self.options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list])
 
         self.cpp_class = SampleWrapper(self.name)
 
@@ -145,6 +147,11 @@ class BlockReaderSample:
         self.cpp_class.setRecoTreeName(self.reco_tree_name)
         self.cpp_class.setSelectionSuffix(self.selection_suffix)
 
+        vector_pairing_indices = StringVector()
+        for reco_to_truth_pairing_index in self.reco_to_truth_pairing_indices:
+            vector_pairing_indices.append(reco_to_truth_pairing_index)
+        self.cpp_class.setRecoToTruthPairingIndices(vector_pairing_indices)
+
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
@@ -160,3 +167,7 @@ class BlockReaderSample:
             truth_cpp_object.constructFromSharedPtr(ptr)
             result.append(truth_cpp_object)
         return result
+
+    def get_reco_to_truth_pairing_indices(self):
+        indices_vector = self.cpp_class.recoToTruthPairingIndices()
+        return [x for x in indices_vector]

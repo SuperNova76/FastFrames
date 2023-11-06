@@ -7,7 +7,7 @@ from BlockReaderNtuple import BlockReaderNtuple
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 
 from python_wrapper.python.logger import Logger
-from ConfigReaderCpp import ConfigReaderCppVariable
+from ConfigReaderCpp import VariableWrapper
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
@@ -89,7 +89,6 @@ if __name__ == "__main__":
     print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
     print("\tnominalOnly: ", block_general.cpp_class.nominalOnly())
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
-    print("\treco_to_truth_pairing_indices: ", block_general.get_reco_to_truth_pairing_indices())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 
@@ -136,6 +135,12 @@ if __name__ == "__main__":
             else:
                 print("\t\tbinning: ", variable_cpp_object.binEdgesString())
             print("\n")
+        variable_combinations = region.get_2d_combinations()
+        if len(variable_combinations) > 0:
+            print("\t2d combinations:")
+            for variable_combination in variable_combinations:
+                print("\t\t", variable_combination)
+            print("\n")
 
     samples = config_reader.samples
     print("\n\nSamples block:\n")
@@ -145,6 +150,7 @@ if __name__ == "__main__":
         print("\tweight: ", sample.cpp_class.weight())
         print("\tsystematic: ", sample.systematic)
         print("\tselection_suffix: \"" + sample.selection_suffix + "\"")
+        print("\treco_to_truth_pairing_indices: ", sample.get_reco_to_truth_pairing_indices())
         print("\tUnique samples:")
         n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):
@@ -164,7 +170,7 @@ if __name__ == "__main__":
                 variable_raw_ptrs = cpp_truth_object.getVariableRawPtrs()
                 print("\t\tvariables:")
                 for variable_ptr in variable_raw_ptrs:
-                    variable = ConfigReaderCppVariable("")
+                    variable = VariableWrapper("")
                     variable.constructFromRawPtr(variable_ptr)
                     print("\t\t\tname: ", variable.name())
                     print("\t\t\ttitle: ", variable.title())

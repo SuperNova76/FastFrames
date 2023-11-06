@@ -1,7 +1,7 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigReaderCppRegion, ConfigReaderCppVariable
+from ConfigReaderCpp import RegionWrapper, VariableWrapper
 
 from BlockReaderVariable import BlockReaderVariable
 from BlockReaderGeneral import BlockReaderGeneral
@@ -23,16 +23,35 @@ class BlockReaderRegion:
             variable = BlockReaderVariable(variable_dict)
             self.variables.append(variable)
 
+        self.histograms_2d = self.options_getter.get("Histograms2D", [], [list])
+
         self.__set_cpp_class = None
         self.__set_config_reader_cpp()
         self._check_unused_options()
 
     def __set_config_reader_cpp(self):
-        self.cpp_class = ConfigReaderCppRegion(self.name)
+        variables_names = []
+        self.cpp_class = RegionWrapper(self.name)
         self.cpp_class.setSelection(self.selection)
         for variable in self.variables:
             ptr = variable.cpp_class.getPtr()
             self.cpp_class.addVariable(variable.cpp_class.getPtr())
+            variables_names.append(variable.cpp_class.name())
+
+        for histogram_2d in self.histograms_2d:
+            options_getter = BlockOptionsGetter(histogram_2d)
+            x = options_getter.get("x", None, [str])
+            y = options_getter.get("y", None, [str])
+            if x is None or y is None:
+                Logger.log_message("ERROR", "Histogram2D in region {} does not have x or y specified".format(self.name))
+                exit(1)
+            if x not in variables_names:
+                Logger.log_message("ERROR", "Histogram2D in region {} has x variable {} which is not defined".format(self.name, x))
+                exit(1)
+            if y not in variables_names:
+                Logger.log_message("ERROR", "Histogram2D in region {} has y variable {} which is not defined".format(self.name, y))
+                exit(1)
+            self.cpp_class.addVariableCombination(x, y)
 
     def __merge_settings(self, block_reader_general) -> list:
         if block_reader_general is None:
@@ -46,11 +65,18 @@ class BlockReaderRegion:
             Logger.log_message("ERROR", "Key {} used in region block is not supported!".format(unused))
             exit(1)
 
-    def get_variable_cpp_objects(self):
+    def get_variable_cpp_objects(self) -> list:
         variable_ptrs = self.cpp_class.getVariableRawPtrs()
         result = []
         for variable_ptr in variable_ptrs:
-            variable_cpp_object = ConfigReaderCppVariable("")
+            variable_cpp_object = VariableWrapper("")
             variable_cpp_object.constructFromRawPtr(variable_ptr)
             result.append(variable_cpp_object)
+        return result
+
+    def get_2d_combinations(self) -> list:
+        result = []
+        vector_combinations = self.cpp_class.variableCombinations()
+        for combination in vector_combinations:
+            result.append(combination)
         return result

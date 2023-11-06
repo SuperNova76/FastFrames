@@ -180,20 +180,6 @@ public:
   const std::vector<std::string>& tLorentzVectors() const {return m_tLorentzVectors;};
 
   /**
-   * @brief Set vector of indices used to pair reco level and truth level trees.
-   *
-   * @param reco_to_truth_pairing_indices
-   */
-  void setRecoToTruthPairingIndices(const std::vector<std::string>& reco_to_truth_pairing_indices) {m_reco_to_truth_pairing_indices = reco_to_truth_pairing_indices;};
-
-  /**
-   * @brief Get vector of indices used to pair reco level and truth level trees.
-   *
-   * @return const std::vector<std::string>&
-   */
-  const std::vector<std::string>& recoToTruthPairingIndices() const {return m_reco_to_truth_pairing_indices;};
-
-  /**
    * @brief Add one Region
    *
    * @param region
@@ -318,7 +304,6 @@ private:
   std::map<std::string, float> m_luminosity_map;
   std::vector<std::string>     m_xSectionFiles ;
   std::vector<std::string>     m_tLorentzVectors;
-  std::vector<std::string>     m_reco_to_truth_pairing_indices;
 
   std::vector<std::shared_ptr<Region> > m_regions;
   std::vector<std::shared_ptr<Sample> > m_samples;

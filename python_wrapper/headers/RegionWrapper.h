@@ -54,6 +54,19 @@ class RegionWrapper {
         };
 
 
+        void addVariableCombination(const std::string& v1, const std::string& v2)   {
+            m_region->addVariableCombination(v1, v2);
+        };
+
+        std::vector<std::string> variableCombinations() const {
+            const std::vector<std::pair<std::string,std::string>> &combinations = m_region->variableCombinations();
+            std::vector<std::string> combinations_python;
+            for (const auto &combination : combinations) {
+                combinations_python.push_back(combination.first + ", "+ combination.second);
+            }
+            return combinations_python;
+        };
+
     private:
         std::shared_ptr<Region> m_region;
 

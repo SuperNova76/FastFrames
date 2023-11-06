@@ -15,7 +15,8 @@
 
 Sample::Sample(const std::string& name) noexcept :
   m_name(name),
-  m_recoTreeName("reco")
+  m_recoTreeName("reco"),
+  m_reco_to_truth_pairing_indices({"eventNumber"})
 {
 }
 

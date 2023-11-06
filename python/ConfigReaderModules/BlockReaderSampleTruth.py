@@ -3,7 +3,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp    import TruthWrapper, ConfigReaderCppRegion
+from ConfigReaderCpp    import TruthWrapper, RegionWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
