@@ -3,7 +3,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp import ConfigReaderCppVariable
+from ConfigReaderCpp import VariableWrapper
 from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderVariable:
@@ -18,7 +18,7 @@ class BlockReaderVariable:
         self._check_unused_options()
 
     def __set_cpp_class(self):
-        self.cpp_class = ConfigReaderCppVariable(self.name)
+        self.cpp_class = VariableWrapper(self.name)
         self.cpp_class.setDefinition(self.definition)
         self.cpp_class.setTitle(self.title)
 

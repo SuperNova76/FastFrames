@@ -52,7 +52,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("executeHistograms",   &MainFrameWrapper::executeHistograms)
     ;
 
-    class_<ConfigSettingWrapper>("ConfigReaderCppGeneral",
+    class_<ConfigSettingWrapper>("ConfigSettingWrapper",
         init<>())
         // getPtr
         .def("getPtr",          &ConfigSettingWrapper::getPtr)
@@ -136,7 +136,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("simulation",      &UniqueSampleIDWrapper::simulation)
     ;
 
-    class_<RegionWrapper>("ConfigReaderCppRegion",
+    class_<RegionWrapper>("RegionWrapper",
         init<std::string>())
         // getPtr
         .def("getPtr",          &RegionWrapper::getPtr)
@@ -153,7 +153,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getVariableRawPtrs",  &RegionWrapper::getVariableRawPtrs)
     ;
 
-    class_<VariableWrapper>("ConfigReaderCppVariable",
+    class_<VariableWrapper>("VariableWrapper",
         init<std::string>())
         // getPtr
         .def("getPtr",                  &VariableWrapper::getPtr)

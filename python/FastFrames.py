@@ -12,7 +12,7 @@ sys.path.append(this_dir)
 from ConfigReaderModules.BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigReaderCppGeneral, FastFramesExecutor
+from ConfigReaderCpp import ConfigSettingWrapper, FastFramesExecutor
 from python_wrapper.python.logger import Logger
 from ConfigReader import ConfigReader
 

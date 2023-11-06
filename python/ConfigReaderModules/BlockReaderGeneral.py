@@ -1,7 +1,7 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigReaderCppGeneral, ConfigReaderCppRegion, StringVector
+from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, StringVector
 from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
 
@@ -25,7 +25,7 @@ class BlockReaderGeneral:
         self.xsection_files = self.options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"], [list])
         self.reco_to_truth_pairing_indices = self.options_getter.get("reco_to_truth_pairing_indices", ["eventNumber"], [list])
         self.__set_luminosity_map(self.options_getter.get("luminosity", None, [dict]))
-        self.cpp_class = ConfigReaderCppGeneral()
+        self.cpp_class = ConfigSettingWrapper()
         self.__set_config_reader_cpp()
         self._check_unused_options()
 

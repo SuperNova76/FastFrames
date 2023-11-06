@@ -1,7 +1,7 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigReaderCppRegion, ConfigReaderCppVariable
+from ConfigReaderCpp import RegionWrapper, VariableWrapper
 
 from BlockReaderVariable import BlockReaderVariable
 from BlockReaderGeneral import BlockReaderGeneral
@@ -28,7 +28,7 @@ class BlockReaderRegion:
         self._check_unused_options()
 
     def __set_config_reader_cpp(self):
-        self.cpp_class = ConfigReaderCppRegion(self.name)
+        self.cpp_class = RegionWrapper(self.name)
         self.cpp_class.setSelection(self.selection)
         for variable in self.variables:
             ptr = variable.cpp_class.getPtr()
@@ -50,7 +50,7 @@ class BlockReaderRegion:
         variable_ptrs = self.cpp_class.getVariableRawPtrs()
         result = []
         for variable_ptr in variable_ptrs:
-            variable_cpp_object = ConfigReaderCppVariable("")
+            variable_cpp_object = VariableWrapper("")
             variable_cpp_object.constructFromRawPtr(variable_ptr)
             result.append(variable_cpp_object)
         return result

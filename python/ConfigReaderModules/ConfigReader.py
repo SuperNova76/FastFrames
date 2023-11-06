@@ -7,7 +7,7 @@ from BlockReaderNtuple import BlockReaderNtuple
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 
 from python_wrapper.python.logger import Logger
-from ConfigReaderCpp import ConfigReaderCppVariable
+from ConfigReaderCpp import VariableWrapper
 
 class ConfigReader:
     def __init__(self, config_file_path : str):
@@ -164,7 +164,7 @@ if __name__ == "__main__":
                 variable_raw_ptrs = cpp_truth_object.getVariableRawPtrs()
                 print("\t\tvariables:")
                 for variable_ptr in variable_raw_ptrs:
-                    variable = ConfigReaderCppVariable("")
+                    variable = VariableWrapper("")
                     variable.constructFromRawPtr(variable_ptr)
                     print("\t\t\tname: ", variable.name())
                     print("\t\t\ttitle: ", variable.title())
