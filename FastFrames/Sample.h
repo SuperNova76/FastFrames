@@ -114,6 +114,20 @@ public:
   inline const std::vector<std::shared_ptr<Region> >& regions() const {return m_regions;}
 
   /**
+   * @brief Set vector of indices used to pair reco level and truth level trees.
+   *
+   * @param reco_to_truth_pairing_indices
+   */
+  void setRecoToTruthPairingIndices(const std::vector<std::string>& reco_to_truth_pairing_indices) {m_reco_to_truth_pairing_indices = reco_to_truth_pairing_indices;};
+
+  /**
+   * @brief Get vector of indices used to pair reco level and truth level trees.
+   *
+   * @return const std::vector<std::string>&
+   */
+  const std::vector<std::string>& recoToTruthPairingIndices() const {return m_reco_to_truth_pairing_indices;};
+
+  /**
    * @brief Set the event weight
    *
    * @param weight
@@ -194,6 +208,8 @@ private:
   std::vector<UniqueSampleID> m_uniqueSampleIDs;
 
   std::vector<std::shared_ptr<Truth> > m_truths;
+
+  std::vector<std::string>     m_reco_to_truth_pairing_indices;
 
   std::string m_eventWeight;
 };

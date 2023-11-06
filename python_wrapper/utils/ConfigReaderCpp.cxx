@@ -99,10 +99,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getNumberOfTLorentzVectors",  &ConfigSettingWrapper::getNumberOfTLorentzVectors)
         .def("getTLorentzVector",           &ConfigSettingWrapper::getTLorentzVector)
 
-        // RecoToTruthPairingIndex
-        .def("setRecoToTruthPairingIndices",  &ConfigSettingWrapper::setRecoToTruthPairingIndices)
-        .def("recoToTruthPairingIndices",     &ConfigSettingWrapper::recoToTruthPairingIndices)
-
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
         .def("getVariableNames",   &ConfigSettingWrapper::getVariableNames)
@@ -219,6 +215,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // addRegion
         .def("addRegion",           &SampleWrapper::addRegion)
+
+        // RecoToTruthPairingIndex
+        .def("setRecoToTruthPairingIndices",  &SampleWrapper::setRecoToTruthPairingIndices)
+        .def("recoToTruthPairingIndices",     &SampleWrapper::recoToTruthPairingIndices)
 
         // setEventWeight
         .def("setEventWeight",      &SampleWrapper::setEventWeight)

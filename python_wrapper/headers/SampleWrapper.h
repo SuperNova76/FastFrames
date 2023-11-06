@@ -57,6 +57,16 @@ class SampleWrapper {
             m_sample->addRegion(*reg);
         };
 
+
+        // reco to truth pairing indices
+        void setRecoToTruthPairingIndices(const std::vector<std::string>& indices) {
+            m_sample->setRecoToTruthPairingIndices(indices);
+        };
+
+        std::vector<std::string> recoToTruthPairingIndices() const {
+            return m_sample->recoToTruthPairingIndices();
+        };
+
         void setEventWeight(const std::string& weight) {m_sample->setEventWeight(weight);};
 
         std::string weight() const {return m_sample->weight();};

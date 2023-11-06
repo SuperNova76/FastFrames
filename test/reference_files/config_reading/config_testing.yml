@@ -125,6 +125,7 @@ samples:
     selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
     simulation_type: "mc"
     regions: ["Electron", "Muon"]
+    reco_to_truth_pairing_indices: ["eventNumber", "runNumber"]
 
   - name: "Zjets_b"
     dsids: [364100,364101]

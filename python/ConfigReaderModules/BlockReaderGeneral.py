@@ -56,11 +56,6 @@ class BlockReaderGeneral:
         for tlorentz_vector in self.create_tlorentz_vectors_for:
             self.cpp_class.addTLorentzVector(tlorentz_vector)
 
-        vector_pairing_indices = StringVector()
-        for reco_to_truth_pairing_index in self.reco_to_truth_pairing_indices:
-            vector_pairing_indices.append(reco_to_truth_pairing_index)
-        self.cpp_class.setRecoToTruthPairingIndices(vector_pairing_indices)
-
     def add_region(self, region):
         self.cpp_class.addRegion(region.cpp_class.getPtr())
 
@@ -70,6 +65,3 @@ class BlockReaderGeneral:
             Logger.log_message("ERROR", "Key {} used in general block is not supported!".format(unused))
             exit(1)
 
-    def get_reco_to_truth_pairing_indices(self):
-        indices_vector = self.cpp_class.recoToTruthPairingIndices()
-        return [x for x in indices_vector]

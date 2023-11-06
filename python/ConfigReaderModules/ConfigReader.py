@@ -89,7 +89,6 @@ if __name__ == "__main__":
     print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
     print("\tnominalOnly: ", block_general.cpp_class.nominalOnly())
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
-    print("\treco_to_truth_pairing_indices: ", block_general.get_reco_to_truth_pairing_indices())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 
@@ -151,6 +150,7 @@ if __name__ == "__main__":
         print("\tweight: ", sample.cpp_class.weight())
         print("\tsystematic: ", sample.systematic)
         print("\tselection_suffix: \"" + sample.selection_suffix + "\"")
+        print("\treco_to_truth_pairing_indices: ", sample.get_reco_to_truth_pairing_indices())
         print("\tUnique samples:")
         n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):

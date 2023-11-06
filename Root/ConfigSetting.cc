@@ -18,7 +18,6 @@ m_outputPathHistograms(""),
 m_outputPathNtuples(""),
 m_inputSumWeightsPath("test/input/sum_of_weights.txt"),
 m_inputFilelistPath("test/input/filelist.txt"),
-m_reco_to_truth_pairing_indices({"eventNumber"}),
 m_regions({}),
 m_samples({}),
 m_systematics({})
