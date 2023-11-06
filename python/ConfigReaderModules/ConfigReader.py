@@ -89,13 +89,14 @@ if __name__ == "__main__":
     print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
     print("\tnominalOnly: ", block_general.cpp_class.nominalOnly())
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
+    print("\txSectionFiles: ",  block_general.get_xsection_files())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 
     print("\tcreate_tlorentz_vectors_for:")
-    ntlorentz_vectors = block_general.cpp_class.getNumberOfTLorentzVectors()
-    for i_tlorentz_vector in range(ntlorentz_vectors):
-        print("\t\t", block_general.cpp_class.getTLorentzVector(i_tlorentz_vector))
+    tlorentz_vectors = block_general.cpp_class.tLorentzVectors()
+    for tlorentz_vector in tlorentz_vectors:
+        print("\t\t", tlorentz_vector)
 
     if config_reader.has_ntuple_block:
         print("\nNtuple block:")

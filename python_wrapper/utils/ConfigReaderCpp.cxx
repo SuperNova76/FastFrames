@@ -91,13 +91,11 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // x-section files
         .def("addXsectionFile",             &ConfigSettingWrapper::addXsectionFile)
-        .def("getNumberOfXsectionFiles",    &ConfigSettingWrapper::getNumberOfXsectionFiles)
-        .def("getXsectionFile",             &ConfigSettingWrapper::getXsectionFile)
+        .def("xSectionFiles",               &ConfigSettingWrapper::xSectionFiles)
 
         // TLorentzVectors
         .def("addTLorentzVector",           &ConfigSettingWrapper::addTLorentzVector)
-        .def("getNumberOfTLorentzVectors",  &ConfigSettingWrapper::getNumberOfTLorentzVectors)
-        .def("getTLorentzVector",           &ConfigSettingWrapper::getTLorentzVector)
+        .def("tLorentzVectors",             &ConfigSettingWrapper::tLorentzVectors)
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
