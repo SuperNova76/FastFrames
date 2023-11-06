@@ -86,7 +86,7 @@ regions:
           min: -3.2
           max: 3.2
           number_of_bins: 16
-    Histograms2D:
+    histograms_2d:
       - x: "met_met"
         y: "met_phi"
 
