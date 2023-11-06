@@ -41,7 +41,7 @@ class BlockReaderSampleTruth:
             Logger.log_message("ERROR", "No variables specified for truth block {}".format(self.name))
             exit(1)
 
-        self.produce_unfolding = self.options_getter.get("produce_unfolding", True, [bool])
+        self.produce_unfolding = self.options_getter.get("produce_unfolding", False, [bool])
 
         self.cpp_class = TruthWrapper(self.name)
         self._set_cpp_class()
