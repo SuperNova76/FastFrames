@@ -86,6 +86,9 @@ regions:
           min: -3.2
           max: 3.2
           number_of_bins: 16
+    Histograms2D:
+      - x: "met_met"
+        y: "met_phi"
 
 samples:
   - name: "ttbar_FS"

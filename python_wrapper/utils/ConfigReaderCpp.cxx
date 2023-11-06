@@ -29,6 +29,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     boost::python::class_<std::vector<std::string>>("StringVector")
     .def(boost::python::vector_indexing_suite<std::vector<std::string>>());
 
+    boost::python::class_<std::vector<boost::python::tuple>>("StringPairVector")
+    .def(boost::python::vector_indexing_suite<std::vector<boost::python::tuple>>());
+
     class_<FastFramesExecutorWrapper>("FastFramesExecutor",
         init<long long unsigned int>())
         // runFastFrames
@@ -151,6 +154,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addVariable
         .def("addVariable",         &RegionWrapper::addVariable)
         .def("getVariableRawPtrs",  &RegionWrapper::getVariableRawPtrs)
+
+        // addVariableCombination
+        .def("addVariableCombination",   &RegionWrapper::addVariableCombination)
+        .def("variableCombinations",    &RegionWrapper::variableCombinations)
     ;
 
     class_<VariableWrapper>("VariableWrapper",

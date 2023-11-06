@@ -136,6 +136,12 @@ if __name__ == "__main__":
             else:
                 print("\t\tbinning: ", variable_cpp_object.binEdgesString())
             print("\n")
+        variable_combinations = region.get_2d_combinations()
+        if len(variable_combinations) > 0:
+            print("\t2d combinations:")
+            for variable_combination in variable_combinations:
+                print("\t\t", variable_combination)
+            print("\n")
 
     samples = config_reader.samples
     print("\n\nSamples block:\n")
