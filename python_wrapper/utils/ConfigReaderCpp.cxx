@@ -309,6 +309,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addVariable
         .def("addVariable",         &TruthWrapper::addVariable)
         .def("getVariableRawPtrs",  &TruthWrapper::getVariableRawPtrs)
+
+        // produceUnfolding
+        .def("setProduceUnfolding", &TruthWrapper::setProduceUnfolding)
+        .def("produceUnfolding",    &TruthWrapper::produceUnfolding)
     ;
 
 }

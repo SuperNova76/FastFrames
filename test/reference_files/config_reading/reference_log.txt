@@ -83,6 +83,7 @@ Samples block:
 		 (410470,mc20e,mc)
 	Truth objects:
 		name:  particle
+		produce_unfolding:  True
 		truth_tree_name:  truth
 		selection:  particle_jet_pt[0] > 10000
 		event_weight:  mc_gen

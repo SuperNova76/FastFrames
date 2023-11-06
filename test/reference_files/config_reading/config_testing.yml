@@ -100,6 +100,7 @@ samples:
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
     truth:
       - name: particle
+        produce_unfolding: True
         truth_tree_name: "truth"
         selection: "particle_jet_pt[0] > 10000" #optional
         event_weight: "mc_gen"

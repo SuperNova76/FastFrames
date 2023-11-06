@@ -161,6 +161,7 @@ if __name__ == "__main__":
             print("\tTruth objects:")
             for cpp_truth_object in truth_objects:
                 print("\t\tname: ", cpp_truth_object.name())
+                print("\t\tproduce_unfolding: ", cpp_truth_object.produceUnfolding())
                 print("\t\ttruth_tree_name: ", cpp_truth_object.truthTreeName())
                 print("\t\tselection: ", cpp_truth_object.selection())
                 print("\t\tevent_weight: ", cpp_truth_object.eventWeight())
