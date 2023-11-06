@@ -1,3 +1,8 @@
+/**
+ * @file RegionWrapper.h
+ * @brief Header file for the RegionWrapper class
+ *
+ */
 #pragma once
 
 #include "FastFrames/Region.h"
@@ -11,39 +16,75 @@
  * @brief Wrapper around region class, to be able to use it in python
  * Wrapper cannot return references or custom classes.
  */
-
 class RegionWrapper {
     public:
         RegionWrapper() = delete;
 
+        /**
+         * @brief Construct a new Region Wrapper object with given name
+         *
+         * @param name
+         */
         explicit RegionWrapper(const std::string& name) : m_region(std::make_shared<Region>(name)) {};
 
+        /**
+         * @brief Destroy the Region Wrapper object
+         *
+         */
         ~RegionWrapper() = default;
 
+        /**
+         * @brief Get raw pointer to the shared_ptr<Region>
+         *
+         * @return unsigned long long int
+         */
         unsigned long long int getPtr() {
             return reinterpret_cast<unsigned long long int>(&m_region);
         }
 
-
+        /**
+         * @brief Get name of the region
+         *
+         * @return std::string
+         */
         std::string name() const {
             return m_region->name();
         };
 
 
+        /**
+         * Sets the selection for the region.
+         *
+         * @param selection The selection to set.
+         */
         void setSelection(const std::string& selection) {
             m_region->setSelection(selection);
         };
 
+        /**
+         * @brief Returns the selection string.
+         *
+         * @return std::string The selection string.
+         */
         std::string selection() const {
             return m_region->selection();
         };
 
-
+        /**
+         * @brief Add variable to the region, given the raw pointer to the shared_ptr<Variable>
+         *
+         * @param variable_ptr - raw pointer to the shared_ptr<Variable>
+         */
         void addVariable(unsigned long long int variable_ptr) {
             const std::shared_ptr<Variable> *variable = reinterpret_cast<std::shared_ptr<Variable> *>(variable_ptr);
             m_region->addVariable(*(*variable));
         };
 
+        /**
+         * @brief Get the vector of raw pointers to the shared_ptr<Variable> objects
+         *
+         * @return std::vector<unsigned long long int>
+         */
         std::vector<unsigned long long int> getVariableRawPtrs()   const {
             const std::vector<Variable> &variables = m_region->variables();
             std::vector<unsigned long long int> variable_ptrs;
@@ -53,11 +94,21 @@ class RegionWrapper {
             return variable_ptrs;
         };
 
-
+        /**
+         * @brief Add combination of 2 variables for 2D histograms
+         *
+         * @param v1 variable #1 name
+         * @param v2 variable #2 name
+         */
         void addVariableCombination(const std::string& v1, const std::string& v2)   {
             m_region->addVariableCombination(v1, v2);
         };
 
+        /**
+         * @brief Get vector of comma separated pairs of variable names for 2D histograms
+         *
+         * @return std::vector<std::string>
+         */
         std::vector<std::string> variableCombinations() const {
             const std::vector<std::pair<std::string,std::string>> &combinations = m_region->variableCombinations();
             std::vector<std::string> combinations_python;

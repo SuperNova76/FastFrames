@@ -8,7 +8,7 @@ sudo apt-get install python3-dev gcc cmake build-essential python3-pip libboost-
 ```
 
 ## Get the code
-Create a new folder for the repository, e.g. 
+Create a new folder for the repository, e.g.
 ```
 mkdir FastFrames
 cd FastFrames
@@ -44,3 +44,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/FastFrames/install/lib
 ```
 
 You can add the export to your `.bashrc` file so this will be done automatically for you every time a new shell is created.
+
+## Documentation:
+
+Doxygen documentation can be found here: https://cern.ch/fastframes

@@ -1,3 +1,9 @@
+/**
+ * @file ConfigSettingWrapper.h
+ * @brief Header file for the ConfigSettingWrapper class
+ *
+ */
+
 #pragma once
 
 #include "FastFrames/ConfigSetting.h"
@@ -23,6 +29,10 @@ class ConfigSettingWrapper {
          */
         ConfigSettingWrapper() :  m_configSetting(std::make_shared<ConfigSetting>())    {};
 
+        /**
+         * @brief Destroy the Config Setting Wrapper object
+         *
+         */
         ~ConfigSettingWrapper() = default;
 
         /**
