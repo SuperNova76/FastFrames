@@ -158,7 +158,6 @@ private:
              ROOT::RDF::RNode> processUniqueSample(const std::shared_ptr<Sample>& sample,
                                                    const UniqueSampleID& uniqueSampleID);
 
-
   /**
    * @brief Main processing function for ntuples
    *
