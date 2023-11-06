@@ -96,6 +96,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getNumberOfTLorentzVectors",  &ConfigSettingWrapper::getNumberOfTLorentzVectors)
         .def("getTLorentzVector",           &ConfigSettingWrapper::getTLorentzVector)
 
+        // RecoToTruthPairingIndex
+        .def("setRecoToTruthPairingIndices",  &ConfigSettingWrapper::setRecoToTruthPairingIndices)
+        .def("recoToTruthPairingIndices",     &ConfigSettingWrapper::recoToTruthPairingIndices)
 
         // addRegion
         .def("addRegion",   &ConfigSettingWrapper::addRegion)
