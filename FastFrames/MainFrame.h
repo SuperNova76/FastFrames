@@ -395,12 +395,12 @@ private:
   /**
    * @brief Process truth histograms
    *
-   * @param mainNode Main RDF node
+   * @param filePaths Paths to the input files
    * @param sample Current sample
    * @param id current UniqueSampleID
    * @return std::vector<VariableHisto>
    */
-  std::vector<VariableHisto> processTruthHistos(ROOT::RDF::RNode mainNode,
+  std::vector<VariableHisto> processTruthHistos(const std::vector<std::string>& filePaths,
                                                 const std::shared_ptr<Sample>& sample,
                                                 const UniqueSampleID& id);
 

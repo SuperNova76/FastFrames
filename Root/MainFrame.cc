@@ -153,14 +153,14 @@ std::tuple<std::vector<SystematicHisto>,
         this->connectTruthTrees(recoChain, sample, filePaths);
     }
 
-    ROOT::RDataFrame df(*recoChain.release());
-    ROOT::RDF::RNode mainNode = df;
-
     std::vector<VariableHisto> truthHistos;
 
     if (sample->hasTruth()) {
-        truthHistos = std::move(this->processTruthHistos(mainNode, sample, uniqueSampleID));
+        truthHistos = std::move(this->processTruthHistos(filePaths, sample, uniqueSampleID));
     }
+
+    ROOT::RDataFrame df(*recoChain.release());
+    ROOT::RDF::RNode mainNode = df;
 
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
@@ -476,7 +476,9 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
             LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
             continue;
         }
-        out->mkdir(isystHist.name().c_str());
+        if (!out->GetDirectory(isystHist.name().c_str())) {
+            out->mkdir(isystHist.name().c_str());
+        }
         out->cd(isystHist.name().c_str());
         for (const auto& iregionHist : isystHist.regionHistos()) {
 
@@ -497,6 +499,7 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
     // Write truth histograms
     out->cd();
     for (const auto& itruthHist : truthHistos) {
+        LOG(INFO) << "Triggering event loop for truth histograms!\n";
         const std::string truthHistoName = StringOperations::replaceString(itruthHist.name(), "_NOSYS", "");
         itruthHist.histo()->Write(truthHistoName.c_str());
     }
@@ -645,9 +648,16 @@ void MainFrame::processTruthHistograms1D(RegionHisto* regionHisto,
 
     for (const auto& itruth : sample->truths()) {
         if (!itruth->produceUnfolding()) continue;
-        auto passedNode = node.Filter(itruth->selection());
-        const std::string failedSelection = "!(" + itruth->selection() + ")";
-        auto failedNode = node.Filter(failedSelection);
+        ROOT::RDF::RNode passedNode = node;
+        ROOT::RDF::RNode failedNode = node;
+        if (!itruth->selection().empty()) {
+            passedNode = passedNode.Filter(itruth->selection());
+            const std::string failedSelection = "!(" + itruth->selection() + ")";
+            failedNode = failedNode.Filter(failedSelection);
+        } else {
+            // should be empty if there is no selection
+            failedNode = failedNode.Filter([](){return false;}, {});
+        }
         for (const auto& imatch : itruth->matchedVariables()) {
             const Variable& truthVariable = itruth->variableByName(imatch.second);
 
@@ -687,9 +697,12 @@ void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
                                          const std::shared_ptr<Systematic>& systematic) {
 
     for (const auto& itruth : sample->truths()) {
-        auto passedNode = node.Filter(itruth->selection());
+        ROOT::RDF::RNode passedNode = node;
+        if (!itruth->selection().empty()) {
+            passedNode = node.Filter(itruth->selection());
+        }
         for (const auto& imatch : itruth->matchedVariables()) {
-            const Variable& recoVariable  = region->variableByName(imatch.second);
+            const Variable& recoVariable  = region->variableByName(imatch.first);
             const Variable& truthVariable = itruth->variableByName(imatch.second);
 
             const std::string name = recoVariable.name() + "_vs_" + truthVariable.name();
@@ -720,40 +733,70 @@ void MainFrame::connectTruthTrees(std::unique_ptr<TChain>& chain,
                                   const std::vector<std::string>& filePaths) const {
 
     for (const auto& itruth : sample->uniqueTruthTreeNames()) {
+
+        const std::vector<std::string>& indexNames = sample->recoToTruthPairingIndices();
+        if (indexNames.empty() || indexNames.size() > 2) {
+            LOG(ERROR) << "Reco to truth index names for sample: " << sample->name() << " are 0 or > 2\n";
+            throw std::invalid_argument("");
+        }
+
         LOG(INFO) << "Attaching tree: " << itruth << " to the reco tree\n";
         TChain* truthChain = Utils::chainFromFiles(itruth, filePaths).release();
-        truthChain->BuildIndex("");
+        if (indexNames.size() == 1 ) {
+            LOG(INFO) << "Building reco truth index with: " << indexNames.at(0) << "\n";
+            truthChain->BuildIndex(indexNames.at(0).c_str());
+        } else {
+            LOG(INFO) << "Building reco truth index with: " << indexNames.at(0) << " and " << indexNames.at(1) << "\n";
+            truthChain->BuildIndex(indexNames.at(0).c_str(), indexNames.at(1).c_str());
+        }
         chain->AddFriend(truthChain);
     }
 }
 
-std::vector<VariableHisto> MainFrame::processTruthHistos(ROOT::RDF::RNode mainNode,
+std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::string>& filePaths,
                                                          const std::shared_ptr<Sample>& sample,
                                                          const UniqueSampleID& id) {
 
     std::vector<VariableHisto> result;
 
+    const std::vector<std::string>& uniqueTreeNames = sample->uniqueTruthTreeNames();
+    std::map<std::string, ROOT::RDF::RNode> rdfNodes;
+    for (const auto& iTree : uniqueTreeNames) {
+        rdfNodes.insert(std::make_pair(iTree, ROOT::RDataFrame(iTree, filePaths)));
+    }
+
     for (const auto& itruth : sample->truths()) {
         // add MC weight
         const float normalisation = m_metadataManager.normalisation(id, sample->nominalSystematic());
+
+        auto itr = rdfNodes.find(itruth->truthTreeName());
+        if (itr == rdfNodes.end()) {
+            LOG(ERROR) << "Cannot find truth tree name: " << itruth->truthTreeName() << "in the map!\n";
+            throw std::runtime_error("");
+        }
+
+        ROOT::RDF::RNode mainNode = itr->second;
 
         // to not cut very small numbers to zero
         std::ostringstream ss;
         ss << normalisation;
         const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + ss.str() +")";
-        mainNode.Define("weight_truth_TOTAL", totalWeight);
+        LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
+        mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
 
         auto customNode = this->defineVariablesTruth(mainNode, itruth, id);
 
         // apply truth filter
-        customNode.Filter(itruth->selection());
+        if (!itruth->selection().empty()) {
+            customNode = customNode.Filter(itruth->selection());
+        }
 
         // add histograms
         for (const auto& ivariable : itruth->variables()) {
             // get histograms (will NOT trigger event loop)
             const std::string name = itruth->name() + "_" + ivariable.name();
             VariableHisto hist(name);
-            auto rdfHist = customNode.Histo1D(ivariable.histoModel1D(), ivariable.definition(), totalWeight);
+            auto rdfHist = customNode.Histo1D(ivariable.histoModel1D(), ivariable.definition(), "weight_truth_TOTAL");
 
             hist.setHisto(rdfHist);
 
@@ -773,8 +816,8 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
         if (!itruth->produceUnfolding()) continue;
         for (const auto& imatch : itruth->matchedVariables()) {
             const std::string& truthName = itruth->name() + "_" + imatch.second;
-            const std::string& selectionPassed = imatch.first + "_passed";
-            const std::string& selectionFailed = imatch.first + "_failed";
+            const std::string& selectionPassed = imatch.second + "_passed";
+            const std::string& selectionFailed = imatch.second + "_failed";
 
             std::unique_ptr<TH1D> truth = Utils::copyHistoFromVariableHistos(truthHistos, truthName);
             for (const auto& isystHist : histos) {
@@ -782,8 +825,10 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
                     continue;
                 }
-                outputFile->mkdir(isystHist.name().c_str());
-                outputFile->cd(isystHist.name().c_str());
+                outputFile->cd();
+                if (!outputFile->GetDirectory(isystHist.name().c_str())) {
+                    outputFile->mkdir(isystHist.name().c_str());
+                }
                 for (const auto& iregionHist : isystHist.regionHistos()) {
                     std::unique_ptr<TH1D> passed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionPassed);
                     std::unique_ptr<TH1D> failed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionFailed);
@@ -802,6 +847,7 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     const std::string selectionEffName = "selection_eff_" + itruth->name() + "_" + truthName + "_" + iregionHist.name();
                     const std::string acceptanceName   = "acceptance_"    + itruth->name() + "_" + truthName + "_" + iregionHist.name();
 
+                    outputFile->cd(isystHist.name().c_str());
                     selectionEff->Write(selectionEffName.c_str());
                     passed->Write(acceptanceName.c_str());
                 }

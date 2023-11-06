@@ -1,5 +1,5 @@
 general:
-  debug_level: VERBOSE
+  debug_level: DEBUG
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path_histograms: ""
@@ -81,6 +81,21 @@ samples:
     #weight_suffix: "something" # this is an additional weight to be applied (multiplication) to the sample
     #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
+    truth:
+      - name: parton
+        truth_tree_name: "truth"
+        selection: "" #optional
+        event_weight: "weight_mc_NOSYS"
+        match_variables:
+          - reco: "jet_pt_NOSYS"
+            truth: "Ttbar_MC_t_afterFSR_pt"
+        variables:
+          - name: "Ttbar_MC_t_afterFSR_pt"
+            definition:  "Ttbar_MC_t_afterFSR_pt"
+            binning:
+              min: 0
+              max: 1000000
+              number_of_bins: 20
 
   - name: "Wjets"
     dsids: [700341]
