@@ -119,6 +119,15 @@ class ConfigSettingWrapper {
             return (m_configSetting->tLorentzVectors()).at(i_vector);
         }
 
+        // reco to truth pairing indices
+        void setRecoToTruthPairingIndices(const std::vector<std::string>& indices) {
+            m_configSetting->setRecoToTruthPairingIndices(indices);
+        };
+
+        std::vector<std::string> recoToTruthPairingIndices() const {
+            return m_configSetting->recoToTruthPairingIndices();
+        };
+
         // regions
         void addRegion(long long int region_shared_ptr_int) {
             const std::shared_ptr<Region> *region = reinterpret_cast<std::shared_ptr<Region> *>(region_shared_ptr_int);

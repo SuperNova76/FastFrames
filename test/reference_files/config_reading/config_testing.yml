@@ -13,6 +13,7 @@ general:
   default_reco_tree_name: "reco"
   xsection_files: ["data/XSection-MC16-13TeV.data"]
   create_tlorentz_vectors_for: ["jet"]
+  #reco_to_truth_pairing_indices: ["eventNumber", "runNumber"]
 #  custom_frame_name: "my_custom_frame_name.so"
   #automatic_systematics: True
   nominal_only: False

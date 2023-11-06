@@ -89,6 +89,7 @@ if __name__ == "__main__":
     print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
     print("\tnominalOnly: ", block_general.cpp_class.nominalOnly())
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
+    print("\treco_to_truth_pairing_indices: ", block_general.get_reco_to_truth_pairing_indices())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 
