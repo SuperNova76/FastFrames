@@ -44,7 +44,7 @@ std::vector<std::string> Sample::uniqueTruthTreeNames() const {
 }
 
 const std::shared_ptr<Systematic>& Sample::nominalSystematic() const {
-  auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [](const auto& element){return element->name() == "NOSYS";});
+  auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [](const auto& element){return element->isNominal();});
   if (itr == m_systematics.end()) {
     LOG(ERROR) << "Cannot find nominal systematic in the list of systematics for sample: " << m_name << "\n";
     throw std::runtime_error("");

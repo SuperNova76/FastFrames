@@ -189,13 +189,18 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
                                           const UniqueSampleID& id) {
 
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(id);
-
-    ROOT::RDataFrame df(sample->recoTreeName(), filePaths);
     if (filePaths.empty()) {
         LOG(WARNING) << "UniqueSample: " << id << " has no files, will not produce output ntuple\n";
         return;
     }
 
+    auto chain = Utils::chainFromFiles(sample->recoTreeName(), filePaths);
+
+    if (sample->hasTruth()) {
+        this->connectTruthTrees(chain, sample, filePaths);
+    }
+
+    ROOT::RDataFrame df(*chain.release());
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
 
