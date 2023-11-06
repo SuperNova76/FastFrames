@@ -83,6 +83,7 @@ samples:
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
     truth:
       - name: parton
+        produce_unfolding: True
         truth_tree_name: "truth"
         selection: "" #optional
         event_weight: "weight_mc_NOSYS"

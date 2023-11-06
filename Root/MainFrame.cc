@@ -471,36 +471,47 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
 
     this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
 
+    bool first(true);
     for (const auto& isystHist : histos) {
         if (isystHist.regionHistos().empty()) {
             LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
             continue;
         }
         if (!out->GetDirectory(isystHist.name().c_str())) {
+            out->cd();
             out->mkdir(isystHist.name().c_str());
         }
-        out->cd(isystHist.name().c_str());
         for (const auto& iregionHist : isystHist.regionHistos()) {
 
             // 1D histograms
             for (const auto& ivariableHist : iregionHist.variableHistos()) {
                 const std::string histoName = StringOperations::replaceString(ivariableHist.name(), "_NOSYS", "") + "_" + iregionHist.name();
-                ivariableHist.histo()->Write(histoName.c_str());
+                if (first) {
+                    std::unique_ptr<TH1D> histoCopy(static_cast<TH1D*>(ivariableHist.histo()->Clone()));
+                    histoCopy->SetDirectory(nullptr);
+                    out->cd(isystHist.name().c_str());
+                    histoCopy->Write(histoName.c_str());
+                    first = false;
+                } else {
+                    out->cd(isystHist.name().c_str());
+                    ivariableHist.histo()->Write(histoName.c_str());
+                }
             }
 
             // 2D histograms
             for (const auto& ivariableHist2D : iregionHist.variableHistos2D()) {
                 const std::string histo2DName = StringOperations::replaceString(ivariableHist2D.name(), "_NOSYS", "") + "_" + iregionHist.name();
+                out->cd(isystHist.name().c_str());
                 ivariableHist2D.histo()->Write(histo2DName.c_str());
             }
         }
     }
 
     // Write truth histograms
-    out->cd();
     for (const auto& itruthHist : truthHistos) {
         LOG(INFO) << "Triggering event loop for truth histograms!\n";
         const std::string truthHistoName = StringOperations::replaceString(itruthHist.name(), "_NOSYS", "");
+        out->cd();
         itruthHist.histo()->Write(truthHistoName.c_str());
     }
     if (printEventLoopCount) {
