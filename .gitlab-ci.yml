@@ -36,8 +36,6 @@ make_doxygen:
      - cmake -DBUILD_DOC=ON .. | tee cmake.log
      - make doc_doxygen
      - ls
-  only:
-    - main@atlas-amglab/fastframes
   artifacts:
      paths:
       - doc_build/docs/
