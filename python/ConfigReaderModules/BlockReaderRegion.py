@@ -23,7 +23,7 @@ class BlockReaderRegion:
             variable = BlockReaderVariable(variable_dict)
             self.variables.append(variable)
 
-        self.histograms_2d = self.options_getter.get("Histograms2D", [], [list])
+        self.histograms_2d = self.options_getter.get("histograms_2d", [], [list])
 
         self.__set_cpp_class = None
         self.__set_config_reader_cpp()
@@ -43,13 +43,13 @@ class BlockReaderRegion:
             x = options_getter.get("x", None, [str])
             y = options_getter.get("y", None, [str])
             if x is None or y is None:
-                Logger.log_message("ERROR", "Histogram2D in region {} does not have x or y specified".format(self.name))
+                Logger.log_message("ERROR", "histograms_2d in region {} does not have x or y specified".format(self.name))
                 exit(1)
             if x not in variables_names:
-                Logger.log_message("ERROR", "Histogram2D in region {} has x variable {} which is not defined".format(self.name, x))
+                Logger.log_message("ERROR", "histograms_2d in region {} has x variable {} which is not defined".format(self.name, x))
                 exit(1)
             if y not in variables_names:
-                Logger.log_message("ERROR", "Histogram2D in region {} has y variable {} which is not defined".format(self.name, y))
+                Logger.log_message("ERROR", "histograms_2d in region {} has y variable {} which is not defined".format(self.name, y))
                 exit(1)
             self.cpp_class.addVariableCombination(x, y)
 
