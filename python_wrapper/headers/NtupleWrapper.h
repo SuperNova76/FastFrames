@@ -122,6 +122,20 @@ class NtupleWrapper {
          */
         std::string excludedBranchName(unsigned int i) const {return m_ntuple->excludedBranches().at(i);};
 
+        /**
+         * @brief Add a tree to copy
+         *
+         * @param tree
+         */
+        void addCopyTree(const std::string& tree) { m_ntuple->addCopyTree(tree);}
+
+        /**
+         * @brief Get trees to copy
+         *
+         * @return const std::vector<std::string>&
+         */
+        std::vector<std::string> copyTrees() const {return m_ntuple->copyTrees();}
+
 
     private:
         std::shared_ptr<Ntuple> m_ntuple;

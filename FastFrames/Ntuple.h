@@ -95,6 +95,20 @@ public:
   const std::vector<std::string>& excludedBranches() const {return m_excludedBrances;}
 
   /**
+   * @brief Add a tree to copy
+   *
+   * @param tree
+   */
+  void addCopyTree(const std::string& tree) {m_copyTrees.emplace_back(tree);}
+
+  /**
+   * @brief Get trees to copy
+   *
+   * @return const std::vector<std::string>&
+   */
+  const std::vector<std::string>& copyTrees() const {return m_copyTrees;}
+
+  /**
    * @brief Get the list of selected branches based on regex from branches and excluded branches
    *
    * @param allBranches all branches

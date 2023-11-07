@@ -19,6 +19,7 @@ Ntuple block:
 	samples: [ ttbar_FS,Zjets_b ]
 	branches: [ my_first_branch,my_second_branch ]
 	excluded_branches: [ my_first_excluded_branch,my_second_excluded_branch ]
+	copy_trees:  ['treeName1', 'treeName2']
 
 
 Regions block:

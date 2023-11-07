@@ -113,6 +113,7 @@ if __name__ == "__main__":
         excluded_branches = [config_reader.block_ntuple.cpp_class.excludedBranchName(i_branch) for i_branch in range(n_excluded_branches)]
         print("\texcluded_branches: [", ",".join(excluded_branches), "]")
 
+        print("\tcopy_trees: ", config_reader.block_ntuple.get_copy_trees())
 
 
     regions = config_reader.regions

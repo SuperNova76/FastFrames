@@ -32,6 +32,7 @@ ntuples:
   branches: ["my_first_branch", "my_second_branch"] # optional, if not provided, use all branches
   exclude_branches: ["my_first_excluded_branch", "my_second_excluded_branch"] # optional, if not provided, use all branches
   regions: [ "Electron", "Muon"] # optional
+  copy_trees: ["treeName1", "treeName2"] # optional, default is empty list
 
 
 regions:

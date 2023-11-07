@@ -277,6 +277,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addExcludedBranch",   &NtupleWrapper::addExcludedBranch)
         .def("nExcludedBranches",   &NtupleWrapper::nExcludedBranches)
         .def("excludedBranchName",  &NtupleWrapper::excludedBranchName)
+
+        // copyTree
+        .def("addCopyTree",     &NtupleWrapper::addCopyTree)
+        .def("copyTrees",       &NtupleWrapper::copyTrees)
     ;
 
     class_<TruthWrapper>("TruthWrapper",
