@@ -22,7 +22,8 @@ public:
 
   enum class ObjectType {
     Histogram = 0,
-    Named = 1
+    Named = 1,
+    Tree = 2
   };
 
   /**
@@ -51,6 +52,15 @@ public:
    * @param outputPath
    */
   void copyObjectsTo(const std::string& outputPath) const;
+
+  /**
+   * @brief Copy trees if requested
+   *
+   * @param outputPath Output ROOT file path
+   * @param trees List of the tree names
+   */
+  void copyTreesTo(const std::string& outputPath,
+                   const std::vector<std::string>& trees) const;
 
 private:
 

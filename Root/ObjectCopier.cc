@@ -8,6 +8,7 @@
 
 #include "FastFrames/Logger.h"
 
+#include "ROOT/RDataFrame.hxx"
 #include "TClass.h"
 #include "TFile.h"
 #include "TH1F.h"
@@ -39,7 +40,10 @@ void ObjectCopier::readObjectInfo() {
         const std::string classname = key->GetClassName();
         TClass *cl = gROOT->GetClass(classname.c_str());
         if (!cl) continue;
-        if (cl->InheritsFrom("TTree")) continue; // skip trees
+        if (cl->InheritsFrom("TTree")) {
+            m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Tree));
+            continue;
+        }
         if (cl->InheritsFrom("TH1F")) {
             m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Histogram));
             continue;
@@ -107,4 +111,22 @@ std::unique_ptr<TH1F> ObjectCopier::mergeHistos(const std::string& name,
     }
 
     return result;
+}
+
+void ObjectCopier::copyTreesTo(const std::string& outputPath,
+                               const std::vector<std::string>& trees) const {
+
+    // Use RDF to merge trees and store them
+
+    for (const auto& iobject : m_objectList) {
+        if (iobject.second != ObjectType::Tree) continue;
+        const std::string& name = iobject.first;
+        auto itr = std::find(trees.begin(), trees.end(), name);
+        if (itr == trees.end()) continue;
+
+        LOG(INFO) << "Started copying tree: " << name << " to " << outputPath << "\n";
+        ROOT::RDataFrame df(name, m_fileList);
+        df.Snapshot(name, outputPath);
+        LOG(INFO) << "Finished copying tree: " << name << " to " << outputPath << "\n";
+    }
 }
