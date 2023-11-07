@@ -239,6 +239,9 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     copier.readObjectInfo();
     copier.copyObjectsTo(fileName);
     LOG(INFO) << "Finished copying metadata from the original files\n";
+    if (!m_config->ntuple()->copyTrees().empty()) {
+        copier.copyTreesTo(fileName, m_config->ntuple()->copyTrees());
+    }
 }
 
 std::string MainFrame::systematicFilter(const std::shared_ptr<Sample>& sample,
