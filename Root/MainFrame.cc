@@ -234,14 +234,14 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
     LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
 
-    LOG(INFO) << "Copying metadata from the original files\n";
     ObjectCopier copier(filePaths);
     copier.readObjectInfo();
-    copier.copyObjectsTo(fileName);
-    LOG(INFO) << "Finished copying metadata from the original files\n";
     if (!m_config->ntuple()->copyTrees().empty()) {
         copier.copyTreesTo(fileName, m_config->ntuple()->copyTrees());
     }
+    LOG(INFO) << "Copying metadata from the original files\n";
+    copier.copyObjectsTo(fileName);
+    LOG(INFO) << "Finished copying metadata from the original files\n";
 }
 
 std::string MainFrame::systematicFilter(const std::shared_ptr<Sample>& sample,

@@ -125,8 +125,10 @@ void ObjectCopier::copyTreesTo(const std::string& outputPath,
         if (itr == trees.end()) continue;
 
         LOG(INFO) << "Started copying tree: " << name << " to " << outputPath << "\n";
+        ROOT::RDF::RSnapshotOptions opts;
+        opts.fMode = "UPDATE";
         ROOT::RDataFrame df(name, m_fileList);
-        df.Snapshot(name, outputPath);
+        df.Snapshot(name, outputPath, df.GetColumnNames(), opts);
         LOG(INFO) << "Finished copying tree: " << name << " to " << outputPath << "\n";
     }
 }
