@@ -176,6 +176,7 @@ std::tuple<std::vector<SystematicHisto>,
 
     // we also need to add truth variables if provided
     for (const auto& itruth : sample->truths()) {
+        mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
         mainNode = this->defineVariablesTruth(mainNode, itruth, uniqueSampleID);
     }
 
@@ -218,6 +219,8 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
 
     // add TLorentzVectors for objects
     mainNode = this->addTLorentzVectors(mainNode);
+
+    mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
 
     // this is the method users will be able to override
     mainNode = this->defineVariablesNtuple(mainNode, id);
@@ -807,6 +810,8 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
         LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
         mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
 
+        mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+
         auto customNode = this->defineVariablesTruth(mainNode, itruth, id);
 
         // apply truth filter
@@ -918,6 +923,16 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
         mainNode = mainNode.Define(newName, newFormula);
 
         m_systReplacer.addVariableAndEffectiveSystematics(name, affectedVariables);
+    }
+
+    return mainNode;
+}
+
+ROOT::RDF::RNode MainFrame::addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
+                                                            const std::shared_ptr<Truth>& truth) {
+
+    for (const auto& ivariable : truth->customDefines()) {
+        mainNode = mainNode.Define(ivariable.first, ivariable.second);
     }
 
     return mainNode;

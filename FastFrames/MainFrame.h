@@ -417,7 +417,7 @@ private:
                                                 const UniqueSampleID& id);
 
   /**
-   * @brief Add custom variables (columns) from cthe config via string
+   * @brief Add custom variables (columns) from the config via string
    *
    * @param mainNode
    * @param sample
@@ -425,6 +425,16 @@ private:
    */
   ROOT::RDF::RNode addCustomDefinesFromConfig(ROOT::RDF::RNode mainNode,
                                               const std::shared_ptr<Sample>& sample);
+
+  /**
+   * @brief Add custom variables (columns) to the truth tree from the config via string
+   *
+   * @param mainNode
+   * @param trut
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
+                                                   const std::shared_ptr<Truth>& truth);
 
 protected:
 
