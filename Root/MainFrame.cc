@@ -218,7 +218,9 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     m_systReplacer.printMaps();
 
     // apply filter
-    mainNode.Filter(this->systematicOrFilter(sample));
+    if (!m_config->ntuple()->selection().empty()) {
+        mainNode.Filter(this->systematicOrFilter(sample));
+    }
 
     //store the file
     const std::string folder = m_config->outputPathNtuples().empty() ? "" : m_config->outputPathNtuples() + "/";
