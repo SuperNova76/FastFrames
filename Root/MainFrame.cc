@@ -175,6 +175,11 @@ std::tuple<std::vector<SystematicHisto>,
     // this is the method users will be able to override
     mainNode = this->defineVariables(mainNode, uniqueSampleID);
 
+    // we also need to add truth variables if provided
+    for (const auto& itruth : sample->truths()) {
+        mainNode = this->defineVariablesTruth(mainNode, itruth, uniqueSampleID);
+    }
+
     m_systReplacer.printMaps();
 
     std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample);

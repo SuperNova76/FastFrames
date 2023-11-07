@@ -66,6 +66,18 @@ ROOT::RDF::RNode CustomFrame::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
   return mainNode;
 }
 
+ROOT::RDF::RNode CustomFrame::defineVariablesTruth(ROOT::RDF::RNode node,
+                                                   const std::shared_ptr<Truth>& truth,
+                                                   const UniqueSampleID& /*sampleID*/) {
+
+  if (truth->name() != "parton") return node; // do not do anything for other trees ("truth" = parton truth)
+  // no systematics for truth
+  // as i nany Define, we can pass as a simple string that will be Just-In-Time compiled
+  LOG(INFO) << "Adding truth variable: Ttbar_MC_ttbar_beforeFSR_pt_GeV\n"; 
+  node = node.Define("Ttbar_MC_ttbar_beforeFSR_pt_GeV", "Ttbar_MC_ttbar_beforeFSR_pt/1e3");
+
+  return node;
+}
 
 bool CustomFrame::passes4Jets50GeV1Btag(const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec,
                                         const std::vector<char>& selected,

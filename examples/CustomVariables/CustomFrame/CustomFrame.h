@@ -3,6 +3,8 @@
 #include "FastFrames/MainFrame.h"
 
 #include "FastFrames/ConfigSetting.h"
+#include "FastFrames/Truth.h"
+#include "FastFrames/UniqueSampleID.h"
 
 #include "Math/Vector4D.h"
 #include "ROOT/RDataFrame.hxx"
@@ -29,6 +31,9 @@ public:
   virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode mainNode,
                                                  const UniqueSampleID& id) override final;
 
+  virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
+                                                const std::shared_ptr<Truth>& truth,
+                                                const UniqueSampleID& sampleID) override final;
 private:
 
   bool passes4Jets50GeV1Btag(const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec,
