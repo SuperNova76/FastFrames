@@ -95,12 +95,16 @@ Samples block:
 			title:  
 			definition:  particle_jet_pt
 			binning:  10 ,  0.0 ,  10.0
-
-
 			name:  truth_el_pt
 			title:  
 			definition:  particle_el_pt
 			binning:  0.000000,2.000000,5.000000,7.000000,8.000000,10.000000,15.000000
+		Custom defines:
+			 "HT_ttbar" -> "truth_top_pt + truth_tbar_pt"
+
+
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
 
 
 
@@ -114,6 +118,10 @@ Samples block:
 	Unique samples:
 		 (364100,mc20e,mc)
 		 (364101,mc20e,mc)
+	Custom defines:
+		 "HT_3_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1] + jet_pt_NOSYS[2]"
+
+
 
 
 	name:  Zjets_b
@@ -125,6 +133,10 @@ Samples block:
 	Unique samples:
 		 (364100,mc20e,mc)
 		 (364101,mc20e,mc)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+
+
 
 
 	name:  Wjets_FS
@@ -140,6 +152,10 @@ Samples block:
 		 (700341,mc20e,mc)
 		 (700342,mc20e,mc)
 		 (700344,mc20e,mc)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+
+
 
 
 	name:  Data
@@ -150,6 +166,10 @@ Samples block:
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	Unique samples:
 		 (0,2018,data)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+
+
 
 
 

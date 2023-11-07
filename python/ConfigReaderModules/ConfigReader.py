@@ -202,7 +202,18 @@ if __name__ == "__main__":
                                 variable.axisMax())
                     else:
                         print("\t\t\tbinning: ", variable.binEdgesString())
+                custom_defines = cpp_truth_object.customDefines()
+                if len(custom_defines) > 0:
+                    print("\t\tCustom defines:")
+                    for custom_define in custom_defines:
+                        print("\t\t\t", custom_define)
                     print("\n")
+        custom_defines = sample.get_custom_defines()
+        if len(custom_defines) > 0:
+            print("\tCustom defines:")
+            for custom_define in custom_defines:
+                print("\t\t", custom_define)
+            print("\n")
 
         print("\n")
 

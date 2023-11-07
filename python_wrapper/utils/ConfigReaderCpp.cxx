@@ -227,6 +227,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("addTruth",            &SampleWrapper::addTruth)
         .def("getTruthPtrs",        &SampleWrapper::getTruthPtrs)
+
+        .def("addCustomDefine",     &SampleWrapper::addCustomDefine)
+        .def("customDefines",       &SampleWrapper::customDefines)
     ;
 
     class_<SystematicWrapper>("SystematicWrapper",
@@ -317,6 +320,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // produceUnfolding
         .def("setProduceUnfolding", &TruthWrapper::setProduceUnfolding)
         .def("produceUnfolding",    &TruthWrapper::produceUnfolding)
+
+        .def("addCustomDefine",     &TruthWrapper::addCustomDefine)
+        .def("customDefines",       &TruthWrapper::customDefines)
     ;
 
 }

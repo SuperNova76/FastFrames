@@ -24,6 +24,9 @@ general:
     mc20e: 654321
     mc23a: 456677
     mc23c: 545676
+  define_custom_columns:
+    - name: "HT_2_jets"
+      definition: "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
 
 ntuples:
   samples: ["ttbar_FS", "Zjets_b"] # optional, if not provided, use all samples
@@ -119,6 +122,9 @@ samples:
             definition:  "particle_el_pt"
             binning:
               bin_edges: [0,2,5,7,8,10,15]
+        define_custom_columns:
+          - name: "HT_ttbar"
+            definition: "truth_top_pt + truth_tbar_pt"
 
   - name: "Zjets_light"
     dsids: [364100,364101]
@@ -128,6 +134,9 @@ samples:
     simulation_type: "mc"
     regions: ["Electron", "Muon"]
     reco_to_truth_pairing_indices: ["eventNumber", "runNumber"]
+    define_custom_columns:
+      - name: "HT_3_jets"
+        definition: "jet_pt_NOSYS[0] + jet_pt_NOSYS[1] + jet_pt_NOSYS[2]"
 
   - name: "Zjets_b"
     dsids: [364100,364101]

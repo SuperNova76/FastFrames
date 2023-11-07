@@ -25,6 +25,7 @@ class BlockReaderGeneral:
         self.xsection_files = self.options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"], [list])
         self.reco_to_truth_pairing_indices = self.options_getter.get("reco_to_truth_pairing_indices", ["eventNumber"], [list])
         self.__set_luminosity_map(self.options_getter.get("luminosity", None, [dict]))
+        self.define_custom_columns = self.options_getter.get("define_custom_columns", [], [list])
         self.cpp_class = ConfigSettingWrapper()
         self.__set_config_reader_cpp()
         self._check_unused_options()
