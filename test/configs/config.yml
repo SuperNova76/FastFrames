@@ -15,6 +15,9 @@ general:
   number_of_cpus: 4
   luminosity:
     mc23c: 1
+  define_custom_columns:
+    - name: "jet_pt_GeV_NOSYS"
+      definition: "jet_pt_NOSYS/1e3"
 
 ntuples:
   selection: "el_pt_NOSYS[0] > 30000" # optional
@@ -31,10 +34,10 @@ regions:
     variables:
       - name: "jet_pt_NOSYS"
         #title : "histo title;X axis title;Y axis title"
-        definition: "jet_pt_NOSYS"
+        definition: "jet_pt_GeV_NOSYS"
         binning:
           min: 0
-          max: 300000
+          max: 300
           number_of_bins: 10
       - name: "met_met"
         title : "histo title;X axis title;Y axis title"
