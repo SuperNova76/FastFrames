@@ -98,7 +98,7 @@ python_config_reader_test:
     - compile
   script:
      - cd python/ConfigReaderModules/
-     - python3 ConfigReader.py ../../test/configs/config.yml
+     - python3 ConfigReader.py --config ../../test/configs/config.yml
 
 run_filelist:
   stage: run
@@ -123,13 +123,25 @@ run_cpp:
       - ttbar_FS.root
      expire_in: 1d
 
-run_python:
+run_python_histograms:
   stage: run
   needs:
     - compile
     - run_filelist
   script:
-     - python3 python/FastFrames.py test/configs/config.yml
+     - python3 python/FastFrames.py --config test/configs/config.yml --step h
+  artifacts:
+     paths:
+      - ttbar_FS.root
+     expire_in: 1d
+
+run_python_ntuples:
+  stage: run
+  needs:
+    - compile
+    - run_filelist
+  script:
+     - python3 python/FastFrames.py --config test/configs/config.yml --step n
   artifacts:
      paths:
       - ttbar_FS.root
@@ -140,8 +152,17 @@ config_reader_comparison:
   needs:
     - compile
   script:
-     - python3 python/ConfigReaderModules/ConfigReader.py test/reference_files/config_reading/config_testing.yml > log.txt
+     - python3 python/ConfigReaderModules/ConfigReader.py --config test/reference_files/config_reading/config_testing.yml > log.txt
      - python3 test/python/compare_two_files.py log.txt test/reference_files/config_reading/reference_log.txt
+  allow_failure: true
+
+config_reader_comparison_CLI_samples:
+  stage: compare_results
+  needs:
+    - compile
+  script:
+     - python3 python/ConfigReaderModules/ConfigReader.py --config test/reference_files/config_reading/config_testing.yml --samples Wjets_FS,ttbar_FS > log.txt
+     - python3 test/python/compare_two_files.py log.txt test/reference_files/config_reading/reference_log_samples_ttbar_Wjets.txt
   allow_failure: true
 
 doxygen_webpage:
