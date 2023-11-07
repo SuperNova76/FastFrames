@@ -206,7 +206,7 @@ std::vector<std::string> SystematicReplacer::listOfVariablesAffected(const std::
     std::vector<std::string> result;
 
     for (const auto& ivariables : m_branchesAffectedBySyst) {
-        if (input.find(ivariables.first)) {
+        if (input.find(ivariables.first) != std::string::npos) {
             result.emplace_back(ivariables.first);
         }
     }

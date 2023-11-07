@@ -914,15 +914,17 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
     // first find on which variables the formula depends that are affected by systematics
     const std::vector<std::string> affectedVariables = m_systReplacer.listOfVariablesAffected(formula);
 
+    const std::vector<std::string> systematicList = m_systReplacer.getListOfEffectiveSystematics(affectedVariables);
+
     // now propagate
-    for (const auto& ivariable : affectedVariables) {
-        if (ivariable == "NOSYS") continue; // we already added nominal
-        const std::string name = m_systReplacer.replaceString(newName, ivariable);
-        const std::string newFormula = m_systReplacer.replaceString(formula, ivariable);
+    for (const auto& isyst : systematicList) {
+        if (isyst == "NOSYS") continue; // we already added nominal
+        const std::string name = m_systReplacer.replaceString(newName, isyst);
+        const std::string newFormula = m_systReplacer.replaceString(formula, isyst);
 
         mainNode = mainNode.Define(newName, newFormula);
 
-        m_systReplacer.addVariableAndEffectiveSystematics(name, affectedVariables);
+        m_systReplacer.addVariableAndEffectiveSystematics(name, systematicList);
     }
 
     return mainNode;
