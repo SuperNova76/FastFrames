@@ -139,6 +139,20 @@ public:
    */
   const Variable& variableByName(const std::string& name) const;
 
+  /**
+   * @brief Add custom new column from the config
+   *
+   * @param newName name of the new column
+   * @param formula the formula for the new column
+   */
+  inline void addCustomDefine(const std::string& newName, const std::string& formula) {m_customDefines.emplace_back(std::make_pair(newName, formula));}
+
+  /**
+   * @brief Get custom defines
+   *
+   * @return const std::vector<std::pair<std::string, std::string> >&
+   */
+  inline const std::vector<std::pair<std::string, std::string> >& customDefines() const {return m_customDefines;}
 private:
 
   std::string m_name;
@@ -148,4 +162,5 @@ private:
   std::vector<std::pair<std::string, std::string> > m_matchedVariables;
   std::vector<Variable> m_variables;
   bool m_produceUnfolding;
+  std::vector<std::pair<std::string, std::string> > m_customDefines;
 };

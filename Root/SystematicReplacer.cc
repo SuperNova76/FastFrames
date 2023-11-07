@@ -200,3 +200,16 @@ void SystematicReplacer::printMaps() const {
         }
     }
 }
+
+std::vector<std::string> SystematicReplacer::listOfVariablesAffected(const std::string& input) const {
+
+    std::vector<std::string> result;
+
+    for (const auto& ivariables : m_branchesAffectedBySyst) {
+        if (input.find(ivariables.first)) {
+            result.emplace_back(ivariables.first);
+        }
+    }
+
+    return result;
+}

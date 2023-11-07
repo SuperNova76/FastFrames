@@ -143,6 +143,19 @@ public:
     return node;
   }
 
+  /**
+   * @brief Define new variable (column) using a string. The code will create a replica
+   * for every systematic variation that affecgts the formula
+   *
+   * @param mainNode The input RDF node
+   * @param newName Name of the new column, has to contain "NOSYS"
+   * @param formula The formula (using nominal branches)
+   * @return ROOT::RDF::RNode modified node
+   */
+  ROOT::RDF::RNode systematicStringDefine(ROOT::RDF::RNode mainNode,
+                                          const std::string& newName,
+                                          const std::string& formula);
+
 private:
 
   /**
@@ -402,6 +415,26 @@ private:
   std::vector<VariableHisto> processTruthHistos(const std::vector<std::string>& filePaths,
                                                 const std::shared_ptr<Sample>& sample,
                                                 const UniqueSampleID& id);
+
+  /**
+   * @brief Add custom variables (columns) from the config via string
+   *
+   * @param mainNode
+   * @param sample
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode addCustomDefinesFromConfig(ROOT::RDF::RNode mainNode,
+                                              const std::shared_ptr<Sample>& sample);
+
+  /**
+   * @brief Add custom variables (columns) to the truth tree from the config via string
+   *
+   * @param mainNode
+   * @param trut
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
+                                                   const std::shared_ptr<Truth>& truth);
 
 protected:
 
