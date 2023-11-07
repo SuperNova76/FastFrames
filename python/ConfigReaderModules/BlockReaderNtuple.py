@@ -27,6 +27,7 @@ class BlockReaderNtuple:
 
         self.branches = self.options_getter.get("branches",[], [list])
         self.exclude_branches = self.options_getter.get("exclude_branches",[], [list])
+        self.copy_trees = self.options_getter.get("copy_trees",[], [list])
 
         self._check_unused_options()
 
@@ -38,7 +39,8 @@ class BlockReaderNtuple:
             self.cpp_class.addBranch(branch)
         for branch in self.exclude_branches:
             self.cpp_class.addExcludedBranch(branch)
-
+        for tree in self.copy_trees:
+            self.cpp_class.addCopyTree(tree)
 
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
@@ -75,3 +77,6 @@ class BlockReaderNtuple:
 
 
 
+    def get_copy_trees(self) -> list:
+        vector_trees = self.cpp_class.copyTrees()
+        return [tree for tree in vector_trees]
