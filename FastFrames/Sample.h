@@ -194,6 +194,22 @@ public:
    */
   const std::shared_ptr<Systematic>& nominalSystematic() const;
 
+  /**
+   * @brief Add custom new column from the config
+   *
+   * @param newName name of the new column
+   * @param formula the formula for the new column
+   */
+  inline void addCustomDefine(const std::string& newName,
+                              const std::string& formula) {m_customDefines.emplace_back(std::make_pair(newName, formula));}
+
+  /**
+   * @brief Get custom defines
+   *
+   * @return const std::vector<std::pair<std::string, std::string> >&
+   */
+  inline const std::vector<std::pair<std::string, std::string> >& customDefines() const {return m_customDefines;}
+
 private:
   std::string m_name;
 
@@ -209,7 +225,9 @@ private:
 
   std::vector<std::shared_ptr<Truth> > m_truths;
 
-  std::vector<std::string>     m_reco_to_truth_pairing_indices;
+  std::vector<std::string> m_reco_to_truth_pairing_indices;
 
   std::string m_eventWeight;
+
+  std::vector<std::pair<std::string, std::string> > m_customDefines;
 };

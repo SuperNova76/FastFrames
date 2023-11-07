@@ -137,6 +137,14 @@ public:
    */
   void printMaps() const;
 
+  /**
+   * @brief From an input string, find which (nominal) variables are present that are affected by systematics
+   *
+   * @param input
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> listOfVariablesAffected(const std::string& input) const;
+
 private:
   /**
    * @brief map where the key is the name of the systematic
