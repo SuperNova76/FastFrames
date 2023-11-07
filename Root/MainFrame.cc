@@ -172,13 +172,13 @@ std::tuple<std::vector<SystematicHisto>,
     // add TLorentzVectors for objects
     mainNode = this->addTLorentzVectors(mainNode);
 
-    // this is the method users will be able to override
-    mainNode = this->defineVariables(mainNode, uniqueSampleID);
-
     // we also need to add truth variables if provided
     for (const auto& itruth : sample->truths()) {
         mainNode = this->defineVariablesTruth(mainNode, itruth, uniqueSampleID);
     }
+
+    // this is the method users will be able to override
+    mainNode = this->defineVariables(mainNode, uniqueSampleID);
 
     m_systReplacer.printMaps();
 
