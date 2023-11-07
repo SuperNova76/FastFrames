@@ -102,6 +102,20 @@ public:
    */
   std::vector<std::string> listOfSelectedBranches(const std::vector<std::string>& allBranches) const;
 
+  /**
+   * @brief Add name of the tree to be copied
+   *
+   * @param treeName
+   */
+  inline void addCopyTree(const std::string& treeName) {m_copyTrees.emplace_back(treeName);}
+
+  /**
+   * @brief Get the list of trees to copy
+   *
+   * @return const std::vector<std::string>&
+   */
+  inline const std::vector<std::string>& copyTrees() const {return m_copyTrees;}
+
 private:
 
   std::vector<std::shared_ptr<Sample> > m_samples;
@@ -111,4 +125,6 @@ private:
   std::vector<std::string> m_branches;
 
   std::vector<std::string> m_excludedBrances;
+
+  std::vector<std::string> m_copyTrees;
 };
