@@ -61,6 +61,8 @@ class BlockReaderSample:
 
         self.reco_to_truth_pairing_indices = self.options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list])
 
+        self.define_custom_columns = self.options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list])
+
         self.cpp_class = SampleWrapper(self.name)
 
         self.truth_dicts = self.options_getter.get("truth", None, [list])
@@ -152,6 +154,16 @@ class BlockReaderSample:
             vector_pairing_indices.append(reco_to_truth_pairing_index)
         self.cpp_class.setRecoToTruthPairingIndices(vector_pairing_indices)
 
+        if self.define_custom_columns:
+            for custom_column_dict in self.define_custom_columns:
+                custom_column_opts = BlockOptionsGetter(custom_column_dict)
+                name        = custom_column_opts.get("name", None, [str])
+                definition  = custom_column_opts.get("definition", None, [str])
+                if name is None or definition is None:
+                    Logger.log_message("ERROR", "Invalid custom column definition for sample {}".format(self.name))
+                    exit(1)
+                self.cpp_class.addCustomDefine(name, definition)
+
     def _check_unused_options(self):
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
@@ -171,3 +183,6 @@ class BlockReaderSample:
     def get_reco_to_truth_pairing_indices(self):
         indices_vector = self.cpp_class.recoToTruthPairingIndices()
         return [x for x in indices_vector]
+
+    def get_custom_defines(self) -> list:
+        return [x for x in self.cpp_class.customDefines()]

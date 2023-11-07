@@ -211,6 +211,30 @@ class SampleWrapper {
             return truth_ptrs;
         };
 
+        /**
+         * @brief Add custom column to the sample, given the name and formula
+         *
+         * @param newName
+         * @param formula
+         */
+        void addCustomDefine(const std::string &newName, const std::string &formula) {
+            m_sample->addCustomDefine(newName, formula);
+        };
+
+        /**
+         * @brief Get std::vector<std::string> of custom column names
+         *
+         * @return std::vector<std::string>
+         */
+        std::vector<std::string> customDefines() const {
+            const std::vector<std::pair<std::string, std::string> > &defines = m_sample->customDefines();
+            std::vector<std::string> result(defines.size());
+            for (unsigned int i = 0; i < defines.size(); ++i) {
+                result.at(i) = "\"" + defines.at(i).first + "\" -> \"" + defines.at(i).second + "\"" ;
+            }
+            return result;
+        };
+
     private:
         std::shared_ptr<Sample> m_sample;
 
