@@ -1,5 +1,5 @@
 general:
-  debug_level: VERBOSE
+  debug_level: DEBUG
   input_filelist_path: "test/input/filelist.txt"
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path_histograms: ""
@@ -19,10 +19,15 @@ general:
 ntuples:
   selection: "el_pt_NOSYS[0] > 30000" # optional
   branches: ["weight_total_.*", "jet_pt_.*"] # optional, if not provided, use all branches
+  copy_trees: ["truth"]
 
 regions:
   - name: "Electron"
     selection: "el_pt_NOSYS[0] > 30000"
+    histograms_2d:
+      - x: "met_met"
+        y: "met_phi"
+
     variables:
       - name: "jet_pt_NOSYS"
         #title : "histo title;X axis title;Y axis title"
