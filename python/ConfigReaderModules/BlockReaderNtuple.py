@@ -7,6 +7,7 @@ from BlockReaderVariable import BlockReaderVariable
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockOptionsGetter import BlockOptionsGetter
 from python_wrapper.python.logger import Logger
+from CommandLineOptions import CommandLineOptions
 
 
 class BlockReaderNtuple:
@@ -15,6 +16,9 @@ class BlockReaderNtuple:
 
         self.samples = self.options_getter.get("samples",None, [list])
         self.exclude_samples = self.options_getter.get("exclude_samples",None, [list])
+        CommandLineOptions().keep_only_selected_samples(self.samples)
+        CommandLineOptions().keep_only_selected_samples(self.exclude_samples)
+
         if not self.samples is None and not self.exclude_samples is None:
             Logger.log_message("ERROR", "Both samples and exclude_samples specified for ntuple block")
             exit(1)

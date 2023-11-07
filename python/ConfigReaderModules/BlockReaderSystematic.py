@@ -6,6 +6,7 @@ from python_wrapper.python.logger import Logger
 from ConfigReaderCpp    import SystematicWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockOptionsGetter import BlockOptionsGetter, VariationsOptionsGetter
+from CommandLineOptions import CommandLineOptions
 
 class BlockReaderSystematic:
     def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):
@@ -37,6 +38,8 @@ class BlockReaderSystematic:
 
         self.samples         = self.options_getter.get("samples",None, [list])
         self.exclude_samples = self.options_getter.get("exclude_samples",None, [list])
+        CommandLineOptions().keep_only_selected_samples(self.samples)
+        CommandLineOptions().keep_only_selected_samples(self.exclude_samples)
         if not self.samples is None and not self.exclude_samples is None:
             Logger.log_message("ERROR", "Both samples and exclude_samples specified for systematic {}".format(self.name))
             exit(1)

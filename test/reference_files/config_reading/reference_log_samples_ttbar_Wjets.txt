@@ -1,0 +1,180 @@
+
+General block:
+	inputSumWeightsPath:  test/input/sum_of_weights.txt
+	outputPathHistograms:  
+	outputPathNtuples:  
+	inputFilelistPath:  test/input/filelist.txt
+	numCPU:  4
+	automaticSystematics:  False
+	nominalOnly:  False
+	customFrameName:  
+	xSectionFiles:  ['data/XSection-MC16-13TeV.data']
+	luminosity, mc20a:  123456.0
+	luminosity, mc20d:  44630.6015625
+	create_tlorentz_vectors_for:
+		 jet
+
+Ntuple block:
+	selection:  ((el_pt_NOSYS[0] > 30000) || (mu_pt_NOSYS[0] > 30000))
+	samples: [ ttbar_FS ]
+	branches: [ my_first_branch,my_second_branch ]
+	excluded_branches: [ my_first_excluded_branch,my_second_excluded_branch ]
+	copy_trees:  ['treeName1', 'treeName2']
+
+
+Regions block:
+
+	name:  Electron
+	selection:  el_pt_NOSYS[0] > 30000
+	variables:
+		name:  jet_pt_NOSYS
+		title:  
+		definition:  jet_pt_NOSYS
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  met_met
+		title:  histo title;X axis title;Y axis title
+		definition:  met_met_NOSYS
+		binning:  0.000000,20000.000000,60000.000000,80000.000000,140000.000000,250000.000000
+
+
+		name:  met_phi
+		title:  histo title;X axis title;Y axis title
+		definition:  met_phi_NOSYS
+		binning:  16 ,  -3.2 ,  3.2
+
+
+	name:  Muon
+	selection:  mu_pt_NOSYS[0] > 30000
+	variables:
+		name:  jet_pt_NOSYS
+		title:  
+		definition:  jet_pt_NOSYS
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  met_met
+		title:  histo title;X axis title;Y axis title
+		definition:  met_met_NOSYS
+		binning:  0.000000,20000.000000,60000.000000,80000.000000,140000.000000,250000.000000
+
+
+		name:  met_phi
+		title:  histo title;X axis title;Y axis title
+		definition:  met_phi_NOSYS
+		binning:  16 ,  -3.2 ,  3.2
+
+
+	2d combinations:
+		 met_met, met_phi
+
+
+
+
+Samples block:
+
+	name:  ttbar_FS
+	regions:  ['Electron', 'Muon']
+	weight:  (weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS)*(my_suffix_weight_for_ttbar)
+	systematic:  ['NOSYS', 'JET_BJES_Response__1up', 'JET_BJES_Response__1down', '0p5muF_0p5muR_NNPDF31_NLO_0118', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down']
+	selection_suffix: ""
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	Unique samples:
+		 (410470,mc20e,mc)
+	Truth objects:
+		name:  particle
+		produce_unfolding:  True
+		truth_tree_name:  truth
+		selection:  particle_jet_pt[0] > 10000
+		event_weight:  mc_gen
+		match_variables:
+			 ('jet_pt_NOSYS', 'truth_jet_pt')
+		variables:
+			name:  truth_jet_pt
+			title:  
+			definition:  particle_jet_pt
+			binning:  10 ,  0.0 ,  10.0
+
+
+			name:  truth_el_pt
+			title:  
+			definition:  particle_el_pt
+			binning:  0.000000,2.000000,5.000000,7.000000,8.000000,10.000000,15.000000
+
+
+
+
+	name:  Wjets_FS
+	regions:  ['Electron']
+	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
+	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down']
+	selection_suffix: ""
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	Unique samples:
+		 (700341,mc20a,mc)
+		 (700342,mc20a,mc)
+		 (700344,mc20a,mc)
+		 (700341,mc20e,mc)
+		 (700342,mc20e,mc)
+		 (700344,mc20e,mc)
+
+
+
+
+Systematics block:
+
+	name:  NOSYS
+	regions:  ['Electron', 'Muon']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  JET_BJES_Response__1up
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  JET_BJES_Response__1down
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  0p5muF_0p5muR_NNPDF31_NLO_0118
+	regions:  ['Electron', 'Muon']
+	weight_suffix:  
+	sum_weights:  0p5muF_0p5muR_NNPDF31_NLO_0118
+
+
+	name:  btag_B_1__up
+	regions:  ['Electron', 'Muon']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_B_1__down
+	regions:  ['Electron', 'Muon']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_C_1__up
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_C_1__down
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  bootstraps1
+	regions:  ['Electron', 'Muon']
+	weight_suffix:  bootstrap_weight1
+	sum_weights:  NOSYS
+
+

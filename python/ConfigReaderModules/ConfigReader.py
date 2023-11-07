@@ -1,10 +1,13 @@
 import yaml
 from sys import argv
+import argparse
+
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderNtuple import BlockReaderNtuple
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
+from CommandLineOptions import CommandLineOptions
 
 from python_wrapper.python.logger import Logger
 from ConfigReaderCpp import VariableWrapper
@@ -27,6 +30,8 @@ class ConfigReader:
                 self.block_general.add_region(region)
 
             self.samples = {}
+            CommandLineOptions().check_samples_existence(data["samples"])
+            CommandLineOptions().keep_only_selected_samples(data["samples"])
             for sample_dict in data["samples"]:
                 sample = BlockReaderSample(sample_dict, self.block_general)
                 sample.adjust_regions(self.regions)
@@ -73,11 +78,23 @@ class ConfigReader:
 
 if __name__ == "__main__":
 
-    if len(argv) < 2:
-        print("Please provide path to config file")
-        exit(1)
+    parser = argparse.ArgumentParser()
 
-    config_reader = ConfigReader(argv[1])
+    parser.add_argument("--config",  help="Path to the config file")
+    parser.add_argument("--samples", help="Comma separated list of samples to run. Default: all", default="all")
+    args = parser.parse_args()
+
+    config_path = args.config
+
+    samples     = args.samples
+    if samples == "all":
+        samples = None
+    else:
+        samples = samples.split(",")
+    command_line_options = CommandLineOptions()
+    command_line_options.set_samples(samples)
+
+    config_reader = ConfigReader(config_path)
     block_general = config_reader.block_general
 
     print("\nGeneral block:")
