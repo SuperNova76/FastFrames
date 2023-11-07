@@ -43,6 +43,8 @@ class BlockReaderSampleTruth:
 
         self.produce_unfolding = self.options_getter.get("produce_unfolding", False, [bool])
 
+        self.define_custom_columns = self.options_getter.get("define_custom_columns", [], [list])
+
         self.cpp_class = TruthWrapper(self.name)
         self._set_cpp_class()
 
@@ -62,6 +64,17 @@ class BlockReaderSampleTruth:
         self.cpp_class.setSelection(self.selection)
         self.cpp_class.setEventWeight(self.event_weight)
         self.cpp_class.setProduceUnfolding(self.produce_unfolding)
+
+        if self.define_custom_columns:
+            for custom_column_dict in self.define_custom_columns:
+                custom_column_opts = BlockOptionsGetter(custom_column_dict)
+                name        = custom_column_opts.get("name", None, [str])
+                definition  = custom_column_opts.get("definition", None, [str])
+                if name is None or definition is None:
+                    Logger.log_message("ERROR", "Invalid custom column definition for truth block {}".format(self.name))
+                    exit(1)
+                self.cpp_class.addCustomDefine(name, definition)
+
 
     def _read_variables(self) -> None:
         for variable_dict in self.variables:
@@ -83,3 +96,6 @@ class BlockReaderSampleTruth:
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in truth block is not supported!".format(unused))
             exit(1)
+
+    def get_custom_defines(self) -> list:
+        return [x for x in self.cpp_class.customDefines()]
