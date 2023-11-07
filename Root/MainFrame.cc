@@ -900,16 +900,16 @@ ROOT::RDF::RNode MainFrame::addCustomDefinesFromConfig(ROOT::RDF::RNode mainNode
 }
 
 ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
-                                                   const std::string& newName,
+                                                   const std::string& name,
                                                    const std::string& formula) {
 
-    if (newName.find("NOSYS") == std::string::npos) {
-        LOG(ERROR) << "The variable: " << newName << ", does not contain \"NOSYS\"\n";
+    if (name.find("NOSYS") == std::string::npos) {
+        LOG(ERROR) << "The variable: " << name << ", does not contain \"NOSYS\"\n";
         throw std::invalid_argument("");
     }
 
     // add nominal
-    mainNode = mainNode.Define(newName, formula);
+    mainNode = mainNode.Define(name, formula);
 
     // first find on which variables the formula depends that are affected by systematics
     const std::vector<std::string> affectedVariables = m_systReplacer.listOfVariablesAffected(formula);
@@ -919,13 +919,14 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
     // now propagate
     for (const auto& isyst : systematicList) {
         if (isyst == "NOSYS") continue; // we already added nominal
-        const std::string name = m_systReplacer.replaceString(newName, isyst);
+        const std::string newName = StringOperations::replaceString(name, "NOSYS", isyst);
         const std::string newFormula = m_systReplacer.replaceString(formula, isyst);
+        LOG(VERBOSE) << "Adding custom variable from config: " << newName << ", formula: " << newFormula << "\n";
 
         mainNode = mainNode.Define(newName, newFormula);
 
-        m_systReplacer.addVariableAndEffectiveSystematics(name, systematicList);
     }
+    m_systReplacer.addVariableAndEffectiveSystematics(name, systematicList);
 
     return mainNode;
 }
