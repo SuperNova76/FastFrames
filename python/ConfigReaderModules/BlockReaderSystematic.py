@@ -1,3 +1,6 @@
+"""
+@file Source file with BlockReaderSystematic class and read_systematics_variations function.
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -9,7 +12,16 @@ from BlockOptionsGetter import BlockOptionsGetter, VariationsOptionsGetter
 from CommandLineOptions import CommandLineOptions
 
 class BlockReaderSystematic:
+    """!Class for reading systematic block from config file. Equivalent of C++ class Systematic
+    """
+
     def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):
+        """
+        Constructor of the BlockReaderSystematic class
+        @param input_dict: dictionary with options from the config file
+        @param variation_type: type of variation (up or down)
+        @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
+        """
         self.options_getter = BlockOptionsGetter(input_dict)
 
         variations_dict = self.options_getter.get("variation",None, [dict])
@@ -60,6 +72,10 @@ class BlockReaderSystematic:
         self.cpp_class.setWeightSuffix(self.weight_suffix)
 
     def adjust_regions(self, regions : dict) -> None:
+        """
+        Resolve list of regions where the systematic should be used. If regions are specified, check if they exist. If no regions are specified, take all regions. If exclude_regions is specified, remove them from the list of regions.
+        @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
+        """
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
             for region_name in regions:
@@ -77,6 +93,7 @@ class BlockReaderSystematic:
     def check_samples_existence(self, sample_dict : dict) -> None:
         """
         Check if all samples specified for the systematic exist
+        @param sample_dict: dictionary with all samples (keys are sample names)
         """
         if not self.samples is None:
             for sample in self.samples:
@@ -102,8 +119,7 @@ class BlockReaderSystematic:
             exit(1)
 
 def read_systematics_variations(input_dict : dict, block_reader_general : BlockReaderGeneral = None) -> list:
-    """
-    Read list of systematic uncertainties from the input dictionary read from config. The result might have 1 (only up or only down) or 2 inputs (both up and down variations)
+    """!Read list of systematic uncertainties from the input dictionary read from config. The result might have 1 (only up or only down) or 2 inputs (both up and down variations)
     """
     variations_dict = input_dict.get("variation",None)
     variations = []

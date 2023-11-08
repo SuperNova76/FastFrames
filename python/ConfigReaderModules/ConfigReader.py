@@ -1,5 +1,5 @@
 """
-Main config reader source file.
+@file Main config reader source file.
 """
 import yaml
 from sys import argv
@@ -16,7 +16,8 @@ from python_wrapper.python.logger import Logger
 from ConfigReaderCpp import VariableWrapper
 
 class ConfigReader:
-    """
+    """!Main class for reading the config file and connecting all its blocks.
+
     Reads the config file performs basic checks, create lists of the corresponding objects based on the objects in the config file, set all the necessary properties of the objects and then
     it propagates all the information to the C++ classes through BlockReaderGeneral class.
     """

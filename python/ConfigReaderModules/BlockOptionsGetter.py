@@ -11,7 +11,6 @@ class BlockOptionsGetter:
 
     def __init__(self, config_dict : dict):
         """!Constructor of the BlockOptionsGetter class
-
         @param self
         @param config_dict: dictionary with options from the config file
         """
@@ -23,7 +22,6 @@ class BlockOptionsGetter:
 
     def get(self, option : str, default_value = None, allowed_types : list = None):
         """!Get option from the config file. If the option is not present, return default_value. If the option is present, check if it matches allowed_types.
-
         @param option: option to be read
         @param default_value: value to be returned if the option is not present
         @param allowed_types: list of allowed types for the option
@@ -65,7 +63,6 @@ class VariationsOptionsGetter:
 
     def __init__(self, config_dict : dict):
         """!Constructor of the VariationsOptionsGetter class
-
         @param config_dict: dictionary with options from the config file
         """
         self.config = config_dict
@@ -85,7 +82,6 @@ class VariationsOptionsGetter:
 
     def get(self, option : str, variation : str, default_value = None, allowed_types : list = None):
         """!Get option for the given variation from the config file. If the option is not present, return default_value. If the option is present, check if it matches allowed_types.
-
         @param option: option to be read
         @param variation: variation to be read (up or down)
         @param default_value: value to be returned if the option is not present

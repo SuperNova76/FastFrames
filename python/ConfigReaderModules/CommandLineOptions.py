@@ -1,15 +1,19 @@
+"""
+@file Source file with CommandLineOptions and SingletonMeta class
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
 from python_wrapper.python.logger import Logger
 
 class SingletonMeta(type):
+    """!Singleton metaclass.
+    """
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
         """
-        Possible changes to the value of the `__init__` argument do not affect
-        the returned instance.
+        Make sure that only one instance of the class exists.
         """
         if cls not in cls._instances:
             instance = super().__call__(*args, **kwargs)
@@ -18,16 +22,28 @@ class SingletonMeta(type):
 
 
 class CommandLineOptions(metaclass=SingletonMeta):
+    """!Singleton class for storing command line options.
+    """
     def __init__(self):
         self.samples_terminal = None
 
-    def set_samples(self, samples):
+    def set_samples(self, samples : list) -> None:
+        """
+        Set list of samples specified from command line.
+        @param samples - List of samples specified from command line.
+        """
         self.samples_terminal = samples
 
-    def get_samples(self):
+    def get_samples(self) -> list:
+        """
+        Get list of samples specified from command line.
+        """
         return self.samples_terminal
 
     def check_samples_existence(self, samples_all) -> None:
+        """
+        Check if all samples specified from command line exist.
+        """
         if self.samples_terminal is None:
             return
         if samples_all is None:
@@ -39,6 +55,9 @@ class CommandLineOptions(metaclass=SingletonMeta):
                 exit(1)
 
     def keep_only_selected_samples(self, samples) -> None:
+        """
+        Remove all samples that are not specified from command line from the input list of samples.
+        """
         if self.samples_terminal is None:
             return
         if samples is None:

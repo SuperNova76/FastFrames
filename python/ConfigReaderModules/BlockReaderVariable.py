@@ -1,3 +1,6 @@
+"""
+@file Source file with BlockReaderVariable class
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -7,7 +10,13 @@ from ConfigReaderCpp import VariableWrapper, DoubleVector
 from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderVariable:
+    """!Class for reading variable block from config file. Equivalent of C++ class Variable
+    """
     def __init__(self, variable_dict : dict):
+        """
+        Constructor of the BlockReaderVariable class
+        @param variable_dict: dictionary with options from the config file
+        """
         self.options_getter = BlockOptionsGetter(variable_dict)
         self.name = self.options_getter.get("name", None, [str])
         self.title = self.options_getter.get("title", "", [str])
