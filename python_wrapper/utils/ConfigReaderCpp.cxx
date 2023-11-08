@@ -31,6 +31,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     boost::python::class_<std::vector<boost::python::tuple>>("StringPairVector")
     .def(boost::python::vector_indexing_suite<std::vector<boost::python::tuple>>());
 
+    boost::python::class_<std::vector<double>>("DoubleVector")
+    .def(boost::python::vector_indexing_suite<std::vector<double>>());
+
     class_<FastFramesExecutorWrapper>("FastFramesExecutor",
         init<long long unsigned int>())
         // runFastFrames

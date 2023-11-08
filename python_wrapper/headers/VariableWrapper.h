@@ -119,12 +119,11 @@ class VariableWrapper   {
         };
 
         /**
-         * @brief Set irregular binning, given string with comma separated bin edges
+         * @brief Set irregular binning given the bin edges
          *
-         * @param std::string - binning_string
+         * @param std::vector<double> - bin edges
          */
-        void setBinningIrregular(const std::string& binning_string) {
-            const std::vector<double> bin_edges = StringOperations::convertStringTo<std::vector<double>>(binning_string);
+        void setBinningIrregular(const std::vector<double> &bin_edges) {
             m_variable->setBinning(bin_edges);
         };
 
