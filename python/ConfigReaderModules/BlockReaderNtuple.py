@@ -1,5 +1,5 @@
 """
-@file Source file with BlockReaderGeneral class.
+@file Source file with BlockReaderNtuple class.
 """
 from BlockReaderCommon import set_paths
 set_paths()

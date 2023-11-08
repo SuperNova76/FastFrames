@@ -1,3 +1,6 @@
+"""
+@file Source file with BlockReaderRegion class.
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -10,7 +13,15 @@ from python_wrapper.python.logger import Logger
 
 
 class BlockReaderRegion:
+    """!Class for reading region block of the config. Equivalent of C++ class Region
+    """
+
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):
+        """
+        Constructor of the BlockReaderRegion class
+        @param input_dict: dictionary with options from the config file
+        @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
+        """
         self.options_getter = BlockOptionsGetter(input_dict)
         self.name = self.options_getter.get("name", None, [str])
         self.selection = self.options_getter.get("selection", None, [str])
@@ -66,6 +77,9 @@ class BlockReaderRegion:
             exit(1)
 
     def get_variable_cpp_objects(self) -> list:
+        """
+        Get list of variables (cpp objects) defined in the region
+        """
         variable_ptrs = self.cpp_class.getVariableRawPtrs()
         result = []
         for variable_ptr in variable_ptrs:
@@ -75,6 +89,10 @@ class BlockReaderRegion:
         return result
 
     def get_2d_combinations(self) -> list:
+        """
+        Get list of 2D variable combinations defined in the region
+        """
+        """
         result = []
         vector_combinations = self.cpp_class.variableCombinations()
         for combination in vector_combinations:

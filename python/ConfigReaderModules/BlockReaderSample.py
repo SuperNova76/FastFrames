@@ -1,3 +1,6 @@
+"""
+@file Source file with BlockReaderSample class.
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -11,7 +14,14 @@ from BlockReaderSampleTruth import BlockReaderSampleTruth
 
 
 class BlockReaderSample:
+    """!Clas for reading sample block of the config. Equivalent of C++ class Sample
+    """
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):
+        """
+        Constructor of the BlockReaderSample class
+        @param input_dict: dictionary with options from the config file
+        @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
+        """
         self.options_getter = BlockOptionsGetter(input_dict)
 
         self.name = self.options_getter.get("name", None, [str])
@@ -95,9 +105,10 @@ class BlockReaderSample:
                     self.cpp_class.addUniqueSampleID(dsid, campaign, self.simulation_type)
 
 
-    def adjust_regions(self, regions : dict):
+    def adjust_regions(self, regions : dict) -> None:
         """
-        Set regions for the sample. If no regions are specified, take all regions.
+        Set regions for the sample. If no regions are specified, take all regions, if exclude_regions are specified, remove them from the list of regions.
+        @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
         """
         if self.regions is None: # if no regions are specified, take all regions
             self.regions = []
@@ -116,7 +127,11 @@ class BlockReaderSample:
             self.cpp_class.addRegion(region_object.cpp_class.getPtr())
 
 
-    def adjust_systematics(self, systematics_all : dict):
+    def adjust_systematics(self, systematics_all : dict) -> None:
+        """
+        Set systematics for the sample. For each systematics check if it has explicit list of samples (if not, add all). If sample_exclude is defined for it, check if this sample is not there.
+        @param systematics_all: dictionary with all systematics (keys are systematic names, values are BlockReaderSystematic objects)
+        """
         self.systematic = []
         for systematic_name, systematic in systematics_all.items():
             # check if systematics has explicit list of samples. If so, does it contain this sample?
@@ -170,8 +185,10 @@ class BlockReaderSample:
             Logger.log_message("ERROR", "Key {} used in  sample block is not supported!".format(unused))
             exit(1)
 
-    def get_truth_cpp_objects(self):
-        #return [truth.cpp_class for truth in self.truths]
+    def get_truth_cpp_objects(self) -> list:
+        """
+        Get list of truth cpp objects defined in the sample
+        """
         vector_shared_ptr = self.cpp_class.getTruthPtrs()
         result = []
         for ptr in vector_shared_ptr:
@@ -180,9 +197,15 @@ class BlockReaderSample:
             result.append(truth_cpp_object)
         return result
 
-    def get_reco_to_truth_pairing_indices(self):
+    def get_reco_to_truth_pairing_indices(self) -> list:
+        """
+        Get list of reco to truth pairing indices
+        """
         indices_vector = self.cpp_class.recoToTruthPairingIndices()
         return [x for x in indices_vector]
 
     def get_custom_defines(self) -> list:
+        """
+        Get list of custom defines
+        """
         return [x for x in self.cpp_class.customDefines()]
