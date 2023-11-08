@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief A wrapper class for the Systematic class, providing an interface for Python.
+ */
 class SystematicWrapper {
     public:
         /**
