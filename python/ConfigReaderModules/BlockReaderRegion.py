@@ -92,7 +92,6 @@ class BlockReaderRegion:
         """
         Get list of 2D variable combinations defined in the region
         """
-        """
         result = []
         vector_combinations = self.cpp_class.variableCombinations()
         for combination in vector_combinations:
