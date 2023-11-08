@@ -8,7 +8,6 @@
 #include "python_wrapper/headers/VariableWrapper.h"
 #include "python_wrapper/headers/MainFrameWrapper.h"
 #include "python_wrapper/headers/FastFramesExecutorWrapper.h"
-#include "python_wrapper/headers/UniqueSampleIDWrapper.h"
 #include "python_wrapper/headers/SampleWrapper.h"
 #include "python_wrapper/headers/SystematicWrapper.h"
 #include "python_wrapper/headers/NtupleWrapper.h"
@@ -116,21 +115,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("clearSystematics",  &ConfigSettingWrapper::clearSystematics)
 
         .def("setNtuple",   &ConfigSettingWrapper::setNtuple)
-    ;
-
-    class_<UniqueSampleIDWrapper>("ConfigReaderCppUniqueSampleID",
-        init<int, std::string, std::string>())
-        // getPtr
-        .def("getPtr",          &UniqueSampleIDWrapper::getPtr)
-
-        // dsid
-        .def("dsid",            &UniqueSampleIDWrapper::dsid)
-
-        // campaign
-        .def("campaign",        &UniqueSampleIDWrapper::campaign)
-
-        // simulation
-        .def("simulation",      &UniqueSampleIDWrapper::simulation)
     ;
 
     class_<RegionWrapper>("RegionWrapper",
