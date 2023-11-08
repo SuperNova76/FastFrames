@@ -3,7 +3,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp import VariableWrapper
+from ConfigReaderCpp import VariableWrapper, DoubleVector
 from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderVariable:
@@ -46,7 +46,9 @@ class BlockReaderVariable:
             if len(binning_bin_edges) < 2:
                 Logger.log_message("ERROR", "Binning for variable {} has less than 2 bin edges".format(self.name))
                 exit(1)
-            bin_edges_str = ",".join([str(x) for x in binning_bin_edges])
+            bin_edges_str = DoubleVector()
+            for bin_edge in binning_bin_edges:
+                bin_edges_str.append(bin_edge)
             self.cpp_class.setBinningIrregular(bin_edges_str)
         else:
             if binning_nbins < 1:
