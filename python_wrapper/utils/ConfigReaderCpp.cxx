@@ -1,4 +1,8 @@
-
+/**
+ * @file ConfigReaderCpp.cxx
+ * @brief Source file for ConfigReaderCpp
+ *
+ */
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <string>
@@ -17,23 +21,46 @@
 
 using namespace std;
 
-
+/**
+ * @brief Construct a new boost python module object containing all the classes that can be used from python
+ *
+ */
 BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     // An established convention for using boost.python.
     using namespace boost::python;
 
+    /**
+     * @brief python wrapper around std::vector<unsigned long long int>
+     *
+     */
     boost::python::class_<std::vector<unsigned long long int>>("ptrVector")
     .def(boost::python::vector_indexing_suite<std::vector<unsigned long long int>>());
 
+    /**
+     * @brief python wrapper around std::vector<std::string>
+     *
+     */
     boost::python::class_<std::vector<std::string>>("StringVector")
     .def(boost::python::vector_indexing_suite<std::vector<std::string>>());
 
+    /**
+     * @brief python wrapper around std::vector<std::tuple<std::string, std::string>>
+     *
+     */
     boost::python::class_<std::vector<boost::python::tuple>>("StringPairVector")
     .def(boost::python::vector_indexing_suite<std::vector<boost::python::tuple>>());
 
+    /**
+     * @brief python wrapper around std::vector<double>
+     *
+     */
     boost::python::class_<std::vector<double>>("DoubleVector")
     .def(boost::python::vector_indexing_suite<std::vector<double>>());
 
+    /**
+     * @brief Python wrapper around FastFramesExecutor
+     *
+     */
     class_<FastFramesExecutorWrapper>("FastFramesExecutor",
         init<long long unsigned int>())
         // runFastFrames
@@ -44,7 +71,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("runNtuples",      &FastFramesExecutorWrapper::runNtuples)
     ;
 
-
+    /**
+     * @brief Python wrapper around MainFrame
+     *
+     */
     class_<MainFrameWrapper>("MainFrame",
         init<>())
         // setConfig
@@ -57,6 +87,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("executeHistograms",   &MainFrameWrapper::executeHistograms)
     ;
 
+    /**
+     * @brief Python wrapper around ConfigSetting
+     *
+     */
     class_<ConfigSettingWrapper>("ConfigSettingWrapper",
         init<>())
         // getPtr
@@ -120,6 +154,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setNtuple",   &ConfigSettingWrapper::setNtuple)
     ;
 
+    /**
+     * @brief Python wrapper around Region
+     *
+     */
     class_<RegionWrapper>("RegionWrapper",
         init<std::string>())
         // getPtr
@@ -141,6 +179,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("variableCombinations",    &RegionWrapper::variableCombinations)
     ;
 
+    /**
+     * @brief Python wrapper around Variable
+     *
+     */
     class_<VariableWrapper>("VariableWrapper",
         init<std::string>())
         // getPtr
@@ -171,6 +213,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("axisNbins",           &VariableWrapper::axisNbins)
     ;
 
+    /**
+     * @brief Python wrapper around Sample
+     *
+     */
     class_<SampleWrapper>("SampleWrapper",
         init<std::string>())
 
@@ -219,6 +265,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("customDefines",       &SampleWrapper::customDefines)
     ;
 
+    /**
+     * @brief Python wrapper around Systematic
+     *
+     */
     class_<SystematicWrapper>("SystematicWrapper",
         init<std::string>())
 
@@ -243,6 +293,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("isNominal",       &SystematicWrapper::isNominal)
     ;
 
+    /**
+     * @brief Python wrapper around Ntuple
+     *
+     */
     class_<NtupleWrapper>("NtupleWrapper",
         init<>())
 
@@ -273,6 +327,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("copyTrees",       &NtupleWrapper::copyTrees)
     ;
 
+    /**
+     * @brief Python wrapper around Truth
+     *
+     */
     class_<TruthWrapper>("TruthWrapper",
         init<std::string> ())
 
