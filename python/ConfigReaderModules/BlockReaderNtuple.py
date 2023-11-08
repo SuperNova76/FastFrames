@@ -1,3 +1,6 @@
+"""
+@file Source file with BlockReaderGeneral class.
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -11,7 +14,14 @@ from CommandLineOptions import CommandLineOptions
 
 
 class BlockReaderNtuple:
+    """!Class for reading ntuple block of the config. Equivalent of C++ class Ntuple
+    """
+
     def __init__(self, input_dict : dict):
+        """
+        Constructor of the BlockReaderNtuple class
+        @param input_dict: dictionary with options from the config file
+        """
         self.options_getter = BlockOptionsGetter(input_dict)
 
         self.samples = self.options_getter.get("samples",None, [list])
@@ -37,7 +47,7 @@ class BlockReaderNtuple:
 
         self.__set_config_reader_cpp()
 
-    def __set_config_reader_cpp(self):
+    def __set_config_reader_cpp(self) -> None:
         self.cpp_class = NtupleWrapper()
         for branch in self.branches:
             self.cpp_class.addBranch(branch)
@@ -46,14 +56,18 @@ class BlockReaderNtuple:
         for tree in self.copy_trees:
             self.cpp_class.addCopyTree(tree)
 
-    def _check_unused_options(self):
+    def _check_unused_options(self) -> None:
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in ntuple block is not supported!".format(unused))
             exit(1)
 
 
-    def adjust_regions(self, regions : dict):
+    def adjust_regions(self, regions : dict) -> None:
+        """
+        Initialize selection based on regions specified in the ntuple block - combined all of them with OR
+        @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
+        """
         # combine selections from all regions
         if self.regions:
             selections = []
@@ -67,7 +81,11 @@ class BlockReaderNtuple:
             self.selection = "({})".format(" || ".join(selections))
         self.cpp_class.setSelection(self.selection)
 
-    def adjust_samples(self, samples : dict):
+    def adjust_samples(self, samples : dict) -> None:
+        """
+        Adjust list of samples for which ntuple step should be run. If samples are specified, check if they exist. If no samples are specified, take all samples.
+        @param samples: dictionary with all samples (keys are sample names)
+        """
         if self.samples is None:
             for sample_name in samples:
                 if self.exclude_samples is None or sample_name not in self.exclude_samples:
@@ -79,8 +97,9 @@ class BlockReaderNtuple:
                     exit(1)
                 self.cpp_class.addSample(samples[sample_name].cpp_class.getPtr())
 
-
-
     def get_copy_trees(self) -> list:
+        """
+        Get list of trees that should be copied
+        """
         vector_trees = self.cpp_class.copyTrees()
         return [tree for tree in vector_trees]

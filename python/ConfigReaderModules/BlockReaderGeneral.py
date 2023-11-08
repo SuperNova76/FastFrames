@@ -1,3 +1,6 @@
+"""
+@file Source file with BlockReaderGeneral class.
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -6,7 +9,14 @@ from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderGeneral:
+    """!Python equialent of C++ ConfigSetting class
+    """
+
     def __init__(self, input_dict : dict):
+        """
+        Constructor of the BlockReaderGeneral class. It reads all the options from the general block, sets the properties of the C++ ConfigSetting class and check for user's errors
+        @param input_dict: dictionary with options from the config file
+        """
         self.options_getter = BlockOptionsGetter(input_dict)
         self.debug_level = self.options_getter.get("debug_level", "WARNING")
         Logger.set_log_level(self.debug_level)
@@ -31,6 +41,10 @@ class BlockReaderGeneral:
         self._check_unused_options()
 
     def __set_luminosity_map(self, luminosity_map : dict) -> None:
+        """
+        Set luminosity values, given the luminosity dictionary read from config
+        @param luminosity_map: dictionary of luminosity values - keys are campaign names (strings), values are luminosity values (float)
+        """
         self.luminosity_map = {}
         if luminosity_map is None:
             Logger.log_message("INFO", "No campaigns and luminosities defined in config. Using default values.")
@@ -39,6 +53,9 @@ class BlockReaderGeneral:
             self.luminosity_map[key] = float(value)
 
     def __set_config_reader_cpp(self):
+        """
+        Set all the properties of the C++ ConfigSetting class
+        """
         self.cpp_class.setInputSumWeightsPath(self.input_sumweights_path)
         self.cpp_class.setOutputPathHistograms(self.output_path_histograms)
         self.cpp_class.setOutputPathNtuples(self.output_path_ntuples)
@@ -57,16 +74,27 @@ class BlockReaderGeneral:
         for tlorentz_vector in self.create_tlorentz_vectors_for:
             self.cpp_class.addTLorentzVector(tlorentz_vector)
 
-    def add_region(self, region):
+    def add_region(self, region : RegionWrapper) -> None:
+        """
+        Add region to the C++ ConfigSetting class
+        @param region: RegionWrapper object
+        """
         self.cpp_class.addRegion(region.cpp_class.getPtr())
 
-    def _check_unused_options(self):
+    def _check_unused_options(self) -> None:
+        """
+        Check if all options from the general block were read, if not, print error message and exit
+        """
         unused = self.options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in general block is not supported!".format(unused))
             exit(1)
 
-    def get_xsection_files(self):
+    def get_xsection_files(self) -> list:
+        """
+        Get list of cross section files
+        @return list of cross section files
+        """
         result = []
         vector_xsection_files = self.cpp_class.xSectionFiles()
         for xsection_file in vector_xsection_files:

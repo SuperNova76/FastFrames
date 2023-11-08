@@ -1,3 +1,6 @@
+"""
+@file Main config reader source file.
+"""
 import yaml
 from sys import argv
 import argparse
@@ -13,6 +16,11 @@ from python_wrapper.python.logger import Logger
 from ConfigReaderCpp import VariableWrapper
 
 class ConfigReader:
+    """!Main class for reading the config file and connecting all its blocks.
+
+    Reads the config file performs basic checks, create lists of the corresponding objects based on the objects in the config file, set all the necessary properties of the objects and then
+    it propagates all the information to the C++ classes through BlockReaderGeneral class.
+    """
     def __init__(self, config_file_path : str):
         with open(config_file_path, "r") as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
