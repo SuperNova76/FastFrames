@@ -1,17 +1,18 @@
 """
-Source file with BlockOptionsGetter and VariationsOptionsGetter classes.
+@file Source file with BlockOptionsGetter and VariationsOptionsGetter classes.
 """
 from copy import deepcopy
 from python_wrapper.python.logger import Logger
 
 class BlockOptionsGetter:
-    """
-    Class used to extract options defined in a block of the config file.
+    """!Class used to extract options defined in a block of the config file.
     It works like a dictionary, but allows to check if all options from config were used in the code.
     """
 
     def __init__(self, config_dict : dict):
-        """
+        """!Constructor of the BlockOptionsGetter class
+
+        @param self
         @param config_dict: dictionary with options from the config file
         """
         self.config = config_dict
@@ -21,8 +22,7 @@ class BlockOptionsGetter:
 
 
     def get(self, option : str, default_value = None, allowed_types : list = None):
-        """
-        Get option from the config file. If the option is not present, return default_value. If the option is present, check if it matches allowed_types.
+        """!Get option from the config file. If the option is not present, return default_value. If the option is present, check if it matches allowed_types.
 
         @param option: option to be read
         @param default_value: value to be returned if the option is not present
@@ -38,8 +38,7 @@ class BlockOptionsGetter:
         return self.config[option]
 
     def get_unused_options(self):
-        """
-        Get list of options that were not read
+        """!Get list of options that were not read
         """
         result = []
         for option in self.option_used:
@@ -61,15 +60,11 @@ class BlockOptionsGetter:
 
 
 class VariationsOptionsGetter:
-    """
-    Class used to extract options defined in variation block of the systematics.
-    Since the up and down variations are read separately, but their properties are defined in the same block,
-    one cannot use BlockOptionsGetter to read them and check for unused options.
+    """!Class used to extract options defined in variation block of the systematics. Since the up and down variations are read separately, but their properties are defined in the same block, one cannot use BlockOptionsGetter to read them and check for unused options.
     """
 
     def __init__(self, config_dict : dict):
-        """
-        Constructor of the VariationsOptionsGetter class
+        """!Constructor of the VariationsOptionsGetter class
 
         @param config_dict: dictionary with options from the config file
         """
@@ -89,8 +84,7 @@ class VariationsOptionsGetter:
             self.option_used[option_wo_variation_suffix] = False
 
     def get(self, option : str, variation : str, default_value = None, allowed_types : list = None):
-        """
-        Get option for the given variation from the config file. If the option is not present, return default_value. If the option is present, check if it matches allowed_types.
+        """!Get option for the given variation from the config file. If the option is not present, return default_value. If the option is present, check if it matches allowed_types.
 
         @param option: option to be read
         @param variation: variation to be read (up or down)
@@ -108,9 +102,7 @@ class VariationsOptionsGetter:
         return return_value
 
     def get_unused_options(self):
-        """
-        Get list of options that were not read
-        """
+        """!Get list of options that were not read"""
         result = []
         for option in self.option_used:
             if not self.option_used[option]:
