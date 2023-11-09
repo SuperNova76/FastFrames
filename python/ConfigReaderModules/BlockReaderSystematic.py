@@ -12,7 +12,7 @@ from BlockOptionsGetter import BlockOptionsGetter, VariationsOptionsGetter
 from CommandLineOptions import CommandLineOptions
 
 class BlockReaderSystematic:
-    """!Class for reading systematic block from config file. Equivalent of C++ class Systematic
+    """!Class for reading systematic block from config file, equivalent of C++ class Systematic
     """
 
     def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):

@@ -14,7 +14,7 @@ from CommandLineOptions import CommandLineOptions
 
 
 class BlockReaderNtuple:
-    """!Class for reading ntuple block of the config. Equivalent of C++ class Ntuple
+    """!Class for reading ntuple block of the config, equivalent of C++ class Ntuple
     """
 
     def __init__(self, input_dict : dict):

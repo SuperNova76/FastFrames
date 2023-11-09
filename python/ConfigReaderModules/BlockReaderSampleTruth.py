@@ -1,3 +1,6 @@
+"""
+@file Source file with BlockReaderSampleTruth class.
+"""
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -11,7 +14,14 @@ from BlockReaderVariable import BlockReaderVariable
 
 
 class BlockReaderSampleTruth:
+    """!Class for reading truth block of sample block in the config, equivalent of C++ class Truth
+    """
+
     def __init__(self, input_dict : dict):
+        """
+        Constructor of the BlockReaderSampleTruth class.
+        @param input_dict: dictionary with options from the config file
+        """
         self.options_getter = BlockOptionsGetter(input_dict)
 
         self.name = self.options_getter.get("name", None, [str])
@@ -53,6 +63,9 @@ class BlockReaderSampleTruth:
         self._read_match_variables()
 
     def check_reco_variables_existence(self, reco_variables : list) -> None:
+        """
+        Check if all reco variables used in match_variables are defined for at least one region
+        """
         for match_variable_dict in self.match_variables:
             reco = match_variable_dict.get("reco")
             if reco not in reco_variables:
@@ -98,4 +111,7 @@ class BlockReaderSampleTruth:
             exit(1)
 
     def get_custom_defines(self) -> list:
+        """
+        Get vector of custom defined variables
+        """
         return [x for x in self.cpp_class.customDefines()]

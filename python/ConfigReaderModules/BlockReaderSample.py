@@ -14,7 +14,7 @@ from BlockReaderSampleTruth import BlockReaderSampleTruth
 
 
 class BlockReaderSample:
-    """!Clas for reading sample block of the config. Equivalent of C++ class Sample
+    """!Clas for reading sample block of the config, equivalent of C++ class Sample
     """
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):
         """

@@ -10,7 +10,7 @@ from ConfigReaderCpp import VariableWrapper, DoubleVector
 from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderVariable:
-    """!Class for reading variable block from config file. Equivalent of C++ class Variable
+    """!Class for reading variable block from config file, equivalent of C++ class Variable
     """
     def __init__(self, variable_dict : dict):
         """

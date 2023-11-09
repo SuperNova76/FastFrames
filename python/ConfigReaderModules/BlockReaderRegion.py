@@ -13,7 +13,7 @@ from python_wrapper.python.logger import Logger
 
 
 class BlockReaderRegion:
-    """!Class for reading region block of the config. Equivalent of C++ class Region
+    """!Class for reading region block of the config, equivalent of C++ class Region
     """
 
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):

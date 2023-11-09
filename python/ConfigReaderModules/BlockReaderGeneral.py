@@ -9,7 +9,7 @@ from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderGeneral:
-    """!Python equialent of C++ ConfigSetting class
+    """!Python equivalent of C++ ConfigSetting class
     """
 
     def __init__(self, input_dict : dict):
