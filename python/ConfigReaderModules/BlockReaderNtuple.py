@@ -22,10 +22,10 @@ class BlockReaderNtuple:
         Constructor of the BlockReaderNtuple class
         @param input_dict: dictionary with options from the config file
         """
-        self.options_getter = BlockOptionsGetter(input_dict)
+        self._options_getter = BlockOptionsGetter(input_dict)
 
-        self.samples = self.options_getter.get("samples",None, [list])
-        self.exclude_samples = self.options_getter.get("exclude_samples",None, [list])
+        self.samples = self._options_getter.get("samples",None, [list])
+        self.exclude_samples = self._options_getter.get("exclude_samples",None, [list])
         CommandLineOptions().keep_only_selected_samples(self.samples)
         CommandLineOptions().keep_only_selected_samples(self.exclude_samples)
 
@@ -33,15 +33,15 @@ class BlockReaderNtuple:
             Logger.log_message("ERROR", "Both samples and exclude_samples specified for ntuple block")
             exit(1)
 
-        self.selection = self.options_getter.get("selection",None, [str])
-        self.regions = self.options_getter.get("regions",None, [list])
+        self.selection = self._options_getter.get("selection",None, [str])
+        self.regions = self._options_getter.get("regions",None, [list])
         if self.regions is not None and self.selection is not None:
             Logger.log_message("ERROR", "Both regions and selection specified for ntuple block")
             exit(1)
 
-        self.branches = self.options_getter.get("branches",[], [list])
-        self.exclude_branches = self.options_getter.get("exclude_branches",[], [list])
-        self.copy_trees = self.options_getter.get("copy_trees",[], [list])
+        self.branches = self._options_getter.get("branches",[], [list])
+        self.exclude_branches = self._options_getter.get("exclude_branches",[], [list])
+        self.copy_trees = self._options_getter.get("copy_trees",[], [list])
 
         self._check_unused_options()
 
@@ -57,7 +57,7 @@ class BlockReaderNtuple:
             self.cpp_class.addCopyTree(tree)
 
     def _check_unused_options(self) -> None:
-        unused = self.options_getter.get_unused_options()
+        unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in ntuple block is not supported!".format(unused))
             exit(1)

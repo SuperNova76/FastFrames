@@ -22,19 +22,19 @@ class BlockReaderRegion:
         @param input_dict: dictionary with options from the config file
         @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
         """
-        self.options_getter = BlockOptionsGetter(input_dict)
-        self.name = self.options_getter.get("name", None, [str])
-        self.selection = self.options_getter.get("selection", None, [str])
+        self._options_getter = BlockOptionsGetter(input_dict)
+        self.name = self._options_getter.get("name", None, [str])
+        self.selection = self._options_getter.get("selection", None, [str])
         self.variables = []
 
         if block_reader_general is not None:
             self.__merge_settings(block_reader_general)
 
-        for variable_dict in self.options_getter.get("variables", [], [list]):
+        for variable_dict in self._options_getter.get("variables", [], [list]):
             variable = BlockReaderVariable(variable_dict)
             self.variables.append(variable)
 
-        self.histograms_2d = self.options_getter.get("histograms_2d", [], [list])
+        self.histograms_2d = self._options_getter.get("histograms_2d", [], [list])
 
         self.__set_cpp_class = None
         self.__set_config_reader_cpp()
@@ -71,7 +71,7 @@ class BlockReaderRegion:
         # if in future we need to merge settings from general block to region block, it will be here
 
     def _check_unused_options(self):
-        unused = self.options_getter.get_unused_options()
+        unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in region block is not supported!".format(unused))
             exit(1)

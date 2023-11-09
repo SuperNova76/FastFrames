@@ -22,12 +22,12 @@ class BlockReaderSystematic:
         @param variation_type: type of variation (up or down)
         @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
         """
-        self.options_getter = BlockOptionsGetter(input_dict)
+        self._options_getter = BlockOptionsGetter(input_dict)
 
-        variations_dict = self.options_getter.get("variation",None, [dict])
+        variations_dict = self._options_getter.get("variation",None, [dict])
         variations_opts_getter = VariationsOptionsGetter(variations_dict)
         if variations_dict is None:
-            Logger.log_message("ERROR", "No variations specified for systematic {}".format(self.options_getter))
+            Logger.log_message("ERROR", "No variations specified for systematic {}".format(self._options_getter))
             exit(1)
 
         self.variation_type = variation_type.lower()
@@ -37,7 +37,7 @@ class BlockReaderSystematic:
 
         self.name = variations_opts_getter.get("", self.variation_type,None, [str])
         if self.name is None:
-            Logger.log_message("ERROR", "{} variation specified for systematic {}".format(self.variation_type, self.options_getter))
+            Logger.log_message("ERROR", "{} variation specified for systematic {}".format(self.variation_type, self._options_getter))
             exit(1)
 
         self.weight_suffix = variations_opts_getter.get("weight_suffix", self.variation_type,"", [str])
@@ -48,8 +48,8 @@ class BlockReaderSystematic:
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
-        self.samples         = self.options_getter.get("samples",None, [list])
-        self.exclude_samples = self.options_getter.get("exclude_samples",None, [list])
+        self.samples         = self._options_getter.get("samples",None, [list])
+        self.exclude_samples = self._options_getter.get("exclude_samples",None, [list])
         CommandLineOptions().keep_only_selected_samples(self.samples)
         CommandLineOptions().keep_only_selected_samples(self.exclude_samples)
         if not self.samples is None and not self.exclude_samples is None:
@@ -57,10 +57,10 @@ class BlockReaderSystematic:
             exit(1)
 
 
-        self.campaigns  = self.options_getter.get("campaigns",None, [list])
+        self.campaigns  = self._options_getter.get("campaigns",None, [list])
 
-        self.regions    = self.options_getter.get("regions",None, [list])
-        self.exclude_regions = self.options_getter.get("exclude_regions",None, [list])
+        self.regions    = self._options_getter.get("regions",None, [list])
+        self.exclude_regions = self._options_getter.get("exclude_regions",None, [list])
         if not self.regions is None and not self.exclude_regions is None:
             Logger.log_message("ERROR", "Both regions and exclude_regions specified for systematic {}".format(self.name))
             exit(1)
@@ -113,7 +113,7 @@ class BlockReaderSystematic:
             exit(1)
 
     def _check_unused_options(self):
-        unused = self.options_getter.get_unused_options()
+        unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in systematic block is not supported!".format(unused))
             exit(1)

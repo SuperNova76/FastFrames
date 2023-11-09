@@ -1,3 +1,6 @@
+"""
+Module defining some common functions for the block reader
+"""
 from sys import path,argv
 import os
 

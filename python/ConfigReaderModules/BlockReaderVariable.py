@@ -17,13 +17,13 @@ class BlockReaderVariable:
         Constructor of the BlockReaderVariable class
         @param variable_dict: dictionary with options from the config file
         """
-        self.options_getter = BlockOptionsGetter(variable_dict)
-        self.name = self.options_getter.get("name", None, [str])
-        self.title = self.options_getter.get("title", "", [str])
-        self.definition = self.options_getter.get("definition", None, [str])
+        self._options_getter = BlockOptionsGetter(variable_dict)
+        self.name = self._options_getter.get("name", None, [str])
+        self.title = self._options_getter.get("title", "", [str])
+        self.definition = self._options_getter.get("definition", None, [str])
         self.cpp_class = None
         self.__set_cpp_class()
-        self.__read_binning(self.options_getter.get("binning", None, [dict]))
+        self.__read_binning(self._options_getter.get("binning", None, [dict]))
         self._check_unused_options()
 
     def __set_cpp_class(self):
@@ -69,7 +69,7 @@ class BlockReaderVariable:
             self.cpp_class.setBinningRegular(binning_min, binning_max, binning_nbins)
 
     def _check_unused_options(self):
-        unused = self.options_getter.get_unused_options()
+        unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in variable block is not supported!".format(unused))
             exit(1)

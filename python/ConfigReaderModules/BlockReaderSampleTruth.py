@@ -22,38 +22,38 @@ class BlockReaderSampleTruth:
         Constructor of the BlockReaderSampleTruth class.
         @param input_dict: dictionary with options from the config file
         """
-        self.options_getter = BlockOptionsGetter(input_dict)
+        self._options_getter = BlockOptionsGetter(input_dict)
 
-        self.name = self.options_getter.get("name", None, [str])
+        self.name = self._options_getter.get("name", None, [str])
         if self.name is None:
-            Logger.log_message("ERROR", "No name specified for truth block: " + str(self.options_getter))
+            Logger.log_message("ERROR", "No name specified for truth block: " + str(self._options_getter))
             exit(1)
 
-        self.truth_tree_name = self.options_getter.get("truth_tree_name", None, [str])
+        self.truth_tree_name = self._options_getter.get("truth_tree_name", None, [str])
         if self.truth_tree_name is None:
             Logger.log_message("ERROR", "No truth_tree_name specified for truth block {}".format(self.name))
             exit(1)
 
-        self.selection = self.options_getter.get("selection", "")
+        self.selection = self._options_getter.get("selection", "")
 
-        self.event_weight = self.options_getter.get("event_weight", None, [str])
+        self.event_weight = self._options_getter.get("event_weight", None, [str])
         if self.event_weight is None:
             Logger.log_message("ERROR", "No event_weight specified for truth block {}".format(self.name))
             exit(1)
 
-        self.match_variables = self.options_getter.get("match_variables", None, [list])
+        self.match_variables = self._options_getter.get("match_variables", None, [list])
         if self.match_variables is None:
             Logger.log_message("ERROR", "No match_variables specified for truth block {}".format(self.name))
             exit(1)
 
-        self.variables = self.options_getter.get("variables", [], [list])
+        self.variables = self._options_getter.get("variables", [], [list])
         if self.variables == []:
             Logger.log_message("ERROR", "No variables specified for truth block {}".format(self.name))
             exit(1)
 
-        self.produce_unfolding = self.options_getter.get("produce_unfolding", False, [bool])
+        self.produce_unfolding = self._options_getter.get("produce_unfolding", False, [bool])
 
-        self.define_custom_columns = self.options_getter.get("define_custom_columns", [], [list])
+        self.define_custom_columns = self._options_getter.get("define_custom_columns", [], [list])
 
         self.cpp_class = TruthWrapper(self.name)
         self._set_cpp_class()
@@ -105,7 +105,7 @@ class BlockReaderSampleTruth:
             self.cpp_class.addMatchVariables(reco, truth)
 
     def _check_unused_options(self) -> None:
-        unused = self.options_getter.get_unused_options()
+        unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in truth block is not supported!".format(unused))
             exit(1)

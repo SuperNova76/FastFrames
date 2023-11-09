@@ -22,25 +22,25 @@ class BlockReaderSample:
         @param input_dict: dictionary with options from the config file
         @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
         """
-        self.options_getter = BlockOptionsGetter(input_dict)
+        self._options_getter = BlockOptionsGetter(input_dict)
 
-        self.name = self.options_getter.get("name", None, [str])
+        self.name = self._options_getter.get("name", None, [str])
         if self.name is None:
-            Logger.log_message("ERROR", "No name specified for sample: " + str(self.options_getter))
+            Logger.log_message("ERROR", "No name specified for sample: " + str(self._options_getter))
             exit(1)
 
-        self.simulation_type = self.options_getter.get("simulation_type",None, [str])
+        self.simulation_type = self._options_getter.get("simulation_type",None, [str])
         if self.simulation_type is None:
             Logger.log_message("ERROR", "No simulation_type specified for sample {}".format(self.name))
             exit(1)
         self.is_data = (self.simulation_type.upper() == "DATA")
 
-        self.dsids = self.options_getter.get("dsids",None, [list])
+        self.dsids = self._options_getter.get("dsids",None, [list])
         if self.dsids is None and not self.is_data:
             Logger.log_message("ERROR", "No dsids specified for sample {}".format(self.name))
             exit(1)
 
-        self.campaigns = self.options_getter.get("campaigns",None, [list])
+        self.campaigns = self._options_getter.get("campaigns",None, [list])
         if self.campaigns is None:
             Logger.log_message("ERROR", "No campaigns specified for sample {}".format(self.name))
             exit(1)
@@ -52,30 +52,30 @@ class BlockReaderSample:
                     Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self.name))
                     exit(1)
 
-        self.selection_suffix = self.options_getter.get("selection","true", [str])
+        self.selection_suffix = self._options_getter.get("selection","true", [str])
 
-        self.regions = self.options_getter.get("regions",None, [list])
-        self.exclude_regions = self.options_getter.get("exclude_regions",None, [list])
+        self.regions = self._options_getter.get("regions",None, [list])
+        self.exclude_regions = self._options_getter.get("exclude_regions",None, [list])
         if not self.regions is None and not self.exclude_regions is None:
             Logger.log_message("ERROR", "Both regions and exclude_regions specified for sample {}".format(self.name))
             exit(1)
 
         self.systematic = []
 
-        self.event_weights = self.options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1", [str])
-        self.weight_suffix = self.options_getter.get("weight_suffix", None, [str])
+        self.event_weights = self._options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1", [str])
+        self.weight_suffix = self._options_getter.get("weight_suffix", None, [str])
 
-        self.reco_tree_name = self.options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name, [str])
+        self.reco_tree_name = self._options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name, [str])
 
-        self.selection_suffix = self.options_getter.get("selection_suffix", "", [str])
+        self.selection_suffix = self._options_getter.get("selection_suffix", "", [str])
 
-        self.reco_to_truth_pairing_indices = self.options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list])
+        self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list])
 
-        self.define_custom_columns = self.options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list])
+        self.define_custom_columns = self._options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list])
 
         self.cpp_class = SampleWrapper(self.name)
 
-        self.truth_dicts = self.options_getter.get("truth", None, [list])
+        self.truth_dicts = self._options_getter.get("truth", None, [list])
         self.truths = []
         if self.truth_dicts is not None:
             reco_variables_from_regions = block_reader_general.cpp_class.getVariableNames()
@@ -180,7 +180,7 @@ class BlockReaderSample:
                 self.cpp_class.addCustomDefine(name, definition)
 
     def _check_unused_options(self):
-        unused = self.options_getter.get_unused_options()
+        unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in  sample block is not supported!".format(unused))
             exit(1)
