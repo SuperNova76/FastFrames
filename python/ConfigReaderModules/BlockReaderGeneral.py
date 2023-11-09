@@ -4,7 +4,8 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, SampleWrapper, StringVector, ptrVector
+from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, SampleWrapper, NtupleWrapper, SystematicWrapper
+from ConfigReaderCpp import StringVector, ptrVector
 from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
 
@@ -143,4 +144,26 @@ class BlockReaderGeneral:
             sample_cpp_object = SampleWrapper("")
             sample_cpp_object.constructFromSharedPtr(sample_ptr)
             result.append(sample_cpp_object)
+        return result
+
+    def get_ntuple_object(self) -> NtupleWrapper:
+        """!Get ntuple cpp object, return None if not defined
+        """
+        shared_ptr = self.cpp_class.getNtupleSharedPtr()
+        if shared_ptr == 0:
+            return None
+        result = NtupleWrapper()
+        result.constructFromSharedPtr(shared_ptr)
+        return result
+
+    def get_systematics_objects(self) -> list:
+        """!Get list of systematics cpp objects
+        @return list of systematics
+        """
+        result = []
+        vector_systematics = self.cpp_class.getSystematicsSharedPtr()
+        for systematic_ptr in vector_systematics:
+            systematic_cpp_object = SystematicWrapper("")
+            systematic_cpp_object.constructFromSharedPtr(systematic_ptr)
+            result.append(systematic_cpp_object)
         return result

@@ -298,6 +298,20 @@ class ConfigSettingWrapper {
         };
 
         /**
+         * @brief Get vector of raw pointer to shared pointers to systematic objects
+         *
+         * @return std::vector<unsigned long long int>
+         */
+        std::vector<unsigned long long int> getSystematicsSharedPtr() const {
+            const std::vector<std::shared_ptr<Systematic>> &systematics = m_configSetting->systematics();
+            std::vector<unsigned long long int> systematics_ptr(systematics.size());
+            for (unsigned int i = 0; i < systematics.size(); ++i) {
+                systematics_ptr.at(i) = reinterpret_cast<unsigned long long int>(&systematics.at(i));
+            }
+            return systematics_ptr;
+        };
+
+        /**
          * @brief Set the Nominal Only object
          *
          * @param bool nominalOnly
@@ -351,6 +365,16 @@ class ConfigSettingWrapper {
             const std::shared_ptr<Ntuple> *ntuple = reinterpret_cast<std::shared_ptr<Ntuple> *>(ntuple_shared_ptr_int);
             m_configSetting->setNtuple(*ntuple);
         };
+
+        /**
+         * @brief Get the Ntuple shared pointer
+         *
+         * @return unsigned long long int
+         */
+        unsigned long long int getNtupleSharedPtr() const {
+            const std::shared_ptr<Ntuple> &ntuple = m_configSetting->ntuple();
+            return reinterpret_cast<unsigned long long int>(&ntuple);
+        }
 
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;

@@ -123,27 +123,27 @@ if __name__ == "__main__":
     for tlorentz_vector in tlorentz_vectors:
         print("\t\t", tlorentz_vector)
 
-    if config_reader.has_ntuple_block:
+    ntuple_cpp_object = block_general.get_ntuple_object()
+    if ntuple_cpp_object:
         print("\nNtuple block:")
-        print("\tselection: ", config_reader.block_ntuple.cpp_class.selection())
-        n_samples = config_reader.block_ntuple.cpp_class.nSamples()
-        samples = [config_reader.block_ntuple.cpp_class.sampleName(i_sample) for i_sample in range(n_samples)]
+        print("\tselection: ", ntuple_cpp_object.selection())
+        n_samples = ntuple_cpp_object.nSamples()
+        samples = [ntuple_cpp_object.sampleName(i_sample) for i_sample in range(n_samples)]
         print("\tsamples: [", ",".join(samples), "]")
 
-        n_branches = config_reader.block_ntuple.cpp_class.nBranches()
-        branches = [config_reader.block_ntuple.cpp_class.branchName(i_branch) for i_branch in range(n_branches)]
+        n_branches = ntuple_cpp_object.nBranches()
+        branches = [ntuple_cpp_object.branchName(i_branch) for i_branch in range(n_branches)]
         print("\tbranches: [", ",".join(branches), "]")
 
-        n_excluded_branches = config_reader.block_ntuple.cpp_class.nExcludedBranches()
-        excluded_branches = [config_reader.block_ntuple.cpp_class.excludedBranchName(i_branch) for i_branch in range(n_excluded_branches)]
+        n_excluded_branches = ntuple_cpp_object.nExcludedBranches()
+        excluded_branches = [ntuple_cpp_object.excludedBranchName(i_branch) for i_branch in range(n_excluded_branches)]
         print("\texcluded_branches: [", ",".join(excluded_branches), "]")
 
         print("\tcopy_trees: ", config_reader.block_ntuple.get_copy_trees())
 
 
-    regions = config_reader.block_general.get_regions_cpp_objects()
-
     print("\n\nRegions block:\n")
+    regions = config_reader.block_general.get_regions_cpp_objects()
     for region in regions:
         print("\tname: ", region.name())
         print("\tselection: ", region.selection())
@@ -168,8 +168,8 @@ if __name__ == "__main__":
                 print("\t\t", variable_combination)
             print("\n")
 
-    samples = config_reader.block_general.get_samples_objects()
     print("\n\nSamples block:\n")
+    samples = config_reader.block_general.get_samples_objects()
     for sample in samples:
         print("\tname: ", sample.name())
         print("\tregions: ", vector_to_list(sample.regionsNames()))
@@ -181,7 +181,7 @@ if __name__ == "__main__":
         n_unique_samples = sample.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):
             print("\t\t", sample.uniqueSampleIDstring(i_unique_id))
-        truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthPtrs())
+        truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthSharedPtrs())
         if len(truth_objects) > 0:
             print("\tTruth objects:")
             for cpp_truth_object in truth_objects:
@@ -224,12 +224,12 @@ if __name__ == "__main__":
 
         print("\n")
 
-    systematics = config_reader.systematics
+    systematics = config_reader.block_general.get_systematics_objects()
     print("\n\nSystematics block:\n")
-    for systematic_name,systematic in systematics.items():
-        print("\tname: ", systematic.cpp_class.name())
-        print("\tregions: ", systematic.get_regions_names())
-        print("\tweight_suffix: ", systematic.cpp_class.weightSuffix())
-        print("\tsum_weights: ", systematic.cpp_class.sumWeights())
+    for systematic in systematics:
+        print("\tname: ", systematic.name())
+        print("\tregions: ", vector_to_list(systematic.regionsNames()))
+        print("\tweight_suffix: ", systematic.weightSuffix())
+        print("\tsum_weights: ", systematic.sumWeights())
         print("\n")
 

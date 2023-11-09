@@ -238,7 +238,7 @@ class SampleWrapper {
          *
          * @return std::vector<unsigned long long int>
          */
-        std::vector<unsigned long long int> getTruthPtrs() const {
+        std::vector<unsigned long long int> getTruthSharedPtrs() const {
             const std::vector<std::shared_ptr<Truth>> &truths = m_sample->truths();
             std::vector<unsigned long long int> truth_ptrs;
             for (const std::shared_ptr<Truth> &truth : truths) {
