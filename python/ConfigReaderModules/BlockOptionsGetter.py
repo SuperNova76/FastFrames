@@ -20,11 +20,12 @@ class BlockOptionsGetter:
             self._option_used[option] = False
 
 
-    def get(self, option : str, default_value = None, allowed_types : list = None):
+    def get(self, option : str, default_value = None, allowed_types : list = None, allowed_elements : list = None):
         """!Get option from the config file. If the option is not present, return default_value. If the option is present, check if it matches allowed_types.
         @param option: option to be read
         @param default_value: value to be returned if the option is not present
         @param allowed_types: list of allowed types for the option
+        @param allowed_elements: if the value is iterable, you can specify allowed types for its elements
         """
         if option not in self._config:
             return default_value
@@ -33,6 +34,11 @@ class BlockOptionsGetter:
         if allowed_types is not None and type(return_value) not in allowed_types:
             Logger.log_message("ERROR", "Option {} has invalid type: {} (allowed types: {})".format(option, type(return_value), allowed_types))
             exit(1)
+        if allowed_elements is not None and hasattr(return_value, "__iter__"):
+            for element in return_value:
+                if type(element) not in allowed_elements:
+                    Logger.log_message("ERROR", "Option {} has invalid type of element: {} (allowed types: {}). The problematic value: {}".format(option, type(element), allowed_elements, return_value))
+                    exit(1)
         return self._config[option]
 
     def get_unused_options(self):

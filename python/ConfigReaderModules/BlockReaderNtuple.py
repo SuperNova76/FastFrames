@@ -23,8 +23,8 @@ class BlockReaderNtuple:
         """
         self._options_getter = BlockOptionsGetter(input_dict)
 
-        self._samples = self._options_getter.get("samples",None, [list])
-        self._exclude_samples = self._options_getter.get("exclude_samples",None, [list])
+        self._samples = self._options_getter.get("samples",None, [list], [str])
+        self._exclude_samples = self._options_getter.get("exclude_samples",None, [list], [str])
         CommandLineOptions().keep_only_selected_samples(self._samples)
         CommandLineOptions().keep_only_selected_samples(self._exclude_samples)
 
@@ -33,14 +33,14 @@ class BlockReaderNtuple:
             exit(1)
 
         self._selection = self._options_getter.get("selection",None, [str])
-        self._regions   = self._options_getter.get("regions",None, [list])
+        self._regions   = self._options_getter.get("regions",None, [list], [str])
         if self._regions is not None and self._selection is not None:
             Logger.log_message("ERROR", "Both regions and selection specified for ntuple block")
             exit(1)
 
-        self._branches = self._options_getter.get("branches",[], [list])
-        self._exclude_branches = self._options_getter.get("exclude_branches",[], [list])
-        self._copy_trees = self._options_getter.get("copy_trees",[], [list])
+        self._branches = self._options_getter.get("branches",[], [list], [str])
+        self._exclude_branches = self._options_getter.get("exclude_branches",[], [list], [str])
+        self._copy_trees = self._options_getter.get("copy_trees",[], [list], [str])
 
         self._check_unused_options()
 

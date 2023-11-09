@@ -37,9 +37,9 @@ class BlockReaderGeneral:
         self._custom_frame_name = self._options_getter.get("custom_frame_name", "", [str])
         self._automatic_systematics = self._options_getter.get("automatic_systematics", False, [bool])
         self._nominal_only = self._options_getter.get("nominal_only", False, [bool])
-        self._create_tlorentz_vectors_for = self._options_getter.get("create_tlorentz_vectors_for", [], [list])
+        self._create_tlorentz_vectors_for = self._options_getter.get("create_tlorentz_vectors_for", [], [list], [str])
         self._number_of_cpus = self._options_getter.get("number_of_cpus", 1, [int])
-        self._xsection_files = self._options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"], [list])
+        self._xsection_files = self._options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"], [list], [str])
         self._luminosity_map = {}
         self._set_luminosity_map(self._options_getter.get("luminosity", None, [dict]))
 
@@ -53,10 +53,10 @@ class BlockReaderGeneral:
         self.default_reco_tree_name = self._options_getter.get("default_reco_tree_name", None, [str])
 
         ## Default names and definitions of custom columns to define -> can be overriden in sample block
-        self.define_custom_columns = self._options_getter.get("define_custom_columns", [], [list])
+        self.define_custom_columns = self._options_getter.get("define_custom_columns", [], [list], [dict])
 
         ## Default indices for pairing truth with reco-level trees, can be overriden in sample block
-        self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", ["eventNumber"], [list])
+        self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", ["eventNumber"], [list], [str])
 
         ## Instance of the ConfigSettingsWrapper C++ class -> wrapper around C++ ConfigSetting class
         self.cpp_class = ConfigSettingWrapper()

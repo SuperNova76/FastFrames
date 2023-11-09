@@ -47,8 +47,8 @@ class BlockReaderSystematic:
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
-        self.samples         = self._options_getter.get("samples",None, [list])
-        self.exclude_samples = self._options_getter.get("exclude_samples",None, [list])
+        self.samples         = self._options_getter.get("samples",None, [list], [str])
+        self.exclude_samples = self._options_getter.get("exclude_samples",None, [list], [str])
         CommandLineOptions().keep_only_selected_samples(self.samples)
         CommandLineOptions().keep_only_selected_samples(self.exclude_samples)
         if not self.samples is None and not self.exclude_samples is None:
@@ -56,10 +56,10 @@ class BlockReaderSystematic:
             exit(1)
 
 
-        self._campaigns  = self._options_getter.get("campaigns",None, [list])
+        self._campaigns  = self._options_getter.get("campaigns",None, [list], [str])
 
-        self._regions           = self._options_getter.get("regions",None, [list])
-        self._exclude_regions   = self._options_getter.get("exclude_regions",None, [list])
+        self._regions           = self._options_getter.get("regions",None, [list], [str])
+        self._exclude_regions   = self._options_getter.get("exclude_regions",None, [list], [str])
         if not self._regions is None and not self._exclude_regions is None:
             Logger.log_message("ERROR", "Both regions and exclude_regions specified for systematic {}".format(self._name))
             exit(1)
