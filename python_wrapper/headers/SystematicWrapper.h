@@ -81,6 +81,19 @@ class SystematicWrapper {
         };
 
         /**
+         * @brief Get std::vector<std::string> names of regions for which the systematics is defined
+         *
+         */
+        std::vector<std::string> regionsNames()     const {
+            const std::vector<std::shared_ptr<Region>> &regions = m_systematic->regions();
+            std::vector<std::string> region_names(regions.size());
+            for (unsigned int i = 0; i < regions.size(); ++i) {
+                region_names.at(i) = regions.at(i)->name();
+            }
+            return region_names;
+        };
+
+        /**
          * @brief Is the systematic nominal?
          *
          * @return true

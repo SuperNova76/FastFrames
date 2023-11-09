@@ -10,30 +10,31 @@ from ConfigReaderCpp import VariableWrapper, DoubleVector
 from BlockOptionsGetter import BlockOptionsGetter
 
 class BlockReaderVariable:
-    """!Class for reading variable block from config file. Equivalent of C++ class Variable
+    """!Class for reading variable block from config file, equivalent of C++ class Variable
     """
     def __init__(self, variable_dict : dict):
-        """
-        Constructor of the BlockReaderVariable class
+        """!Constructor of the BlockReaderVariable class
         @param variable_dict: dictionary with options from the config file
         """
-        self.options_getter = BlockOptionsGetter(variable_dict)
-        self.name = self.options_getter.get("name", None, [str])
-        self.title = self.options_getter.get("title", "", [str])
-        self.definition = self.options_getter.get("definition", None, [str])
-        self.cpp_class = None
-        self.__set_cpp_class()
-        self.__read_binning(self.options_getter.get("binning", None, [dict]))
+        self._options_getter = BlockOptionsGetter(variable_dict)
+        self._name = self._options_getter.get("name", None, [str])
+        self._title = self._options_getter.get("title", "", [str])
+        self._definition = self._options_getter.get("definition", None, [str])
+
+
+        ## Instance of the VariableWrapper C++ class -> wrapper around C++ Variable class
+        self.cpp_class = VariableWrapper(self._name)
+        self._set_cpp_class()
+        self._read_binning(self._options_getter.get("binning", None, [dict]))
         self._check_unused_options()
 
-    def __set_cpp_class(self):
-        self.cpp_class = VariableWrapper(self.name)
-        self.cpp_class.setDefinition(self.definition)
-        self.cpp_class.setTitle(self.title)
+    def _set_cpp_class(self):
+        self.cpp_class.setDefinition(self._definition)
+        self.cpp_class.setTitle(self._title)
 
-    def __read_binning(self, binning_dict : dict):
+    def _read_binning(self, binning_dict : dict):
         if binning_dict is None:
-            Logger.log_message("ERROR", "No binning specified for variable {}".format(self.name))
+            Logger.log_message("ERROR", "No binning specified for variable {}".format(self._name))
             exit(1)
 
         binning_options_getter = BlockOptionsGetter(binning_dict)
@@ -53,7 +54,7 @@ class BlockReaderVariable:
 
         if len(binning_bin_edges) != 0:
             if len(binning_bin_edges) < 2:
-                Logger.log_message("ERROR", "Binning for variable {} has less than 2 bin edges".format(self.name))
+                Logger.log_message("ERROR", "Binning for variable {} has less than 2 bin edges".format(self._name))
                 exit(1)
             bin_edges_str = DoubleVector()
             for bin_edge in binning_bin_edges:
@@ -61,15 +62,15 @@ class BlockReaderVariable:
             self.cpp_class.setBinningIrregular(bin_edges_str)
         else:
             if binning_nbins < 1:
-                Logger.log_message("ERROR", "Binning for variable {} has less than 1 bin".format(self.name))
+                Logger.log_message("ERROR", "Binning for variable {} has less than 1 bin".format(self._name))
                 exit(1)
             if binning_min >= binning_max:
-                Logger.log_message("ERROR", "Binning for variable {} has min >= max".format(self.name))
+                Logger.log_message("ERROR", "Binning for variable {} has min >= max".format(self._name))
                 exit(1)
             self.cpp_class.setBinningRegular(binning_min, binning_max, binning_nbins)
 
     def _check_unused_options(self):
-        unused = self.options_getter.get_unused_options()
+        unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in variable block is not supported!".format(unused))
             exit(1)

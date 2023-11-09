@@ -30,7 +30,7 @@ class ConfigReader:
             self.regions = {}
             for region_dict in data["regions"]:
                 region = BlockReaderRegion(region_dict, self.block_general)
-                region_name = region.name
+                region_name = region.cpp_class.name()
                 if region_name in self.regions:
                     Logger.log_message("ERROR", "Duplicate region name: {}".format(region_name))
                     exit(1)
@@ -43,7 +43,7 @@ class ConfigReader:
             for sample_dict in data["samples"]:
                 sample = BlockReaderSample(sample_dict, self.block_general)
                 sample.adjust_regions(self.regions)
-                sample_name = sample.name
+                sample_name = sample.cpp_class.name()
                 if sample_name in self.samples:
                     Logger.log_message("ERROR", "Duplicate sample name: {}".format(sample_name))
                     exit(1)
@@ -54,13 +54,13 @@ class ConfigReader:
             nominal_dict = {"variation": {"up": "NOSYS"}}
             nominal = BlockReaderSystematic(nominal_dict, "up", self.block_general)
             nominal.adjust_regions(self.regions)
-            self.systematics[nominal.name] = nominal
+            self.systematics[nominal.cpp_class.name()] = nominal
 
             for systematic_dict in data["systematics"]:
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general)
                 for systematic in systematic_list:
                     systematic.adjust_regions(self.regions)
-                    systematic_name = systematic.name
+                    systematic_name = systematic.cpp_class.name()
                     if systematic_name in self.systematics:
                         Logger.log_message("ERROR", "Duplicate systematic name: {}".format(systematic_name))
                         exit(1)
@@ -71,7 +71,7 @@ class ConfigReader:
                 self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
 
             for sample_name,sample in self.samples.items():
-                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.regions)))
+                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.get_regions_names())))
                 sample.adjust_systematics(self.systematics)
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
@@ -173,10 +173,10 @@ if __name__ == "__main__":
     print("\n\nSamples block:\n")
     for sample_name,sample in samples.items():
         print("\tname: ", sample.cpp_class.name())
-        print("\tregions: ", sample.regions)
+        print("\tregions: ", sample.get_regions_names())
         print("\tweight: ", sample.cpp_class.weight())
-        print("\tsystematic: ", sample.systematic)
-        print("\tselection_suffix: \"" + sample.selection_suffix + "\"")
+        print("\tsystematic: ", sample.get_systematics_names())
+        print("\tselection_suffix: \"" + sample.cpp_class.selectionSuffix() + "\"")
         print("\treco_to_truth_pairing_indices: ", sample.get_reco_to_truth_pairing_indices())
         print("\tUnique samples:")
         n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     print("\n\nSystematics block:\n")
     for systematic_name,systematic in systematics.items():
         print("\tname: ", systematic.cpp_class.name())
-        print("\tregions: ", systematic.regions)
+        print("\tregions: ", systematic.get_regions_names())
         print("\tweight_suffix: ", systematic.cpp_class.weightSuffix())
         print("\tsum_weights: ", systematic.cpp_class.sumWeights())
         print("\n")
