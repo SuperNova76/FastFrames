@@ -66,7 +66,7 @@ class BlockReaderSystematic:
 
         self._check_unused_options()
 
-        ## Instance of the SystematiWrapper C++ class -> wrapper around C++ Systemati class
+        ## Instance of the SystematicWrapper C++ class -> wrapper around C++ Systematic class
         self.cpp_class = SystematicWrapper(self._name)
 
         self.cpp_class.setSumWeights(self._sum_weights)
