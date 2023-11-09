@@ -181,34 +181,12 @@ class BlockReaderSample:
             Logger.log_message("ERROR", "Key {} used in  sample block is not supported!".format(unused))
             exit(1)
 
-    def get_truth_cpp_objects(self) -> list:
+    def get_truth_cpp_objects(vector_shared_ptr) -> list:
         """!Get list of truth cpp objects defined in the sample
         """
-        vector_shared_ptr = self.cpp_class.getTruthPtrs()
         result = []
         for ptr in vector_shared_ptr:
             truth_cpp_object = TruthWrapper("")
             truth_cpp_object.constructFromSharedPtr(ptr)
             result.append(truth_cpp_object)
         return result
-
-    def get_reco_to_truth_pairing_indices(self) -> list:
-        """!Get list of reco to truth pairing indices
-        """
-        indices_vector = self.cpp_class.recoToTruthPairingIndices()
-        return [x for x in indices_vector]
-
-    def get_custom_defines(self) -> list:
-        """!Get list of custom defines
-        """
-        return [x for x in self.cpp_class.customDefines()]
-
-    def get_regions_names(self) -> list:
-        """!Get list of regions where the sample is defined
-        """
-        return [x for x in self.cpp_class.regionsNames()]
-
-    def get_systematics_names(self) -> list:
-        """!Get list of systematics defined for the sample
-        """
-        return [x for x in self.cpp_class.systematicsNames()]

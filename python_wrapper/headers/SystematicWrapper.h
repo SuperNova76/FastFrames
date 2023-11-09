@@ -36,6 +36,15 @@ class SystematicWrapper {
         unsigned long long int getPtr() const   {return reinterpret_cast<unsigned long long int>(&m_systematic);};
 
         /**
+         * @brief Construct SystematicWrapper object from shared_ptr
+         *
+         * @param unsigned long long int - shared_ptr
+         */
+        void constructFromSharedPtr(unsigned long long int shared_ptr)  {
+            m_systematic = *reinterpret_cast<std::shared_ptr<Systematic> *>(shared_ptr);
+        };
+
+        /**
          * @brief Get name of the systematic
          *
          * @return std::string

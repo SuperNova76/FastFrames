@@ -139,7 +139,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getRegionsSharedPtr", &ConfigSettingWrapper::getRegionsSharedPtr)
 
         // addSample
-        .def("addSample",   &ConfigSettingWrapper::addSample)
+        .def("addSample",           &ConfigSettingWrapper::addSample)
+        .def("getSamplesSharedPtr", &ConfigSettingWrapper::getSamplesSharedPtr)
 
         // addSystematic
         .def("addSystematic",   &ConfigSettingWrapper::addSystematic)
@@ -227,6 +228,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // getPtr
         .def("getPtr",          &SampleWrapper::getPtr)
 
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &SampleWrapper::constructFromSharedPtr)
+
         // name
         .def("name",            &SampleWrapper::name)
 
@@ -281,6 +285,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // getPtr
         .def("getPtr",          &SystematicWrapper::getPtr)
 
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &SampleWrapper::constructFromSharedPtr)
+
         // name
         .def("name",            &SystematicWrapper::name)
 
@@ -309,6 +316,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // getPtr
         .def("getPtr",          &NtupleWrapper::getPtr)
+
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &NtupleWrapper::constructFromSharedPtr)
 
         // addSample
         .def("addSample",       &NtupleWrapper::addSample)

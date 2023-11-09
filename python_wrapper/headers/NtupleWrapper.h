@@ -40,6 +40,15 @@ class NtupleWrapper {
         unsigned long long int getPtr() const   {return reinterpret_cast<unsigned long long int>(&m_ntuple);};
 
         /**
+         * @brief Construct NtupleWrapper object from shared_ptr
+         *
+         * @param unsigned long long int - shared_ptr
+         */
+        void constructFromSharedPtr(unsigned long long int shared_ptr)  {
+            m_ntuple = *reinterpret_cast<std::shared_ptr<Ntuple> *>(shared_ptr);
+        }
+
+        /**
          * @brief Add sample to the Ntuple, given the raw pointer to the shared_ptr<Sample>
          *
          * @param sample_shared_ptr

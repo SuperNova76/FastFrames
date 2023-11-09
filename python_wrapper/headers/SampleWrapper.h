@@ -37,6 +37,15 @@ class SampleWrapper {
         unsigned long long int getPtr() const   {return reinterpret_cast<unsigned long long int>(&m_sample);};
 
         /**
+         * @brief Construct SampleWrapper object from shared_ptr
+         *
+         * @param unsigned long long int - shared_ptr
+         */
+        void constructFromSharedPtr(unsigned long long int shared_ptr)  {
+            m_sample = *reinterpret_cast<std::shared_ptr<Sample> *>(shared_ptr);
+        };
+
+        /**
          * @brief Get name of the sample
          *
          * @return std::string

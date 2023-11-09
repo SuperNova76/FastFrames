@@ -4,10 +4,19 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, StringVector, ptrVector
+from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, SampleWrapper, StringVector, ptrVector
 from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
 
+def vector_to_list(cpp_vector) -> list:
+    """!Convert C++ vector to python list
+    @param cpp_vector: C++ vector
+    @return python list
+    """
+    result = []
+    for element in cpp_vector:
+        result.append(element)
+    return result
 
 class BlockReaderGeneral:
     """!Python equivalent of C++ ConfigSetting class
@@ -113,7 +122,7 @@ class BlockReaderGeneral:
         return result
 
     def get_regions_cpp_objects(self) -> list:
-        """!Get list of regions
+        """!Get list of regions cpp objects
         @return list of regions
         """
         result = []
@@ -122,4 +131,16 @@ class BlockReaderGeneral:
             region_cpp_object = RegionWrapper("")
             region_cpp_object.constructFromSharedPtr(region_ptr)
             result.append(region_cpp_object)
+        return result
+
+    def get_samples_objects(self) -> list:
+        """!Get list of samples cpp objects
+        @return list of samples
+        """
+        result = []
+        vector_samples = self.cpp_class.getSamplesSharedPtr()
+        for sample_ptr in vector_samples:
+            sample_cpp_object = SampleWrapper("")
+            sample_cpp_object.constructFromSharedPtr(sample_ptr)
+            result.append(sample_cpp_object)
         return result

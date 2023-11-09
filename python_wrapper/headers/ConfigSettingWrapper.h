@@ -233,6 +233,7 @@ class ConfigSettingWrapper {
         /**
          * @brief Get vector of raw pointer to shared pointers to region objects
          *
+         * @return std::vector<unsigned long long int>
          */
         std::vector<unsigned long long int> getRegionsSharedPtr() const {
             const std::vector<std::shared_ptr<Region>> &regions = m_configSetting->regions();
@@ -270,6 +271,20 @@ class ConfigSettingWrapper {
         void addSample(long long int sample_shared_ptr_int) {
             const std::shared_ptr<Sample> *sample = reinterpret_cast<std::shared_ptr<Sample> *>(sample_shared_ptr_int);
             m_configSetting->addSample(*sample);
+        };
+
+        /**
+         * @brief Get vector of raw pointer to shared pointers to sample objects
+         *
+         * @return std::vector<unsigned long long int>
+         */
+        std::vector<unsigned long long int> getSamplesSharedPtr() const {
+            const std::vector<std::shared_ptr<Sample>> &samples = m_configSetting->samples();
+            std::vector<unsigned long long int> samples_ptr(samples.size());
+            for (unsigned int i = 0; i < samples.size(); ++i) {
+                samples_ptr.at(i) = reinterpret_cast<unsigned long long int>(&samples.at(i));
+            }
+            return samples_ptr;
         };
 
         /**

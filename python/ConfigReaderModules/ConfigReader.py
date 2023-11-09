@@ -5,7 +5,7 @@ import yaml
 from sys import argv
 import argparse
 
-from BlockReaderGeneral import BlockReaderGeneral
+from BlockReaderGeneral import BlockReaderGeneral, vector_to_list
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderNtuple import BlockReaderNtuple
@@ -71,7 +71,7 @@ class ConfigReader:
                 self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
 
             for sample_name,sample in self.samples.items():
-                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.get_regions_names())))
+                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.cpp_class.regionsNames())))
                 sample.adjust_systematics(self.systematics)
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
@@ -168,20 +168,20 @@ if __name__ == "__main__":
                 print("\t\t", variable_combination)
             print("\n")
 
-    samples = config_reader.samples
+    samples = config_reader.block_general.get_samples_objects()
     print("\n\nSamples block:\n")
-    for sample_name,sample in samples.items():
-        print("\tname: ", sample.cpp_class.name())
-        print("\tregions: ", sample.get_regions_names())
-        print("\tweight: ", sample.cpp_class.weight())
-        print("\tsystematic: ", sample.get_systematics_names())
-        print("\tselection_suffix: \"" + sample.cpp_class.selectionSuffix() + "\"")
-        print("\treco_to_truth_pairing_indices: ", sample.get_reco_to_truth_pairing_indices())
+    for sample in samples:
+        print("\tname: ", sample.name())
+        print("\tregions: ", vector_to_list(sample.regionsNames()))
+        print("\tweight: ", sample.weight())
+        print("\tsystematic: ", vector_to_list(sample.systematicsNames()))
+        print("\tselection_suffix: \"" + sample.selectionSuffix() + "\"")
+        print("\treco_to_truth_pairing_indices: ", vector_to_list(sample.recoToTruthPairingIndices()))
         print("\tUnique samples:")
-        n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
+        n_unique_samples = sample.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):
-            print("\t\t", sample.cpp_class.uniqueSampleIDstring(i_unique_id))
-        truth_objects = sample.get_truth_cpp_objects()
+            print("\t\t", sample.uniqueSampleIDstring(i_unique_id))
+        truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthPtrs())
         if len(truth_objects) > 0:
             print("\tTruth objects:")
             for cpp_truth_object in truth_objects:
@@ -209,13 +209,13 @@ if __name__ == "__main__":
                                 variable.axisMax())
                     else:
                         print("\t\t\tbinning: ", variable.binEdgesString())
-                custom_defines = cpp_truth_object.customDefines()
+                custom_defines = vector_to_list(cpp_truth_object.customDefines())
                 if len(custom_defines) > 0:
                     print("\t\tCustom defines:")
                     for custom_define in custom_defines:
                         print("\t\t\t", custom_define)
                     print("\n")
-        custom_defines = sample.get_custom_defines()
+        custom_defines = vector_to_list(sample.customDefines())
         if len(custom_defines) > 0:
             print("\tCustom defines:")
             for custom_define in custom_defines:
