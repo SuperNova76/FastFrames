@@ -18,8 +18,7 @@ class BlockReaderNtuple:
     """
 
     def __init__(self, input_dict : dict):
-        """
-        Constructor of the BlockReaderNtuple class
+        """!Constructor of the BlockReaderNtuple class
         @param input_dict: dictionary with options from the config file
         """
         self._options_getter = BlockOptionsGetter(input_dict)
@@ -66,8 +65,7 @@ class BlockReaderNtuple:
 
 
     def adjust_regions(self, regions : dict) -> None:
-        """
-        Initialize selection based on regions specified in the ntuple block - combined all of them with OR
+        """!Initialize selection based on regions specified in the ntuple block - combined all of them with OR
         @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
         """
         # combine selections from all regions
@@ -79,13 +77,12 @@ class BlockReaderNtuple:
                     exit(1)
                 region_selection = regions[region_name].cpp_class.selection()
                 if region_selection != "":
-                    selections.append("(" + regions[region_name].selection + ")")
+                    selections.append("(" + regions[region_name].cpp_class.selection() + ")")
             self._selection = "({})".format(" || ".join(selections))
         self.cpp_class.setSelection(self._selection)
 
     def adjust_samples(self, samples : dict) -> None:
-        """
-        Adjust list of samples for which ntuple step should be run. If samples are specified, check if they exist. If no samples are specified, take all samples.
+        """!Adjust list of samples for which ntuple step should be run. If samples are specified, check if they exist. If no samples are specified, take all samples.
         @param samples: dictionary with all samples (keys are sample names)
         """
         if self._samples is None:
@@ -100,8 +97,7 @@ class BlockReaderNtuple:
                 self.cpp_class.addSample(samples[sample_name].cpp_class.getPtr())
 
     def get_copy_trees(self) -> list:
-        """
-        Get list of trees that should be copied
+        """!Get list of trees that should be copied
         """
         vector_trees = self.cpp_class.copyTrees()
         return [tree for tree in vector_trees]

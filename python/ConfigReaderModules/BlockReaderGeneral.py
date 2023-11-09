@@ -13,8 +13,7 @@ class BlockReaderGeneral:
     """
 
     def __init__(self, input_dict : dict):
-        """
-        Constructor of the BlockReaderGeneral class. It reads all the options from the general block, sets the properties of the C++ ConfigSetting class and check for user's errors
+        """!Constructor of the BlockReaderGeneral class. It reads all the options from the general block, sets the properties of the C++ ConfigSetting class and check for user's errors
         @param input_dict: dictionary with options from the config file
         """
         self._options_getter = BlockOptionsGetter(input_dict)
@@ -88,8 +87,7 @@ class BlockReaderGeneral:
             self.cpp_class.addTLorentzVector(tlorentz_vector)
 
     def add_region(self, region : RegionWrapper) -> None:
-        """
-        Add region to the C++ ConfigSetting class
+        """!Add region to the C++ ConfigSetting class
         @param region: RegionWrapper object
         """
         self.cpp_class.addRegion(region.cpp_class.getPtr())
@@ -104,8 +102,7 @@ class BlockReaderGeneral:
             exit(1)
 
     def get_xsection_files(self) -> list:
-        """
-        Get list of cross section files
+        """!Get list of cross section files
         @return list of cross section files
         """
         result = []

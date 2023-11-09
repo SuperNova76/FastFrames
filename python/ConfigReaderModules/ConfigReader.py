@@ -30,7 +30,7 @@ class ConfigReader:
             self.regions = {}
             for region_dict in data["regions"]:
                 region = BlockReaderRegion(region_dict, self.block_general)
-                region_name = region.name
+                region_name = region.cpp_class.name()
                 if region_name in self.regions:
                     Logger.log_message("ERROR", "Duplicate region name: {}".format(region_name))
                     exit(1)

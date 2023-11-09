@@ -17,50 +17,49 @@ class BlockReaderRegion:
     """
 
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):
-        """
-        Constructor of the BlockReaderRegion class
+        """!Constructor of the BlockReaderRegion class
         @param input_dict: dictionary with options from the config file
         @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
         """
         self._options_getter = BlockOptionsGetter(input_dict)
-        self.name = self._options_getter.get("name", None, [str])
-        self.selection = self._options_getter.get("selection", None, [str])
-        self.variables = []
+        self._name = self._options_getter.get("name", None, [str])
+        self._selection = self._options_getter.get("selection", None, [str])
+        self._variables = []
 
         if block_reader_general is not None:
             self.__merge_settings(block_reader_general)
 
         for variable_dict in self._options_getter.get("variables", [], [list]):
             variable = BlockReaderVariable(variable_dict)
-            self.variables.append(variable)
+            self._variables.append(variable)
 
-        self.histograms_2d = self._options_getter.get("histograms_2d", [], [list])
+        self._histograms_2d = self._options_getter.get("histograms_2d", [], [list])
 
-        self.__set_cpp_class = None
-        self.__set_config_reader_cpp()
+        ## Instance of the RegionWrapper C++ class -> wrapper around C++ Region class
+        self.cpp_class = RegionWrapper(self._name)
+        self._set_config_reader_cpp()
         self._check_unused_options()
 
-    def __set_config_reader_cpp(self):
+    def _set_config_reader_cpp(self) -> None:
         variables_names = []
-        self.cpp_class = RegionWrapper(self.name)
-        self.cpp_class.setSelection(self.selection)
-        for variable in self.variables:
+        self.cpp_class.setSelection(self._selection)
+        for variable in self._variables:
             ptr = variable.cpp_class.getPtr()
             self.cpp_class.addVariable(variable.cpp_class.getPtr())
             variables_names.append(variable.cpp_class.name())
 
-        for histogram_2d in self.histograms_2d:
+        for histogram_2d in self._histograms_2d:
             options_getter = BlockOptionsGetter(histogram_2d)
             x = options_getter.get("x", None, [str])
             y = options_getter.get("y", None, [str])
             if x is None or y is None:
-                Logger.log_message("ERROR", "histograms_2d in region {} does not have x or y specified".format(self.name))
+                Logger.log_message("ERROR", "histograms_2d in region {} does not have x or y specified".format(self._name))
                 exit(1)
             if x not in variables_names:
-                Logger.log_message("ERROR", "histograms_2d in region {} has x variable {} which is not defined".format(self.name, x))
+                Logger.log_message("ERROR", "histograms_2d in region {} has x variable {} which is not defined".format(self._name, x))
                 exit(1)
             if y not in variables_names:
-                Logger.log_message("ERROR", "histograms_2d in region {} has y variable {} which is not defined".format(self.name, y))
+                Logger.log_message("ERROR", "histograms_2d in region {} has y variable {} which is not defined".format(self._name, y))
                 exit(1)
             self.cpp_class.addVariableCombination(x, y)
 
@@ -70,15 +69,14 @@ class BlockReaderRegion:
 
         # if in future we need to merge settings from general block to region block, it will be here
 
-    def _check_unused_options(self):
+    def _check_unused_options(self) -> None:
         unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in region block is not supported!".format(unused))
             exit(1)
 
     def get_variable_cpp_objects(self) -> list:
-        """
-        Get list of variables (cpp objects) defined in the region
+        """!Get list of variables (cpp objects) defined in the region
         """
         variable_ptrs = self.cpp_class.getVariableRawPtrs()
         result = []
@@ -89,8 +87,7 @@ class BlockReaderRegion:
         return result
 
     def get_2d_combinations(self) -> list:
-        """
-        Get list of 2D variable combinations defined in the region
+        """!Get list of 2D variable combinations defined in the region
         """
         result = []
         vector_combinations = self.cpp_class.variableCombinations()
