@@ -47,8 +47,8 @@ class BlockReaderSystematic:
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
-        self.samples         = self._options_getter.get("samples",None, [list])
-        self.exclude_samples = self._options_getter.get("exclude_samples",None, [list])
+        self.samples         = self._options_getter.get("samples",None, [list], [str])
+        self.exclude_samples = self._options_getter.get("exclude_samples",None, [list], [str])
         CommandLineOptions().keep_only_selected_samples(self.samples)
         CommandLineOptions().keep_only_selected_samples(self.exclude_samples)
         if not self.samples is None and not self.exclude_samples is None:
@@ -56,10 +56,10 @@ class BlockReaderSystematic:
             exit(1)
 
 
-        self._campaigns  = self._options_getter.get("campaigns",None, [list])
+        self._campaigns  = self._options_getter.get("campaigns",None, [list], [str])
 
-        self._regions           = self._options_getter.get("regions",None, [list])
-        self._exclude_regions   = self._options_getter.get("exclude_regions",None, [list])
+        self._regions           = self._options_getter.get("regions",None, [list], [str])
+        self._exclude_regions   = self._options_getter.get("exclude_regions",None, [list], [str])
         if not self._regions is None and not self._exclude_regions is None:
             Logger.log_message("ERROR", "Both regions and exclude_regions specified for systematic {}".format(self._name))
             exit(1)
@@ -103,6 +103,21 @@ class BlockReaderSystematic:
             for sample in self.exclude_samples:
                 if sample not in sample_dict:
                     Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self._name))
+                    exit(1)
+
+    def check_regions_existence(self, region_dict : dict) -> None:
+        """!Check if all regions specified for the systematic exist
+        @param region_dict: dictionary with all regions (keys are region names)
+        """
+        if not self._regions is None:
+            for region in self._regions:
+                if region not in region_dict:
+                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self._name))
+                    exit(1)
+        if not self._exclude_regions is None:
+            for region in self._exclude_regions:
+                if region not in region_dict:
+                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self._name))
                     exit(1)
 
     def get_regions_names(self) -> list:

@@ -29,11 +29,11 @@ class BlockReaderRegion:
         if block_reader_general is not None:
             self.__merge_settings(block_reader_general)
 
-        for variable_dict in self._options_getter.get("variables", [], [list]):
+        for variable_dict in self._options_getter.get("variables", [], [list], [dict]):
             variable = BlockReaderVariable(variable_dict)
             self._variables.append(variable)
 
-        self._histograms_2d = self._options_getter.get("histograms_2d", [], [list])
+        self._histograms_2d = self._options_getter.get("histograms_2d", [], [list], [dict])
 
         ## Instance of the RegionWrapper C++ class -> wrapper around C++ Region class
         self.cpp_class = RegionWrapper(self._name)

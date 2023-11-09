@@ -41,7 +41,7 @@ class BlockReaderVariable:
         binning_min = binning_options_getter.get("min", 0, [int, float]  )
         binning_max = binning_options_getter.get("max", 0, [int, float])
         binning_nbins = binning_options_getter.get("number_of_bins", 0, [int])
-        binning_bin_edges = binning_options_getter.get("bin_edges", [], [list])
+        binning_bin_edges = binning_options_getter.get("bin_edges", [], [list], [int, float])
 
         unused = binning_options_getter.get_unused_options()
         if len(unused) > 0:

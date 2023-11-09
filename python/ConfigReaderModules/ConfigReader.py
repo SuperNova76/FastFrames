@@ -9,6 +9,7 @@ from BlockReaderGeneral import BlockReaderGeneral, vector_to_list
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderNtuple import BlockReaderNtuple
+from BlockOptionsGetter import BlockOptionsGetter
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 from CommandLineOptions import CommandLineOptions
 
@@ -24,11 +25,12 @@ class ConfigReader:
     def __init__(self, config_file_path : str):
         with open(config_file_path, "r") as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
+            self.block_getter = BlockOptionsGetter(data)
 
-            self.block_general = BlockReaderGeneral(data["general"])
+            self.block_general = BlockReaderGeneral(self.block_getter.get("general"))
 
             self.regions = {}
-            for region_dict in data["regions"]:
+            for region_dict in self.block_getter.get("regions"):
                 region = BlockReaderRegion(region_dict, self.block_general)
                 region_name = region.cpp_class.name()
                 if region_name in self.regions:
@@ -38,9 +40,9 @@ class ConfigReader:
                 self.block_general.add_region(region)
 
             self.samples = {}
-            CommandLineOptions().check_samples_existence(data["samples"])
-            CommandLineOptions().keep_only_selected_samples(data["samples"])
-            for sample_dict in data["samples"]:
+            CommandLineOptions().check_samples_existence(self.block_getter.get("samples"))
+            CommandLineOptions().keep_only_selected_samples(self.block_getter.get("samples"))
+            for sample_dict in self.block_getter.get("samples"):
                 sample = BlockReaderSample(sample_dict, self.block_general)
                 sample.adjust_regions(self.regions)
                 sample_name = sample.cpp_class.name()
@@ -56,7 +58,7 @@ class ConfigReader:
             nominal.adjust_regions(self.regions)
             self.systematics[nominal.cpp_class.name()] = nominal
 
-            for systematic_dict in data["systematics"]:
+            for systematic_dict in self.block_getter.get("systematics"):
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general)
                 for systematic in systematic_list:
                     systematic.adjust_regions(self.regions)
@@ -68,6 +70,7 @@ class ConfigReader:
 
             for systematic_name,systematic in self.systematics.items():
                 systematic.check_samples_existence(self.samples)
+                systematic.check_regions_existence(self.regions)
                 self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
 
             for sample_name,sample in self.samples.items():
@@ -76,13 +79,17 @@ class ConfigReader:
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
             self.block_ntuple = BlockReaderNtuple([])
-            self.has_ntuple_block = "ntuples" in data
+            self.has_ntuple_block = "ntuples" in self.block_getter
             if self.has_ntuple_block:
-                self.block_ntuple = BlockReaderNtuple(data["ntuples"])
+                self.block_ntuple = BlockReaderNtuple(self.block_getter.get("ntuples"))
                 self.block_ntuple.adjust_regions(self.regions)
                 self.block_ntuple.adjust_samples(self.samples)
             self.block_general.cpp_class.setNtuple(self.block_ntuple.cpp_class.getPtr())
 
+            unused_blocks = self.block_getter.get_unused_options()
+            if unused_blocks:
+                Logger.log_message("ERROR", "Unused blocks: {}".format(unused_blocks))
+                exit(1)
 
 if __name__ == "__main__":
 

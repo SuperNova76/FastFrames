@@ -34,12 +34,12 @@ class BlockReaderSample:
             exit(1)
         self._is_data = (self._simulation_type.upper() == "DATA")
 
-        self._dsids = self._options_getter.get("dsids",None, [list])
+        self._dsids = self._options_getter.get("dsids",None, [list], [int])
         if self._dsids is None and not self._is_data:
             Logger.log_message("ERROR", "No dsids specified for sample {}".format(self._name))
             exit(1)
 
-        self._campaigns = self._options_getter.get("campaigns",None, [list])
+        self._campaigns = self._options_getter.get("campaigns",None, [list], [str])
         if self._campaigns is None:
             Logger.log_message("ERROR", "No campaigns specified for sample {}".format(self._name))
             exit(1)
@@ -53,8 +53,8 @@ class BlockReaderSample:
 
         self._selection_suffix = self._options_getter.get("selection","true", [str])
 
-        self._regions = self._options_getter.get("regions",None, [list])
-        self._exclude_regions = self._options_getter.get("exclude_regions",None, [list])
+        self._regions = self._options_getter.get("regions",None, [list], [str])
+        self._exclude_regions = self._options_getter.get("exclude_regions",None, [list], [str])
         if not self._regions is None and not self._exclude_regions is None:
             Logger.log_message("ERROR", "Both regions and exclude_regions specified for sample {}".format(self._name))
             exit(1)
@@ -68,14 +68,14 @@ class BlockReaderSample:
 
         self._selection_suffix = self._options_getter.get("selection_suffix", "", [str])
 
-        self._reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list])
+        self._reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list], [str])
 
-        self._define_custom_columns = self._options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list])
+        self._define_custom_columns = self._options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list], [dict])
 
         ## Instance of the SampleWrapper C++ class -> wrapper around C++ Sample class
         self.cpp_class = SampleWrapper(self._name)
 
-        self._truth_dicts = self._options_getter.get("truth", None, [list])
+        self._truth_dicts = self._options_getter.get("truth", None, [list], [dict])
         self._truths = []
         if self._truth_dicts is not None:
             reco_variables_from_regions = block_reader_general.cpp_class.getVariableNames()
@@ -108,6 +108,12 @@ class BlockReaderSample:
         """!Set regions for the sample. If no regions are specified, take all regions, if exclude_regions are specified, remove them from the list of regions.
         @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
         """
+        if self._exclude_regions is not None:
+            for region_name in self._exclude_regions:
+                if not region_name in regions:
+                    Logger.log_message("ERROR", "Region {} specified for sample {} does not exist".format(region_name, self._name))
+                    exit(1)
+
         if self._regions is None: # if no regions are specified, take all regions
             self._regions = []
             for region_name in regions:
