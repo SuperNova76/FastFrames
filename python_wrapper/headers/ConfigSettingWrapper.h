@@ -231,6 +231,20 @@ class ConfigSettingWrapper {
         };
 
         /**
+         * @brief Get vector of raw pointer to shared pointers to region objects
+         *
+         * @return std::vector<unsigned long long int>
+         */
+        std::vector<unsigned long long int> getRegionsSharedPtr() const {
+            const std::vector<std::shared_ptr<Region>> &regions = m_configSetting->regions();
+            std::vector<unsigned long long int> regions_ptr(regions.size());
+            for (unsigned int i = 0; i < regions.size(); ++i) {
+                regions_ptr.at(i) = reinterpret_cast<unsigned long long int>(&regions.at(i));
+            }
+            return regions_ptr;
+        }
+
+        /**
          * @brief Get the names of the variables defined in any of the region
          *
          * @return std::vector<std::string>
@@ -260,6 +274,20 @@ class ConfigSettingWrapper {
         };
 
         /**
+         * @brief Get vector of raw pointer to shared pointers to sample objects
+         *
+         * @return std::vector<unsigned long long int>
+         */
+        std::vector<unsigned long long int> getSamplesSharedPtr() const {
+            const std::vector<std::shared_ptr<Sample>> &samples = m_configSetting->samples();
+            std::vector<unsigned long long int> samples_ptr(samples.size());
+            for (unsigned int i = 0; i < samples.size(); ++i) {
+                samples_ptr.at(i) = reinterpret_cast<unsigned long long int>(&samples.at(i));
+            }
+            return samples_ptr;
+        };
+
+        /**
          * @brief Add systematic to the config setting
          *
          * @param systematic_shared_ptr_int - raw pointer to the shared pointer with the systematic
@@ -267,6 +295,20 @@ class ConfigSettingWrapper {
         void addSystematic(long long int systematic_shared_ptr_int) {
             const std::shared_ptr<Systematic> *systematic = reinterpret_cast<std::shared_ptr<Systematic> *>(systematic_shared_ptr_int);
             m_configSetting->addSystematic(*systematic);
+        };
+
+        /**
+         * @brief Get vector of raw pointer to shared pointers to systematic objects
+         *
+         * @return std::vector<unsigned long long int>
+         */
+        std::vector<unsigned long long int> getSystematicsSharedPtr() const {
+            const std::vector<std::shared_ptr<Systematic>> &systematics = m_configSetting->systematics();
+            std::vector<unsigned long long int> systematics_ptr(systematics.size());
+            for (unsigned int i = 0; i < systematics.size(); ++i) {
+                systematics_ptr.at(i) = reinterpret_cast<unsigned long long int>(&systematics.at(i));
+            }
+            return systematics_ptr;
         };
 
         /**
@@ -323,6 +365,16 @@ class ConfigSettingWrapper {
             const std::shared_ptr<Ntuple> *ntuple = reinterpret_cast<std::shared_ptr<Ntuple> *>(ntuple_shared_ptr_int);
             m_configSetting->setNtuple(*ntuple);
         };
+
+        /**
+         * @brief Get the Ntuple shared pointer
+         *
+         * @return unsigned long long int
+         */
+        unsigned long long int getNtupleSharedPtr() const {
+            const std::shared_ptr<Ntuple> &ntuple = m_configSetting->ntuple();
+            return reinterpret_cast<unsigned long long int>(&ntuple);
+        }
 
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;

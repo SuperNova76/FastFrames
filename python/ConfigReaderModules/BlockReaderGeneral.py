@@ -4,9 +4,20 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, StringVector
+from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, SampleWrapper, NtupleWrapper, SystematicWrapper
+from ConfigReaderCpp import StringVector, ptrVector
 from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
+
+def vector_to_list(cpp_vector) -> list:
+    """!Convert C++ vector to python list
+    @param cpp_vector: C++ vector
+    @return python list
+    """
+    result = []
+    for element in cpp_vector:
+        result.append(element)
+    return result
 
 class BlockReaderGeneral:
     """!Python equivalent of C++ ConfigSetting class
@@ -109,4 +120,50 @@ class BlockReaderGeneral:
         vector_xsection_files = self.cpp_class.xSectionFiles()
         for xsection_file in vector_xsection_files:
             result.append(xsection_file)
+        return result
+
+    def get_regions_cpp_objects(self) -> list:
+        """!Get list of regions cpp objects
+        @return list of regions
+        """
+        result = []
+        vector_regions = self.cpp_class.getRegionsSharedPtr()
+        for region_ptr in vector_regions:
+            region_cpp_object = RegionWrapper("")
+            region_cpp_object.constructFromSharedPtr(region_ptr)
+            result.append(region_cpp_object)
+        return result
+
+    def get_samples_objects(self) -> list:
+        """!Get list of samples cpp objects
+        @return list of samples
+        """
+        result = []
+        vector_samples = self.cpp_class.getSamplesSharedPtr()
+        for sample_ptr in vector_samples:
+            sample_cpp_object = SampleWrapper("")
+            sample_cpp_object.constructFromSharedPtr(sample_ptr)
+            result.append(sample_cpp_object)
+        return result
+
+    def get_ntuple_object(self) -> NtupleWrapper:
+        """!Get ntuple cpp object, return None if not defined
+        """
+        shared_ptr = self.cpp_class.getNtupleSharedPtr()
+        if shared_ptr == 0:
+            return None
+        result = NtupleWrapper()
+        result.constructFromSharedPtr(shared_ptr)
+        return result
+
+    def get_systematics_objects(self) -> list:
+        """!Get list of systematics cpp objects
+        @return list of systematics
+        """
+        result = []
+        vector_systematics = self.cpp_class.getSystematicsSharedPtr()
+        for systematic_ptr in vector_systematics:
+            systematic_cpp_object = SystematicWrapper("")
+            systematic_cpp_object.constructFromSharedPtr(systematic_ptr)
+            result.append(systematic_cpp_object)
         return result

@@ -75,22 +75,22 @@ class BlockReaderRegion:
             Logger.log_message("ERROR", "Key {} used in region block is not supported!".format(unused))
             exit(1)
 
-    def get_variable_cpp_objects(self) -> list:
+    def get_variable_cpp_objects(variable_raw_ptrs) -> list:
         """!Get list of variables (cpp objects) defined in the region
+        @param: list of variable raw pointers
         """
-        variable_ptrs = self.cpp_class.getVariableRawPtrs()
         result = []
-        for variable_ptr in variable_ptrs:
+        for variable_ptr in variable_raw_ptrs:
             variable_cpp_object = VariableWrapper("")
             variable_cpp_object.constructFromRawPtr(variable_ptr)
             result.append(variable_cpp_object)
         return result
 
-    def get_2d_combinations(self) -> list:
+    def get_2d_combinations(vector_combinations) -> list:
         """!Get list of 2D variable combinations defined in the region
+        @param: vector of variable combinations
         """
         result = []
-        vector_combinations = self.cpp_class.variableCombinations()
         for combination in vector_combinations:
             result.append(combination)
         return result

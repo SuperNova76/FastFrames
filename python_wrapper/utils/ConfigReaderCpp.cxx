@@ -134,14 +134,17 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("tLorentzVectors",             &ConfigSettingWrapper::tLorentzVectors)
 
         // addRegion
-        .def("addRegion",   &ConfigSettingWrapper::addRegion)
-        .def("getVariableNames",   &ConfigSettingWrapper::getVariableNames)
+        .def("addRegion",           &ConfigSettingWrapper::addRegion)
+        .def("getVariableNames",    &ConfigSettingWrapper::getVariableNames)
+        .def("getRegionsSharedPtr", &ConfigSettingWrapper::getRegionsSharedPtr)
 
         // addSample
-        .def("addSample",   &ConfigSettingWrapper::addSample)
+        .def("addSample",           &ConfigSettingWrapper::addSample)
+        .def("getSamplesSharedPtr", &ConfigSettingWrapper::getSamplesSharedPtr)
 
         // addSystematic
-        .def("addSystematic",   &ConfigSettingWrapper::addSystematic)
+        .def("addSystematic",           &ConfigSettingWrapper::addSystematic)
+        .def("getSystematicsSharedPtr", &ConfigSettingWrapper::getSystematicsSharedPtr)
 
         .def("setNominalOnly",  &ConfigSettingWrapper::setNominalOnly)
         .def("nominalOnly",     &ConfigSettingWrapper::nominalOnly)
@@ -151,7 +154,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("clearSystematics",  &ConfigSettingWrapper::clearSystematics)
 
-        .def("setNtuple",   &ConfigSettingWrapper::setNtuple)
+        .def("setNtuple",           &ConfigSettingWrapper::setNtuple)
+        .def("getNtupleSharedPtr",  &ConfigSettingWrapper::getNtupleSharedPtr)
     ;
 
     /**
@@ -162,6 +166,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         init<std::string>())
         // getPtr
         .def("getPtr",          &RegionWrapper::getPtr)
+
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &RegionWrapper::constructFromSharedPtr)
 
         // name
         .def("name",            &RegionWrapper::name)
@@ -223,6 +230,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // getPtr
         .def("getPtr",          &SampleWrapper::getPtr)
 
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &SampleWrapper::constructFromSharedPtr)
+
         // name
         .def("name",            &SampleWrapper::name)
 
@@ -261,7 +271,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("skipSystematicRegionCombination", &SampleWrapper::skipSystematicRegionCombination)
 
         .def("addTruth",            &SampleWrapper::addTruth)
-        .def("getTruthPtrs",        &SampleWrapper::getTruthPtrs)
+        .def("getTruthSharedPtrs",  &SampleWrapper::getTruthSharedPtrs)
 
         .def("addCustomDefine",     &SampleWrapper::addCustomDefine)
         .def("customDefines",       &SampleWrapper::customDefines)
@@ -276,6 +286,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // getPtr
         .def("getPtr",          &SystematicWrapper::getPtr)
+
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &SystematicWrapper::constructFromSharedPtr)
 
         // name
         .def("name",            &SystematicWrapper::name)
@@ -305,6 +318,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // getPtr
         .def("getPtr",          &NtupleWrapper::getPtr)
+
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &NtupleWrapper::constructFromSharedPtr)
 
         // addSample
         .def("addSample",       &NtupleWrapper::addSample)

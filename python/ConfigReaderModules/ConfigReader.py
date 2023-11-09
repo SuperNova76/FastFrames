@@ -5,7 +5,7 @@ import yaml
 from sys import argv
 import argparse
 
-from BlockReaderGeneral import BlockReaderGeneral
+from BlockReaderGeneral import BlockReaderGeneral, vector_to_list
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderNtuple import BlockReaderNtuple
@@ -71,7 +71,7 @@ class ConfigReader:
                 self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
 
             for sample_name,sample in self.samples.items():
-                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.get_regions_names())))
+                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.cpp_class.regionsNames())))
                 sample.adjust_systematics(self.systematics)
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
@@ -123,37 +123,36 @@ if __name__ == "__main__":
     for tlorentz_vector in tlorentz_vectors:
         print("\t\t", tlorentz_vector)
 
-    if config_reader.has_ntuple_block:
+    ntuple_cpp_object = block_general.get_ntuple_object()
+    if ntuple_cpp_object:
         print("\nNtuple block:")
-        print("\tselection: ", config_reader.block_ntuple.cpp_class.selection())
-        n_samples = config_reader.block_ntuple.cpp_class.nSamples()
-        samples = [config_reader.block_ntuple.cpp_class.sampleName(i_sample) for i_sample in range(n_samples)]
+        print("\tselection: ", ntuple_cpp_object.selection())
+        n_samples = ntuple_cpp_object.nSamples()
+        samples = [ntuple_cpp_object.sampleName(i_sample) for i_sample in range(n_samples)]
         print("\tsamples: [", ",".join(samples), "]")
 
-        n_branches = config_reader.block_ntuple.cpp_class.nBranches()
-        branches = [config_reader.block_ntuple.cpp_class.branchName(i_branch) for i_branch in range(n_branches)]
+        n_branches = ntuple_cpp_object.nBranches()
+        branches = [ntuple_cpp_object.branchName(i_branch) for i_branch in range(n_branches)]
         print("\tbranches: [", ",".join(branches), "]")
 
-        n_excluded_branches = config_reader.block_ntuple.cpp_class.nExcludedBranches()
-        excluded_branches = [config_reader.block_ntuple.cpp_class.excludedBranchName(i_branch) for i_branch in range(n_excluded_branches)]
+        n_excluded_branches = ntuple_cpp_object.nExcludedBranches()
+        excluded_branches = [ntuple_cpp_object.excludedBranchName(i_branch) for i_branch in range(n_excluded_branches)]
         print("\texcluded_branches: [", ",".join(excluded_branches), "]")
 
         print("\tcopy_trees: ", config_reader.block_ntuple.get_copy_trees())
 
 
-    regions = config_reader.regions
-
     print("\n\nRegions block:\n")
-    for region_name,region in regions.items():
-        print("\tname: ", region.cpp_class.name())
-        print("\tselection: ", region.cpp_class.selection())
+    regions = config_reader.block_general.get_regions_cpp_objects()
+    for region in regions:
+        print("\tname: ", region.name())
+        print("\tselection: ", region.selection())
         print("\tvariables:")
-        variable_cpp_objects = region.get_variable_cpp_objects()
+        variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
         for variable_cpp_object in variable_cpp_objects:
             print("\t\tname: ", variable_cpp_object.name())
             print("\t\ttitle: ", variable_cpp_object.title())
             print("\t\tdefinition: ", variable_cpp_object.definition())
-            #print("\t\tbinning: ", variable_cpp_object.binning())
             if variable_cpp_object.hasRegularBinning():
                 print(  "\t\tbinning: ",
                         variable_cpp_object.axisNbins(), ", ",
@@ -162,27 +161,27 @@ if __name__ == "__main__":
             else:
                 print("\t\tbinning: ", variable_cpp_object.binEdgesString())
             print("\n")
-        variable_combinations = region.get_2d_combinations()
+        variable_combinations = BlockReaderRegion.get_2d_combinations(region.variableCombinations())
         if len(variable_combinations) > 0:
             print("\t2d combinations:")
             for variable_combination in variable_combinations:
                 print("\t\t", variable_combination)
             print("\n")
 
-    samples = config_reader.samples
     print("\n\nSamples block:\n")
-    for sample_name,sample in samples.items():
-        print("\tname: ", sample.cpp_class.name())
-        print("\tregions: ", sample.get_regions_names())
-        print("\tweight: ", sample.cpp_class.weight())
-        print("\tsystematic: ", sample.get_systematics_names())
-        print("\tselection_suffix: \"" + sample.cpp_class.selectionSuffix() + "\"")
-        print("\treco_to_truth_pairing_indices: ", sample.get_reco_to_truth_pairing_indices())
+    samples = config_reader.block_general.get_samples_objects()
+    for sample in samples:
+        print("\tname: ", sample.name())
+        print("\tregions: ", vector_to_list(sample.regionsNames()))
+        print("\tweight: ", sample.weight())
+        print("\tsystematic: ", vector_to_list(sample.systematicsNames()))
+        print("\tselection_suffix: \"" + sample.selectionSuffix() + "\"")
+        print("\treco_to_truth_pairing_indices: ", vector_to_list(sample.recoToTruthPairingIndices()))
         print("\tUnique samples:")
-        n_unique_samples = sample.cpp_class.nUniqueSampleIDs()
+        n_unique_samples = sample.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):
-            print("\t\t", sample.cpp_class.uniqueSampleIDstring(i_unique_id))
-        truth_objects = sample.get_truth_cpp_objects()
+            print("\t\t", sample.uniqueSampleIDstring(i_unique_id))
+        truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthSharedPtrs())
         if len(truth_objects) > 0:
             print("\tTruth objects:")
             for cpp_truth_object in truth_objects:
@@ -210,13 +209,13 @@ if __name__ == "__main__":
                                 variable.axisMax())
                     else:
                         print("\t\t\tbinning: ", variable.binEdgesString())
-                custom_defines = cpp_truth_object.customDefines()
+                custom_defines = vector_to_list(cpp_truth_object.customDefines())
                 if len(custom_defines) > 0:
                     print("\t\tCustom defines:")
                     for custom_define in custom_defines:
                         print("\t\t\t", custom_define)
                     print("\n")
-        custom_defines = sample.get_custom_defines()
+        custom_defines = vector_to_list(sample.customDefines())
         if len(custom_defines) > 0:
             print("\tCustom defines:")
             for custom_define in custom_defines:
@@ -225,12 +224,12 @@ if __name__ == "__main__":
 
         print("\n")
 
-    systematics = config_reader.systematics
+    systematics = config_reader.block_general.get_systematics_objects()
     print("\n\nSystematics block:\n")
-    for systematic_name,systematic in systematics.items():
-        print("\tname: ", systematic.cpp_class.name())
-        print("\tregions: ", systematic.get_regions_names())
-        print("\tweight_suffix: ", systematic.cpp_class.weightSuffix())
-        print("\tsum_weights: ", systematic.cpp_class.sumWeights())
+    for systematic in systematics:
+        print("\tname: ", systematic.name())
+        print("\tregions: ", vector_to_list(systematic.regionsNames()))
+        print("\tweight_suffix: ", systematic.weightSuffix())
+        print("\tsum_weights: ", systematic.sumWeights())
         print("\n")
 

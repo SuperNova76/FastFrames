@@ -10,6 +10,9 @@
 #include <vector>
 #include <stdexcept>
 
+/**
+ * @brief A namespace containing various string manipulation functions
+ */
 namespace StringOperations  {
 
     /**

@@ -1,6 +1,10 @@
-"""
-The main script for running the whole framework from python.
-It takes the path to the config file as the first argument.
+"""!The main script for running the whole framework from python. It takes couple of arguments:
+
+    --config: path to the config file
+
+    --step: step to run, 'h' for histograms, 'n' for ntuples. Default: 'h'
+
+    --samples: comma separated list of samples to run. Default: all
 """
 import os
 import sys

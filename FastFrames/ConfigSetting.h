@@ -308,6 +308,6 @@ private:
   std::vector<std::shared_ptr<Region> > m_regions;
   std::vector<std::shared_ptr<Sample> > m_samples;
   std::vector<std::shared_ptr<Systematic> > m_systematics;
-  std::shared_ptr<Ntuple> m_ntuple;
+  std::shared_ptr<Ntuple> m_ntuple = nullptr;
 
 };
