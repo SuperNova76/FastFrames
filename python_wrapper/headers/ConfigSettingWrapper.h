@@ -231,6 +231,19 @@ class ConfigSettingWrapper {
         };
 
         /**
+         * @brief Get vector of raw pointer to shared pointers to region objects
+         *
+         */
+        std::vector<unsigned long long int> getRegionsSharedPtr() const {
+            const std::vector<std::shared_ptr<Region>> &regions = m_configSetting->regions();
+            std::vector<unsigned long long int> regions_ptr(regions.size());
+            for (unsigned int i = 0; i < regions.size(); ++i) {
+                regions_ptr.at(i) = reinterpret_cast<unsigned long long int>(&regions.at(i));
+            }
+            return regions_ptr;
+        }
+
+        /**
          * @brief Get the names of the variables defined in any of the region
          *
          * @return std::vector<std::string>

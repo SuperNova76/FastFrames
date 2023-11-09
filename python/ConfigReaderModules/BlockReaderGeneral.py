@@ -4,9 +4,10 @@
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, StringVector
+from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, StringVector, ptrVector
 from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
+
 
 class BlockReaderGeneral:
     """!Python equivalent of C++ ConfigSetting class
@@ -109,4 +110,16 @@ class BlockReaderGeneral:
         vector_xsection_files = self.cpp_class.xSectionFiles()
         for xsection_file in vector_xsection_files:
             result.append(xsection_file)
+        return result
+
+    def get_regions_cpp_objects(self) -> list:
+        """!Get list of regions
+        @return list of regions
+        """
+        result = []
+        vector_regions = self.cpp_class.getRegionsSharedPtr()
+        for region_ptr in vector_regions:
+            region_cpp_object = RegionWrapper("")
+            region_cpp_object.constructFromSharedPtr(region_ptr)
+            result.append(region_cpp_object)
         return result

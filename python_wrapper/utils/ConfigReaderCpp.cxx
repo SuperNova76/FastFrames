@@ -134,8 +134,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("tLorentzVectors",             &ConfigSettingWrapper::tLorentzVectors)
 
         // addRegion
-        .def("addRegion",   &ConfigSettingWrapper::addRegion)
-        .def("getVariableNames",   &ConfigSettingWrapper::getVariableNames)
+        .def("addRegion",           &ConfigSettingWrapper::addRegion)
+        .def("getVariableNames",    &ConfigSettingWrapper::getVariableNames)
+        .def("getRegionsSharedPtr", &ConfigSettingWrapper::getRegionsSharedPtr)
 
         // addSample
         .def("addSample",   &ConfigSettingWrapper::addSample)
@@ -162,6 +163,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         init<std::string>())
         // getPtr
         .def("getPtr",          &RegionWrapper::getPtr)
+
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &RegionWrapper::constructFromSharedPtr)
 
         // name
         .def("name",            &RegionWrapper::name)

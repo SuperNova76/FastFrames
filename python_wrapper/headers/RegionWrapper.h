@@ -43,6 +43,16 @@ class RegionWrapper {
         }
 
         /**
+         * @brief Build region object from shared_ptr
+         *
+         * @param unsigned long long int - shared_ptr
+         */
+        void constructFromSharedPtr(unsigned long long int shared_ptr)  {
+            m_region = *reinterpret_cast<std::shared_ptr<Region> *>(shared_ptr);
+        };
+
+
+        /**
          * @brief Get name of the region
          *
          * @return std::string

@@ -141,19 +141,18 @@ if __name__ == "__main__":
         print("\tcopy_trees: ", config_reader.block_ntuple.get_copy_trees())
 
 
-    regions = config_reader.regions
+    regions = config_reader.block_general.get_regions_cpp_objects()
 
     print("\n\nRegions block:\n")
-    for region_name,region in regions.items():
-        print("\tname: ", region.cpp_class.name())
-        print("\tselection: ", region.cpp_class.selection())
+    for region in regions:
+        print("\tname: ", region.name())
+        print("\tselection: ", region.selection())
         print("\tvariables:")
-        variable_cpp_objects = region.get_variable_cpp_objects()
+        variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
         for variable_cpp_object in variable_cpp_objects:
             print("\t\tname: ", variable_cpp_object.name())
             print("\t\ttitle: ", variable_cpp_object.title())
             print("\t\tdefinition: ", variable_cpp_object.definition())
-            #print("\t\tbinning: ", variable_cpp_object.binning())
             if variable_cpp_object.hasRegularBinning():
                 print(  "\t\tbinning: ",
                         variable_cpp_object.axisNbins(), ", ",
@@ -162,7 +161,7 @@ if __name__ == "__main__":
             else:
                 print("\t\tbinning: ", variable_cpp_object.binEdgesString())
             print("\n")
-        variable_combinations = region.get_2d_combinations()
+        variable_combinations = BlockReaderRegion.get_2d_combinations(region.variableCombinations())
         if len(variable_combinations) > 0:
             print("\t2d combinations:")
             for variable_combination in variable_combinations:
