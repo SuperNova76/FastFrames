@@ -108,6 +108,12 @@ class BlockReaderSample:
         """!Set regions for the sample. If no regions are specified, take all regions, if exclude_regions are specified, remove them from the list of regions.
         @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
         """
+        if self._exclude_regions is not None:
+            for region_name in self._exclude_regions:
+                if not region_name in regions:
+                    Logger.log_message("ERROR", "Region {} specified for sample {} does not exist".format(region_name, self._name))
+                    exit(1)
+
         if self._regions is None: # if no regions are specified, take all regions
             self._regions = []
             for region_name in regions:

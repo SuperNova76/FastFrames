@@ -105,6 +105,21 @@ class BlockReaderSystematic:
                     Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self._name))
                     exit(1)
 
+    def check_regions_existence(self, region_dict : dict) -> None:
+        """!Check if all regions specified for the systematic exist
+        @param region_dict: dictionary with all regions (keys are region names)
+        """
+        if not self._regions is None:
+            for region in self._regions:
+                if region not in region_dict:
+                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self._name))
+                    exit(1)
+        if not self._exclude_regions is None:
+            for region in self._exclude_regions:
+                if region not in region_dict:
+                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self._name))
+                    exit(1)
+
     def get_regions_names(self) -> list:
         """!Get list of regions where the systematic should be used
         """

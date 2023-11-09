@@ -85,6 +85,12 @@ class BlockReaderNtuple:
         """!Adjust list of samples for which ntuple step should be run. If samples are specified, check if they exist. If no samples are specified, take all samples.
         @param samples: dictionary with all samples (keys are sample names)
         """
+        if self._exclude_samples is not None:
+            for sample_name in self._exclude_samples:
+                if sample_name not in samples:
+                    Logger.log_message("ERROR", "Unknown sample {} specified in ntuple block".format(sample_name))
+                    exit(1)
+
         if self._samples is None:
             for sample_name in samples:
                 if self._exclude_samples is None or sample_name not in self._exclude_samples:

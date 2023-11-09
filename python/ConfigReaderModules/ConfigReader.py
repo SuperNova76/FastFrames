@@ -68,6 +68,7 @@ class ConfigReader:
 
             for systematic_name,systematic in self.systematics.items():
                 systematic.check_samples_existence(self.samples)
+                systematic.check_regions_existence(self.regions)
                 self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
 
             for sample_name,sample in self.samples.items():
