@@ -42,7 +42,6 @@ if __name__ == "__main__":
 
     Logger.log_message("INFO", "Going to read the config: " + config_path)
     config_reader = ConfigReader(config_path)
-    Logger.set_log_level(config_reader.block_general.debug_level)
 
     fast_frames_executor = FastFramesExecutor(config_reader.block_general.cpp_class.getPtr())
 
