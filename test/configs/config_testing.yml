@@ -37,7 +37,6 @@ ntuples:
   regions: [ "Electron", "Muon"] # optional
   copy_trees: ["treeName1", "treeName2"] # optional, default is empty list
 
-
 regions:
   - name: "Electron"
     selection: "el_pt_NOSYS[0] > 30000"
