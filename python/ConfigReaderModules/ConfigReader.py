@@ -43,7 +43,7 @@ class ConfigReader:
             for sample_dict in data["samples"]:
                 sample = BlockReaderSample(sample_dict, self.block_general)
                 sample.adjust_regions(self.regions)
-                sample_name = sample.name
+                sample_name = sample.cpp_class.name()
                 if sample_name in self.samples:
                     Logger.log_message("ERROR", "Duplicate sample name: {}".format(sample_name))
                     exit(1)
@@ -71,7 +71,7 @@ class ConfigReader:
                 self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
 
             for sample_name,sample in self.samples.items():
-                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.regions)))
+                Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.get_regions_names())))
                 sample.adjust_systematics(self.systematics)
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
@@ -173,10 +173,10 @@ if __name__ == "__main__":
     print("\n\nSamples block:\n")
     for sample_name,sample in samples.items():
         print("\tname: ", sample.cpp_class.name())
-        print("\tregions: ", sample.regions)
+        print("\tregions: ", sample.get_regions_names())
         print("\tweight: ", sample.cpp_class.weight())
-        print("\tsystematic: ", sample.systematic)
-        print("\tselection_suffix: \"" + sample.selection_suffix + "\"")
+        print("\tsystematic: ", sample.get_systematics_names())
+        print("\tselection_suffix: \"" + sample.cpp_class.selectionSuffix() + "\"")
         print("\treco_to_truth_pairing_indices: ", sample.get_reco_to_truth_pairing_indices())
         print("\tUnique samples:")
         n_unique_samples = sample.cpp_class.nUniqueSampleIDs()

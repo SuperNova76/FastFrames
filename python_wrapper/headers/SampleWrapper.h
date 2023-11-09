@@ -131,6 +131,19 @@ class SampleWrapper {
         };
 
         /**
+         * @brief Get std::vector<std::string> of systematic names defined for the sample
+         *
+         */
+        std::vector<std::string> systematicsNames() const {
+            const std::vector<std::shared_ptr<Systematic>> &systematics = m_sample->systematics();
+            std::vector<std::string> syst_names(systematics.size());
+            for (unsigned int i = 0; i < systematics.size(); ++i) {
+                syst_names.at(i) = systematics.at(i)->name();
+            }
+            return syst_names;
+        };
+
+        /**
          * @brief Add region, given the raw pointer to the shared_ptr<Region>
          *
          * @param reg_shared_ptr_int
@@ -138,6 +151,20 @@ class SampleWrapper {
         void addRegion(unsigned long long int reg_shared_ptr_int) {
             const std::shared_ptr<Region> *reg = reinterpret_cast<std::shared_ptr<Region> *>(reg_shared_ptr_int);
             m_sample->addRegion(*reg);
+        };
+
+        /**
+         * @brief Get the names of the regions where the same is to be used
+         *
+         * @return std::vector<std::string>
+         */
+        std::vector<std::string> regionsNames()    const {
+            const std::vector<std::shared_ptr<Region>> &regions = m_sample->regions();
+            std::vector<std::string> region_names(regions.size());
+            for (unsigned int i = 0; i < regions.size(); ++i) {
+                region_names.at(i) = regions.at(i)->name();
+            }
+            return region_names;
         };
 
 

@@ -14,74 +14,74 @@ from BlockReaderSampleTruth import BlockReaderSampleTruth
 
 
 class BlockReaderSample:
-    """!Clas for reading sample block of the config, equivalent of C++ class Sample
+    """!Class for reading sample block of the config, equivalent of C++ class Sample
     """
     def __init__(self, input_dict : dict, block_reader_general : BlockReaderGeneral = None):
-        """
-        Constructor of the BlockReaderSample class
+        """!Constructor of the BlockReaderSample class
         @param input_dict: dictionary with options from the config file
         @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
         """
         self._options_getter = BlockOptionsGetter(input_dict)
 
-        self.name = self._options_getter.get("name", None, [str])
-        if self.name is None:
+        self._name = self._options_getter.get("name", None, [str])
+        if self._name is None:
             Logger.log_message("ERROR", "No name specified for sample: " + str(self._options_getter))
             exit(1)
 
-        self.simulation_type = self._options_getter.get("simulation_type",None, [str])
-        if self.simulation_type is None:
-            Logger.log_message("ERROR", "No simulation_type specified for sample {}".format(self.name))
+        self._simulation_type = self._options_getter.get("simulation_type",None, [str])
+        if self._simulation_type is None:
+            Logger.log_message("ERROR", "No simulation_type specified for sample {}".format(self._name))
             exit(1)
-        self.is_data = (self.simulation_type.upper() == "DATA")
+        self._is_data = (self._simulation_type.upper() == "DATA")
 
-        self.dsids = self._options_getter.get("dsids",None, [list])
-        if self.dsids is None and not self.is_data:
-            Logger.log_message("ERROR", "No dsids specified for sample {}".format(self.name))
+        self._dsids = self._options_getter.get("dsids",None, [list])
+        if self._dsids is None and not self._is_data:
+            Logger.log_message("ERROR", "No dsids specified for sample {}".format(self._name))
             exit(1)
 
-        self.campaigns = self._options_getter.get("campaigns",None, [list])
-        if self.campaigns is None:
-            Logger.log_message("ERROR", "No campaigns specified for sample {}".format(self.name))
+        self._campaigns = self._options_getter.get("campaigns",None, [list])
+        if self._campaigns is None:
+            Logger.log_message("ERROR", "No campaigns specified for sample {}".format(self._name))
             exit(1)
 
         # check if all campaigns are defined in general block
-        if not self.is_data and self.campaigns != None and block_reader_general != None:
-            for campaign in self.campaigns:
+        if not self._is_data and self._campaigns != None and block_reader_general != None:
+            for campaign in self._campaigns:
                 if not block_reader_general.cpp_class.campaignIsDefined(campaign):
-                    Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self.name))
+                    Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self._name))
                     exit(1)
 
-        self.selection_suffix = self._options_getter.get("selection","true", [str])
+        self._selection_suffix = self._options_getter.get("selection","true", [str])
 
-        self.regions = self._options_getter.get("regions",None, [list])
-        self.exclude_regions = self._options_getter.get("exclude_regions",None, [list])
-        if not self.regions is None and not self.exclude_regions is None:
-            Logger.log_message("ERROR", "Both regions and exclude_regions specified for sample {}".format(self.name))
+        self._regions = self._options_getter.get("regions",None, [list])
+        self._exclude_regions = self._options_getter.get("exclude_regions",None, [list])
+        if not self._regions is None and not self._exclude_regions is None:
+            Logger.log_message("ERROR", "Both regions and exclude_regions specified for sample {}".format(self._name))
             exit(1)
 
-        self.systematic = []
+        self._systematic = []
 
-        self.event_weights = self._options_getter.get("event_weights", block_reader_general.default_event_weights if not self.is_data else "1", [str])
-        self.weight_suffix = self._options_getter.get("weight_suffix", None, [str])
+        self._event_weights = self._options_getter.get("event_weights", block_reader_general.default_event_weights if not self._is_data else "1", [str])
+        self._weight_suffix = self._options_getter.get("weight_suffix", None, [str])
 
-        self.reco_tree_name = self._options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name, [str])
+        self._reco_tree_name = self._options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name, [str])
 
-        self.selection_suffix = self._options_getter.get("selection_suffix", "", [str])
+        self._selection_suffix = self._options_getter.get("selection_suffix", "", [str])
 
-        self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list])
+        self._reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", block_reader_general.reco_to_truth_pairing_indices, [list])
 
-        self.define_custom_columns = self._options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list])
+        self._define_custom_columns = self._options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list])
 
-        self.cpp_class = SampleWrapper(self.name)
+        ## Instance of the SampleWrapper C++ class -> wrapper around C++ Sample class
+        self.cpp_class = SampleWrapper(self._name)
 
-        self.truth_dicts = self._options_getter.get("truth", None, [list])
-        self.truths = []
-        if self.truth_dicts is not None:
+        self._truth_dicts = self._options_getter.get("truth", None, [list])
+        self._truths = []
+        if self._truth_dicts is not None:
             reco_variables_from_regions = block_reader_general.cpp_class.getVariableNames()
-            for truth_dict in self.truth_dicts:
+            for truth_dict in self._truth_dicts:
                 truth_object = BlockReaderSampleTruth(truth_dict)
-                self.truths.append(truth_object)
+                self._truths.append(truth_object)
                 truth_object.check_reco_variables_existence(reco_variables_from_regions)
                 self.cpp_class.addTruth(truth_object.cpp_class.getPtr())
 
@@ -93,89 +93,85 @@ class BlockReaderSample:
 
 
     def _set_unique_samples_IDs(self):
+        """!Set unique sample IDs for the sample. If no dsids are specified, take all dsids.
         """
-        Set unique sample IDs for the sample. If no dsids are specified, take all dsids.
-        """
-        if self.is_data:
-            for campaign in self.campaigns:
+        if self._is_data:
+            for campaign in self._campaigns:
                 self.cpp_class.addUniqueSampleID(0, campaign, "data")
         else:
-            for campaign in self.campaigns:
-                for dsid in self.dsids:
-                    self.cpp_class.addUniqueSampleID(dsid, campaign, self.simulation_type)
+            for campaign in self._campaigns:
+                for dsid in self._dsids:
+                    self.cpp_class.addUniqueSampleID(dsid, campaign, self._simulation_type)
 
 
     def adjust_regions(self, regions : dict) -> None:
-        """
-        Set regions for the sample. If no regions are specified, take all regions, if exclude_regions are specified, remove them from the list of regions.
+        """!Set regions for the sample. If no regions are specified, take all regions, if exclude_regions are specified, remove them from the list of regions.
         @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
         """
-        if self.regions is None: # if no regions are specified, take all regions
-            self.regions = []
+        if self._regions is None: # if no regions are specified, take all regions
+            self._regions = []
             for region_name in regions:
-                if self.exclude_regions is not None and region_name in self.exclude_regions:
+                if self._exclude_regions is not None and region_name in self._exclude_regions:
                     continue
-                self.regions.append(region_name)
+                self._regions.append(region_name)
         else:   # if regions are specified, check if they exist
-            for region in self.regions:
+            for region in self._regions:
                 if region not in regions:
-                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self.name))
+                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self._name))
                     exit(1)
 
-        for region_name in self.regions:
+        for region_name in self._regions:
             region_object = regions[region_name]
             self.cpp_class.addRegion(region_object.cpp_class.getPtr())
 
 
     def adjust_systematics(self, systematics_all : dict) -> None:
-        """
-        Set systematics for the sample. For each systematics check if it has explicit list of samples (if not, add all). If sample_exclude is defined for it, check if this sample is not there.
+        """!Set systematics for the sample. For each systematics check if it has explicit list of samples (if not, add all). If sample_exclude is defined for it, check if this sample is not there.
         @param systematics_all: dictionary with all systematics (keys are systematic names, values are BlockReaderSystematic objects)
         """
-        self.systematic = []
+        self._systematic = []
         for systematic_name, systematic in systematics_all.items():
             # check if systematics has explicit list of samples. If so, does it contain this sample?
             if systematic.samples is not None:
-                if self.name not in systematic.samples:
+                if self._name not in systematic.samples:
                     continue
 
             # check if systematics has explicit list of exclude_samples. If so, does it contain this sample?
             if systematic.exclude_samples is not None:
-                if self.name in systematic.exclude_samples:
+                if self._name in systematic.exclude_samples:
                     continue
 
             # for data samples, we do not want to add systematics by default (other than nominal)
-            if systematic.samples is None and self.is_data and not systematic.cpp_class.isNominal():
+            if systematic.samples is None and self._is_data and not systematic.cpp_class.isNominal():
                 continue
 
             self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
-            self.systematic.append(systematic_name)
+            self._systematic.append(systematic_name)
 
 
     def _set_cpp_class(self) -> None:
+        """!Set the cpp class for the sample.
         """
-        Set the cpp class for the sample.
-        """
-        total_weight = self.event_weights
-        if self.weight_suffix is not None:
-            total_weight =  "(" + total_weight + ")*(" + self.weight_suffix + ")"
+        total_weight = self._event_weights
+        if self._weight_suffix is not None:
+            total_weight =  "(" + total_weight + ")*(" + self._weight_suffix + ")"
         self.cpp_class.setEventWeight(total_weight)
 
-        self.cpp_class.setRecoTreeName(self.reco_tree_name)
-        self.cpp_class.setSelectionSuffix(self.selection_suffix)
+        self.cpp_class.setRecoTreeName(self._reco_tree_name)
+        self.cpp_class.setSelectionSuffix(self._selection_suffix)
 
         vector_pairing_indices = StringVector()
-        for reco_to_truth_pairing_index in self.reco_to_truth_pairing_indices:
+        for reco_to_truth_pairing_index in self._reco_to_truth_pairing_indices:
             vector_pairing_indices.append(reco_to_truth_pairing_index)
         self.cpp_class.setRecoToTruthPairingIndices(vector_pairing_indices)
 
-        if self.define_custom_columns:
-            for custom_column_dict in self.define_custom_columns:
+        if self._define_custom_columns:
+            for custom_column_dict in self._define_custom_columns:
                 custom_column_opts = BlockOptionsGetter(custom_column_dict)
                 name        = custom_column_opts.get("name", None, [str])
                 definition  = custom_column_opts.get("definition", None, [str])
                 if name is None or definition is None:
-                    Logger.log_message("ERROR", "Invalid custom column definition for sample {}".format(self.name))
+                    Logger.log_message("ERROR", "Invalid custom column definition for sample {}".format(self._name))
                     exit(1)
                 self.cpp_class.addCustomDefine(name, definition)
 
@@ -186,8 +182,7 @@ class BlockReaderSample:
             exit(1)
 
     def get_truth_cpp_objects(self) -> list:
-        """
-        Get list of truth cpp objects defined in the sample
+        """!Get list of truth cpp objects defined in the sample
         """
         vector_shared_ptr = self.cpp_class.getTruthPtrs()
         result = []
@@ -198,14 +193,22 @@ class BlockReaderSample:
         return result
 
     def get_reco_to_truth_pairing_indices(self) -> list:
-        """
-        Get list of reco to truth pairing indices
+        """!Get list of reco to truth pairing indices
         """
         indices_vector = self.cpp_class.recoToTruthPairingIndices()
         return [x for x in indices_vector]
 
     def get_custom_defines(self) -> list:
-        """
-        Get list of custom defines
+        """!Get list of custom defines
         """
         return [x for x in self.cpp_class.customDefines()]
+
+    def get_regions_names(self) -> list:
+        """!Get list of regions where the sample is defined
+        """
+        return [x for x in self.cpp_class.regionsNames()]
+
+    def get_systematics_names(self) -> list:
+        """!Get list of systematics defined for the sample
+        """
+        return [x for x in self.cpp_class.systematicsNames()]

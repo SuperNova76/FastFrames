@@ -243,9 +243,11 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addSystematic",       &SampleWrapper::addSystematic)
         .def("nSystematics",        &SampleWrapper::nSystematics)
         .def("getSystematicPtr",    &SampleWrapper::getSystematicPtr)
+        .def("systematicsNames",    &SampleWrapper::systematicsNames)
 
         // addRegion
         .def("addRegion",           &SampleWrapper::addRegion)
+        .def("regionsNames",        &SampleWrapper::regionsNames)
 
         // RecoToTruthPairingIndex
         .def("setRecoToTruthPairingIndices",  &SampleWrapper::setRecoToTruthPairingIndices)
