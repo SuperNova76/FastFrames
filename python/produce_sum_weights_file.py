@@ -1,9 +1,15 @@
+"""!Script/module to produce sum_of_weights.txt file from a filelist.txt file, it is imported by python/produce_metadata_files.py
+"""
 from ROOT import TFile, TTree
 from sys import argv
 import os
 import argparse
 
-def read_filelist(filelist_path : str) -> str:
+def read_filelist(filelist_path : str) -> dict:
+    """!Reads the filelist.txt file and returns it as a dictionary metadata_tuple -> list of root files
+    @param filelist_path: path to the filelist.txt file
+    @return dictionary metadata_tuple -> list of root files
+    """
     filelist = {}
     with open(filelist_path) as f:
         for line in f.readlines():
@@ -16,6 +22,10 @@ def read_filelist(filelist_path : str) -> str:
     return filelist
 
 def get_variation_name(histo_name : str) -> str:
+    """!Get variation name from the histogram name
+    @param histo_name: histogram name
+    @return variation name - str
+    """
     elements = histo_name.split("_")
     if len(elements) < 4:
         return ""
@@ -26,6 +36,10 @@ def get_variation_name(histo_name : str) -> str:
     return "_".join(elements[3:])
 
 def get_sum_of_weights_for_single_file(root_file : str) -> dict:
+    """!Get sum of weights for a single root file
+    @param root_file: path to the root file
+    @return dictionary variation_name -> sum_of_weights
+    """
     result = {}
     root_file = TFile(root_file)
     # loop over all objects in file
@@ -42,6 +56,10 @@ def get_sum_of_weights_for_single_file(root_file : str) -> dict:
     return result
 
 def get_sum_of_weights_for_sample(root_files : list) -> dict:
+    """!Get sum of weights for a sample
+    @param root_files: list of paths to root files
+    @return dictionary variation_name -> sum_of_weights
+    """
     result = {}
     result_initialized = False
     for root_file in root_files:
@@ -56,6 +74,10 @@ def get_sum_of_weights_for_sample(root_files : list) -> dict:
     return result
 
 def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
+    """!Produce sum_of_weights.txt file from the input filelist.txt file
+    @param filelist_path: path to the filelist.txt file
+    @param output_path: path to the output sum_of_weights.txt file
+    """
     sample_map = {}
     filelist = read_filelist(filelist_path)
     with open(output_path, "w") as sum_of_weights_file:
