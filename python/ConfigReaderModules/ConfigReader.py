@@ -54,13 +54,13 @@ class ConfigReader:
             nominal_dict = {"variation": {"up": "NOSYS"}}
             nominal = BlockReaderSystematic(nominal_dict, "up", self.block_general)
             nominal.adjust_regions(self.regions)
-            self.systematics[nominal.name] = nominal
+            self.systematics[nominal.cpp_class.name()] = nominal
 
             for systematic_dict in data["systematics"]:
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general)
                 for systematic in systematic_list:
                     systematic.adjust_regions(self.regions)
-                    systematic_name = systematic.name
+                    systematic_name = systematic.cpp_class.name()
                     if systematic_name in self.systematics:
                         Logger.log_message("ERROR", "Duplicate systematic name: {}".format(systematic_name))
                         exit(1)
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     print("\n\nSystematics block:\n")
     for systematic_name,systematic in systematics.items():
         print("\tname: ", systematic.cpp_class.name())
-        print("\tregions: ", systematic.regions)
+        print("\tregions: ", systematic.get_regions_names())
         print("\tweight_suffix: ", systematic.cpp_class.weightSuffix())
         print("\tsum_weights: ", systematic.cpp_class.sumWeights())
         print("\n")

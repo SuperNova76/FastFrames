@@ -16,8 +16,7 @@ class BlockReaderSystematic:
     """
 
     def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):
-        """
-        Constructor of the BlockReaderSystematic class
+        """!Constructor of the BlockReaderSystematic class
         @param input_dict: dictionary with options from the config file
         @param variation_type: type of variation (up or down)
         @param block_reader_general: BlockReaderGeneral object with general options from the config file - this is there to get default values
@@ -30,21 +29,21 @@ class BlockReaderSystematic:
             Logger.log_message("ERROR", "No variations specified for systematic {}".format(self._options_getter))
             exit(1)
 
-        self.variation_type = variation_type.lower()
-        if self.variation_type not in ["up", "down"]:
-            Logger.log_message("ERROR", "Unknown variation type: {}".format(self.variation_type))
+        self._variation_type = variation_type.lower()
+        if self._variation_type not in ["up", "down"]:
+            Logger.log_message("ERROR", "Unknown variation type: {}".format(self._variation_type))
             exit(1)
 
-        self.name = variations_opts_getter.get("", self.variation_type,None, [str])
-        if self.name is None:
-            Logger.log_message("ERROR", "{} variation specified for systematic {}".format(self.variation_type, self._options_getter))
+        self._name = variations_opts_getter.get("", self._variation_type,None, [str])
+        if self._name is None:
+            Logger.log_message("ERROR", "{} variation specified for systematic {}".format(self._variation_type, self._options_getter))
             exit(1)
 
-        self.weight_suffix = variations_opts_getter.get("weight_suffix", self.variation_type,"", [str])
+        self._weight_suffix = variations_opts_getter.get("weight_suffix", self._variation_type,"", [str])
 
-        self.sum_weights = variations_opts_getter.get("sum_weights", self.variation_type,None, [str])
-        if self.sum_weights is None:
-            self.sum_weights = block_reader_general.default_sumweights
+        self._sum_weights = variations_opts_getter.get("sum_weights", self._variation_type,None, [str])
+        if self._sum_weights is None:
+            self._sum_weights = block_reader_general.default_sumweights
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
@@ -53,58 +52,63 @@ class BlockReaderSystematic:
         CommandLineOptions().keep_only_selected_samples(self.samples)
         CommandLineOptions().keep_only_selected_samples(self.exclude_samples)
         if not self.samples is None and not self.exclude_samples is None:
-            Logger.log_message("ERROR", "Both samples and exclude_samples specified for systematic {}".format(self.name))
+            Logger.log_message("ERROR", "Both samples and exclude_samples specified for systematic {}".format(self._name))
             exit(1)
 
 
-        self.campaigns  = self._options_getter.get("campaigns",None, [list])
+        self._campaigns  = self._options_getter.get("campaigns",None, [list])
 
-        self.regions    = self._options_getter.get("regions",None, [list])
-        self.exclude_regions = self._options_getter.get("exclude_regions",None, [list])
-        if not self.regions is None and not self.exclude_regions is None:
-            Logger.log_message("ERROR", "Both regions and exclude_regions specified for systematic {}".format(self.name))
+        self._regions           = self._options_getter.get("regions",None, [list])
+        self._exclude_regions   = self._options_getter.get("exclude_regions",None, [list])
+        if not self._regions is None and not self._exclude_regions is None:
+            Logger.log_message("ERROR", "Both regions and exclude_regions specified for systematic {}".format(self._name))
             exit(1)
 
         self._check_unused_options()
 
-        self.cpp_class = SystematicWrapper(self.name)
-        self.cpp_class.setSumWeights(self.sum_weights)
-        self.cpp_class.setWeightSuffix(self.weight_suffix)
+        ## Instance of the SystematiWrapper C++ class -> wrapper around C++ Systemati class
+        self.cpp_class = SystematicWrapper(self._name)
+
+        self.cpp_class.setSumWeights(self._sum_weights)
+        self.cpp_class.setWeightSuffix(self._weight_suffix)
 
     def adjust_regions(self, regions : dict) -> None:
-        """
-        Resolve list of regions where the systematic should be used. If regions are specified, check if they exist. If no regions are specified, take all regions. If exclude_regions is specified, remove them from the list of regions.
+        """!Resolve list of regions where the systematic should be used. If regions are specified, check if they exist. If no regions are specified, take all regions. If exclude_regions is specified, remove them from the list of regions.
         @param regions: dictionary with all regions (keys are region names, values are BlockReaderRegion objects)
         """
-        if self.regions is None: # if no regions are specified, take all regions
-            self.regions = []
+        if self._regions is None: # if no regions are specified, take all regions
+            self._regions = []
             for region_name in regions:
-                if self.exclude_regions is None or region_name not in self.exclude_regions:
-                    self.regions.append(region_name)
+                if self._exclude_regions is None or region_name not in self._exclude_regions:
+                    self._regions.append(region_name)
         else:   # if regions are specified, check if they exist
-            for region in self.regions:
+            for region in self._regions:
                 if region not in regions:
-                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self.name))
+                    Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self._name))
                     exit(1)
 
-        for region_name in self.regions:
+        for region_name in self._regions:
             self.cpp_class.addRegion(regions[region_name].cpp_class.getPtr())
 
     def check_samples_existence(self, sample_dict : dict) -> None:
-        """
-        Check if all samples specified for the systematic exist
+        """!Check if all samples specified for the systematic exist
         @param sample_dict: dictionary with all samples (keys are sample names)
         """
         if not self.samples is None:
             for sample in self.samples:
                 if sample not in sample_dict:
-                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self._name))
                     exit(1)
         if not self.exclude_samples is None:
             for sample in self.exclude_samples:
                 if sample not in sample_dict:
-                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self.name))
+                    Logger.log_message("ERROR", "Sample {} specified for systematic {} does not exist".format(sample, self._name))
                     exit(1)
+
+    def get_regions_names(self) -> list:
+        """!Get list of regions where the systematic should be used
+        """
+        return [x for x in self.cpp_class.regionsNames()]
 
     def _check_unused_variation_options(variations_opts_getter : VariationsOptionsGetter) -> None:
         unused = variations_opts_getter.get_unused_options()
