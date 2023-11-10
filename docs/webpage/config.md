@@ -91,4 +91,24 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | variables         | list of dicts     | The same as ```variable`````` block for region |
 | define_custom_columns | list of dicts | The same as ```define_custom_columns ``` in general block |
 
+## `systematics` block settings
+
+| **Option**        | **Value type**    | **Function** |
+| ----------------- | ----------------- | ------------ |
+| variation         | dict              | Defines up and down variations and how they should be calculated (see the block bellow) |
+| samples           | list of strings   | List of samples where systematic should be used. By default it will be used everywhere except for data    |
+| campaigns         | list of strings   | List of campaigns where the systematic should be used |
+| regions           | list of strings   | List of regions where the systematic should be used   |
+| exclude_regions   | list of strings   | If specified, the systematics will be used in all regions except for these. The option cannot be combined with option ```regions```   |
+
+#### `variation` block inside of `systematics` block
+
+| **Option**        | **Value type**    | **Function** |
+| ----------------- | ----------------- | ------------ |
+| up                | string            | Name of the up variation. The code will check for branches with this suffix and replace ```_NOSYS``` ones by those    |
+| down              | string            | The same as ```up``` but for down variation   |
+| sum_weights_up    | string            | Sum of weights to use for up variation    |
+| sum_weights_down  | string            | Sum of weights to use for down variation    |
+| weight_suffix_up  | string            | If specified, the overall weight will be multiplied by this scale factor for up variation. Can be used to define bootstraps. |
+| weight_suffix_down| string            | Similar to ```weight_suffix_up``` |
 
