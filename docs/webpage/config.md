@@ -2,41 +2,41 @@
 
 The config file consists of several blocks.
 Available options for each block are documented bellow. Using an option which is not supported will result in error message and program termination.
-The options are case sensitive.
+The options are case sensitive. Example config files can be found in ```test/configs/```.
 
 ## `general` block settings
-| **Option** | **Value type** | **Function** |
-| ---------- | ------------ | ------------ |
-| debug_level                   | string | Supported values: ERROR, WARNING, DEBUG, INFO and VERBOSE |
+| **Option** | **Value type**   |  **Function** |
+| ---------- | ------------     | ------------- |
+| debug_level                   | string | Supported values: ERROR, WARNING, DEBUG, INFO and VERBOSE. Default value is ```WARNING``` |
 | input_filelist_path           | string | Path to the filelist text file produced by ```produce_metadata_files.py``` script |
 | input_sumweights_path         | string | Path to the sum_of_weights text file produced by ```produce_metadata_files.py``` script   |
-| output_path_histograms        | string | Path to the output histograms |
-| output_path_ntuples           | string | Path to the output ntuples    |
-| default_sumweights            | string | Default sum of weights        |
+| output_path_histograms        | string | Path to the output histograms. Default value is empty string, i.e. current directory will be used. |
+| output_path_ntuples           | string | Path to the output ntuples. Default value is empty string, i.e. current directory will be used.  |
+| default_sumweights            | string | Default sum of weights to be used (can be overridden from Sample block). Default value is ```NOSYS```.        |
 | default_event_weights         | string | Default weight of events - i.e. product of mc_weights and all scale factors. The term corresponding to luminosity, sum of weights and x-section will be added automatically  |
-| default_reco_tree_name        | string | Default name of the reco-level tree   |
-| xsection_files                | list of strings | List of x-section files to use (example of these files can be found in ```data/```)       |
-| create_tlorentz_vectors_for   | list of strings | List of objects (i.e. "jet", "el", "mu" ...) for which TLorentzVectors will be created for each systematic variations. The will always be sorted by pT |
-| reco_to_truth_pairing_indices | list of strings  | List of branches which should be used to pair reco-level to truth-level trees. |
-| custom_frame_name             | string    | If you define your own custom class for the analysis which inherits from the base class, this is the place where you should define its name   |
-| automatic_systematics         | bool | If set to true, the list of systematic uncertainties in config will be ignored and all uncertainties present in the input ROOT file will be used   |
-| nominal_only                  | bool | Run nominal only   |
-| number_of_cpus                | int  | Number of CPUs to use for multithreading |
-| luminosity                    | dict | Dictionary of luminosity values, where key is MC campaign (for example ```mc20d```) and value is luminosity for that campaign. See example config file .   |
-| define_custom_columns         | list of dicts | Default list of custom columns to create in data-frame (can be overriden in sample block for a given sample). Each custom column has to have 2 options: ```name``` and ```definition``` |
+| default_reco_tree_name        | string |Default name of the reco-level tree   |
+| xsection_files                | list of strings | List of x-section files to use (example of these files can be found in ```data/```). Default value is ``` ["data/XSection-MC16-13TeV.data"]```      |
+| create_tlorentz_vectors_for   | list of strings | List of objects (i.e. "jet", "el", "mu" ...) for which TLorentzVectors will be created for each systematic variations. The will always be sorted by pT (default is empty list) |
+| reco_to_truth_pairing_indices | list of strings   | List of branches which should be used to pair reco-level to truth-level trees. Default is ``` ["eventNumber"]```|
+| custom_frame_name             | string |If you define your own custom class for the analysis which inherits from the base class, this is the place where you should define its name. Default is empty string: i.e. base class will be used   |
+| automatic_systematics         | bool | If set to true, the list of systematic uncertainties in config will be ignored and all uncertainties present in the input ROOT file will be used. Default is ```False```.   |
+| nominal_only                  | bool | Run nominal only. Default is ```False```  |
+| number_of_cpus                | int  | Number of CPUs to use for multithreading. Default is ```1``` |
+| luminosity                    | dict | Dictionary of luminosity values, where key is MC campaign (for example ```mc20d```) and value is luminosity for that campaign. See example config file.   |
+| define_custom_columns         | list of dicts | Default list of custom columns to create in data-frame (can be overriden in sample block for a given sample). Each custom column has to have 2 options: ```name``` and ```definition```. |
 
 
 ## `ntuples` block settings
 This block is optional.
 | **Option** | **Value type** | **Function** |
 | ---------- | ------------ | ------------ |
-| samples           | list of strings   | List of samples to produce ntuples for (by default, all samples will be used)  |
-| exclude_samples   | list of strings   | If specified, all samples except for these will be used. Cannot be used together with ```samples``` option.
-| branches          | list of strings   | List of branches to keep in the output tree   |
-| exclude_branches  | list of strings   | List of branches to drop from the output tree |
-| selection         | string            | Only the events passing this selection will be saved in the output    |
+| samples           | list of strings   | List of samples to produce ntuples for (by default, all samples will be used).  |
+| exclude_samples   | list of strings   | If specified, all samples except for these will be used. Cannot be used together with ```samples``` option. |
+| branches          | list of strings   | List of branches to keep in the output tree. Regular expressions are allowed.   |
+| exclude_branches  | list of strings   | List of branches to drop from the output tree. Regular expressions are allowed. |
+| selection         | string            | Only the events passing this selection will be saved in the output. By default, the selection is not applied.  |
 | regions           | list of strings   | Only the events passing the selection in at least one of the regions will be saved. Cannot be used together with ```selection``` option |
-| copy_trees        | list of strings   | Trees to be copied from input to output ntuples   |
+| copy_trees        | list of strings   | Trees to be copied from input to output ntuples.  |
 | histograms_2d     | list of dicts     | List of 2D histograms between 2 reco-level variables to produce. The dict must have 2 keys: ```x``` and ```y``` for variables on x and y axes. |
 
 
