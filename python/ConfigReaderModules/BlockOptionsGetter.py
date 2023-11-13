@@ -118,3 +118,7 @@ class VariationsOptionsGetter:
                 result.append(option)
         return result
 
+    def use_option(self, option : str):
+        """!Mark option as used"""
+        self._option_used[option] = True
+

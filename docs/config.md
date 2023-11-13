@@ -99,6 +99,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | **Option**        | **Value type**    | **Function** |
 | ----------------- | ----------------- | ------------ |
 | variation         | dict              | Defines up and down variations and how they should be calculated (see the block bellow) |
+| numbering_sequence| dict              | Can be used to add systematics with similar names, differing just by the number of the nuisance parameter  (see description bellow)|
 | samples           | list of strings   | List of samples where systematic should be used. By default it will be used everywhere except for data    |
 | exclude_samples   | list of strings   | If specified, the systematic will be used for all samples except for these and data. Cannot be used together with ```samples``` option. |
 | campaigns         | list of strings   | List of campaigns where the systematic should be used |
@@ -115,4 +116,13 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | sum_weights_down  | string            | Sum of weights to use for down variation    |
 | weight_suffix_up  | string            | If specified, the overall weight will be multiplied by this scale factor for up variation. Can be used to define bootstraps. |
 | weight_suffix_down| string            | Similar to ```weight_suffix_up``` |
+
+
+#### `numbering_sequence` block inside of `systematics` block
+
+| **Option**        | **Value type**    | **Function** |
+| ----------------- | ----------------- | ------------ |
+| replacement_string| string            | If the string is found in ```up``` or ```down``` options (as well as in corresponding sum of weights or weight_suffix) for the systematic variations, it will be replaced by the number. This will add new systematics for each value from min to max (including), where the replacement string will be replaced by the integer number (see lines bellow) |
+| min               | int               | Minimal value of the number in the name that should be used for the replacement.   |
+| max               | int               | Maximal value of the number in the name that should be used for the replacement.   |
 

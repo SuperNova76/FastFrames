@@ -15,7 +15,7 @@ class BlockReaderSystematic:
     """!Class for reading systematic block from config file, equivalent of C++ class Systematic
     """
 
-    def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None):
+    def __init__(self, input_dict : dict, variation_type : str, block_reader_general : BlockReaderGeneral = None, replacement_tuple : tuple = None):
         """!Constructor of the BlockReaderSystematic class
         @param input_dict: dictionary with options from the config file
         @param variation_type: type of variation (up or down)
@@ -44,6 +44,12 @@ class BlockReaderSystematic:
         self._sum_weights = variations_opts_getter.get("sum_weights", self._variation_type,None, [str])
         if self._sum_weights is None:
             self._sum_weights = block_reader_general.default_sumweights
+
+        if replacement_tuple is not None:
+            self._name          = self._name.replace(replacement_tuple[0], replacement_tuple[1])
+            self._weight_suffix = self._weight_suffix.replace(replacement_tuple[0], replacement_tuple[1])
+            self._sum_weights   = self._sum_weights.replace(replacement_tuple[0], replacement_tuple[1])
+            self._options_getter.get("numbering_sequence")
 
         BlockReaderSystematic._check_unused_variation_options(variations_opts_getter)
 
@@ -140,17 +146,37 @@ class BlockReaderSystematic:
 def read_systematics_variations(input_dict : dict, block_reader_general : BlockReaderGeneral = None) -> list:
     """!Read list of systematic uncertainties from the input dictionary read from config. The result might have 1 (only up or only down) or 2 inputs (both up and down variations)
     """
-    variations_dict = input_dict.get("variation",None)
+    input_dict_getter = BlockOptionsGetter(input_dict)
+    variations_dict = input_dict_getter.get("variation",None)
     variations = []
     if "up" in variations_dict:
         variations.append("up")
     if "down" in variations_dict:
         variations.append("down")
     if len(variations) == 0:
-        Logger.log_message("ERROR", "No variations specified for systematic {}".format(input_dict["name"]))
+        Logger.log_message("ERROR", "No variations specified for systematic {}".format(input_dict_getter["name"]))
         exit(1)
 
-    result = []
-    for variation in variations:
-        result.append(BlockReaderSystematic(input_dict, variation, block_reader_general))
-    return result
+    replacement_string = NPmin = NPmax = None
+    numbering_sequence_dict = input_dict_getter.get("numbering_sequence",None, [dict])
+    if numbering_sequence_dict is not None:
+        numbering_sequence_opt_getter = BlockOptionsGetter(numbering_sequence_dict)
+        replacement_string = numbering_sequence_opt_getter.get("replacement_string",None, [str])
+        NPmin = numbering_sequence_opt_getter.get("min",None, [int])
+        NPmax = numbering_sequence_opt_getter.get("max",None, [int])
+        if NPmin is None or NPmax is None or replacement_string is None:
+            Logger.log_message("ERROR", "Invalid numbering_sequence options for systematic {}".format(input_dict_getter["name"]))
+            exit(1)
+
+    if replacement_string is None:
+        result = []
+        for variation in variations:
+            result.append(BlockReaderSystematic(input_dict, variation, block_reader_general))
+        return result
+    else:
+        result = []
+        for i_NP in range(NPmin, NPmax+1):
+            replecement_tuple = (replacement_string, str(i_NP))
+            for variation in variations:
+                result.append(BlockReaderSystematic(input_dict, variation, block_reader_general, replecement_tuple))
+        return result

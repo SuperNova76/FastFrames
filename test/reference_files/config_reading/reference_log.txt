@@ -77,7 +77,7 @@ Samples block:
 	name:  ttbar_FS
 	regions:  ['Electron', 'Muon']
 	weight:  (weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS)*(my_suffix_weight_for_ttbar)
-	systematic:  ['NOSYS', 'JET_BJES_Response__1up', 'JET_BJES_Response__1down', '0p5muF_0p5muR_NNPDF31_NLO_0118', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down']
+	systematic:  ['NOSYS', 'JET_BJES_Response__1up', 'JET_BJES_Response__1down', '0p5muF_0p5muR_NNPDF31_NLO_0118', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	Unique samples:
@@ -127,7 +127,7 @@ Samples block:
 	name:  Zjets_b
 	regions:  ['Electron']
 	weight:  weight_mc_NOSYS
-	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down']
+	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: "n_bjets_truth > 0"
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	Unique samples:
@@ -142,7 +142,7 @@ Samples block:
 	name:  Wjets_FS
 	regions:  ['Electron']
 	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
-	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down']
+	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	Unique samples:
@@ -219,6 +219,54 @@ Systematics block:
 
 
 	name:  btag_C_1__down
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_1__up
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_1__down
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_2__up
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_2__down
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_3__up
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_3__down
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_4__up
+	regions:  ['Electron']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
+	name:  btag_light_4__down
 	regions:  ['Electron']
 	weight_suffix:  
 	sum_weights:  NOSYS
