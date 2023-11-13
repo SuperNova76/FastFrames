@@ -91,7 +91,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | selection         | string            | Selection |
 | event_weight      | string            | Event weight to use for the truth level. Terms corresponding to x-section, luminosity and sum of weights will be added automatically |
 | match variables   | list of dicts     | Pair of variables (reco - truth) to be used for unfolding. The dictionary has to have 2 keys: ```reco``` and ```truth``` for corresponding names of the variables. The truth variable must be defined in this truth block and ```reco``` variable must be defined in at least one region  |
-| variables         | list of dicts     | The same as ```variable`````` block for region |
+| variables         | list of dicts     | The same as ```variable``` block for region |
 | define_custom_columns | list of dicts | The same as ```define_custom_columns ``` in general block |
 
 ## `systematics` block settings
