@@ -1,0 +1,33 @@
+site_name: FastFrames documentation
+site_description: Documentation for FastFrames
+site_author: FastFrames team
+site_url: https://atlas-project-topreconstruction.web.cern.ch/fastframesdocumentation/
+
+repo_name: GitLab
+repo_url: https://gitlab.cern.ch/atlas-amglab/fastframes
+edit_uri: 'tree/master/docs/webpage'
+
+theme:
+    name: mkdocs
+    palette:
+        primary: 'green'
+        accent: 'green'
+
+nav:
+    - Introduction: index.md
+
+    - Config: config.md
+
+
+markdown_extensions:
+    - admonition
+    - codehilite
+#    - pymdownx.arithmatex
+#    - pymdownx.details
+#    - pymdownx.inlinehilite
+#    - pymdownx.smartsymbols
+#    - pymdownx.superfences
+
+extra_javascript:
+    - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
+

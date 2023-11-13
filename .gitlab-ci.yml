@@ -41,6 +41,19 @@ make_doxygen:
       - doc_build/docs/
      expire_in: 1d
 
+build_webpage:
+  stage: build
+  needs: []
+  image: gitlab-registry.cern.ch/authoring/documentation/mkdocs
+  script:
+     - mkdocs build --strict --clean --site-dir www
+  before_script:
+    - "" # overwrite default, do nothing
+  artifacts:
+    paths:
+      - www
+    expire_in: 1 hour
+
 compile:
   stage: build
   needs:
@@ -185,5 +198,26 @@ doxygen_webpage:
     - ls doc_build/docs
     - ls doc_build/docs/html
     - tar cvzf - -C doc_build/docs/html/ . | ssh ${EOS_ACCOUNT_USERNAME}@lxplus.cern.ch tar xzf - -C /eos/user/t/topreco/www/fastframesdoxygen
+  only:
+    - main@atlas-amglab/fastframes
+
+documentation_webpage:
+  stage: webpage
+  needs:
+    - build_webpage
+  before_script:
+    - date
+    - echo "${EOS_ACCOUNT_PASSWORD}" | kinit ${EOS_ACCOUNT_USERNAME}@CERN.CH
+    - klist
+    - cp docs/custom_krb5.conf /etc/krb5.conf
+    - cp docs/custom_ssh.conf /etc/ssh/ssh_config
+    - mkdir ~/.ssh
+    - ls ~/.ssh
+    - echo -e "Host lxplus.cern.ch\n\tUser ${EOS_ACCOUNT_USERNAME}\n\tStrictHostKeyChecking no\n\tGSSAPIAuthentication yes\n\tGSSAPIDelegateCredentials yes\n\tProtocol 2\n\tForwardX11 no\n\tIdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+    - cat ~/.ssh/config
+    - date
+  script:
+    - ls www/
+    - tar cvzf - -C www/ . | ssh ${EOS_ACCOUNT_USERNAME}@lxplus.cern.ch tar xzf - -C /eos/user/t/topreco/www/fastframesdocumentation
   only:
     - main@atlas-amglab/fastframes
