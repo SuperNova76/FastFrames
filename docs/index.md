@@ -4,7 +4,7 @@ FastFrames is an histograming and ntuple reprocessing framework. The core code i
 
 ## How to checkout and compile the code
 
-In order to run the code, one has to compile to checkout and compile the package:
+To run the code, you firstly need to check out the repository and compile the C++ part of the package. In order to do so:
 
 ```
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git

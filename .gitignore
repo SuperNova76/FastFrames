@@ -6,3 +6,4 @@ install/*
 filelist.txt
 sum_of_weights.txt
 ***/__pycache__/
+www/
