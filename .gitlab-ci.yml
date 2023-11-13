@@ -184,6 +184,6 @@ doxygen_webpage:
     - ls doc_build/
     - ls doc_build/docs
     - ls doc_build/docs/html
-    - tar cvzf - -C doc_build/docs/html/ . | ssh ${EOS_ACCOUNT_USERNAME}@lxplus.cern.ch tar xzf - -C /eos/user/t/topreco/www/fastframesdocumentation
+    - tar cvzf - -C doc_build/docs/html/ . | ssh ${EOS_ACCOUNT_USERNAME}@lxplus.cern.ch tar xzf - -C /eos/user/t/topreco/www/fastframesdoxygen
   only:
     - main@atlas-amglab/fastframes
