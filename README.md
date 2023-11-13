@@ -47,4 +47,6 @@ You can add the export to your `.bashrc` file so this will be done automatically
 
 ## Documentation:
 
-Doxygen documentation can be found here: https://cern.ch/fastframes
+The package documentation can be found here: https://cern.ch/fastframes
+
+Doxygen documentation can be found here: https://cern.ch/fastframesdoxygen/
