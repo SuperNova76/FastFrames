@@ -184,6 +184,16 @@ systematics:
       up: "btag_C_1__up"
       down: "btag_C_1__down"
 
+  - exclude_samples: ["Zjets_light"]
+    exclude_regions: ["Muon"]
+    numbering_sequence:
+        replacement_string: "#N"
+        min: 1
+        max: 4
+    variation:
+      up: "btag_light_#N__up"
+      down: "btag_light_#N__down"
+
   - samples: ["Data"]
     #campaigns: ["mc20e"]
     #regions: ["Electron", "Muon"]
