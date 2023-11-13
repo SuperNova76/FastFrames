@@ -27,9 +27,11 @@ The options are case sensitive. Example config files can be found in ```test/con
 
 
 ## `ntuples` block settings
+
 This block is optional.
+
 | **Option** | **Value type** | **Function** |
-| ---------- | ------------ | ------------ |
+| ---------- | -------------- | ------------ |
 | samples           | list of strings   | List of samples to produce ntuples for (by default, all samples will be used).  |
 | exclude_samples   | list of strings   | If specified, all samples except for these will be used. Cannot be used together with ```samples``` option. |
 | branches          | list of strings   | List of branches to keep in the output tree. Regular expressions are allowed.   |
@@ -57,6 +59,7 @@ This block is optional.
 
 ####   `Binning` block inside of the `variable` block
 User has 2 options how to define the binning. Either specify bin edges for irregular binning, or specify number of bins and range of the x-axis for regular binning.
+
 | **Option**    | **Value type**    | **Function** |
 | ------------- | ----------------- | ------------ |
 | min           | int or float      | x-axis minimum   |
