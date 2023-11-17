@@ -41,7 +41,7 @@ def get_sum_of_weights_for_single_file(root_file : str) -> dict:
     @return dictionary variation_name -> sum_of_weights
     """
     result = {}
-    root_file = TFile(root_file)
+    root_file = TFile.Open(root_file)
     # loop over all objects in file
     for key in root_file.GetListOfKeys():
         if key.GetClassName() == "TH1F":

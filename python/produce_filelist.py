@@ -26,11 +26,15 @@ class Metadata:
         return (self.dsid, self.campaign, self.data_type)
 
 def get_list_of_root_files_in_folder(folder_path : str) -> list:
-    """!Get list of all root files in the input folder
+    """!Get list of all root files in the input folder, if it contains a folder, go recursively through it
     @param folder_path: path to the folder
     @return list of paths to root files
     """
-    return [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(".root")]
+    result = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(".root")]
+    for directory in os.listdir(folder_path):
+        if os.path.isdir(os.path.join(folder_path, directory)):
+            result += get_list_of_root_files_in_folder(os.path.join(folder_path, directory))
+    return result
 
 def get_metadata_string(root_file : TFile, key : str) -> str:
     """!Get given metadata as string from the input ROOT file
@@ -49,7 +53,7 @@ def get_file_metadata(file_path : str) -> Metadata:
     @return metadata object
     """
     metadata = Metadata()
-    root_file = TFile(file_path)
+    root_file = TFile.Open(file_path)
     metadata.dsid        = int(get_metadata_string(root_file, "dsid"))
     metadata.campaign    = get_metadata_string(root_file, "campaign")
     metadata.data_type = get_metadata_string(root_file, "dataType")
