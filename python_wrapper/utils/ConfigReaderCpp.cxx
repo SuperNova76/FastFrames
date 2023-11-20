@@ -17,6 +17,8 @@
 #include "python_wrapper/headers/NtupleWrapper.h"
 #include "python_wrapper/headers/TruthWrapper.h"
 
+#include "python_wrapper/headers/SumWeightsGetter.h"
+
 #include "FastFrames/Binning.h"
 
 using namespace std;
@@ -395,4 +397,15 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("customDefines",       &TruthWrapper::customDefines)
     ;
 
+
+    /**
+     * @brief Python wrapper SumWeightsGetter class
+     *
+     */
+    class_<SumWeightsGetter>("SumWeightsGetter",
+        init<const std::vector<std::string> &>())
+
+        .def("getSumWeightsNames",      &SumWeightsGetter::getSumWeightsNames)
+        .def("getSumWeightsValues",     &SumWeightsGetter::getSumWeightsValues)
+    ;
 }

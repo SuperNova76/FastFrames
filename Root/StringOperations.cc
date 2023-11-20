@@ -126,3 +126,13 @@ bool StringOperations::compare_case_insensitive(const std::string &x, const std:
     const string y_upper = StringOperations::toUpperCopy(y);
     return x_upper == y_upper;
 };
+
+
+std::string StringOperations::joinStrings(const std::string &separator, const std::vector<std::string> &strings)    {
+    std::string result;
+    for (const auto &x : strings)   {
+        result += x + separator;
+    }
+    if (result.size() > 0) result.erase(result.size()-separator.size());
+    return result;
+};
