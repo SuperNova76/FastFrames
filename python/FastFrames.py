@@ -21,6 +21,16 @@ from python_wrapper.python.logger import Logger
 from ConfigReader import ConfigReader
 from CommandLineOptions import CommandLineOptions
 
+def prepare_output_folder(folder_path : str) -> None:
+    """!Create output folder if it does not exist
+    @param folder_path: path to the output folder
+    """
+    if folder_path == "" or folder_path == ".":
+        return
+
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
 
 if __name__ == "__main__":
     config_path = CommandLineOptions().get_config_path()
@@ -31,8 +41,10 @@ if __name__ == "__main__":
 
     fast_frames_executor = FastFramesExecutor(config_reader.block_general.cpp_class.getPtr())
 
-    if len(sys.argv) > 2:
-        step = sys.argv[2].lower()
-        if step == "ntuple" or step == "ntuples":
-            fast_frames_executor.setRunNtuples(True)
+    if step == "n":
+        prepare_output_folder(config_reader.block_general.cpp_class.outputPathNtuples())
+        fast_frames_executor.setRunNtuples(True)
+    elif step == "h":
+        prepare_output_folder(config_reader.block_general.cpp_class.outputPathHistograms())
+
     fast_frames_executor.runFastFrames()
