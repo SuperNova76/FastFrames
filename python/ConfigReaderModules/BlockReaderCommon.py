@@ -48,22 +48,26 @@ def find_path_to_main_dir():
     """
     Find path to the main directory
     """
-    files_to_check = ["python/ConfigReaderModules/BlockReaderCommon.py", "CMakeLists.txt", "FastFrames"]
-    paths_to_check = [".", "../", "../../", "../../../"]
+    this_file_path = os.path.abspath(__file__)
 
-    for path_to_check in paths_to_check:
-        if all_paths_exist(files_to_check, path_to_check):
-            return path_to_check
+    # 2 folders up
+    this_file_path = os.path.dirname(this_file_path)
+    this_file_path = os.path.dirname(this_file_path)
+    this_file_path = os.path.dirname(this_file_path)
 
-    raise ValueError("Could not find path to main directory, please run this script from the main directory")
+    return this_file_path
 
 def find_path_to_shared_libs():
     """
     Find path to the shared libraries
     """
     path_to_main_dir = find_path_to_main_dir()
-    paths_to_check = ["build/lib", "bin/lib"]
+    paths_to_check = [path_to_main_dir + "/build/lib", path_to_main_dir + "/bin/lib"]
+
+    LD_LIBRARY_PATH = os.environ.get("LD_LIBRARY_PATH")
+    lib_paths = LD_LIBRARY_PATH.split(":")
+    paths_to_check += lib_paths
     for path_to_check in paths_to_check:
-        if os.path.exists(path_to_main_dir + "/" + path_to_check):
-            return path_to_main_dir + "/" + path_to_check
+        if os.path.exists(path_to_check + "/ConfigReaderCpp.so"):
+            return path_to_check
     raise ValueError("Could not find path to shared libraries, please run this script from the main directory")
