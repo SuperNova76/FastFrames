@@ -79,6 +79,8 @@ If you do not want to run over all samples from your config, but just over a par
 python3 python/FastFrames.py --config <path to your config> --step h --samples sample1,sample2,sample3
 ```
 
+You can also specify ```max_event``` or ```min_event``` options from general part of the config using the command line.
+
 #### Running ntuple part:
 
 Running ntuple part is similar to running histogramming part, you just need to specify ```n``` step in terminal:
