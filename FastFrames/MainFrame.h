@@ -436,6 +436,14 @@ private:
   ROOT::RDF::RNode addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
                                                    const std::shared_ptr<Truth>& truth);
 
+  /**
+   * @brief Take a node and apply Range criteria if applicable
+   *
+   * @param node Input node
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode minMaxRange(ROOT::RDF::RNode node) const;
+
 protected:
 
   /**
