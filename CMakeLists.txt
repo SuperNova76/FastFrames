@@ -49,13 +49,13 @@ if (BUILD_DOC)
       # set input and output files
       set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/Doxyfile.in)
       set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-  
+
       # request to configure the file
       configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
       message("Doxygen build started")
-  
+
       # note the option ALL which allows to build the docs together with the application
-      add_custom_target( doc_doxygen ALL 
+      add_custom_target( doc_doxygen ALL
           COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
           WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
           COMMENT "Generating API documentation with Doxygen"
@@ -89,8 +89,22 @@ target_link_libraries( FastFrames ${ROOT_LIBRARIES} )
 set_property( TARGET FastFrames
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 
+# Build the Python module for C++ logger
+add_library( cppLogger SHARED python_wrapper/utils/Logger.cxx )
+target_link_libraries( cppLogger PRIVATE Python3::Python ${Python3_LIBRARIES} )
+set_target_properties( cppLogger PROPERTIES
+   PREFIX ""
+   OUTPUT_NAME "cppLogger" )
+
+# Build the Python module for config reader
+add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${LIB_HEADERS} )
+target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
+set_target_properties( ConfigReaderCpp PROPERTIES
+   PREFIX ""
+   OUTPUT_NAME "ConfigReaderCpp" )
+
 # Install the libraries.
-install( TARGETS FastFrames
+install( TARGETS FastFrames ConfigReaderCpp cppLogger
    EXPORT FastFramesTargets
    ARCHIVE DESTINATION lib
    LIBRARY DESTINATION lib
@@ -131,20 +145,6 @@ macro( FastFrames_add_executable name )
 endmacro( FastFrames_add_executable )
 
 FastFrames_add_executable( fast-frames.exe util/fast-frames.cc )
-
-# Build the Python module for C++ logger
-add_library( cppLogger SHARED python_wrapper/utils/Logger.cxx )
-target_link_libraries( cppLogger PRIVATE Python3::Python ${Python3_LIBRARIES} )
-set_target_properties( cppLogger PROPERTIES
-   PREFIX ""
-   OUTPUT_NAME "cppLogger" )
-
-# Build the Python module for config reader
-add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${LIB_HEADERS} )
-target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
-set_target_properties( ConfigReaderCpp PROPERTIES
-   PREFIX ""
-   OUTPUT_NAME "ConfigReaderCpp" )
 
 ROOT_GENERATE_DICTIONARY(FastFrames_dict FastFrames/MainFrame.h MODULE FastFrames LINKDEF Root/LinkDef.h)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
