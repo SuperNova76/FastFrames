@@ -290,6 +290,34 @@ public:
    */
   const std::shared_ptr<Ntuple>& ntuple() const {return m_ntuple;}
 
+  /**
+   * @brief Set the minimum event count to be processed
+   *
+   * @param i
+   */
+  void setMinEvent(const long long int i) {m_minEvent = i;}
+
+  /**
+   * @brief Get the min event index
+   *
+   * @return long long int
+   */
+  long long int minEvent() const {return m_minEvent;}
+
+  /**
+   * @brief Get the max event index
+   *
+   * @return long long int
+   */
+  long long int maxEvent() const {return m_maxEvent;}
+
+  /**
+   * @brief Set the maximum event count to be processed
+   *
+   * @param i
+   */
+  void setMaxEvent(const long long int i) {m_maxEvent = i;}
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -297,9 +325,11 @@ private:
   std::string m_inputFilelistPath;
   std::string m_customFrameName;
 
-  int         m_numCPU = 1;
-  bool        m_nominalOnly = false;
-  bool        m_automaticSystematics = false;
+  int           m_numCPU = 1;
+  bool          m_nominalOnly = false;
+  bool          m_automaticSystematics = false;
+  long long int m_minEvent = -1;
+  long long int m_maxEvent = -1;
 
   std::map<std::string, float> m_luminosity_map;
   std::vector<std::string>     m_xSectionFiles ;

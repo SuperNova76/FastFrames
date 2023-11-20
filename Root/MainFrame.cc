@@ -161,6 +161,7 @@ std::tuple<std::vector<SystematicHisto>,
 
     ROOT::RDataFrame df(*recoChain.release());
     ROOT::RDF::RNode mainNode = df;
+    mainNode = this->minMaxRange(mainNode);
 
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
@@ -213,6 +214,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
 
     ROOT::RDF::RNode mainNode = df;
+    mainNode = this->minMaxRange(mainNode);
     //ROOT::RDF::Experimental::AddProgressBar(mainNode);
 
     mainNode = this->addWeightColumns(mainNode, sample, id);
@@ -802,6 +804,7 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
         }
 
         ROOT::RDF::RNode mainNode = itr->second;
+        mainNode = this->minMaxRange(mainNode);
 
         // to not cut very small numbers to zero
         std::ostringstream ss;
@@ -939,4 +942,14 @@ ROOT::RDF::RNode MainFrame::addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mai
     }
 
     return mainNode;
+}
+
+ROOT::RDF::RNode MainFrame::minMaxRange(ROOT::RDF::RNode node) const {
+    if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0) {
+        long long int min = m_config->minEvent() >= 0 ? m_config->minEvent() : 0;
+        long long int max = m_config->maxEvent() >= 0 ? m_config->maxEvent() : 0;
+        return node.Range(min, max);
+    }
+
+    return node;
 }
