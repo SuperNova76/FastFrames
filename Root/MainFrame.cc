@@ -21,7 +21,13 @@
 #include <exception>
 
 void MainFrame::init() {
-    ROOT::EnableImplicitMT(m_config->numCPU());
+    if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0) {
+        ROOT::DisableImplicitMT();
+        LOG(WARNING) << "Disabling implicit MT as it is not allowed for Range() call\n";
+    } else {
+        ROOT::EnableImplicitMT(m_config->numCPU());
+        LOG(DEBUG) << "Enabling implicit MT with " << m_config->numCPU() << " threads\n";
+    }
     m_metadataManager.readFileList( m_config->inputFilelistPath() );
     m_metadataManager.readSumWeights( m_config->inputSumWeightsPath() );
     m_metadataManager.readXSectionFiles( m_config->xSectionFiles() );
@@ -948,6 +954,7 @@ ROOT::RDF::RNode MainFrame::minMaxRange(ROOT::RDF::RNode node) const {
     if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0) {
         long long int min = m_config->minEvent() >= 0 ? m_config->minEvent() : 0;
         long long int max = m_config->maxEvent() >= 0 ? m_config->maxEvent() : 0;
+        LOG(INFO) << "Will only run for range: [" << min << "," << max << ")\n";
         return node.Range(min, max);
     }
 
