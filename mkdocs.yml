@@ -17,6 +17,8 @@ nav:
     - Introduction: index.md
 
     - Config: config.md
+    
+    - Helper functions: helpers.md
 
 
 markdown_extensions:
