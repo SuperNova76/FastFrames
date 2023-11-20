@@ -144,6 +144,37 @@ public:
   }
 
   /**
+   * @brief Helper function for systematic define that only adds columns if the input columns exist
+   *
+   * @tparam F
+   * @param node Input node
+   * @param newVariable Name of the new column
+   * @param defineFunction Functor to be used for the column
+   * @param branches Branches the functor depends on
+   * @return ROOT::RDF::RNode Output node
+   */
+  template<typename F>
+  ROOT::RDF::RNode systematicDefineNoCheck(ROOT::RDF::RNode node,
+                                           const std::string& newVariable,
+                                           F defineFunction,
+                                           const std::vector<std::string>& branches) {
+
+    // check of the branches exist, if not then do not do anything
+    bool missing(false);
+    for (const auto& ibranch : branches) {
+      if (!m_systReplacer.branchExists(ibranch)) {
+        LOG(WARNING) << "Branch: " << ibranch << " used in the custom Define() does not exist for this sample, will not add the new column: " << newVariable << "!\n";
+        missing = true;
+        break;
+      }
+    }
+
+    if (missing) return node;
+
+    return this->systematicDefine(node, newVariable, defineFunction, branches);
+  }
+
+  /**
    * @brief Define new variable (column) using a string. The code will create a replica
    * for every systematic variation that affecgts the formula
    *
