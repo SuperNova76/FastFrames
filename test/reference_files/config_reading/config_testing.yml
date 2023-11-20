@@ -18,6 +18,7 @@ general:
   #automatic_systematics: True
   nominal_only: False
   number_of_cpus: 4
+  max_event: 1000
   luminosity:
     mc20a: 123456
     #mc20d: 111111 #default one from C++ part

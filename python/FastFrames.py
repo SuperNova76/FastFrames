@@ -23,26 +23,8 @@ from CommandLineOptions import CommandLineOptions
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--config",  help="Path to the config file")
-    parser.add_argument("--step",    help="Step to run: 'n' (ntuples) or 'h' (histograms). Default: 'h'", nargs = '?',  default="h")
-    parser.add_argument("--samples", help="Comma separated list of samples to run. Default: all",                       default="all")
-    args = parser.parse_args()
-
-    config_path = args.config
-    step        = args.step
-    if step != "h" and step != "n":
-        Logger.log_message("ERROR", "Unknown step: {}".format(step))
-
-    samples     = args.samples
-    if samples == "all":
-        samples = None
-    else:
-        samples = samples.split(",")
-
-    command_line_options = CommandLineOptions()
-    command_line_options.set_samples(samples)
+    config_path = CommandLineOptions().get_config_path()
+    step        = CommandLineOptions().get_step()
 
     Logger.log_message("INFO", "Going to read the config: " + config_path)
     config_reader = ConfigReader(config_path)

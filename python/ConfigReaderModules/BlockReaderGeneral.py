@@ -8,6 +8,7 @@ from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, SampleWrapper, 
 from ConfigReaderCpp import StringVector, ptrVector
 from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
+from CommandLineOptions import CommandLineOptions
 
 def vector_to_list(cpp_vector) -> list:
     """!Convert C++ vector to python list
@@ -42,6 +43,8 @@ class BlockReaderGeneral:
         self._xsection_files = self._options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"], [list], [str])
         self._luminosity_map = {}
         self._set_luminosity_map(self._options_getter.get("luminosity", None, [dict]))
+        self._min_event = self._options_getter.get("min_event", None, [int])
+        self._max_event = self._options_getter.get("max_event", None, [int])
 
         ## Default value for sumweights -> can be overriden in sample block
         self.default_sumweights = self._options_getter.get("default_sumweights", "NOSYS", [str])
@@ -96,6 +99,20 @@ class BlockReaderGeneral:
 
         for tlorentz_vector in self._create_tlorentz_vectors_for:
             self.cpp_class.addTLorentzVector(tlorentz_vector)
+
+        # min_event
+        cli_min_event = CommandLineOptions().get_min_event()
+        if cli_min_event:
+            self.cpp_class.setMinEvent(cli_min_event)
+        elif self._min_event:
+            self.cpp_class.setMinEvent(self._min_event)
+
+        # max_event
+        cli_max_event = CommandLineOptions().get_max_event()
+        if cli_max_event:
+            self.cpp_class.setMaxEvent(cli_max_event)
+        elif self._max_event:
+            self.cpp_class.setMaxEvent(self._max_event)
 
     def add_region(self, region : RegionWrapper) -> None:
         """!Add region to the C++ ConfigSetting class

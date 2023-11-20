@@ -92,22 +92,7 @@ class ConfigReader:
                 exit(1)
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--config",  help="Path to the config file")
-    parser.add_argument("--samples", help="Comma separated list of samples to run. Default: all", default="all")
-    args = parser.parse_args()
-
-    config_path = args.config
-
-    samples     = args.samples
-    if samples == "all":
-        samples = None
-    else:
-        samples = samples.split(",")
-    command_line_options = CommandLineOptions()
-    command_line_options.set_samples(samples)
+    config_path = CommandLineOptions().get_config_path()
 
     config_reader = ConfigReader(config_path)
     block_general = config_reader.block_general
@@ -121,6 +106,8 @@ if __name__ == "__main__":
     print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
     print("\tnominalOnly: ", block_general.cpp_class.nominalOnly())
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
+    print("\tmin_event: ", block_general.cpp_class.minEvent())
+    print("\tmax_event: ", block_general.cpp_class.maxEvent())
     print("\txSectionFiles: ",  block_general.get_xsection_files())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))

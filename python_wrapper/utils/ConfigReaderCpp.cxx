@@ -156,6 +156,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("setNtuple",           &ConfigSettingWrapper::setNtuple)
         .def("getNtupleSharedPtr",  &ConfigSettingWrapper::getNtupleSharedPtr)
+
+        // min and max event
+        .def("setMinEvent",         &ConfigSettingWrapper::setMinEvent)
+        .def("minEvent",            &ConfigSettingWrapper::minEvent)
+        .def("setMaxEvent",         &ConfigSettingWrapper::setMaxEvent)
+        .def("maxEvent",            &ConfigSettingWrapper::maxEvent)
     ;
 
     /**
