@@ -376,6 +376,34 @@ class ConfigSettingWrapper {
             return reinterpret_cast<unsigned long long int>(&ntuple);
         }
 
+        /**
+         * @brief Set the minimum event count to be processed
+         *
+         * @param i
+         */
+        void setMinEvent(const long long int i) {m_configSetting->setMinEvent(i);}
+        /**
+         * @brief Get the min event index
+         *
+         * @return long long int
+         */
+        long long int minEvent() const {return m_configSetting->minEvent();}
+
+        /**
+         * @brief Get the max event index
+         *
+         * @return long long int
+         */
+        long long int maxEvent() const {return m_configSetting->maxEvent();}
+
+        /**
+         * @brief Set the maximum event count to be processed
+         *
+         * @param i
+         */
+        void setMaxEvent(const long long int i) {m_configSetting->setMaxEvent(i);}
+
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };

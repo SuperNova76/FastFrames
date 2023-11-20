@@ -1,6 +1,9 @@
 """
 @file Source file with CommandLineOptions and SingletonMeta class
 """
+
+import argparse
+
 from BlockReaderCommon import set_paths
 set_paths()
 
@@ -25,31 +28,77 @@ class CommandLineOptions(metaclass=SingletonMeta):
     """!Singleton class for storing command line options.
     """
     def __init__(self):
-        self.samples_terminal = None
+        self._samples_terminal = None
+        self._min_event = None
+        self._max_event = None
+        self._config_path = None
+        self._step = None
+        self._set_options()
 
-    def set_samples(self, samples : list) -> None:
+    def _set_options(self) -> None:
+        parser = argparse.ArgumentParser()
+
+        parser.add_argument("--config",  help="Path to the config file")
+        parser.add_argument("--samples", help="Comma separated list of samples to run. Default: all", default="all")
+        parser.add_argument("--step",    help="Step to run: 'n' (ntuples) or 'h' (histograms). Default: 'h'", nargs = '?',  default="h")
+        parser.add_argument("--min_event", help="Minimal index of event", default="")
+        parser.add_argument("--max_event", help="Maximal index of event", default="")
+        args = parser.parse_args()
+
+        self._config_path = args.config
+        self._step        = args.step
+
+        samples     = args.samples
+        if samples == "all":
+            self._samples_terminal = None
+        else:
+            self._samples_terminal = samples.split(",")
+
+        if (args.min_event):
+            self._min_event = int(args.min_event)
+        if (args.max_event):
+            self._max_event = int(args.max_event)
+
+    def get_step(self) -> str:
         """
-        Set list of samples specified from command line.
-        @param samples - List of samples specified from command line.
+        Get step to run.
         """
-        self.samples_terminal = samples
+        return self._step
+
+    def get_config_path(self) -> str:
+        """
+        Get path to the config file.
+        """
+        return self._config_path
+
+    def get_min_event(self) -> int:
+        """
+        Get minimal index of event.
+        """
+        return self._min_event
+
+    def get_max_event(self) -> int:
+        """
+        Get maximal index of event.
+        """
+        return self._max_event
 
     def get_samples(self) -> list:
         """
         Get list of samples specified from command line.
         """
-        return self.samples_terminal
+        return self._samples_terminal
 
     def check_samples_existence(self, samples_all) -> None:
         """
         Check if all samples specified from command line exist.
         """
-        if self.samples_terminal is None:
+        if self._samples_terminal is None:
             return
         if samples_all is None:
             return
         samples_names = self._get_list_of_sample_names(samples_all)
-        for sample in self.samples_terminal:
+        for sample in self._samples_terminal:
             if sample not in samples_names:
                 Logger.log_message("ERROR", "Sample {} specified from command line does not exist".format(sample))
                 exit(1)
@@ -58,12 +107,12 @@ class CommandLineOptions(metaclass=SingletonMeta):
         """
         Remove all samples that are not specified from command line from the input list of samples.
         """
-        if self.samples_terminal is None:
+        if self._samples_terminal is None:
             return
         if samples is None:
             return
         samples_names = self._get_list_of_sample_names(samples)
-        keep_sample = [sample in self.samples_terminal for sample in samples_names]
+        keep_sample = [sample in self._samples_terminal for sample in samples_names]
 
         for i in range(len(samples), 0, -1):
             if not keep_sample[i - 1]:
