@@ -311,4 +311,13 @@ namespace StringOperations  {
         return result;
     };
 
+    /**
+     * @brief equivalent to python's join function
+     *
+     * @param std::string
+     * @param std::vector<std::string>
+     * @return std::string
+     */
+    std::string joinStrings(const std::string &separator, const std::vector<std::string> &strings);
+
 }

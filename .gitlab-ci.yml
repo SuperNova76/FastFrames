@@ -116,7 +116,7 @@ python_config_reader_test:
 run_filelist:
   stage: run
   needs:
-     - cmake
+    - compile
   script:
      - python3 python/produce_metadata_files.py --root_files_folder test/input/
   artifacts:

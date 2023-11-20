@@ -2,8 +2,17 @@
 """
 from ROOT import TFile, TTree
 from sys import argv
+import sys
 import os
 import argparse
+
+this_dir = "/".join(os.path.dirname(os.path.abspath(__file__)).split("/")[0:-1])
+sys.path.append(this_dir)
+
+from ConfigReaderModules.BlockReaderCommon import set_paths
+set_paths()
+
+from ConfigReaderCpp import SumWeightsGetter, DoubleVector, StringVector
 
 def read_filelist(filelist_path : str) -> dict:
     """!Reads the filelist.txt file and returns it as a dictionary metadata_tuple -> list of root files
@@ -83,8 +92,16 @@ def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
     with open(output_path, "w") as sum_of_weights_file:
         for sample, root_files in filelist.items():
             MAX_METADATA_ITEM_LENGTHS = [8 for i in range(len(sample))]
-            sample_map[sample] = get_sum_of_weights_for_sample(root_files)
-            for variation_name, sum_of_weights in sample_map[sample].items():
+            root_files_vector = StringVector()
+            for root_file in root_files:
+                root_files_vector.append(root_file)
+            sum_weights_getter = SumWeightsGetter(root_files_vector)
+            sum_weights_values = sum_weights_getter.getSumWeightsValues()
+            sum_weights_names  = sum_weights_getter.getSumWeightsNames()
+
+            for i in range(len(sum_weights_values)):
+                variation_name = sum_weights_names[i]
+                sum_of_weights = sum_weights_values[i]
                 for metadata_element in sample:
                     n_spaces = MAX_METADATA_ITEM_LENGTHS[sample.index(metadata_element)] - len(str(metadata_element))
                     sum_of_weights_file.write(str(metadata_element) + n_spaces*" ")
