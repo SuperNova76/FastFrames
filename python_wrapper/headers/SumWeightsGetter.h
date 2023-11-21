@@ -82,11 +82,11 @@ class SumWeightsGetter {
         };
 
         static std::string get_variation_name(const std::string &histogram_name)   {
-            std::vector<std::string> elements = StringOperations::splitString(histogram_name, "_");
-            if (elements.size() < 4)    {
+            if (!StringOperations::stringStartsWith(histogram_name, "CutBookkeeper_"))   {
                 return "";
             }
-            if (elements[0] != "CutBookkeeper")    {
+            std::vector<std::string> elements = StringOperations::splitString(histogram_name, "_");
+            if (elements.size() < 4)    {
                 return "";
             }
             if (!StringOperations::stringIsInt(elements[1]) || !StringOperations::stringIsInt(elements[2]))    {
