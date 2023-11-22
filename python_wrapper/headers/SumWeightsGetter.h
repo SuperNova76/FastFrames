@@ -14,8 +14,17 @@
 #include <stdexcept>
 #include <iostream>
 
+/**
+ * @brief Class for calculating sum of weights from all files in the given vector of files
+ *
+ */
 class SumWeightsGetter {
     public:
+        /**
+         * @brief Construct a new SumWeightsGetter object - it will calculate sum of weights from all files in the given vector of files
+         *
+         * @param filelist Vector of files to read
+         */
         explicit SumWeightsGetter(const std::vector<std::string> &filelist) {
             for (const auto &filename : filelist) {
                 LOG(INFO) << "SumWeightsGetter: Reading file " + filename + "\n";
@@ -36,13 +45,24 @@ class SumWeightsGetter {
             }
         };
 
+        SumWeightsGetter() = delete;
 
         ~SumWeightsGetter() = default;
 
+        /**
+         * @brief Get names of sum weights elements
+         *
+         * @return std::vector<std::string>
+         */
         std::vector<std::string> getSumWeightsNames() const {
             return m_sumWeightsNames;
         };
 
+        /**
+         * @brief Get the Sum Weights values
+         *
+         * @return std::vector<double>
+         */
         std::vector<double>      getSumWeightsValues() const    {
             return m_sumWeightsValues;
         };

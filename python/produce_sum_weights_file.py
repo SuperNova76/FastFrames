@@ -30,58 +30,6 @@ def read_filelist(filelist_path : str) -> dict:
             filelist[key].append(file_name)
     return filelist
 
-def get_variation_name(histo_name : str) -> str:
-    """!Get variation name from the histogram name
-    @param histo_name: histogram name
-    @return variation name - str
-    """
-    elements = histo_name.split("_")
-    if len(elements) < 4:
-        return ""
-    if elements[0] != "CutBookkeeper":
-        return ""
-    if not (elements[1].isdigit() and elements[2].isdigit()):
-        return ""
-    return "_".join(elements[3:])
-
-def get_sum_of_weights_for_single_file(root_file : str) -> dict:
-    """!Get sum of weights for a single root file
-    @param root_file: path to the root file
-    @return dictionary variation_name -> sum_of_weights
-    """
-    result = {}
-    root_file = TFile.Open(root_file)
-    # loop over all objects in file
-    for key in root_file.GetListOfKeys():
-        if key.GetClassName() == "TH1F":
-            histogram = key.ReadObj()
-            histogram_name = histogram.GetName()
-            variation_name = get_variation_name(histogram_name)
-            if variation_name == "":
-                continue
-            sum_of_weights = histogram.GetBinContent(2)
-            result[variation_name] = sum_of_weights
-    root_file.Close()
-    return result
-
-def get_sum_of_weights_for_sample(root_files : list) -> dict:
-    """!Get sum of weights for a sample
-    @param root_files: list of paths to root files
-    @return dictionary variation_name -> sum_of_weights
-    """
-    result = {}
-    result_initialized = False
-    for root_file in root_files:
-        sum_of_weights_for_single_file = get_sum_of_weights_for_single_file(root_file)
-        for variation_name, sum_of_weights in sum_of_weights_for_single_file.items():
-            if variation_name not in result:
-                if result_initialized:
-                    raise Exception("Variation {} found in file {} but not in other files".format(variation_name, root_file))
-                result[variation_name] = 0
-            result[variation_name] += sum_of_weights
-        result_initialized = True
-    return result
-
 def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
     """!Produce sum_of_weights.txt file from the input filelist.txt file
     @param filelist_path: path to the filelist.txt file
