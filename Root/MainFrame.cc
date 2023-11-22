@@ -63,6 +63,7 @@ void MainFrame::executeHistograms() {
     for (const auto& isample : m_config->samples()) {
         LOG(INFO) << "\n";
         LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
+
         std::vector<SystematicHisto> finalSystHistos;
         std::vector<VariableHisto> finalTruthHistos;
         std::size_t uniqueSampleN(1);
@@ -148,27 +149,34 @@ std::tuple<std::vector<SystematicHisto>,
            std::vector<VariableHisto>,
            ROOT::RDF::RNode> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
                                                             const UniqueSampleID& uniqueSampleID) {
+
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
-    if (filePaths.empty()) {
+    std::vector<std::string> selectedFilePaths(filePaths);
+    if (Utils::sampleHasUnfolding(sample) && m_config->totalJobSplits() > 0) {
+        LOG(WARNING) << "Sample: " << sample->name() << " has unfolding set, cannot split into more jobs\n";
+    } else if (m_config->totalJobSplits() > 0) {
+        selectedFilePaths = Utils::selectedFileList(filePaths, m_config->totalJobSplits(), m_config->currentJobIndex());
+    }
+    if (selectedFilePaths.empty()) {
         LOG(WARNING) << "UniqueSample: " << uniqueSampleID << " has no files, will not produce histograms\n";
         ROOT::RDataFrame tmp("", {});
         return std::make_tuple(std::vector<SystematicHisto>{}, std::vector<VariableHisto>{}, tmp);
     }
 
-    std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), filePaths);
+    std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
 
     if (sample->hasTruth()) {
-        this->connectTruthTrees(recoChain, sample, filePaths);
+        this->connectTruthTrees(recoChain, sample, selectedFilePaths);
     }
 
     std::vector<VariableHisto> truthHistos;
 
     if (sample->hasTruth()) {
-        truthHistos = std::move(this->processTruthHistos(filePaths, sample, uniqueSampleID));
+        truthHistos = std::move(this->processTruthHistos(selectedFilePaths, sample, uniqueSampleID));
     }
 
     // we could use any file from the list, use the first one
-    m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
+    m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
 
     ROOT::RDataFrame df(*recoChain.release());
     ROOT::RDF::RNode mainNode = df;
@@ -209,18 +217,22 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
                                           const UniqueSampleID& id) {
 
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(id);
-    if (filePaths.empty()) {
+    std::vector<std::string> selectedFilePaths(filePaths);
+    if (m_config->totalJobSplits() > 0) {
+        selectedFilePaths = Utils::selectedFileList(filePaths, m_config->totalJobSplits(), m_config->currentJobIndex());
+    }
+    if (selectedFilePaths.empty()) {
         LOG(WARNING) << "UniqueSample: " << id << " has no files, will not produce output ntuple\n";
         return;
     }
 
-    auto chain = Utils::chainFromFiles(sample->recoTreeName(), filePaths);
+    auto chain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
 
     if (sample->hasTruth()) {
-        this->connectTruthTrees(chain, sample, filePaths);
+        this->connectTruthTrees(chain, sample, selectedFilePaths);
     }
     // we could use any file from the list, use the first one
-    m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
+    m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
 
     ROOT::RDataFrame df(*chain.release());
 
@@ -259,7 +271,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
     LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
 
-    ObjectCopier copier(filePaths);
+    ObjectCopier copier(selectedFilePaths);
     copier.readObjectInfo();
     if (!m_config->ntuple()->copyTrees().empty()) {
         copier.copyTreesTo(fileName, m_config->ntuple()->copyTrees());
@@ -484,9 +496,15 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         LOG(WARNING) << "No histograms available for sample: " << sample->name() << "\n";
     }
 
+    std::string suffix("");
+    if (!Utils::sampleHasUnfolding(sample) && m_config->totalJobSplits() > 0) {
+        suffix = "_Njobs_" + std::to_string(m_config->totalJobSplits()) + "_jobIndex_" + std::to_string(m_config->currentJobIndex());
+    }
+
     std::string fileName = m_config->outputPathHistograms();
     fileName += fileName.empty() ? "" : "/";
-    fileName += sample->name() + ".root";
+    fileName += sample->name() + suffix + ".root";
+
 
     std::unique_ptr<TFile> out(TFile::Open(fileName.c_str(), "RECREATE"));
     if (!out) {

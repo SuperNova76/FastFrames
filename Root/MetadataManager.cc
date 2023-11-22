@@ -7,6 +7,7 @@
 #include "FastFrames/MetadataManager.h"
 
 #include "FastFrames/Logger.h"
+#include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
 #include "FastFrames/XSectionManager.h"
 
@@ -15,7 +16,6 @@
 
 MetadataManager::MetadataManager() noexcept
 {
-
 }
 
 void MetadataManager::readFileList(const std::string& path) {

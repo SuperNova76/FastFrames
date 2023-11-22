@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 
+class Sample;
 class Systematic;
 
 /**
