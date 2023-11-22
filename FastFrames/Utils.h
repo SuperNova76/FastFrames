@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+class Sample;
+
 /**
  * @brief Helper functions
  *
@@ -52,4 +54,25 @@ namespace Utils {
    */
   std::unique_ptr<TH1D> copyHistoFromVariableHistos(const std::vector<VariableHisto>& histos,
                                                     const std::string& name);
+
+  /**
+   * @brief Does the given sample have unfolding specified?
+   *
+   * @param sample
+   * @return true
+   * @return false
+   */
+  bool sampleHasUnfolding(const std::shared_ptr<Sample>& sample);
+
+  /**
+   * @brief Take only N files from the input file list based on an approximate split and the current index
+   *
+   * @param fileList Input file list
+   * @param split Approximate splitting
+   * @param index Current index of a job
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> selectedFileList(const std::vector<std::string>& fileList,
+                                            const int split,
+                                            const int index);
 }
