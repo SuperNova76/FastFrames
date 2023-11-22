@@ -64,6 +64,7 @@ class BlockReaderGeneral:
         ## Instance of the ConfigSettingsWrapper C++ class -> wrapper around C++ ConfigSetting class
         self.cpp_class = ConfigSettingWrapper()
 
+        self._set_job_index_and_split_n_jobs()
         self._set_config_reader_cpp()
         self._check_unused_options()
 
@@ -77,6 +78,17 @@ class BlockReaderGeneral:
             return
         for key, value in luminosity_map.items():
             self._luminosity_map[key] = float(value)
+
+    def _set_job_index_and_split_n_jobs(self) -> None:
+        """
+        Set job index and split_n_jobs, if they were specified in the command line
+        """
+        cli_split_n_jobs = CommandLineOptions().get_split_n_jobs()
+        cli_job_index    = CommandLineOptions().get_job_index()
+        if cli_split_n_jobs is not None:
+            self.cpp_class.setTotalJobSplits(cli_split_n_jobs)
+        if cli_job_index is not None:
+            self.cpp_class.setCurrentJobIndex(cli_job_index)
 
     def _set_config_reader_cpp(self):
         """

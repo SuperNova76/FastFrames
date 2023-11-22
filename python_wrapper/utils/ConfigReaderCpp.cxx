@@ -164,6 +164,15 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("minEvent",            &ConfigSettingWrapper::minEvent)
         .def("setMaxEvent",         &ConfigSettingWrapper::setMaxEvent)
         .def("maxEvent",            &ConfigSettingWrapper::maxEvent)
+
+        // total job splits
+        .def("setTotalJobSplits",   &ConfigSettingWrapper::setTotalJobSplits)
+        .def("totalJobSplits",      &ConfigSettingWrapper::totalJobSplits)
+
+        // current job index
+        .def("setCurrentJobIndex",  &ConfigSettingWrapper::setCurrentJobIndex)
+        .def("currentJobIndex",     &ConfigSettingWrapper::currentJobIndex)
+
     ;
 
     /**

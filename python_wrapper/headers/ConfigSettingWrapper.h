@@ -403,6 +403,33 @@ class ConfigSettingWrapper {
          */
         void setMaxEvent(const long long int i) {m_configSetting->setMaxEvent(i);}
 
+        /**
+         * @brief Set the total number of job splittings for submitting
+         *
+         * @param number
+         */
+        void setTotalJobSplits(const int number) {m_configSetting->setTotalJobSplits(number);}
+
+        /**
+         * @brief Get the total number of job splittings for submitting
+         *
+         * @return int
+         */
+        int totalJobSplits() const {return m_configSetting->totalJobSplits();}
+
+        /**
+         * @brief Set the current job index
+         *
+         * @param number
+         */
+        void setCurrentJobIndex(const int number) { m_configSetting->setCurrentJobIndex(number);}
+
+        /**
+         * @brief Get the current job index
+         *
+         * @return int
+         */
+        int currentJobIndex() const {return m_configSetting->currentJobIndex();}
 
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;

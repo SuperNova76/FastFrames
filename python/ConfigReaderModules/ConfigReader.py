@@ -108,6 +108,8 @@ if __name__ == "__main__":
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
     print("\tmin_event: ", block_general.cpp_class.minEvent())
     print("\tmax_event: ", block_general.cpp_class.maxEvent())
+    print("\t--split_n_jobs: ", block_general.cpp_class.totalJobSplits())
+    print("\t--job_index: ", block_general.cpp_class.currentJobIndex())
     print("\txSectionFiles: ",  block_general.get_xsection_files())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))

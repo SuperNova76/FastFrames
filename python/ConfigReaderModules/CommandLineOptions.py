@@ -33,6 +33,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
         self._max_event = None
         self._config_path = None
         self._step = None
+        self._split_n_jobs = None
+        self._job_index = None
         self._set_options()
 
     def _set_options(self) -> None:
@@ -43,6 +45,9 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("--step",    help="Step to run: 'n' (ntuples) or 'h' (histograms). Default: 'h'", nargs = '?',  default="h")
         parser.add_argument("--min_event", help="Minimal index of event", default="")
         parser.add_argument("--max_event", help="Maximal index of event", default="")
+        parser.add_argument("--split_n_jobs", help="Number of jobs to split one sample into", default="")
+        parser.add_argument("--job_index",    help="ID of the job", default="")
+
         args = parser.parse_args()
 
         self._config_path = args.config
@@ -58,6 +63,43 @@ class CommandLineOptions(metaclass=SingletonMeta):
             self._min_event = int(args.min_event)
         if (args.max_event):
             self._max_event = int(args.max_event)
+
+        self._read_splits(args)
+
+    def _read_splits(self, args) -> None:
+        if (args.split_n_jobs):
+            if (args.split_n_jobs.isnumeric() == False):
+                Logger.log_message("ERROR", "split_n_jobs must be a number")
+                exit(1)
+            self._split_n_jobs = int(args.split_n_jobs)
+        if (args.job_index):
+            if (args.job_index.isnumeric() == False):
+                Logger.log_message("ERROR", "job_index must be a number")
+                exit(1)
+            self._job_index = int(args.job_index)
+        if ((self._split_n_jobs is None) != (self._job_index is None)):
+            Logger.log_message("ERROR", "Only one of the following options has been specified. Please specify either both or none: split_n_jobs, job_index")
+            exit(1)
+        if (self._split_n_jobs is None):
+            return
+        if (self._job_index >= self._split_n_jobs):
+            Logger.log_message("ERROR", "job_index must be smaller than split_n_jobs")
+            exit(1)
+        if (self._job_index < 0 | self._split_n_jobs < 0):
+            Logger.log_message("ERROR", "job_index and split_n_jobs must be positive")
+            exit(1)
+
+    def get_split_n_jobs(self) -> int:
+        """
+        Get number of jobs to split one sample into.
+        """
+        return self._split_n_jobs
+
+    def get_job_index(self) -> int:
+        """
+        Get ID of the job.
+        """
+        return self._job_index
 
     def get_step(self) -> str:
         """
