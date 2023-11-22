@@ -103,6 +103,12 @@ set_target_properties( ConfigReaderCpp PROPERTIES
    PREFIX ""
    OUTPUT_NAME "ConfigReaderCpp" )
 
+
+set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
+file(WRITE ${SETUP} "#!/bin/bash\n")
+file(APPEND ${SETUP} "# this is an auto-generated setup script\n" )
+file(APPEND ${SETUP} "export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib\n")
+
 # Install the libraries.
 install( TARGETS FastFrames ConfigReaderCpp cppLogger
    EXPORT FastFramesTargets
