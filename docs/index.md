@@ -88,6 +88,13 @@ Running ntuple part is similar to running histogramming part, you just need to s
 ```
 python3 python/FastFrames.py --config <path to your config> --step n
 ```
+#### Other command line options:
+
+In order to split the sample into multiple jobs, you can use the following command line option:
+
+```
+--split_n_jobs <N jobs total> --job_index <current job index>
+```
 
 ## Adding custom class for custom Define() call
 
@@ -110,7 +117,7 @@ In this way, any new columns can be added. FastFrames allows users to only modif
 Technically this is done by overriding the main class and leading the new class on runtime.
 
 #### Example of custom class for custom define
-An example of the custom class is provided [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/main/examples/CustomVariables?ref_type=heads) 
+An example of the custom class is provided [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/main/examples/CustomVariables?ref_type=heads)
 
 #### Compile the custom class
 It is important that the new class needs to be compiled and linked against the base class.

@@ -10,6 +10,8 @@ General block:
 	customFrameName:  
 	min_event:  -1
 	max_event:  1000
+	--split_n_jobs:  10
+	--job_index:  1
 	xSectionFiles:  ['data/XSection-MC16-13TeV.data']
 	luminosity, mc20a:  123456.0
 	luminosity, mc20d:  44630.6015625
