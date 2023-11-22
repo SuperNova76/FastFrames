@@ -89,7 +89,7 @@ void MainFrame::executeHistograms() {
                     throw std::runtime_error("");
                 }
 
-                LOG(INFO) << "Merging samples, triggers event loop!\n";
+                LOG(INFO) << "Merging samples, triggers event loop for the reco tree!\n";
                 for (std::size_t isyst = 0; isyst < finalSystHistos.size(); ++isyst) {
                     finalSystHistos.at(isyst).merge(systematicHistos.at(isyst));
                 }
@@ -97,8 +97,10 @@ void MainFrame::executeHistograms() {
             }
             if (!truthHistos.empty()) {
                 if (finalTruthHistos.empty()) {
+                    LOG(DEBUG) << "First set of histograms for this sample for truth, this will NOT trigger event loop\n";
                     finalTruthHistos = std::move(truthHistos);
                 } else {
+                    LOG(INFO) << "Merging truth, triggers event loop for the truth trees!\n";
                     if (finalTruthHistos.size() != truthHistos.size()) {
                         LOG(ERROR) << "Sizes of truth histograms do not match!\n";
                         throw std::runtime_error("");
@@ -165,14 +167,17 @@ std::tuple<std::vector<SystematicHisto>,
         truthHistos = std::move(this->processTruthHistos(filePaths, sample, uniqueSampleID));
     }
 
-    ROOT::RDataFrame df(*recoChain.release());
-    ROOT::RDF::RNode mainNode = df;
-    mainNode = this->minMaxRange(mainNode);
-
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
 
-    //ROOT::RDF::Experimental::AddProgressBar(mainNode);
+    ROOT::RDataFrame df(*recoChain.release());
+    ROOT::RDF::RNode mainNode = df;
+
+    #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
+    ROOT::RDF::Experimental::AddProgressBar(mainNode);
+    #endif
+
+    mainNode = this->minMaxRange(mainNode);
 
     mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
 
@@ -214,14 +219,16 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     if (sample->hasTruth()) {
         this->connectTruthTrees(chain, sample, filePaths);
     }
-
-    ROOT::RDataFrame df(*chain.release());
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(filePaths.at(0), sample->recoTreeName(), sample->systematics());
 
+    ROOT::RDataFrame df(*chain.release());
+
     ROOT::RDF::RNode mainNode = df;
+    #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
+    ROOT::RDF::Experimental::AddProgressBar(mainNode);
+    #endif
     mainNode = this->minMaxRange(mainNode);
-    //ROOT::RDF::Experimental::AddProgressBar(mainNode);
 
     mainNode = this->addWeightColumns(mainNode, sample, id);
 
@@ -248,7 +255,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     for (const auto& iselected : selectedBranches) {
         LOG(VERBOSE) << "\t" << iselected << "\n";
     }
-    LOG(INFO) << "Triggering event loop!\n";
+    LOG(INFO) << "Triggering event loop for the reco tree!\n";
     mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
     LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
 
@@ -488,12 +495,12 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
     }
 
     LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
-    if (printEventLoopCount) {
-        LOG(INFO) << "Triggering event loop!\n";
-    }
 
     this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
 
+    if (printEventLoopCount && sample->truths().empty()) {
+        LOG(INFO) << "Triggering event loop for the reco tree!\n";
+    }
     bool first(true);
     for (const auto& isystHist : histos) {
         if (isystHist.regionHistos().empty()) {
@@ -532,7 +539,6 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
 
     // Write truth histograms
     for (const auto& itruthHist : truthHistos) {
-        LOG(INFO) << "Triggering event loop for truth histograms!\n";
         const std::string truthHistoName = StringOperations::replaceString(itruthHist.name(), "_NOSYS", "");
         out->cd();
         itruthHist.histo()->Write(truthHistoName.c_str());
@@ -810,6 +816,9 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
         }
 
         ROOT::RDF::RNode mainNode = itr->second;
+        #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
+        ROOT::RDF::Experimental::AddProgressBar(mainNode);
+        #endif
         mainNode = this->minMaxRange(mainNode);
 
         // to not cut very small numbers to zero
@@ -849,7 +858,9 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                                      const std::vector<VariableHisto>& truthHistos,
                                      const std::shared_ptr<Sample>& sample) const {
 
+    bool first(true);
     for (const auto& itruth : sample->truths()) {
+        LOG(INFO) << "Triggering event loop for truth histograms for truth tree: " << itruth->name() << "\n";
         if (!itruth->produceUnfolding()) continue;
         for (const auto& imatch : itruth->matchedVariables()) {
             const std::string& truthName = itruth->name() + "_" + imatch.second;
@@ -867,6 +878,10 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     outputFile->mkdir(isystHist.name().c_str());
                 }
                 for (const auto& iregionHist : isystHist.regionHistos()) {
+                    if (first) {
+                        LOG(INFO) << "Triggering event loop for the reco tree\n";
+                        first = false;
+                    }
                     std::unique_ptr<TH1D> passed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionPassed);
                     std::unique_ptr<TH1D> failed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionFailed);
 
