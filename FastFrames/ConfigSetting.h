@@ -318,6 +318,34 @@ public:
    */
   void setMaxEvent(const long long int i) {m_maxEvent = i;}
 
+  /**
+   * @brief Set the total number of job splittings for submitting
+   *
+   * @param number
+   */
+  void setTotalJobSplits(const int number) {m_totalJobSplits = number;}
+
+  /**
+   * @brief Get the total number of job splittings for submitting
+   *
+   * @return int
+   */
+  int totalJobSplits() const {return m_totalJobSplits;}
+
+  /**
+   * @brief Set the current job index
+   *
+   * @param number
+   */
+  void setCurrentJobIndex(const int number) {m_currentJobIndex = number;}
+
+  /**
+   * @brief Get the current job index
+   *
+   * @return int
+   */
+  int currentJobIndex() const {return m_currentJobIndex;}
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -339,5 +367,7 @@ private:
   std::vector<std::shared_ptr<Sample> > m_samples;
   std::vector<std::shared_ptr<Systematic> > m_systematics;
   std::shared_ptr<Ntuple> m_ntuple = nullptr;
+  int m_totalJobSplits = -1;
+  int m_currentJobIndex = -1;
 
 };
