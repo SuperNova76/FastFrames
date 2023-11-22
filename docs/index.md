@@ -24,10 +24,10 @@ make # alternatively "make -jN", where N is number of CPUs you want to use for c
 make install
 ```
 
-Then you will need to set the `LD_LIBRARY_PATH` path to the installation path, e.g.
+Then you will need to set the `LD_LIBRARY_PATH` to the installation path using the produced setup.sh script
 
 ```
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/FastFrames/install/lib
+source setup.sh
 ```
 
 At this point the code should be compiled. Make sure you are using at least 6.28 version of the ROOT.
@@ -45,7 +45,6 @@ asetup StatAnalysis,0.2,latest
 ```
 
 This will setup an appropriate version of ROOT (you can check the ROOT version with `root --version`)
-
 
 
 ## How to run the code:
@@ -158,12 +157,11 @@ Now, compile and install the code
 make
 make install
 ```
-Finally, you need to export `LD_LIBRARY_PATH` to tell ROOT where to look for the library, e.g.
+Finally, you need to export set the `LD_LIBRARY_PATH` to tell ROOT where to look for the library:
 
 ```
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/MyCustomFrame/install/lib
+source setup.sh
 ```
-You can add this to your .bashrc file.
 
 #### Using the custom class
 To use the custom class, you need to set the name of the class in the config file in the general block: `custom_frame_name` to the name of the library, code will then search the `LD_LIBRARY_PATH` to find the appropriate library.
