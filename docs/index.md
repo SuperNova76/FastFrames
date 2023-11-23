@@ -72,6 +72,8 @@ To run the histogramming part:
 FastFrames.py --config <path to your config> --step h
 ```
 
+One can also use ```c``` instead of ```config```
+
 If you do not want to run over all samples from your config, but just over a part of them, you can specify the list of these samples using optional argument ```samples```:
 
 ```

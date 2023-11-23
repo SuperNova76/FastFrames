@@ -41,6 +41,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser = argparse.ArgumentParser()
 
         parser.add_argument("--config",  help="Path to the config file")
+        parser.add_argument("--c",       help="Path to the config file")
         parser.add_argument("--samples", help="Comma separated list of samples to run. Default: all", default="all")
         parser.add_argument("--step",    help="Step to run: 'n' (ntuples) or 'h' (histograms). Default: 'h'", nargs = '?',  default="h")
         parser.add_argument("--min_event", help="Minimal index of event", default="")
@@ -51,6 +52,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
         args = parser.parse_args()
 
         self._config_path = args.config
+        if (self._config_path is None):
+            self._config_path = args.c
         if (self._config_path is None):
             Logger.log_message("ERROR", "config argument is not specified, please use --config <path_to_config_file>")
             exit(1)
