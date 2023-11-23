@@ -94,7 +94,7 @@ public:
     std::time_t t = std::time(0);
     std::tm* now = std::localtime(&t);
     if (level <= m_logLevel) {
-      m_stream << fancyHeader(level) << formatString(file + std::string(":") + std::to_string(line), 30) <<
+      m_stream << fancyHeader(level) << formatString(file + std::string(":") + std::to_string(line), 26) <<
               " " << formatTime(now->tm_mday) << "-" << formatTime(now->tm_mon+1) << "-" << now->tm_year+1900 << " " << formatTime(now->tm_hour) <<
               ":" << formatTime(now->tm_min) << ":" << formatTime(now->tm_sec)
               << " | ";

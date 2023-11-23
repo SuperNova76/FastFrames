@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <exception>
-#include <functional>
 
 std::unique_ptr<TChain> Utils::chainFromFiles(const std::string& treeName,
                                               const std::vector<std::string>& files) {
@@ -77,11 +76,12 @@ std::vector<std::string> Utils::selectedFileList(const std::vector<std::string>&
 
     std::vector<std::string> result;
     for (std::size_t i = 0; i < fileList.size(); ++i) {
-        std::size_t hash = std::hash<std::string>{}(fileList.at(i));
-        if ((int)hash % split == index) {
+        static int totalIndex(0);
+        if ((int)totalIndex % split == index) {
             LOG(DEBUG) << "Split N: " << split << ", index: " << index << ", adding file: " << fileList.at(i) << "\n";
             result.emplace_back(fileList.at(i));
         }
+        ++totalIndex;
     }
 
     return result;

@@ -26,7 +26,7 @@ void MainFrame::init() {
         LOG(WARNING) << "Disabling implicit MT as it is not allowed for Range() call\n";
     } else {
         ROOT::EnableImplicitMT(m_config->numCPU());
-        LOG(DEBUG) << "Enabling implicit MT with " << m_config->numCPU() << " threads\n";
+        LOG(INFO) << "Enabling implicit MT with " << m_config->numCPU() << " threads\n";
     }
     m_metadataManager.readFileList( m_config->inputFilelistPath() );
     m_metadataManager.readSumWeights( m_config->inputSumWeightsPath() );
