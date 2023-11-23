@@ -1,3 +1,5 @@
+#!/bin/python3
+
 """!Script to produce filelist.txt and sum_of_weights.txt files from a folder containing root files.
 It will loop over all root files in root_files_folder, and produce filelist and sum_of_weights files for all samples, where sample is characterized by (dsid, campaign, data_type).
 

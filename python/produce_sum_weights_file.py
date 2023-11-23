@@ -1,3 +1,5 @@
+#!/bin/python3
+
 """!Script/module to produce sum_of_weights.txt file from a filelist.txt file, it is imported by python/produce_metadata_files.py
 """
 from ROOT import TFile, TTree

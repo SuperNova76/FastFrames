@@ -1,3 +1,5 @@
+#!/bin/python3
+
 """!The main script for running the whole framework from python. It takes couple of arguments:
 
     --config: path to the config file
