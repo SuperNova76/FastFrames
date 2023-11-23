@@ -51,6 +51,10 @@ class CommandLineOptions(metaclass=SingletonMeta):
         args = parser.parse_args()
 
         self._config_path = args.config
+        if (self._config_path is None):
+            Logger.log_message("ERROR", "config argument is not specified, please use --config <path_to_config_file>")
+            exit(1)
+
         self._step        = args.step
 
         samples     = args.samples
