@@ -37,6 +37,16 @@ To install Boost libraries, do (or similarly on different linux platforms)
 sudo apt-get install libboost-all-dev
 ```
 
+If you do not have git large file storage (LFS) installed on your machine, you need to use the following steps:
+
+```
+sudo apt install git-lfs #or similar
+git install lfs
+git lfs pull
+```
+
+This should download the ROOT files that are used for the CI tests, but can also be used to run the code as an example
+
 #### Using lxplus(-like) machine
 The instructions are the same as in the Local build, but you can setup ROOT and Boost using StatAnalysis:
 ```
