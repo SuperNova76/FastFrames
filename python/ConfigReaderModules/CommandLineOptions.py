@@ -40,8 +40,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
     def _set_options(self) -> None:
         parser = argparse.ArgumentParser()
 
-        parser.add_argument("--config",  help="Path to the config file")
-        parser.add_argument("--c",       help="Path to the config file")
+        parser.add_argument("-c", "--config",  help="Path to the config file")
         parser.add_argument("--samples", help="Comma separated list of samples to run. Default: all", default="all")
         parser.add_argument("--step",    help="Step to run: 'n' (ntuples) or 'h' (histograms). Default: 'h'", nargs = '?',  default="h")
         parser.add_argument("--min_event", help="Minimal index of event", default="")
