@@ -67,7 +67,7 @@ The other file contains sum of weights for each sample and each systematic varia
 In order to produce the metadata files:
 
 ```
-produce_metadata_files.py --root_files_folder <path_to_root_files_folder> --output_path <path_to_output_folder>
+python3 produce_metadata_files.py --root_files_folder <path_to_root_files_folder> --output_path <path_to_output_folder>
 ```
 
 where you have to specify the path to the folder with the ROOT files that you are going to reprocess. The second argument is optional, it is the path to the folder where metadata files will be stored.
@@ -79,7 +79,7 @@ To produce the histograms from your ROOT files, one has to set up a config. You 
 To run the histogramming part:
 
 ```
-FastFrames.py --config <path to your config> --step h
+python3 FastFrames.py --config <path to your config> --step h
 ```
 
 One can also use ```c``` instead of ```config```
@@ -87,7 +87,7 @@ One can also use ```c``` instead of ```config```
 If you do not want to run over all samples from your config, but just over a part of them, you can specify the list of these samples using optional argument ```samples```:
 
 ```
-FastFrames.py --config <path to your config> --step h --samples sample1,sample2,sample3
+python3 FastFrames.py --config <path to your config> --step h --samples sample1,sample2,sample3
 ```
 
 You can also specify ```max_event``` or ```min_event``` options from general part of the config using the command line.
@@ -97,7 +97,7 @@ You can also specify ```max_event``` or ```min_event``` options from general par
 Running ntuple part is similar to running histogramming part, you just need to specify ```n``` step in terminal:
 
 ```
-FastFrames.py --config <path to your config> --step n
+python3 FastFrames.py --config <path to your config> --step n
 ```
 #### Other command line options:
 
