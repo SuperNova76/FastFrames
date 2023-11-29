@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/bin/env python3
 
 """!Script for producing filelist.txt from a folder containing root files, it can be also imported as a module.
 """

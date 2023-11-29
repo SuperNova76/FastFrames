@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 """!The main script for running the whole framework from python. It takes couple of arguments:
 
