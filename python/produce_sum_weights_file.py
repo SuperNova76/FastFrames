@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/bin/env python3
 
 """!Script/module to produce sum_of_weights.txt file from a filelist.txt file, it is imported by python/produce_metadata_files.py
 """

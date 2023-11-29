@@ -84,6 +84,7 @@ file(GLOB LIB_HEADERS "FastFrames/*.h" )
 
 # Build the shared library.
 add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
+set_target_properties(FastFrames PROPERTIES SUFFIX ".so")
 target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> $<INSTALL_INTERFACE:> ${ROOT_INCLUDE_DIRS} )
 target_link_libraries( FastFrames ${ROOT_LIBRARIES} )
 set_property( TARGET FastFrames
@@ -91,6 +92,7 @@ set_property( TARGET FastFrames
 
 # Build the Python module for C++ logger
 add_library( cppLogger SHARED python_wrapper/utils/Logger.cxx )
+set_target_properties(cppLogger PROPERTIES SUFFIX ".so")
 target_link_libraries( cppLogger PRIVATE Python3::Python ${Python3_LIBRARIES} )
 set_target_properties( cppLogger PROPERTIES
    PREFIX ""
@@ -98,6 +100,7 @@ set_target_properties( cppLogger PROPERTIES
 
 # Build the Python module for config reader
 add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${LIB_HEADERS} )
+set_target_properties(ConfigReaderCpp PROPERTIES SUFFIX ".so")
 target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
 set_target_properties( ConfigReaderCpp PROPERTIES
    PREFIX ""
