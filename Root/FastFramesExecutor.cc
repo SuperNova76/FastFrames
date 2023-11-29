@@ -33,8 +33,7 @@ void FastFramesExecutor::runFastFrames() const {
     if (!name.empty()) {
       // read the custom code for adding variables
       LOG(INFO) << "Using custom class: " << name << "\n";
-      const std::string libName = "lib" + name + ".so";
-      gSystem->Load(libName.c_str());
+      gSystem->Load(("lib"+name).c_str());
 
       c = ::TClass::GetClass(name.c_str());
       if (!c) {
