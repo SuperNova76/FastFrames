@@ -32,7 +32,7 @@ def get_list_of_root_files_in_folder(folder_path : str) -> list:
     @param folder_path: path to the folder
     @return list of paths to root files
     """
-    result = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith(".root")]
+    result = [os.path.abspath(os.path.join(folder_path, file)) for file in os.listdir(folder_path) if file.endswith(".root")]
     for directory in os.listdir(folder_path):
         if os.path.isdir(os.path.join(folder_path, directory)):
             result += get_list_of_root_files_in_folder(os.path.join(folder_path, directory))
