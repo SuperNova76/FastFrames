@@ -124,7 +124,6 @@ Samples block:
 	selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
 	reco_to_truth_pairing_indices:  ['eventNumber', 'runNumber']
 	variables:
-		 jet_pt_NOSYS
 		 met_met
 		 met_phi
 	Unique samples:

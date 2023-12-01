@@ -12,6 +12,7 @@ from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
 from BlockReaderSampleTruth import BlockReaderSampleTruth
 
+import re
 
 class BlockReaderSample:
     """!Class for reading sample block of the config, equivalent of C++ class Sample
@@ -173,27 +174,26 @@ class BlockReaderSample:
                 if variable not in variables_defined_for_sample:
                     variables_defined_for_sample.append(variable)
 
-        # check if all variables exist
-        if self.variables is not None:
-            for variable in self.variables:
-                if variable not in variables_defined_for_sample:
-                    Logger.log_message("ERROR", "Variable {} specified for sample {} does not exist".format(variable, self._name))
-                    exit(1)
-        if self.exclude_variables is not None:
-            for variable in self.exclude_variables:
-                if variable not in variables_defined_for_sample:
-                    Logger.log_message("ERROR", "Variable {} specified for sample {} does not exist".format(variable, self._name))
-                    exit(1)
-
         variables_to_keep = []
+
+        def string_matches_some_regex(string : list, regex_list : list) -> bool:
+            for regex in regex_list:
+                if re.match(regex, string):
+                    return True
+            return False
+
 
         if self.variables is None and self.exclude_variables is None:
             variables_to_keep = variables_defined_for_sample
         elif self.variables is not None:
-            variables_to_keep = self.variables
+            for variable in variables_defined_for_sample:
+                if variable in self.variables:
+                    variables_to_keep.append(variable)
+                elif string_matches_some_regex(variable, self.variables):
+                    variables_to_keep.append(variable)
         elif self.exclude_variables is not None:
             for variable in variables_defined_for_sample:
-                if variable not in self.exclude_variables:
+                if variable not in self.exclude_variables and not string_matches_some_regex(variable, self.exclude_variables):
                     variables_to_keep.append(variable)
 
         for variable in variables_to_keep:
