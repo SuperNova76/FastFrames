@@ -85,7 +85,7 @@ samples:
   - name: "ttbar_FS"
     dsids: [410470]
     campaigns: ["mc20e"]
-    simulation_type: "mc" # mc is full sim
+    simulation_type: "fullsim"
     #weight_suffix: "something" # this is an additional weight to be applied (multiplication) to the sample
     #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
@@ -109,11 +109,11 @@ samples:
   - name: "Wjets"
     dsids: [700341]
     campaigns: ["mc20a"]
-    simulation_type: "mc" # mc is full sim
+    simulation_type: "fullsim" # mc is full sim
 
   - name: "Data"
     dsids: [0]
-    campaigns: ["2018"]
+    campaigns: ["2017"]
     simulation_type: "data"
 
 systematics:

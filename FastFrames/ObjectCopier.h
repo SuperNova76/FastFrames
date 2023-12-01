@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-class TH1F;
+class TH1;
 class TFile;
 
 /**
@@ -22,8 +22,7 @@ public:
 
   enum class ObjectType {
     Histogram = 0,
-    Named = 1,
-    Tree = 2
+    Tree = 1
   };
 
   /**
@@ -69,10 +68,10 @@ private:
    *
    * @param name name of the histogram
    * @param files list of files
-   * @return std::unique_ptr<TH1F>
+   * @return std::unique_ptr<TH1>
    */
-  std::unique_ptr<TH1F> mergeHistos(const std::string& name,
-                                    const std::vector<std::unique_ptr<TFile> >& files) const;
+  std::unique_ptr<TH1> mergeHistos(const std::string& name,
+                                   const std::vector<std::unique_ptr<TFile> >& files) const;
 
   std::vector<std::string> m_fileList;
 

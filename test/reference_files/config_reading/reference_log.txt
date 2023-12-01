@@ -89,7 +89,7 @@ Samples block:
 		 met_met
 		 met_phi
 	Unique samples:
-		 (410470,mc20e,mc)
+		 (410470,mc20e,fullsim)
 	Truth objects:
 		name:  particle
 		produce_unfolding:  True
@@ -128,8 +128,8 @@ Samples block:
 		 met_met
 		 met_phi
 	Unique samples:
-		 (364100,mc20e,mc)
-		 (364101,mc20e,mc)
+		 (364100,mc20e,fullsim)
+		 (364101,mc20e,fullsim)
 	Custom defines:
 		 "HT_3_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1] + jet_pt_NOSYS[2]"
 
@@ -147,8 +147,8 @@ Samples block:
 		 met_met
 		 met_phi
 	Unique samples:
-		 (364100,mc20e,mc)
-		 (364101,mc20e,mc)
+		 (364100,mc20e,fullsim)
+		 (364101,mc20e,fullsim)
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
 
@@ -165,12 +165,12 @@ Samples block:
 		 met_met
 		 met_phi
 	Unique samples:
-		 (700341,mc20a,mc)
-		 (700342,mc20a,mc)
-		 (700344,mc20a,mc)
-		 (700341,mc20e,mc)
-		 (700342,mc20e,mc)
-		 (700344,mc20e,mc)
+		 (700341,mc20a,fullsim)
+		 (700342,mc20a,fullsim)
+		 (700344,mc20a,fullsim)
+		 (700341,mc20e,fullsim)
+		 (700342,mc20e,fullsim)
+		 (700344,mc20e,fullsim)
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
 

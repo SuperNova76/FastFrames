@@ -76,12 +76,14 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | name              | string            | name of the sample |
 | dsids             | list of ints      | list od DSIDs corresponding to this sample    |
 | campaigns         | list of strings   | list of campaigns for which this sample is defined   |
-| simulation_type   | string            | Allowed options: "data", "mc", "AFII" |
+| simulation_type   | string            | Allowed options: "data", "fullsim", "AFII" |
 | event_weights     | string            | Event weight to use. If defined, it will replace ```default_event_weights``` from general block   |
 | selection_suffix  | string            | Additional selection to use for this sample, for example to split based on flavor composition |
 | regions           | list of strings   | List of regions where the sample should be defined. If not specified, use all regions. |
 | exclude_regions   | list of strings   | If specified, all regions except for these will be added for the sample. Cannot be used together with options ```regions```   |
 | truth             | list of dicts     | List of truth levels which should be used for the given sample    |
+| variables         | list of strings   | If specified, only histograms for these variables will be produced for the sample |
+| exclude_variables | list of strings   | If specified, histograms containing these variables will not be produced for the sample. This option cannot be combined with ```variables``` |
 
 #### `truth` block inside of the `sample` block
 
