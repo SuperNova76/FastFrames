@@ -173,6 +173,18 @@ class BlockReaderSample:
                 if variable not in variables_defined_for_sample:
                     variables_defined_for_sample.append(variable)
 
+        # check if all variables exist
+        if self.variables is not None:
+            for variable in self.variables:
+                if variable not in variables_defined_for_sample:
+                    Logger.log_message("ERROR", "Variable {} specified for sample {} does not exist".format(variable, self._name))
+                    exit(1)
+        if self.exclude_variables is not None:
+            for variable in self.exclude_variables:
+                if variable not in variables_defined_for_sample:
+                    Logger.log_message("ERROR", "Variable {} specified for sample {} does not exist".format(variable, self._name))
+                    exit(1)
+
         variables_to_keep = []
 
         if self.variables is None and self.exclude_variables is None:
