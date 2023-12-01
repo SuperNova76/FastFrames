@@ -85,6 +85,10 @@ class BlockReaderSample:
                 truth_object.check_reco_variables_existence(reco_variables_from_regions)
                 self.cpp_class.addTruth(truth_object.cpp_class.getPtr())
 
+
+        self.variables          = self._options_getter.get("variables", [], [list], [str])
+        self.exclude_variables  = self._options_getter.get("exclude_variables", [], [list], [str])
+
         self._set_unique_samples_IDs()
 
         self._set_cpp_class()

@@ -53,3 +53,7 @@ const std::shared_ptr<Systematic>& Sample::nominalSystematic() const {
 
   return *itr;
 }
+
+void Sample::addVariable(const std::string& variable) {
+  m_variables.push_back(variable);
+};

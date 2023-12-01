@@ -271,6 +271,24 @@ class SampleWrapper {
             return result;
         };
 
+        /**
+         * @brief Add variable to the list of variables
+         *
+         * @param variable
+         */
+        void addVariable(const std::string& variable)   {
+            m_sample->addVariable(variable);
+        };
+
+        /**
+         * @brief Get the list of variables
+         *
+         * @return const std::vector<std::string>
+         */
+        std::vector<std::string> variables() const {
+            return m_sample->variables();
+        };
+
     private:
         std::shared_ptr<Sample> m_sample;
 

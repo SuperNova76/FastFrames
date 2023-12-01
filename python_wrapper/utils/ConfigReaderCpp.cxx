@@ -292,6 +292,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("addCustomDefine",     &SampleWrapper::addCustomDefine)
         .def("customDefines",       &SampleWrapper::customDefines)
+
+        .def("addVariable",         &SampleWrapper::addVariable)
+        .def("variables",           &SampleWrapper::variables)
     ;
 
     /**
