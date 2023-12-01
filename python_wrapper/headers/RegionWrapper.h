@@ -51,7 +51,6 @@ class RegionWrapper {
             m_region = *reinterpret_cast<std::shared_ptr<Region> *>(shared_ptr);
         };
 
-
         /**
          * @brief Get name of the region
          *
@@ -102,6 +101,21 @@ class RegionWrapper {
                 variable_ptrs.push_back(reinterpret_cast<unsigned long long int>(&variable));
             }
             return variable_ptrs;
+        };
+
+
+        /**
+         * @brief Get names of the variables defined in this region
+         *
+         * @return std::vector<std::string>
+         */
+        std::vector<std::string> getVariableNames()   const {
+            const std::vector<Variable> &variables = m_region->variables();
+            std::vector<std::string> variable_names;
+            for (const auto &variable : variables) {
+                variable_names.push_back(variable.name());
+            }
+            return variable_names;
         };
 
         /**

@@ -151,11 +151,13 @@ samples:
     campaigns: ["mc20a","mc20e"]
     simulation_type: "mc"
     regions: ["Electron"]
+    exclude_variables: ["jet_pt_NOSYS"]
 
   - name: "Data"
     simulation_type: "data"
     campaigns: ["2018"]
     regions: ["Electron", "Muon"]
+    variables: ["met_met"]
 
 
 

@@ -84,6 +84,10 @@ Samples block:
 	systematic:  ['NOSYS', 'JET_BJES_Response__1up', 'JET_BJES_Response__1down', '0p5muF_0p5muR_NNPDF31_NLO_0118', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
+	variables:
+		 jet_pt_NOSYS
+		 met_met
+		 met_phi
 	Unique samples:
 		 (410470,mc20e,mc)
 	Truth objects:
@@ -119,6 +123,9 @@ Samples block:
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
+	variables:
+		 met_met
+		 met_phi
 	Unique samples:
 		 (700341,mc20a,mc)
 		 (700342,mc20a,mc)
