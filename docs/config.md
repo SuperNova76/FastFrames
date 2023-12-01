@@ -82,8 +82,8 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | regions           | list of strings   | List of regions where the sample should be defined. If not specified, use all regions. |
 | exclude_regions   | list of strings   | If specified, all regions except for these will be added for the sample. Cannot be used together with options ```regions```   |
 | truth             | list of dicts     | List of truth levels which should be used for the given sample    |
-| variables         | list of strings   | If specified, only histograms for these variables will be produced for the sample |
-| exclude_variables | list of strings   | If specified, histograms containing these variables will not be produced for the sample. This option cannot be combined with ```variables``` |
+| variables         | list of strings   | If specified, only histograms for these variables will be produced for the sample. Regular expressions are supported. |
+| exclude_variables | list of strings   | If specified, histograms containing these variables will not be produced for the sample. Regular expressions are supported. This option cannot be combined with ```variables``` |
 
 #### `truth` block inside of the `sample` block
 
