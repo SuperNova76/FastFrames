@@ -134,6 +134,7 @@ samples:
     simulation_type: "fullsim"
     regions: ["Electron", "Muon"]
     reco_to_truth_pairing_indices: ["eventNumber", "runNumber"]
+    exclude_variables: ["jet_pt_*"]
     define_custom_columns:
       - name: "HT_3_jets"
         definition: "jet_pt_NOSYS[0] + jet_pt_NOSYS[1] + jet_pt_NOSYS[2]"
