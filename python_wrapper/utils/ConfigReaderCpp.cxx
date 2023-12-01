@@ -197,6 +197,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addVariable
         .def("addVariable",         &RegionWrapper::addVariable)
         .def("getVariableRawPtrs",  &RegionWrapper::getVariableRawPtrs)
+        .def("getVariableNames",    &RegionWrapper::getVariableNames)
 
         // addVariableCombination
         .def("addVariableCombination",   &RegionWrapper::addVariableCombination)
@@ -275,6 +276,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addRegion
         .def("addRegion",           &SampleWrapper::addRegion)
         .def("regionsNames",        &SampleWrapper::regionsNames)
+        .def("regions",             &SampleWrapper::regions)
+
 
         // RecoToTruthPairingIndex
         .def("setRecoToTruthPairingIndices",  &SampleWrapper::setRecoToTruthPairingIndices)

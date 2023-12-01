@@ -168,12 +168,21 @@ class SampleWrapper {
          * @return std::vector<std::string>
          */
         std::vector<std::string> regionsNames()    const {
-            const std::vector<std::shared_ptr<Region>> &regions = m_sample->regions();
-            std::vector<std::string> region_names(regions.size());
-            for (unsigned int i = 0; i < regions.size(); ++i) {
-                region_names.at(i) = regions.at(i)->name();
+            const std::vector<std::shared_ptr<Region>> &regions_shared_ptrs = m_sample->regions();
+            std::vector<std::string> region_names(regions_shared_ptrs.size());
+            for (unsigned int i = 0; i < regions_shared_ptrs.size(); ++i) {
+                region_names.at(i) = regions_shared_ptrs.at(i)->name();
             }
             return region_names;
+        };
+
+        std::vector<unsigned long long int> regions() const {
+            const std::vector<std::shared_ptr<Region>> &regions_shared_ptrs = m_sample->regions();
+            std::vector<unsigned long long int> region_ptrs;
+            for (const std::shared_ptr<Region> &region : regions_shared_ptrs) {
+                region_ptrs.push_back(reinterpret_cast<unsigned long long int>(&region));
+            }
+            return region_ptrs;
         };
 
 

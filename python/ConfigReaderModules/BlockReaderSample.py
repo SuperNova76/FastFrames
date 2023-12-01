@@ -6,7 +6,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp    import SampleWrapper, TruthWrapper, StringVector
+from ConfigReaderCpp    import SampleWrapper, TruthWrapper, StringVector, RegionWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
@@ -86,8 +86,12 @@ class BlockReaderSample:
                 self.cpp_class.addTruth(truth_object.cpp_class.getPtr())
 
 
-        self.variables          = self._options_getter.get("variables", [], [list], [str])
-        self.exclude_variables  = self._options_getter.get("exclude_variables", [], [list], [str])
+        self.variables          = self._options_getter.get("variables", None, [list], [str])
+        self.exclude_variables  = self._options_getter.get("exclude_variables", None, [list], [str])
+        if self.variables is not None and self.exclude_variables is not None:
+            Logger.log_message("ERROR", "Both variables and exclude_variables specified for sample {}".format(self._name))
+            exit(1)
+
 
         self._set_unique_samples_IDs()
 
@@ -157,6 +161,31 @@ class BlockReaderSample:
 
             self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
             self._systematic.append(systematic_name)
+
+    def resolve_variables(self) -> None:
+        variables_defined_for_sample = []
+        regions_ptrs = self.cpp_class.regions()
+        for region_ptr in regions_ptrs:
+            region_object = RegionWrapper("")
+            region_object.constructFromSharedPtr(region_ptr)
+            variables_in_region = region_object.getVariableNames()
+            for variable in variables_in_region:
+                if variable not in variables_defined_for_sample:
+                    variables_defined_for_sample.append(variable)
+
+        variables_to_keep = []
+
+        if self.variables is None and self.exclude_variables is None:
+            variables_to_keep = variables_defined_for_sample
+        elif self.variables is not None:
+            variables_to_keep = self.variables
+        elif self.exclude_variables is not None:
+            for variable in variables_defined_for_sample:
+                if variable not in self.exclude_variables:
+                    variables_to_keep.append(variable)
+
+        for variable in variables_to_keep:
+            self.cpp_class.addVariable(variable)
 
 
     def _set_cpp_class(self) -> None:

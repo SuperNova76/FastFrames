@@ -76,6 +76,7 @@ class ConfigReader:
             for sample_name,sample in self.samples.items():
                 Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.cpp_class.regionsNames())))
                 sample.adjust_systematics(self.systematics)
+                sample.resolve_variables()
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
             self.block_ntuple = BlockReaderNtuple([])
@@ -173,6 +174,10 @@ if __name__ == "__main__":
         print("\tsystematic: ", vector_to_list(sample.systematicsNames()))
         print("\tselection_suffix: \"" + sample.selectionSuffix() + "\"")
         print("\treco_to_truth_pairing_indices: ", vector_to_list(sample.recoToTruthPairingIndices()))
+        print("\tvariables:")
+        variable_names = vector_to_list(sample.variables())
+        for variable_name in variable_names:
+            print("\t\t", variable_name)
         print("\tUnique samples:")
         n_unique_samples = sample.nUniqueSampleIDs()
         for i_unique_id in range(n_unique_samples):
