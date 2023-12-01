@@ -215,8 +215,7 @@ public:
    *
    * @param variable
    */
-  void addVariable(const std::string& variable);
-
+  inline void addVariable(const std::string& variable) {m_variables.emplace_back(variable);}
 
   /**
    * @brief Get the list of variables

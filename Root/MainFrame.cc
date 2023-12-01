@@ -645,6 +645,12 @@ void MainFrame::processHistograms1D(RegionHisto* regionHisto,
                                     const std::shared_ptr<Systematic>& systematic) const {
 
     for (const auto& ivariable : region->variables()) {
+        const std::vector<std::string>& variables = sample->variables();
+        auto itrVar = std::find(variables.begin(), variables.end(), ivariable.name());
+        if (itrVar == variables.end()) {
+            LOG(DEBUG) << "Skippping variable: " << ivariable.name() << " for sample: " << sample->name() << "\n";
+            continue;
+        }
         VariableHisto variableHisto(ivariable.name());
 
         ROOT::RDF::RResultPtr<TH1D> histogram = node.Histo1D(
@@ -674,8 +680,15 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
     for (const auto& combinations : region->variableCombinations()) {
         const Variable& v1 = region->variableByName(combinations.first);
         const Variable& v2 = region->variableByName(combinations.second);
-
         const std::string name = v1.name() + "_vs_" + v2.name();
+        
+        const std::vector<std::string>& variables = sample->variables();
+        auto itrVar1 = std::find(variables.begin(), variables.end(), v1.name());
+        auto itrVar2 = std::find(variables.begin(), variables.end(), v2.name());
+        if (itrVar1 == variables.end() || itrVar2 == variables.end()) {
+            LOG(DEBUG) << "Skippping variable (2D): " << name << " for sample: " << sample->name() << "\n";
+            continue;
+        }
 
         VariableHisto2D variableHisto2D(name);
         ROOT::RDF::RResultPtr<TH2D> histogram2D = node.Histo2D(
