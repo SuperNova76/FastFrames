@@ -210,6 +210,22 @@ public:
    */
   inline const std::vector<std::pair<std::string, std::string> >& customDefines() const {return m_customDefines;}
 
+  /**
+   * @brief Add variable to the list of variables
+   *
+   * @param variable
+   */
+  void addVariable(const std::string& variable);
+
+
+  /**
+   * @brief Get the list of variables
+   *
+   * @return const std::vector<std::string>&
+   */
+  inline const std::vector<std::string>& variables() const {return m_variables;}
+
+
 private:
   std::string m_name;
 
@@ -230,4 +246,6 @@ private:
   std::string m_eventWeight;
 
   std::vector<std::pair<std::string, std::string> > m_customDefines;
+
+  std::vector<std::string> m_variables;
 };
