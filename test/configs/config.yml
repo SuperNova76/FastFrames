@@ -110,6 +110,7 @@ samples:
     dsids: [700341]
     campaigns: ["mc20a"]
     simulation_type: "fullsim" # mc is full sim
+    exclude_variables: ["met_phi"]
 
   - name: "Data"
     dsids: [0]
