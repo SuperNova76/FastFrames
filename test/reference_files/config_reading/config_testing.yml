@@ -98,7 +98,7 @@ samples:
   - name: "ttbar_FS"
     dsids: [410470]
     campaigns: ["mc20e"]
-    simulation_type: "mc" # mc is full sim
+    simulation_type: "fullsim"
     weight_suffix: "my_suffix_weight_for_ttbar" # this is an additional weight to be applied (multiplication) to the sample
     #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
@@ -131,7 +131,7 @@ samples:
     campaigns: ["mc20e"]
     event_weights: "weight_mc_NOSYS"
     selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
-    simulation_type: "mc"
+    simulation_type: "fullsim"
     regions: ["Electron", "Muon"]
     reco_to_truth_pairing_indices: ["eventNumber", "runNumber"]
     define_custom_columns:
@@ -143,13 +143,13 @@ samples:
     campaigns: ["mc20e"]
     event_weights: "weight_mc_NOSYS"
     selection_suffix: "n_bjets_truth > 0"
-    simulation_type: "mc"
+    simulation_type: "fullsim"
     exclude_regions: ["Muon"]
 
   - name: "Wjets_FS"
     dsids: [700341,700342,700344]
     campaigns: ["mc20a","mc20e"]
-    simulation_type: "mc"
+    simulation_type: "fullsim"
     regions: ["Electron"]
     exclude_variables: ["jet_pt_NOSYS"]
 

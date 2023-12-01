@@ -43,7 +43,7 @@ void ConfigSetting::setTestingValues()  {
     syst->addRegion(reg);
     m_systematics.emplace_back(syst);
     std::shared_ptr<Sample> sample = std::make_shared<Sample>("ttbar_FS");
-    UniqueSampleID unique(410470, "mc20e", "mc");
+    UniqueSampleID unique(410470, "mc20e", "fullsim");
     sample->addUniqueSampleID(unique);
     sample->addSystematic(syst);
     sample->addSystematic(nominal);

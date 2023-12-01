@@ -11,7 +11,7 @@
 #include "ROOT/RDataFrame.hxx"
 #include "TClass.h"
 #include "TFile.h"
-#include "TH1F.h"
+#include "TH1.h"
 #include "TKey.h"
 #include "TNamed.h"
 #include "TROOT.h"
@@ -44,12 +44,8 @@ void ObjectCopier::readObjectInfo() {
             m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Tree));
             continue;
         }
-        if (cl->InheritsFrom("TH1F")) {
+        if (cl->InheritsFrom("TH1")) {
             m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Histogram));
-            continue;
-        }
-        if (cl->InheritsFrom("TNamed")) {
-            m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Named));
             continue;
         }
     }
@@ -77,26 +73,17 @@ void ObjectCopier::copyObjectsTo(const std::string& outputPath) const {
             auto finalHist = this->mergeHistos(iobject.first, files);
             out->cd();
             finalHist->Write(iobject.first.c_str());
-        } else if (iobject.second == ObjectCopier::ObjectType::Named) {
-            std::unique_ptr<TNamed> named(files.at(0)->Get<TNamed>(iobject.first.c_str()));
-            if (!named) {
-                LOG(ERROR) << "Cannot read TNamed object: " << iobject.first << "\n";
-                throw std::invalid_argument("");
-            }
-
-            out->cd();
-            named->Write(iobject.first.c_str());
         }
     }
 }
 
-std::unique_ptr<TH1F> ObjectCopier::mergeHistos(const std::string& name,
+std::unique_ptr<TH1> ObjectCopier::mergeHistos(const std::string& name,
                                                 const std::vector<std::unique_ptr<TFile> >& files) const {
 
-    std::unique_ptr<TH1F> result(nullptr);
+    std::unique_ptr<TH1> result(nullptr);
 
     for (const auto& ifile : files) {
-        std::unique_ptr<TH1F> hist(ifile->Get<TH1F>(name.c_str()));
+        std::unique_ptr<TH1> hist(ifile->Get<TH1>(name.c_str()));
         if (!hist) {
             LOG(ERROR) << "Cannot read histogram: " << name << "\n";
             throw std::invalid_argument("");
