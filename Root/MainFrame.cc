@@ -648,7 +648,7 @@ void MainFrame::processHistograms1D(RegionHisto* regionHisto,
         const std::vector<std::string>& variables = sample->variables();
         auto itrVar = std::find(variables.begin(), variables.end(), ivariable.name());
         if (itrVar == variables.end()) {
-            LOG(DEBUG) << "Skippping variable: " << ivariable.name() << " for sample: " << sample->name() << "\n";
+            LOG(VERBOSE) << "Skipping variable: " << ivariable.name() << " for sample: " << sample->name() << ", systematic" << systematic->name() << "\n";
             continue;
         }
         VariableHisto variableHisto(ivariable.name());
@@ -686,7 +686,7 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
         auto itrVar1 = std::find(variables.begin(), variables.end(), v1.name());
         auto itrVar2 = std::find(variables.begin(), variables.end(), v2.name());
         if (itrVar1 == variables.end() || itrVar2 == variables.end()) {
-            LOG(DEBUG) << "Skippping variable (2D): " << name << " for sample: " << sample->name() << "\n";
+            LOG(VERBOSE) << "Skipping variable (2D): " << name << " for sample: " << sample->name() << ", systematic" << systematic->name() << "\n";
             continue;
         }
 
