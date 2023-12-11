@@ -58,7 +58,7 @@ class ConfigReader:
             nominal.adjust_regions(self.regions)
             self.systematics[nominal.cpp_class.name()] = nominal
 
-            for systematic_dict in self.block_getter.get("systematics"):
+            for systematic_dict in self.block_getter.get("systematics", []):
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general)
                 for systematic in systematic_list:
                     systematic.adjust_regions(self.regions)
