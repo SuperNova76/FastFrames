@@ -114,3 +114,62 @@ std::vector<std::size_t> DefineHelpers::sortedPassedIndices(const std::vector<TL
   }
   return result;
 }
+
+std::size_t DefineHelpers::numberOfObjects(const std::vector<TLV>& tlv,
+                                           const float minPt,
+                                           const std::vector<char>& selection) {
+
+  std::size_t result(0);
+  for (std::size_t i = 0; i < tlv.size(); ++i) {
+    if (!selection.at(i)) continue;
+    if (tlv.at(i).pt() < minPt) continue;
+    ++result;
+  }
+
+  return result;
+}
+
+std::size_t DefineHelpers::numberOfObjects(const std::vector<TLV>& tlv,
+                                           const float minPt,
+                                           const std::vector<char>& selection1,
+                                           const std::vector<char>& selection2) {
+
+  std::size_t result(0);
+  for (std::size_t i = 0; i < tlv.size(); ++i) {
+    if (!selection1.at(i)) continue;
+    if (!selection2.at(i)) continue;
+    if (tlv.at(i).pt() < minPt) continue;
+    ++result;
+  }
+
+  return result;
+}
+
+std::size_t DefineHelpers::numberOfObjects(const std::vector<float>& pts,
+                                           const float minPt,
+                                           const std::vector<char>& selection) {
+
+  std::size_t result(0);
+  for (std::size_t i = 0; i < pts.size(); ++i) {
+    if (!selection.at(i)) continue;
+    if (pts.at(i) < minPt) continue;
+    ++result;
+  }
+
+  return result;
+}
+
+std::size_t DefineHelpers::numberOfObjects(const std::vector<float>& pts,
+                                           const float minPt,
+                                           const std::vector<char>& selection1,
+                                           const std::vector<char>& selection2) {
+  std::size_t result(0);
+  for (std::size_t i = 0; i < pts.size(); ++i) {
+    if (!selection1.at(i)) continue;
+    if (!selection2.at(i)) continue;
+    if (pts.at(i) < minPt) continue;
+    ++result;
+  }
+
+  return result;
+}

@@ -64,6 +64,57 @@ namespace DefineHelpers {
                                                const std::vector<char>& selection2);
 
   /**
+   * @brief Number of objects passing a selection and minimum pT requirement 
+   * 
+   * @param tlv LorentzVectors
+   * @param minPt minimum pT
+   * @param selection1 first selection
+   * @param selection2 second selection
+   * @return std::size_t 
+   */
+  std::size_t numberOfObjects(const std::vector<TLV>& tlv,
+                              const float minPt,
+                              const std::vector<char>& selection1,
+                              const std::vector<char>& selection2);
+
+  /**
+   * @brief Number of objects passing a selection and minimum pT requirement 
+   * 
+   * @param tlv LorentzVectors
+   * @param minPt minimum pT
+   * @param selection selection
+   * @return std::size_t 
+   */
+  std::size_t numberOfObjects(const std::vector<TLV>& tlv,
+                              const float minPt,
+                              const std::vector<char>& selection);
+
+  /**
+   * @brief Number of objects passing a selection and minimum pT requirement 
+   * 
+   * @param pts Pt of the objects
+   * @param minPt minimum pT
+   * @param selection selection
+   * @return std::size_t 
+   */
+  std::size_t numberOfObjects(const std::vector<float>& pts,
+                              const float minPt,
+                              const std::vector<char>& selection);
+  
+  /**
+   * @brief Number of objects passing a selection and minimum pT requirement 
+   * 
+   * @param pts Pt of the objects
+   * @param minPt minimum pT
+   * @param selection1 selection1
+   * @param selection2 selection2
+   * @return std::size_t 
+   */
+  std::size_t numberOfObjects(const std::vector<float>& pts,
+                              const float minPt,
+                              const std::vector<char>& selection1,
+                              const std::vector<char>& selection2);
+  /**
    * @brief Get vector based on given set of indices
    *
    * @tparam T
