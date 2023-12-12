@@ -28,3 +28,5 @@ Same as `systematicDefine` if the columns that the functor depends on, but if th
 Function that uses string to define the new variable instead of a functor. This is recommended for simple functions, but `systematicDefine` is recommended for complex defines.
 Similarly to `systematicDefine`, this will also automatically make systematic copied for the effective systematics.
 
+## numberOfObjects
+Function that count the number of objects passing selection (vector of chars) and a given minimum pT passed to the function. Works with one or two selections and with LorentzVectors or directly with the `vector<float>` for the object pt.
