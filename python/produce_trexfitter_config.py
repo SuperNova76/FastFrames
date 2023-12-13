@@ -82,11 +82,15 @@ def get_sample_dictionary(sample, regions_map) -> tuple[str,str,dict]:
 
     region_names = vector_to_list(sample.regionsNames())
     region_list = []
+    variable_names_defined_for_sample = vector_to_list(sample.variables())
     for region_name in region_names:
         region = regions_map[region_name]
         variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
         for variable in variable_cpp_objects:
-            variable_name = variable.name().replace("_NOSYS","")
+            variable_name = variable.name()
+            if not variable_name in variable_names_defined_for_sample:
+                continue
+            variable_name = variable_name.replace("_NOSYS","")
             region_list.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
     dictionary["Regions"] = ",".join(region_list)
 
