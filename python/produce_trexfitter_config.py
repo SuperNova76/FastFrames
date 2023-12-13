@@ -18,13 +18,24 @@ from ConfigReader import ConfigReader
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from CommandLineOptions import CommandLineOptions
+from BlockReaderGeneral import BlockReaderGeneral, vector_to_list
+
+sample_color_counter = 2
+def get_sample_color(sample_name : str) -> int:
+    global sample_color_counter
+    sample_color_counter += 1
+    return sample_color_counter
 
 def dump_dictionary_to_file(block_type : str, block_name : str, dictionary : dict, file) -> None:
     file.write(block_type + ': "' + block_name + '"\n')
     for key in dictionary:
         value = dictionary[key]
         if type(value) == str:
-            file.write("\t" + key + ': "' + value + '"\n')
+            contains_spaces = " " in value
+            if contains_spaces:
+                file.write("\t" + key + ': "' + value + '"\n')
+            else:
+                file.write("\t" + key + ': ' + value + '\n')
         else:
             file.write("\t" + key + ': ' + str(value) + '\n')
     file.write("\n")
@@ -49,23 +60,35 @@ def get_job_dictionary(block_general) -> tuple[str,str,dict]:
 
 def get_region_dictionary(region, variable) -> tuple[str,str,dict]:
     dictionary = {}
-    region_name = region.name() + "_" + variable.name()
+    variable_name = variable.name().replace("_NOSYS","")
+    region_name = region.name() + "_" + variable_name
     dictionary["Type"] = "SIGNAL"
     dictionary["NumberOfRecoBins"] = variable.axisNbins()
-    dictionary["VariableTitle"] = variable.name() # TODO: proper title
-    dictionary["HistoName"] = "NOSYS/" + variable.name() + "_" + region.name()
+    dictionary["VariableTitle"] = variable_name # TODO: proper title
+    dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
     dictionary["Label"] = region_name       # TODO: proper label
     dictionary["ShortLabel"] = region_name  # TODO: proper label
     return "Region", region_name, dictionary
 
-def get_sample_dictionary(sample) -> tuple[str,str,dict]:
+def get_sample_dictionary(sample, regions_map) -> tuple[str,str,dict]:
     dictionary = {}
     is_data = BlockReaderSample.is_data_sample(sample)
     dictionary["Type"] = "BACKGROUND" if not is_data else "DATA"
     dictionary["Title"] = sample.name()
     dictionary["HistoFile"] = sample.name()
-    # TODO: FillColor
-    # TODO: LineColor
+    sample_color = get_sample_color(sample.name())
+    dictionary["FillColor"] = sample_color # TODO: FillColor
+    dictionary["LineColor"] = sample_color  # TODO: LineColor
+
+    region_names = vector_to_list(sample.regionsNames())
+    region_list = []
+    for region_name in region_names:
+        region = regions_map[region_name]
+        variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
+        for variable in variable_cpp_objects:
+            variable_name = variable.name().replace("_NOSYS","")
+            region_list.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
+    dictionary["Regions"] = ",".join(region_list)
 
     return "Sample", sample.name(), dictionary
 
@@ -82,7 +105,10 @@ if __name__ == "__main__":
 
         add_block_comment("REGIONS", file)
         regions = config_reader.block_general.get_regions_cpp_objects()
+        region_map = {}
         for region in regions:
+            region_name = region.name()
+            region_map[region_name] = region
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable_cpp_object in variable_cpp_objects:
                 region_dict = get_region_dictionary(region,variable_cpp_object)
@@ -91,6 +117,6 @@ if __name__ == "__main__":
         add_block_comment("SAMPLES", file)
         samples = config_reader.block_general.get_samples_objects()
         for sample in samples:
-            sample_dict = get_sample_dictionary(sample)
+            sample_dict = get_sample_dictionary(sample, region_map)
             dump_dictionary_to_file(*sample_dict, file)
 
