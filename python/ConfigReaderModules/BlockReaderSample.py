@@ -241,3 +241,14 @@ class BlockReaderSample:
             truth_cpp_object.constructFromSharedPtr(ptr)
             result.append(truth_cpp_object)
         return result
+
+    def is_data_sample(sample_cpp_object) -> bool:
+        """!Check if the sample is data sample
+        """
+        n_unique_ids = sample_cpp_object.nUniqueSampleIDs()
+        for i in range(n_unique_ids):
+            id_string = sample_cpp_object.uniqueSampleIDstring(i)[1:-1]
+            sample_type = id_string.split(",")[2].strip()
+            if sample_type.lower() != "data":
+                return False
+        return True
