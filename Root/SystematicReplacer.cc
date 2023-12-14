@@ -47,7 +47,7 @@ void SystematicReplacer::getBranchesFromFile(const std::unique_ptr<TFile>& file,
         throw std::invalid_argument("");
     }
 
-    const auto branchList = tree->GetListOfBranches();
+    const TObjArray* const branchList = tree->GetListOfBranches();
     std::size_t branchSize = tree->GetNbranches();
     for (std::size_t ibranch = 0; ibranch < branchSize; ++ibranch) {
         const std::string name = branchList->At(ibranch)->GetName();
