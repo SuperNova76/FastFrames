@@ -143,7 +143,7 @@ class BlockReaderSystematic:
             Logger.log_message("ERROR", "Key {} used in systematic block is not supported!".format(unused))
             exit(1)
 
-def read_systematics_variations(input_dict : dict, block_reader_general : BlockReaderGeneral = None) -> list:
+def read_systematics_variations(input_dict : dict, block_reader_general : BlockReaderGeneral = None, systematics_pairs_list : list[dict] = None) -> list:
     """!Read list of systematic uncertainties from the input dictionary read from config. The result might have 1 (only up or only down) or 2 inputs (both up and down variations)
     """
     input_dict_getter = BlockOptionsGetter(input_dict)
@@ -170,13 +170,22 @@ def read_systematics_variations(input_dict : dict, block_reader_general : BlockR
 
     if replacement_string is None:
         result = []
+        dictionary = {}
         for variation in variations:
             result.append(BlockReaderSystematic(input_dict, variation, block_reader_general))
+            dictionary[variation] = result[-1].cpp_class
+        if not systematics_pairs_list is None:
+            systematics_pairs_list.append(dictionary)
         return result
     else:
         result = []
         for i_NP in range(NPmin, NPmax+1):
             replecement_tuple = (replacement_string, str(i_NP))
+            dictionary = {}
             for variation in variations:
                 result.append(BlockReaderSystematic(input_dict, variation, block_reader_general, replecement_tuple))
+                dictionary[variation] = result[-1].cpp_class
+
+            if not systematics_pairs_list is None:
+                systematics_pairs_list.append(dictionary)
         return result
