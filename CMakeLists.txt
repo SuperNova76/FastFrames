@@ -72,6 +72,7 @@ endif (BUILD_DOC)
 # Add ROOT system directory and require ROOT.
 find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame ROOTVecOps)
 find_package( Python3 COMPONENTS Development REQUIRED )
+find_package( LCG QUIET )
 find_package( Boost COMPONENTS python REQUIRED )
 
 include_directories(${CMAKE_SOURCE_DIR})

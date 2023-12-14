@@ -49,9 +49,19 @@ This should download the ROOT files that are used for the CI tests, but can also
 
 #### Using lxplus(-like) machine
 The instructions are the same as in the Local build, but you can setup ROOT and Boost using StatAnalysis:
+
+When using Alma Linux 9 (lxplus default)
+
 ```
 setupATLAS
-asetup StatAnalysis,0.2,latest
+asetup StatAnalysis,0.3,latest 
+```
+
+When using CentOS 7 (lxplus7)
+
+```
+setupATLAS
+asetup StatAnalysis,0.2,latest 
 ```
 
 This will setup an appropriate version of ROOT (you can check the ROOT version with `root --version`)

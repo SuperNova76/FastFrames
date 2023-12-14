@@ -38,7 +38,7 @@ void ObjectCopier::readObjectInfo() {
     TIter nextkey(in->GetListOfKeys());
     while ((key = static_cast<TKey*>(nextkey()))) {
         const std::string classname = key->GetClassName();
-        TClass *cl = gROOT->GetClass(classname.c_str());
+        const TClass *cl = gROOT->GetClass(classname.c_str());
         if (!cl) continue;
         if (cl->InheritsFrom("TTree")) {
             m_objectList.emplace_back(std::make_pair(key->GetName(), ObjectCopier::ObjectType::Tree));
