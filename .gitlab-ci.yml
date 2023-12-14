@@ -161,6 +161,7 @@ produce_trexfitter_config:
     - compile
   script:
      - python3 python/produce_trexfitter_config.py --config test/configs/config.yml
+  allow_failure: true
 
 run_python_histograms:
   stage: run

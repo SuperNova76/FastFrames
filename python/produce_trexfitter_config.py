@@ -94,6 +94,8 @@ def get_sample_dictionary(sample, regions_map) -> tuple[str,str,dict]:
                 continue
             variable_name = variable_name.replace("_NOSYS","")
             selected_regions.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
+
+    # check if there is more included or excluded regions and use the shorter list of these two
     if (len(selected_regions) > 0.5*len(all_regions_list)):
         excluded_regions = []
         for region in all_regions_list:
