@@ -206,7 +206,7 @@ doxygen_webpage:
     - klist
     - cp docs/custom_krb5.conf /etc/krb5.conf
     - cp docs/custom_ssh.conf /etc/ssh/ssh_config
-    - mkdir ~/.ssh
+    - mkdir -p ~/.ssh
     - ls ~/.ssh
     - echo -e "Host lxplus.cern.ch\n\tUser ${EOS_ACCOUNT_USERNAME}\n\tStrictHostKeyChecking no\n\tGSSAPIAuthentication yes\n\tGSSAPIDelegateCredentials yes\n\tProtocol 2\n\tForwardX11 no\n\tIdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
     - cat ~/.ssh/config
@@ -229,7 +229,7 @@ documentation_webpage:
     - klist
     - cp docs/custom_krb5.conf /etc/krb5.conf
     - cp docs/custom_ssh.conf /etc/ssh/ssh_config
-    - mkdir ~/.ssh
+    - mkdir -p ~/.ssh
     - ls ~/.ssh
     - echo -e "Host lxplus.cern.ch\n\tUser ${EOS_ACCOUNT_USERNAME}\n\tStrictHostKeyChecking no\n\tGSSAPIAuthentication yes\n\tGSSAPIDelegateCredentials yes\n\tProtocol 2\n\tForwardX11 no\n\tIdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
     - cat ~/.ssh/config
