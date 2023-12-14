@@ -115,6 +115,18 @@ def get_strings_common_part(str1 : str, str2 : str) -> str:
             return result
 
 def get_systematics_blocks(systematics_dicts : list[dict], samples_cpp_objects : list, regions_map : dict) -> list:
+    all_regions = []
+    for region in regions_map.values():
+        variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
+        for variable in variable_cpp_objects:
+            all_regions.append(region.name() + "_" + variable.name().replace("_NOSYS",""))
+
+    all_MC_samples = []
+    for sample in samples_cpp_objects:
+        if BlockReaderSample.is_data_sample(sample):
+            continue
+        all_MC_samples.append(sample.name())
+
     result = []
     for systematic_pair in systematics_dicts:
         syst_cpp_object_up = systematic_pair.get("up", None)
@@ -139,8 +151,6 @@ def get_systematics_blocks(systematics_dicts : list[dict], samples_cpp_objects :
             result_dict["HistoFolderNameDown"] = syst_name_down
         result_dict["Title"] = syst_name.replace("_"," ")
         result_dict["Type"] = "HISTO"
-        # TODO: exclude
-        # TODO: samples
         result.append(("Systematic", syst_name, result_dict))
 
         # regions
@@ -152,8 +162,16 @@ def get_systematics_blocks(systematics_dicts : list[dict], samples_cpp_objects :
             for variable in variable_cpp_objects:
                 variable_name = variable.name()
                 regions_selected.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
-        result_dict["Regions"] = ",".join(regions_selected)
-
+        if len(regions_selected) != len(all_regions):
+            if len(regions_selected) > 0.5*len(all_regions):
+                excluded_regions = []
+                for region in all_regions:
+                    if not region in regions_selected:
+                        excluded_regions.append(region)
+                if excluded_regions:
+                    result_dict["Exclude"] = ",".join(excluded_regions)
+            else:
+                result_dict["Regions"] = ",".join(regions_selected)
 
         # samples
         samples_selected = []
@@ -161,7 +179,19 @@ def get_systematics_blocks(systematics_dicts : list[dict], samples_cpp_objects :
             if not sample.hasSystematics(non_empty_variation):
                 continue
             samples_selected.append(sample.name())
-        result_dict["Samples"] = ",".join(samples_selected)
+        if len(samples_selected) != len(all_MC_samples):
+            if len(samples_selected) > 0.5*len(all_MC_samples):
+                excluded_samples = []
+                for sample in all_MC_samples:
+                    if not sample in samples_selected:
+                        excluded_samples.append(sample)
+                if excluded_samples:
+                    if "Exclude" in result_dict:
+                        result_dict["Exclude"] += "," + ",".join(excluded_samples)
+                    else:
+                        result_dict["Exclude"] = ",".join(excluded_samples)
+            else:
+                result_dict["Samples"] = ",".join(samples_selected)
 
     return result
 

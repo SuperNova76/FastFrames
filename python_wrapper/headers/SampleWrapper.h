@@ -152,10 +152,13 @@ class SampleWrapper {
             return syst_names;
         };
 
+        /**
+         * @brief is the systematics defined for this sample?
+        */
         bool hasSystematics(const std::string &syst_name) const {
             const std::vector<std::shared_ptr<Systematic>> &systematics = m_sample->systematics();
-            for (unsigned int i = 0; i < systematics.size(); ++i) {
-                if (syst_name == systematics.at(i)->name()) {
+            for (const std::shared_ptr<Systematic> &syst : systematics) {
+                if (syst_name == syst->name()) {
                     return true;
                 };
             }
