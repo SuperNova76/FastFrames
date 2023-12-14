@@ -22,16 +22,17 @@ stages:
 cmake:
   stage: build
   script:
-     - mkdir -p build && cd build
-     - cmake -DCMAKE_INSTALL_PREFIX=../install/ .. | tee cmake.log
+   - mkdir -p build && cd build
+   - cmake -DCMAKE_INSTALL_PREFIX=../install/ .. | tee cmake.log
   artifacts:
-     paths:
-      - build
-     expire_in: 1d
+   paths:
+    - build
+   expire_in: 1d
 
 make_doxygen:
   stage: build
   script:
+     - yum -y install doxygen
      - mkdir -p doc_build && cd doc_build
      - cmake -DBUILD_DOC=ON .. | tee cmake.log
      - make doc_doxygen
