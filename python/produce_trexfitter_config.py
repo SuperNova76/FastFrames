@@ -45,6 +45,23 @@ def add_block_comment(block_type : str, file) -> None:
     file.write("% " + "-"*(length-4) + " %\n")
     file.write("\n")
 
+def get_normfactor_dicts(samples_cpp_objects : list) -> list:
+    normfactor_dict = {}
+    normfactor_dict["Title"] =  '"#mu(signal)"'
+    normfactor_dict["Nominal"] =  1
+    normfactor_dict["Min"] =  -100
+    normfactor_dict["Max"] =  100
+    normfactor_dict["Samples"] = samples_cpp_objects[0].name()
+    return [("NormFactor", "mu_signal", normfactor_dict)]
+
+def get_fit_block() -> tuple:
+    result = {}
+    result["FitType"]   = "SPLUSB"
+    result["FitRegion"] = "CRSR"
+    result["POIAsimov"] = 1
+    result["FitBlind"] = "True"
+    return "Fit", "fit", result
+
 def get_job_dictionary(block_general) -> tuple[str,str,dict]:
     dictionary = {}
     histo_path = block_general.cpp_class.outputPathHistograms()
@@ -54,6 +71,7 @@ def get_job_dictionary(block_general) -> tuple[str,str,dict]:
     dictionary["Lumi"] = 1
     dictionary["ImageFormat"] = "pdf"
     dictionary["ReadFrom"] = "HIST"
+    dictionary["POI"] = "mu_signal"
     return "Job","my_fit",dictionary
 
 def get_region_dictionary(region, variable) -> tuple[str,str,dict]:
@@ -207,6 +225,11 @@ if __name__ == "__main__":
         add_block_comment("JOB", file)
         dump_dictionary_to_file(*job_tuple, file)
 
+        add_block_comment("FIT", file)
+        fit_block = get_fit_block()
+        dump_dictionary_to_file(*fit_block, file)
+
+
         add_block_comment("REGIONS", file)
         regions = config_reader.block_general.get_regions_cpp_objects()
         region_map = {}
@@ -223,6 +246,11 @@ if __name__ == "__main__":
         for sample in samples:
             sample_dict = get_sample_dictionary(sample, region_map)
             dump_dictionary_to_file(*sample_dict, file)
+
+        add_block_comment("NORM. FACTORS", file)
+        norm_factor_blocks = get_normfactor_dicts(samples)
+        for norm_factor_block in norm_factor_blocks:
+            dump_dictionary_to_file(*norm_factor_block, file)
 
 
         add_block_comment("SYSTEMATICS", file)
