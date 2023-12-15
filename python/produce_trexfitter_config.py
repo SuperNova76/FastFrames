@@ -78,6 +78,10 @@ if __name__ == "__main__":
         for norm_factor_block in norm_factor_blocks:
             dump_dictionary_to_file(*norm_factor_block, file)
 
+        #automatic_systematics = trex_settings_getter.get_automatic_systematics_list(".", [x.name() for x in samples], regions)
+        #print("Automatic systematics:")
+        #for syst in automatic_systematics:
+        #    print(syst, ":", automatic_systematics[syst])
 
         add_block_comment("SYSTEMATICS", file)
         systematics_dicts = config_reader.systematics_dicts
