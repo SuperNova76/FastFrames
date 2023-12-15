@@ -1,0 +1,5 @@
+samples:
+    - name: "ttbar_FS"
+      Color: 50
+      Title: "t#bar{t}"
+      Type: "Signal"
