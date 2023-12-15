@@ -224,6 +224,19 @@ public:
    */
   inline const std::vector<std::string>& variables() const {return m_variables;}
 
+  /**
+   * @brief Add regex for exclude systematics from automatic systematics
+   * 
+   * @param name 
+   */
+  inline void addExcludeAutomaticSystematic(const std::string& name) {m_excludeAutomaticSystematics.emplace_back(name);}
+
+  /**
+   * @brief Get the vector of regexes for automatic systematics exclusion 
+   * 
+   * @return const std::vector<std::string>& 
+   */
+  inline const std::vector<std::string>& excludeAutomaticSystematics() const {return m_excludeAutomaticSystematics;}
 
 private:
   std::string m_name;
@@ -247,4 +260,6 @@ private:
   std::vector<std::pair<std::string, std::string> > m_customDefines;
 
   std::vector<std::string> m_variables;
+
+  std::vector<std::string> m_excludeAutomaticSystematics;
 };

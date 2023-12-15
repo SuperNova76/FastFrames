@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <exception>
+#include <regex>
 
 void MainFrame::init() {
     if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0) {
@@ -594,6 +595,21 @@ void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const 
         const std::vector<std::string> listOfSystematics = this->automaticSystematicNames(fileList.at(0));
         // now add the systematics
         for (const auto& isyst : listOfSystematics) {
+
+            bool skip(false);
+            for (const auto& iexclude : sample->excludeAutomaticSystematics()) {
+                std::regex match(iexclude);
+                if (std::regex_match(isyst, match)) {
+                    skip = true;
+                    break;
+                }
+            }
+
+            if (skip) {
+                LOG(VERBOSE) << "Sample: " << sample->name() << " skipping automatic systematic: " << isyst << "\n";
+                continue;
+            }
+
             auto syst = std::make_shared<Systematic>(isyst);
             if (m_metadataManager.sumWeightsExist(iuniqueSample, syst)) {
                 syst->setSumWeights(isyst);
