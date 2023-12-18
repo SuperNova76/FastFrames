@@ -15,7 +15,6 @@ from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderGeneral import vector_to_list
 
-from python_wrapper.python.logger import Logger
 
 import yaml
 
@@ -96,6 +95,45 @@ class TrexSettingsGetter:
             root_file.Close
         return result
 
+    def get_automatic_systematics_pairs(self, output_root_files_folder : str, sample_names : list, regions_objects : list) -> dict[str,dict]:
+        automatic_systematics = self.get_automatic_systematics_list(output_root_files_folder, sample_names, regions_objects)
+        contains_generator_syst = False
+        result = {}
+        for histo_name in automatic_systematics:
+            samples_string = ",".join(automatic_systematics[histo_name])
+            if histo_name.startswith("GEN_"):
+                contains_generator_syst = True
+                continue
+            syst_name = histo_name
+            if histo_name.endswith("__1up"):
+                syst_name = histo_name[:-5]
+                if syst_name in result:
+                    result[syst_name]["HistoFolderNameUp"] = histo_name
+                else:
+                    result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": samples_string}
+            elif histo_name.endswith("__1down"):
+                syst_name = histo_name[:-7]
+                if syst_name in result:
+                    result[syst_name]["HistoFolderNameDown"] = histo_name
+                else:
+                    result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": samples_string}
+            else:
+                result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": samples_string}
+
+        if contains_generator_syst:
+            Logger.log_message("WARNING", "The ROOT files contain generator systematics. These cannot be added automaticaly. Please take a look at it.")
+
+        # add all other info:
+        for syst_name in result:
+            syst_dict = result[syst_name]
+            syst_dict["Title"] = syst_name.replace("_"," ")
+            syst_dict["Type"] = "HISTO"
+            syst_dict["Symmetrisation"] = "TWOSIDED" if (("HistoFolderNameDown" in syst_dict) and ("HistoFolderNameUp" in syst_dict)) else "ONESIDED"
+            syst_dict["Smoothing"] = 40
+
+        return result
+
+
     def get_sample_color(self) -> int:
         self._sample_color_counter += 1
         return self._sample_color_counter
@@ -128,6 +166,7 @@ class TrexSettingsGetter:
         dictionary["ImageFormat"] = "pdf"
         dictionary["ReadFrom"] = "HIST"
         dictionary["POI"] = "mu_signal"
+        dictionary["HistoChecks"] = "NOCRASH"
         return "Job","my_fit",dictionary
 
     def get_region_dictionary(self, region, variable) -> tuple[str,str,dict]:

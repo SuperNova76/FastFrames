@@ -78,15 +78,16 @@ if __name__ == "__main__":
         for norm_factor_block in norm_factor_blocks:
             dump_dictionary_to_file(*norm_factor_block, file)
 
-        #automatic_systematics = trex_settings_getter.get_automatic_systematics_list(".", [x.name() for x in samples], regions)
-        #print("Automatic systematics:")
-        #for syst in automatic_systematics:
-        #    print(syst, ":", automatic_systematics[syst])
 
         add_block_comment("SYSTEMATICS", file)
-        systematics_dicts = config_reader.systematics_dicts
-        samples_cpp_objects = config_reader.block_general.get_samples_objects()
-        regions_cpp_objects = config_reader.block_general.get_regions_cpp_objects()
-        systematics_blocks = trex_settings_getter.get_systematics_blocks(systematics_dicts, samples_cpp_objects, region_map)
-        for syst_block in systematics_blocks:
-            dump_dictionary_to_file(*syst_block, file)
+        if not block_general.cpp_class.automaticSystematics():
+            systematics_dicts = config_reader.systematics_dicts
+            samples_cpp_objects = config_reader.block_general.get_samples_objects()
+            regions_cpp_objects = config_reader.block_general.get_regions_cpp_objects()
+            systematics_blocks = trex_settings_getter.get_systematics_blocks(systematics_dicts, samples_cpp_objects, region_map)
+            for syst_block in systematics_blocks:
+                dump_dictionary_to_file(*syst_block, file)
+        else:
+            automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", [x.name() for x in samples], regions)
+            for syst_name in automatic_systematics:
+                dump_dictionary_to_file("Systematic", syst_name, automatic_systematics[syst_name], file)
