@@ -187,7 +187,10 @@ class VariableWrapper   {
          * @return int
          */
         int axisNbins() const {
-            return m_variable->axisNbins();
+            if (m_variable->hasRegularBinning())    {
+                return m_variable->axisNbins();
+            }
+            return m_variable->binEdges().size() -1;
         };
 
     private:

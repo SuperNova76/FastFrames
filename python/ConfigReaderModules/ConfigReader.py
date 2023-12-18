@@ -58,8 +58,9 @@ class ConfigReader:
             nominal.adjust_regions(self.regions)
             self.systematics[nominal.cpp_class.name()] = nominal
 
+            self.systematics_dicts = [] # for creation of TRExFitter config
             for systematic_dict in self.block_getter.get("systematics", []):
-                systematic_list = read_systematics_variations(systematic_dict, self.block_general)
+                systematic_list = read_systematics_variations(systematic_dict, self.block_general, self.systematics_dicts)
                 for systematic in systematic_list:
                     systematic.adjust_regions(self.regions)
                     systematic_name = systematic.cpp_class.name()

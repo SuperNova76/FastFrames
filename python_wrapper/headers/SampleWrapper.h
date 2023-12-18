@@ -153,6 +153,19 @@ class SampleWrapper {
         };
 
         /**
+         * @brief is the systematics defined for this sample?
+        */
+        bool hasSystematics(const std::string &syst_name) const {
+            const std::vector<std::shared_ptr<Systematic>> &systematics = m_sample->systematics();
+            for (const std::shared_ptr<Systematic> &syst : systematics) {
+                if (syst_name == syst->name()) {
+                    return true;
+                };
+            }
+            return false;
+        };
+
+        /**
          * @brief Add region, given the raw pointer to the shared_ptr<Region>
          *
          * @param reg_shared_ptr_int

@@ -272,6 +272,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("nSystematics",        &SampleWrapper::nSystematics)
         .def("getSystematicPtr",    &SampleWrapper::getSystematicPtr)
         .def("systematicsNames",    &SampleWrapper::systematicsNames)
+        .def("hasSystematics",      &SampleWrapper::hasSystematics)
 
         // addRegion
         .def("addRegion",           &SampleWrapper::addRegion)

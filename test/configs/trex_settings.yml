@@ -1,0 +1,11 @@
+Fit:
+  FitType: "SPLUSB"
+  FitRegion: "CRSR"
+  POIAsimov: 1
+  FitBlind: "True"
+
+samples:
+    - name: "ttbar_FS"
+      Color: 50
+      Title: "t#bar{t}"
+      Type: "Signal"

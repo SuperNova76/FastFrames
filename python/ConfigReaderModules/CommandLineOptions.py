@@ -47,12 +47,11 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("--max_event", help="Maximal index of event", default="")
         parser.add_argument("--split_n_jobs", help="Number of jobs to split one sample into", default="")
         parser.add_argument("--job_index",    help="ID of the job", default="")
+        parser.add_argument("--trex_settings", help="Path to the yaml with TRExFitter specific settings, it is used to create config", default="")
 
         args = parser.parse_args()
 
         self._config_path = args.config
-        if (self._config_path is None):
-            self._config_path = args.c
         if (self._config_path is None):
             Logger.log_message("ERROR", "config argument is not specified, please use --config <path_to_config_file>")
             exit(1)
@@ -69,6 +68,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
             self._min_event = int(args.min_event)
         if (args.max_event):
             self._max_event = int(args.max_event)
+
+        self._trex_settings = args.trex_settings
 
         self._read_splits(args)
 
@@ -165,6 +166,12 @@ class CommandLineOptions(metaclass=SingletonMeta):
         for i in range(len(samples), 0, -1):
             if not keep_sample[i - 1]:
                 del samples[i - 1]
+
+    def get_trex_settings_yaml(self) -> str:
+        """
+        Get path to the yaml with TRExFitter specific settings.
+        """
+        return self._trex_settings
 
 
     def _get_list_of_sample_names(self, samples) -> list:
