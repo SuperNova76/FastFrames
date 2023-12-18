@@ -61,6 +61,9 @@ class BlockReaderGeneral:
         ## Default indices for pairing truth with reco-level trees, can be overriden in sample block
         self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", ["eventNumber"], [list], [str])
 
+        ## List of systematics regexes to exclude from automatic systematics -> can be overriden in sample block
+        self.default_exclude_systematics = self._options_getter.get("exclude_systematics", [], [list], [str])
+
         ## Instance of the ConfigSettingsWrapper C++ class -> wrapper around C++ ConfigSetting class
         self.cpp_class = ConfigSettingWrapper()
 

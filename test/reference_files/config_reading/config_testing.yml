@@ -8,6 +8,7 @@ general:
   input_sumweights_path: "test/input/sum_of_weights.txt"
   output_path_histograms: ""
   output_path_ntuples: ""
+  exclude_systematics: ["GEN_*."]
   default_sumweights: "NOSYS"
   default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
   default_reco_tree_name: "reco"
@@ -138,6 +139,7 @@ samples:
     define_custom_columns:
       - name: "HT_3_jets"
         definition: "jet_pt_NOSYS[0] + jet_pt_NOSYS[1] + jet_pt_NOSYS[2]"
+    exclude_systematics: ["btag_B_eff_*."]
 
   - name: "Zjets_b"
     dsids: [364100,364101]

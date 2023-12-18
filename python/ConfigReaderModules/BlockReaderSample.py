@@ -73,6 +73,8 @@ class BlockReaderSample:
 
         self._define_custom_columns = self._options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list], [dict])
 
+        self._exclude_systematics = self._options_getter.get("exclude_systematics", block_reader_general.default_exclude_systematics, [list], [str])
+
         ## Instance of the SampleWrapper C++ class -> wrapper around C++ Sample class
         self.cpp_class = SampleWrapper(self._name)
 
@@ -225,6 +227,9 @@ class BlockReaderSample:
                     Logger.log_message("ERROR", "Invalid custom column definition for sample {}".format(self._name))
                     exit(1)
                 self.cpp_class.addCustomDefine(name, definition)
+
+        for syst_regex in self._exclude_systematics:
+            self.cpp_class.addExcludeAutomaticSystematic(syst_regex)
 
     def _check_unused_options(self):
         unused = self._options_getter.get_unused_options()

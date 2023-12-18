@@ -299,6 +299,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("addVariable",         &SampleWrapper::addVariable)
         .def("variables",           &SampleWrapper::variables)
+
+        .def("addExcludeAutomaticSystematic", &SampleWrapper::addExcludeAutomaticSystematic)
+        .def("excludeAutomaticSystematics",   &SampleWrapper::excludeAutomaticSystematics)
+
     ;
 
     /**

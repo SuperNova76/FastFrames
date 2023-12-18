@@ -113,8 +113,8 @@ Samples block:
 
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
-
-
+	Excluded systematics:
+		 GEN_*.
 
 
 	name:  Zjets_light
@@ -131,8 +131,8 @@ Samples block:
 		 (364101,mc20e,fullsim)
 	Custom defines:
 		 "HT_3_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1] + jet_pt_NOSYS[2]"
-
-
+	Excluded systematics:
+		 btag_B_eff_*.
 
 
 	name:  Zjets_b
@@ -150,8 +150,8 @@ Samples block:
 		 (364101,mc20e,fullsim)
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
-
-
+	Excluded systematics:
+		 GEN_*.
 
 
 	name:  Wjets_FS
@@ -172,8 +172,8 @@ Samples block:
 		 (700344,mc20e,fullsim)
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
-
-
+	Excluded systematics:
+		 GEN_*.
 
 
 	name:  Data
@@ -188,8 +188,8 @@ Samples block:
 		 (0,2018,data)
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
-
-
+	Excluded systematics:
+		 GEN_*.
 
 
 

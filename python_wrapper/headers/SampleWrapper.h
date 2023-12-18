@@ -311,6 +311,26 @@ class SampleWrapper {
             return m_sample->variables();
         };
 
+
+        /**
+         * @brief Add regex for exclude systematics from automatic systematics
+         *
+         * @param name
+         */
+        void addExcludeAutomaticSystematic(const std::string& name) {
+            m_sample->addExcludeAutomaticSystematic(name);
+        };
+
+        /**
+         * @brief Get the vector of regexes for automatic systematics exclusion
+         *
+         * @return std::vector<std::string>
+         */
+        std::vector<std::string> excludeAutomaticSystematics() const {
+            return m_sample->excludeAutomaticSystematics();
+        };
+
+
     private:
         std::shared_ptr<Sample> m_sample;
 

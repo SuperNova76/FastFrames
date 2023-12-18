@@ -113,8 +113,8 @@ Samples block:
 
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
-
-
+	Excluded systematics:
+		 GEN_*.
 
 
 	name:  Wjets_FS
@@ -135,8 +135,8 @@ Samples block:
 		 (700344,mc20e,fullsim)
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
-
-
+	Excluded systematics:
+		 GEN_*.
 
 
 
