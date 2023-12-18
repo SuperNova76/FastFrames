@@ -159,6 +159,7 @@ produce_trexfitter_config:
   stage: run
   needs:
     - compile
+    - run_python_histograms
   script:
      - python3 python/produce_trexfitter_config.py --config test/configs/config.yml
   allow_failure: true
@@ -173,6 +174,7 @@ run_python_histograms:
   artifacts:
      paths:
       - ttbar_FS.root
+      - Wjets.root
      expire_in: 1d
 
 run_python_ntuples:
