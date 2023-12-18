@@ -100,7 +100,6 @@ class TrexSettingsGetter:
         contains_generator_syst = False
         result = {}
         for histo_name in automatic_systematics:
-            samples_string = ",".join(automatic_systematics[histo_name])
             if histo_name.startswith("GEN_"):
                 contains_generator_syst = True
                 continue
@@ -110,26 +109,38 @@ class TrexSettingsGetter:
                 if syst_name in result:
                     result[syst_name]["HistoFolderNameUp"] = histo_name
                 else:
-                    result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": samples_string}
+                    result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
             elif histo_name.endswith("__1down"):
                 syst_name = histo_name[:-7]
                 if syst_name in result:
                     result[syst_name]["HistoFolderNameDown"] = histo_name
                 else:
-                    result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": samples_string}
+                    result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
             else:
-                result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": samples_string}
+                result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
 
         if contains_generator_syst:
             Logger.log_message("WARNING", "The ROOT files contain generator systematics. These cannot be added automaticaly. Please take a look at it.")
 
-        # add all other info:
+        # add all other info and resolve samples:
         for syst_name in result:
             syst_dict = result[syst_name]
             syst_dict["Title"] = syst_name.replace("_"," ")
             syst_dict["Type"] = "HISTO"
             syst_dict["Symmetrisation"] = "TWOSIDED" if (("HistoFolderNameDown" in syst_dict) and ("HistoFolderNameUp" in syst_dict)) else "ONESIDED"
             syst_dict["Smoothing"] = 40
+            samples = syst_dict["Samples"]
+            if len(samples) == len(sample_names):
+                del syst_dict["Samples"]
+            elif len(samples) < 0.5*len(sample_names):
+                syst_dict["Samples"] = ",".join(samples)
+            else:
+                excluded_samples = []
+                del syst_dict["Samples"]
+                for sample in sample_names:
+                    if not sample in samples:
+                        excluded_samples.append(sample)
+                syst_dict["Exclude"] = ",".join(excluded_samples)
 
         return result
 

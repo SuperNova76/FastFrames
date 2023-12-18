@@ -14,6 +14,7 @@ set_paths()
 from python_wrapper.python.logger import Logger
 from ConfigReader import ConfigReader
 from BlockReaderRegion import BlockReaderRegion
+from BlockReaderSample import BlockReaderSample
 from CommandLineOptions import CommandLineOptions
 
 from TRExFitterConfigPreparation.TrexSettingsGetter import TrexSettingsGetter
@@ -88,6 +89,7 @@ if __name__ == "__main__":
             for syst_block in systematics_blocks:
                 dump_dictionary_to_file(*syst_block, file)
         else:
-            automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", [x.name() for x in samples], regions)
+            all_MC_samples = [x.name() for x in samples if not BlockReaderSample.is_data_sample(x)]
+            automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", all_MC_samples, regions)
             for syst_name in automatic_systematics:
                 dump_dictionary_to_file("Systematic", syst_name, automatic_systematics[syst_name], file)
