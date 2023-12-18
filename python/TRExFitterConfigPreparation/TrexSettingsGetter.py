@@ -1,6 +1,7 @@
 
 import os
 import sys
+from copy import deepcopy
 
 from ROOT import TFile
 
@@ -60,6 +61,21 @@ class TrexSettingsGetter:
             for variable_cpp_object in variable_cpp_objects:
                 variable_name = variable_cpp_object.name()
                 result.append(variable_name + "_" + region_name)
+        return result
+
+    def get_trex_only_systematics_blocks(self) -> list[tuple[str,str,dict]]:
+        if not self.trex_settings_dict:
+            return []
+        result = []
+        systematics_dict = self.trex_settings_dict.get("systematic", [])
+        for syst_dict in systematics_dict:
+            syst_name = syst_dict.get("name", None)
+            if not syst_name:
+                Logger.log_message("ERROR", "Systematic without name found in the yaml file")
+                exit(1)
+            syst_output_dict = deepcopy(syst_dict)
+            del syst_output_dict["name"]
+            result.append(("Systematic", syst_name, syst_output_dict))
         return result
 
     def get_automatic_systematics_list(self, output_root_files_folder : str, sample_names : list, regions_objects : list) -> dict:

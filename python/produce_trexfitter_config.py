@@ -93,3 +93,8 @@ if __name__ == "__main__":
             automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", all_MC_samples, regions)
             for syst_name in automatic_systematics:
                 dump_dictionary_to_file("Systematic", syst_name, automatic_systematics[syst_name], file)
+
+        # systematic uncertainties from trex_settings.yaml
+        trex_settings_systematics = trex_settings_getter.get_trex_only_systematics_blocks()
+        for syst in trex_settings_systematics:
+            dump_dictionary_to_file(*syst, file)
