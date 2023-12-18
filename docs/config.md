@@ -26,7 +26,7 @@ The options are case sensitive. Example config files can be found in ```test/con
 | max_event                     | int  | If defined, it will process only events with entry index smaller than this |
 | luminosity                    | dict | Dictionary of luminosity values, where key is MC campaign (for example ```mc20d```) and value is luminosity for that campaign. See example config file. Default values for some MC campaigns are defined already in the code, but they can be overridden from here.  |
 | define_custom_columns         | list of dicts | Default list of custom columns (branches) to create in data-frame (can be overriden in sample block for a given sample). Each custom column has to have 2 options: ```name``` and ```definition```. |
-
+| exclude_systematics  | list of strings | List of systematic uncertainties to skip when automatic systematic option is selected. It supports regular expressions. It can be overriden for individual samples. |
 
 ## `ntuples` block settings
 
@@ -84,6 +84,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | truth             | list of dicts     | List of truth levels which should be used for the given sample    |
 | variables         | list of strings   | If specified, only histograms for these variables will be produced for the sample. Regular expressions are supported. |
 | exclude_variables | list of strings   | If specified, histograms containing these variables will not be produced for the sample. Regular expressions are supported. This option cannot be combined with ```variables``` |
+| exclude_systematics  | list of strings | Overrides default from General block for the given sample |
 
 #### `truth` block inside of the `sample` block
 

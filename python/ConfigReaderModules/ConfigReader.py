@@ -222,7 +222,11 @@ if __name__ == "__main__":
             print("\tCustom defines:")
             for custom_define in custom_defines:
                 print("\t\t", custom_define)
-            print("\n")
+        excluded_systematics = vector_to_list(sample.excludeAutomaticSystematics())
+        if len(excluded_systematics) > 0:
+            print("\tExcluded systematics:")
+            for excluded_systematic in excluded_systematics:
+                print("\t\t", excluded_systematic)
 
         print("\n")
 
