@@ -175,6 +175,7 @@ run_python_histograms:
      paths:
       - ttbar_FS.root
       - Wjets.root
+      - Data.root
      expire_in: 1d
 
 run_python_ntuples:
