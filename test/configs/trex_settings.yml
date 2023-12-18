@@ -10,7 +10,7 @@ samples:
       Title: "t#bar{t}"
       Type: "Signal"
 
-systematic:
+Systematics:
     - name: "Luminosity"
       Title: "Luminosity"
       Type: "OVERALL"
@@ -25,3 +25,18 @@ systematic:
       OverallDown: -0.1
       Samples: "Wjets"
       Category: "Theoretical"
+
+NormFactors:
+    - name: "mu_signal"
+      Title: "#mu(signal)"
+      Nominal: 1
+      Min: -100
+      Max: 100
+      Samples: "ttbar_FS"
+
+    - name: "N_wjets"
+      Title: "#mu(W+jets)"
+      Nominal: 1
+      Min: -100
+      Max: 100
+      Samples: "Wjets"

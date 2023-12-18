@@ -67,7 +67,7 @@ class TrexSettingsGetter:
         if not self.trex_settings_dict:
             return []
         result = []
-        systematics_dict = self.trex_settings_dict.get("systematic", [])
+        systematics_dict = self.trex_settings_dict.get("Systematics", [])
         for syst_dict in systematics_dict:
             syst_name = syst_dict.get("name", None)
             if not syst_name:
@@ -76,6 +76,21 @@ class TrexSettingsGetter:
             syst_output_dict = deepcopy(syst_dict)
             del syst_output_dict["name"]
             result.append(("Systematic", syst_name, syst_output_dict))
+        return result
+
+    def get_normfactors_from_trex_settings(self) -> list[tuple[str,str,dict]]:
+        if not self.trex_settings_dict:
+            return []
+        result = []
+        normfactors_dict = self.trex_settings_dict.get("NormFactors", [])
+        for normfactor_dict in normfactors_dict:
+            normfactor_name = normfactor_dict.get("name", None)
+            if not normfactor_name:
+                Logger.log_message("ERROR", "NormFactor without name found in the yaml file")
+                exit(1)
+            normfactor_output_dict = deepcopy(normfactor_dict)
+            del normfactor_output_dict["name"]
+            result.append(("NormFactor", normfactor_name, normfactor_output_dict))
         return result
 
     def get_automatic_systematics_list(self, output_root_files_folder : str, sample_names : list, regions_objects : list) -> dict:
@@ -166,6 +181,10 @@ class TrexSettingsGetter:
         return self._sample_color_counter
 
     def get_normfactor_dicts(self, samples_cpp_objects : list) -> list:
+        normfactor_dicts = self.get_normfactors_from_trex_settings()
+        if normfactor_dicts:
+            return normfactor_dicts
+
         normfactor_dict = {}
         normfactor_dict["Title"] =  '"#mu(signal)"'
         normfactor_dict["Nominal"] =  1
