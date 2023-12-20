@@ -256,13 +256,13 @@ class TrexSettingsGetter:
                     continue
                 variable_raw_ptrs = truth_object.getVariableRawPtrs()
                 for variable_ptr in variable_raw_ptrs:
-                    variable = VariableWrapper("")
-                    variable.constructFromRawPtr(variable_ptr)
-                    if variable.name() != self.unfolding_variable:
+                    truth_variable = VariableWrapper("")
+                    truth_variable.constructFromRawPtr(variable_ptr)
+                    if truth_variable.name() != self.unfolding_variable:
                         continue
 
                     if self.unfolding_n_bins is None:
-                        self.unfolding_n_bins = variable.axisNbins()
+                        self.unfolding_n_bins = truth_variable.axisNbins()
                     sample_dict = {}
                     sample_name = sample.name()
                     if sample_name != self.unfolding_sample:
@@ -277,9 +277,9 @@ class TrexSettingsGetter:
                     sample_dict["MigrationFile"] =  sample_name
                     sample_dict["SelectionEffFile"] =  sample_name
 
-                    sample_dict["AcceptanceName"]   = "acceptance_eff_" + level + "_" + variable.name()
-                    sample_dict["SelectionEffName"] = "selection_eff_" + level + "_" + variable.name()
-                    sample_dict["MigrationName"]    = "selection_eff_" + level + "_" + variable.name()
+                    sample_dict["AcceptanceName"]   = "acceptance_eff_" + level + "_" + truth_variable.name()
+                    sample_dict["SelectionEffName"] = "selection_eff_" + level + "_" + truth_variable.name()
+                    sample_dict["MigrationName"]    = "selection_eff_" + level + "_" + truth_variable.name()
 
                     result.append(("UnfoldingSample", sample.name(), sample_dict))
         return result
