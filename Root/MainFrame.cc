@@ -883,7 +883,7 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     acceptance->SetDirectory(nullptr);
 
                     const std::string selectionEffName = "selection_eff_" + truthName + "_" + iregionHist.name();
-                    const std::string acceptanceName   = "acceptance_"    + truthName + "_" + iregionHist.name();
+                    const std::string acceptanceName   = "acceptance_"    + itruth->name() + "_" + StringOperations::replaceString(recoName, "_NOSYS", "") + "_" + iregionHist.name();
 
                     outputFile->cd(isystHist.name().c_str());
                     selectionEff->Write(selectionEffName.c_str());
