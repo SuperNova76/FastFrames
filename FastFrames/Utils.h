@@ -12,6 +12,7 @@
 #include "ROOT/RDFHelpers.hxx"
 #include "TChain.h"
 #include "TH1D.h"
+#include "TH2D.h"
 
 #include <memory>
 #include <string>
@@ -55,6 +56,17 @@ namespace Utils {
   std::unique_ptr<TH1D> copyHistoFromVariableHistos(const std::vector<VariableHisto>& histos,
                                                     const std::string& name);
 
+  /**
+   * @brief 
+   * @brief Copy a histogram from VariableHistos2d based on a name of the histogram
+   * This triggers event loop!
+   * 
+   * @param histos 
+   * @param name 
+   * @return std::unique_ptr<TH2D> 
+   */
+  std::unique_ptr<TH2D> copyHistoFromVariableHistos2D(const std::vector<VariableHisto2D>& histos,
+                                                      const std::string& name);
   /**
    * @brief Does the given sample have unfolding specified?
    *

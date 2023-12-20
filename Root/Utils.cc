@@ -56,6 +56,21 @@ std::unique_ptr<TH1D> Utils::copyHistoFromVariableHistos(const std::vector<Varia
     return result;
 }
 
+std::unique_ptr<TH2D> Utils::copyHistoFromVariableHistos2D(const std::vector<VariableHisto2D>& histos,
+                                                           const std::string& name) {
+
+    auto itr = std::find_if(histos.begin(), histos.end(), [&name](const auto& element){return element.name() == name;});
+    if (itr == histos.end()) {
+        LOG(ERROR) << "Cannot find histogram: " << name << "\n";
+        throw std::runtime_error("");
+    }
+
+    std::unique_ptr<TH2D> result(static_cast<TH2D*>(itr->histo()->Clone()));
+    result->SetDirectory(nullptr);
+
+    return result;
+}
+
 bool Utils::sampleHasUnfolding(const std::shared_ptr<Sample>& sample) {
 
     for (const auto& itruth : sample->truths()) {
