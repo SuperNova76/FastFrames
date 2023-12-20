@@ -14,6 +14,7 @@ set_paths()
 from python_wrapper.python.logger import Logger
 from ConfigReader import ConfigReader
 from BlockReaderRegion import BlockReaderRegion
+from BlockReaderSample import BlockReaderSample
 from CommandLineOptions import CommandLineOptions
 
 from TRExFitterConfigPreparation.TrexSettingsGetter import TrexSettingsGetter
@@ -30,8 +31,8 @@ def dump_dictionary_to_file(block_type : str, block_name : str, dictionary : dic
     for key in dictionary:
         value = dictionary[key]
         if type(value) == str:
-            contains_spaces = " " in value
-            if contains_spaces:
+            use_quotes = " " in value or "#" in value
+            if use_quotes:
                 file.write("\t" + key + ': "' + value + '"\n')
             else:
                 file.write("\t" + key + ': ' + value + '\n')
@@ -40,13 +41,15 @@ def dump_dictionary_to_file(block_type : str, block_name : str, dictionary : dic
     file.write("\n")
 
 if __name__ == "__main__":
-    config_path = CommandLineOptions().get_config_path()
+    cli = CommandLineOptions()
+    config_path = cli.get_config_path()
 
     config_reader = ConfigReader(config_path)
     block_general = config_reader.block_general
+    unfolding_settings_tuple = cli.get_unfolding_settings()
 
-    with open("trex_test.config","w") as file:
-        trex_settings_getter = TrexSettingsGetter(CommandLineOptions().get_trex_settings_yaml())
+    with open(cli.get_trex_fitter_output_config(),"w") as file:
+        trex_settings_getter = TrexSettingsGetter(cli.get_trex_settings_yaml())
         add_block_comment("JOB", file)
         job_tuple = trex_settings_getter.get_job_dictionary(block_general)
         dump_dictionary_to_file(*job_tuple, file)
@@ -88,6 +91,12 @@ if __name__ == "__main__":
             for syst_block in systematics_blocks:
                 dump_dictionary_to_file(*syst_block, file)
         else:
-            automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", [x.name() for x in samples], regions)
+            all_MC_samples = [x.name() for x in samples if not BlockReaderSample.is_data_sample(x)]
+            automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", all_MC_samples, regions)
             for syst_name in automatic_systematics:
                 dump_dictionary_to_file("Systematic", syst_name, automatic_systematics[syst_name], file)
+
+        # systematic uncertainties from trex_settings.yaml
+        trex_settings_systematics = trex_settings_getter.get_trex_only_systematics_blocks()
+        for syst in trex_settings_systematics:
+            dump_dictionary_to_file(*syst, file)

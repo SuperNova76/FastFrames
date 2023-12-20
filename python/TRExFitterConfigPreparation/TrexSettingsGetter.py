@@ -1,6 +1,7 @@
 
 import os
 import sys
+from copy import deepcopy
 
 from ROOT import TFile
 
@@ -14,6 +15,7 @@ from python_wrapper.python.logger import Logger
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderGeneral import vector_to_list
+from ConfigReaderCpp import VariableWrapper
 
 
 import yaml
@@ -38,6 +40,21 @@ class TrexSettingsGetter:
                     exit(1)
         self._sample_color_counter = 2
 
+        self.run_unfolding = False
+        self.unfolding_sample = ""
+        self.unfolding_level = ""
+        self.unfolding_variable = ""
+        self.unfolding_n_bins = None
+
+    def set_unfolding_settings(self, unfolding_settings_tuple : tuple[str,str,str]) -> None:
+        if unfolding_settings_tuple:
+            self.run_unfolding = True
+            self.unfolding_sample = unfolding_settings_tuple[0]
+            self.unfolding_level = unfolding_settings_tuple[1]
+            self.unfolding_variable = unfolding_settings_tuple[2]
+        else:
+            self.run_unfolding = False
+
     def _get_sample_dict(self, sample_name : str) -> dict:
         if not self.trex_settings_dict:
             return {}
@@ -60,6 +77,36 @@ class TrexSettingsGetter:
             for variable_cpp_object in variable_cpp_objects:
                 variable_name = variable_cpp_object.name()
                 result.append(variable_name + "_" + region_name)
+        return result
+
+    def get_trex_only_systematics_blocks(self) -> list[tuple[str,str,dict]]:
+        if not self.trex_settings_dict:
+            return []
+        result = []
+        systematics_dict = self.trex_settings_dict.get("Systematics", [])
+        for syst_dict in systematics_dict:
+            syst_name = syst_dict.get("name", None)
+            if not syst_name:
+                Logger.log_message("ERROR", "Systematic without name found in the yaml file")
+                exit(1)
+            syst_output_dict = deepcopy(syst_dict)
+            del syst_output_dict["name"]
+            result.append(("Systematic", syst_name, syst_output_dict))
+        return result
+
+    def get_normfactors_from_trex_settings(self) -> list[tuple[str,str,dict]]:
+        if not self.trex_settings_dict:
+            return []
+        result = []
+        normfactors_dict = self.trex_settings_dict.get("NormFactors", [])
+        for normfactor_dict in normfactors_dict:
+            normfactor_name = normfactor_dict.get("name", None)
+            if not normfactor_name:
+                Logger.log_message("ERROR", "NormFactor without name found in the yaml file")
+                exit(1)
+            normfactor_output_dict = deepcopy(normfactor_dict)
+            del normfactor_output_dict["name"]
+            result.append(("NormFactor", normfactor_name, normfactor_output_dict))
         return result
 
     def get_automatic_systematics_list(self, output_root_files_folder : str, sample_names : list, regions_objects : list) -> dict:
@@ -100,7 +147,6 @@ class TrexSettingsGetter:
         contains_generator_syst = False
         result = {}
         for histo_name in automatic_systematics:
-            samples_string = ",".join(automatic_systematics[histo_name])
             if histo_name.startswith("GEN_"):
                 contains_generator_syst = True
                 continue
@@ -110,26 +156,38 @@ class TrexSettingsGetter:
                 if syst_name in result:
                     result[syst_name]["HistoFolderNameUp"] = histo_name
                 else:
-                    result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": samples_string}
+                    result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
             elif histo_name.endswith("__1down"):
                 syst_name = histo_name[:-7]
                 if syst_name in result:
                     result[syst_name]["HistoFolderNameDown"] = histo_name
                 else:
-                    result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": samples_string}
+                    result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
             else:
-                result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": samples_string}
+                result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
 
         if contains_generator_syst:
             Logger.log_message("WARNING", "The ROOT files contain generator systematics. These cannot be added automaticaly. Please take a look at it.")
 
-        # add all other info:
+        # add all other info and resolve samples:
         for syst_name in result:
             syst_dict = result[syst_name]
             syst_dict["Title"] = syst_name.replace("_"," ")
             syst_dict["Type"] = "HISTO"
             syst_dict["Symmetrisation"] = "TWOSIDED" if (("HistoFolderNameDown" in syst_dict) and ("HistoFolderNameUp" in syst_dict)) else "ONESIDED"
             syst_dict["Smoothing"] = 40
+            samples = syst_dict["Samples"]
+            if len(samples) == len(sample_names):
+                del syst_dict["Samples"]
+            elif len(samples) < 0.5*len(sample_names):
+                syst_dict["Samples"] = ",".join(samples)
+            else:
+                excluded_samples = []
+                del syst_dict["Samples"]
+                for sample in sample_names:
+                    if not sample in samples:
+                        excluded_samples.append(sample)
+                syst_dict["Exclude"] = ",".join(excluded_samples)
 
         return result
 
@@ -139,6 +197,10 @@ class TrexSettingsGetter:
         return self._sample_color_counter
 
     def get_normfactor_dicts(self, samples_cpp_objects : list) -> list:
+        normfactor_dicts = self.get_normfactors_from_trex_settings()
+        if normfactor_dicts:
+            return normfactor_dicts
+
         normfactor_dict = {}
         normfactor_dict["Title"] =  '"#mu(signal)"'
         normfactor_dict["Nominal"] =  1
@@ -180,6 +242,47 @@ class TrexSettingsGetter:
         dictionary["Label"] = region_name       # TODO: proper label
         dictionary["ShortLabel"] = region_name  # TODO: proper label
         return "Region", region_name, dictionary
+
+    def get_unfolding_samples_blocks(self, samples_cpp_objects : list) -> list[tuple]:
+        if not self.run_unfolding:
+            return []
+        result = []
+        for sample in samples_cpp_objects:
+            sample_setting_dict = self._get_sample_dict(sample.name())
+            truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthSharedPtrs())
+            for truth_object in truth_objects:
+                level = truth_object.name()
+                if level != self.unfolding_level:
+                    continue
+                variable_raw_ptrs = truth_object.getVariableRawPtrs()
+                for variable_ptr in variable_raw_ptrs:
+                    variable = VariableWrapper("")
+                    variable.constructFromRawPtr(variable_ptr)
+                    if variable.name() != self.unfolding_variable:
+                        continue
+
+                    if self.unfolding_n_bins is None:
+                        self.unfolding_n_bins = variable.axisNbins()
+                    sample_dict = {}
+                    sample_name = sample.name()
+                    if sample_name != self.unfolding_sample:
+                        sample_dict["Type"] = "GHOST"
+
+                    sample_color = self.get_sample_color()
+                    sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
+                    sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
+                    sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
+
+                    sample_dict["AcceptanceFile"] =  sample_name
+                    sample_dict["MigrationFile"] =  sample_name
+                    sample_dict["SelectionEffFile"] =  sample_name
+
+                    sample_dict["AcceptanceName"]   = "acceptance_eff_" + level + "_" + variable.name()
+                    sample_dict["SelectionEffName"] = "selection_eff_" + level + "_" + variable.name()
+                    sample_dict["MigrationName"]    = "selection_eff_" + level + "_" + variable.name()
+
+                    result.append(("UnfoldingSample", sample.name(), sample_dict))
+        return result
 
     def get_sample_dictionary(self, sample, regions_map) -> tuple[str,str,dict]:
         dictionary = {}

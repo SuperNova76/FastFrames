@@ -48,6 +48,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("--split_n_jobs", help="Number of jobs to split one sample into", default="")
         parser.add_argument("--job_index",    help="ID of the job", default="")
         parser.add_argument("--trex_settings", help="Path to the yaml with TRExFitter specific settings, it is used to create config", default="")
+        parser.add_argument("-o", "--output", help="Output config file for TRExFitter", default = "trex_config.config")
+        parser.add_argument("-u", "--unfolding", help="Unfolding configuration: 'sample:truth_block_name:truth_variable_name'", default = "")
 
         args = parser.parse_args()
 
@@ -70,6 +72,14 @@ class CommandLineOptions(metaclass=SingletonMeta):
             self._max_event = int(args.max_event)
 
         self._trex_settings = args.trex_settings
+        self._trex_config = args.output
+
+        self._unfolding_settings = None
+        if args.unfolding:
+            if args.unfolding.count(":") != 2:
+                Logger.log_message("ERROR", "unfolding argument must have format 'sample:truth_block_name:truth_variable_name'")
+                exit(1)
+            self._unfolding_settings = tuple(args.unfolding.split(":"))
 
         self._read_splits(args)
 
@@ -173,6 +183,17 @@ class CommandLineOptions(metaclass=SingletonMeta):
         """
         return self._trex_settings
 
+    def get_trex_fitter_output_config(self) -> str:
+        """
+        Get path to the output config file for TRExFitter.
+        """
+        return self._trex_config
+
+    def get_unfolding_settings(self) -> tuple:
+        """
+        Get unfolding settings.
+        """
+        return self._unfolding_settings
 
     def _get_list_of_sample_names(self, samples) -> list:
         if type(samples) == list:
