@@ -48,6 +48,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("--split_n_jobs", help="Number of jobs to split one sample into", default="")
         parser.add_argument("--job_index",    help="ID of the job", default="")
         parser.add_argument("--trex_settings", help="Path to the yaml with TRExFitter specific settings, it is used to create config", default="")
+        parser.add_argument("-o", "--output", help="Output config file for TRExFitter", default = "trex_config.config")
 
         args = parser.parse_args()
 
@@ -70,6 +71,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
             self._max_event = int(args.max_event)
 
         self._trex_settings = args.trex_settings
+        self._trex_config = args.output
 
         self._read_splits(args)
 
@@ -173,6 +175,11 @@ class CommandLineOptions(metaclass=SingletonMeta):
         """
         return self._trex_settings
 
+    def get_trex_fitter_output_config(self) -> str:
+        """
+        Get path to the output config file for TRExFitter.
+        """
+        return self._trex_config
 
     def _get_list_of_sample_names(self, samples) -> list:
         if type(samples) == list:

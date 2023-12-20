@@ -31,8 +31,8 @@ def dump_dictionary_to_file(block_type : str, block_name : str, dictionary : dic
     for key in dictionary:
         value = dictionary[key]
         if type(value) == str:
-            contains_spaces = " " in value
-            if contains_spaces:
+            use_quotes = " " in value or "#" in value
+            if use_quotes:
                 file.write("\t" + key + ': "' + value + '"\n')
             else:
                 file.write("\t" + key + ': ' + value + '\n')
@@ -41,13 +41,14 @@ def dump_dictionary_to_file(block_type : str, block_name : str, dictionary : dic
     file.write("\n")
 
 if __name__ == "__main__":
-    config_path = CommandLineOptions().get_config_path()
+    cli = CommandLineOptions()
+    config_path = cli.get_config_path()
 
     config_reader = ConfigReader(config_path)
     block_general = config_reader.block_general
 
-    with open("trex_test.config","w") as file:
-        trex_settings_getter = TrexSettingsGetter(CommandLineOptions().get_trex_settings_yaml())
+    with open(cli.get_trex_fitter_output_config(),"w") as file:
+        trex_settings_getter = TrexSettingsGetter(cli.get_trex_settings_yaml())
         add_block_comment("JOB", file)
         job_tuple = trex_settings_getter.get_job_dictionary(block_general)
         dump_dictionary_to_file(*job_tuple, file)
