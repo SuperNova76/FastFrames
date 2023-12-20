@@ -31,7 +31,7 @@ Regions block:
 	name:  Electron
 	selection:  el_pt_NOSYS[0] > 30000
 	variables:
-		name:  jet_pt_NOSYS
+		name:  jet_pt
 		title:  
 		definition:  jet_pt_NOSYS
 		binning:  10 ,  0.0 ,  300000.0
@@ -52,7 +52,7 @@ Regions block:
 	name:  Muon
 	selection:  mu_pt_NOSYS[0] > 30000
 	variables:
-		name:  jet_pt_NOSYS
+		name:  jet_pt
 		title:  
 		definition:  jet_pt_NOSYS
 		binning:  10 ,  0.0 ,  300000.0
@@ -85,7 +85,7 @@ Samples block:
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	variables:
-		 jet_pt_NOSYS
+		 jet_pt
 		 met_met
 		 met_phi
 	Unique samples:
@@ -97,7 +97,7 @@ Samples block:
 		selection:  particle_jet_pt[0] > 10000
 		event_weight:  mc_gen
 		match_variables:
-			 ('jet_pt_NOSYS', 'truth_jet_pt')
+			 ('jet_pt', 'truth_jet_pt')
 		variables:
 			name:  truth_jet_pt
 			title:  
