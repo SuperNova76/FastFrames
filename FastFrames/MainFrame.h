@@ -349,21 +349,6 @@ private:
                            const std::shared_ptr<Systematic>& systematic) const;
 
   /**
-   * @brief Define 1D histograms with variables and systematics for unfolding
-   *
-   * @param regionHisto RegionHisto to be filled
-   * @param node Filtered node
-   * @param sample Sample
-   * @param region Region
-   * @param systematic Systematic
-   */
-  void processTruthHistograms1D(RegionHisto* regionHisto,
-                                ROOT::RDF::RNode& node,
-                                const std::shared_ptr<Sample>& sample,
-                                const std::shared_ptr<Region>& region,
-                                const std::shared_ptr<Systematic>& systematic);
-
-  /**
    * @brief Define 2D histograms with variables and systematics for unfolding
    *
    * @param regionHisto RegionHisto to be filled

@@ -471,10 +471,6 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 
             this->processHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
-            if (sample->hasTruth()) {
-                this->processTruthHistograms1D(&regionHisto, node, sample, ireg, isyst);
-            }
-
             this->processTruthHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
             systematicHisto.addRegionHisto(std::move(regionHisto));
@@ -515,9 +511,7 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
 
     LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
 
-    this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
-
-    if (printEventLoopCount && sample->truths().empty()) {
+    if (printEventLoopCount) {
         LOG(INFO) << "Triggering event loop for the reco tree!\n";
     }
     bool first(true);
@@ -556,12 +550,16 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         }
     }
 
+    LOG(INFO) << "Writing truth histograms, triggers event loop for the truth tree!\n";
     // Write truth histograms
     for (const auto& itruthHist : truthHistos) {
         const std::string truthHistoName = StringOperations::replaceString(itruthHist.name(), "_NOSYS", "");
         out->cd();
         itruthHist.histo()->Write(truthHistoName.c_str());
     }
+
+    this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
+
     if (printEventLoopCount) {
         LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
     }
@@ -727,56 +725,6 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
     }
 }
 
-void MainFrame::processTruthHistograms1D(RegionHisto* regionHisto,
-                                         ROOT::RDF::RNode& node,
-                                         const std::shared_ptr<Sample>& sample,
-                                         const std::shared_ptr<Region>& region,
-                                         const std::shared_ptr<Systematic>& systematic) {
-
-    for (const auto& itruth : sample->truths()) {
-        if (!itruth->produceUnfolding()) continue;
-        ROOT::RDF::RNode passedNode = node;
-        ROOT::RDF::RNode failedNode = node;
-        if (!itruth->selection().empty()) {
-            passedNode = passedNode.Filter(itruth->selection());
-            const std::string failedSelection = "!(" + itruth->selection() + ")";
-            failedNode = failedNode.Filter(failedSelection);
-        } else {
-            // should be empty if there is no selection
-            failedNode = failedNode.Filter([](){return false;}, {});
-        }
-        for (const auto& imatch : itruth->matchedVariables()) {
-            const Variable& truthVariable = itruth->variableByName(imatch.second);
-
-            VariableHisto variableHistoPassed(truthVariable.name() + "_passed");
-            VariableHisto variableHistoFailed(truthVariable.name() + "_failed");
-
-            ROOT::RDF::RResultPtr<TH1D> histogramPassed = passedNode.Histo1D(
-                                                            truthVariable.histoModel1D(),
-                                                            this->systematicVariable(truthVariable, systematic),
-                                                            this->systematicWeight(systematic)
-                                                          );
-            ROOT::RDF::RResultPtr<TH1D> histogramFailed = failedNode.Histo1D(
-                                                            truthVariable.histoModel1D(),
-                                                            this->systematicVariable(truthVariable, systematic),
-                                                            this->systematicWeight(systematic)
-                                                          );
-
-            if (!histogramPassed || !histogramFailed) {
-                LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
-                           << systematic->name() << ", region: " << region->name() << " and variable: " << truthVariable.name() << " is empty!\n";
-                throw std::runtime_error("");
-
-            }
-            variableHistoPassed.setHisto(histogramPassed);
-            variableHistoFailed.setHisto(histogramFailed);
-
-            regionHisto->addVariableHisto(std::move(variableHistoPassed));
-            regionHisto->addVariableHisto(std::move(variableHistoFailed));
-        }
-    }
-}
-
 void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
                                          ROOT::RDF::RNode& node,
                                          const std::shared_ptr<Sample>& sample,
@@ -905,14 +853,12 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                                      const std::vector<VariableHisto>& truthHistos,
                                      const std::shared_ptr<Sample>& sample) const {
 
-    bool first(true);
     for (const auto& itruth : sample->truths()) {
-        LOG(INFO) << "Triggering event loop for truth histograms for truth tree: " << itruth->name() << "\n";
         if (!itruth->produceUnfolding()) continue;
         for (const auto& imatch : itruth->matchedVariables()) {
             const std::string& truthName = itruth->name() + "_" + imatch.second;
-            const std::string& selectionPassed = imatch.second + "_passed";
-            const std::string& selectionFailed = imatch.second + "_failed";
+            const std::string& recoName = imatch.first;
+            const std::string& migrationName = recoName + "_vs_" + truthName;
 
             std::unique_ptr<TH1D> truth = Utils::copyHistoFromVariableHistos(truthHistos, truthName);
             for (const auto& isystHist : histos) {
@@ -925,30 +871,23 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     outputFile->mkdir(isystHist.name().c_str());
                 }
                 for (const auto& iregionHist : isystHist.regionHistos()) {
-                    if (first) {
-                        LOG(INFO) << "Triggering event loop for the reco tree\n";
-                        first = false;
-                    }
-                    std::unique_ptr<TH1D> passed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionPassed);
-                    std::unique_ptr<TH1D> failed = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), selectionFailed);
+                    std::unique_ptr<TH1D> reco = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), recoName);
+                    std::unique_ptr<TH2D> migration = Utils::copyHistoFromVariableHistos2D(iregionHist.variableHistos2D(), migrationName);
 
-                    std::unique_ptr<TH1D> selectionEff(static_cast<TH1D*>(passed->Clone()));
-                    // selection eff = truth events passing reco selection/all
+                    std::unique_ptr<TH1D> selectionEff(migration->ProjectionX(""));
                     selectionEff->Divide(truth.get());
-
-                    // acceptance = events passing reco and truth selection / events passing reco (failed truth + passed truth)
-                    std::unique_ptr<TH1D> total(static_cast<TH1D*>(passed->Clone()));
-                    total->Add(failed.get());
-
-                    // this is now the acceptance
-                    passed->Divide(total.get());
+                    selectionEff->SetDirectory(nullptr);
+                    
+                    std::unique_ptr<TH1D> acceptance(migration->ProjectionY(""));
+                    acceptance->Divide(reco.get());
+                    acceptance->SetDirectory(nullptr);
 
                     const std::string selectionEffName = "selection_eff_" + truthName + "_" + iregionHist.name();
                     const std::string acceptanceName   = "acceptance_"    + truthName + "_" + iregionHist.name();
 
                     outputFile->cd(isystHist.name().c_str());
                     selectionEff->Write(selectionEffName.c_str());
-                    passed->Write(acceptanceName.c_str());
+                    acceptance->Write(acceptanceName.c_str());
                 }
             }
         }
