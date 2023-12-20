@@ -697,7 +697,7 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
         const Variable& v1 = region->variableByName(combinations.first);
         const Variable& v2 = region->variableByName(combinations.second);
         const std::string name = v1.name() + "_vs_" + v2.name();
-        
+
         const std::vector<std::string>& variables = sample->variables();
         auto itrVar1 = std::find(variables.begin(), variables.end(), v1.name());
         auto itrVar2 = std::find(variables.begin(), variables.end(), v2.name());
@@ -792,7 +792,7 @@ void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
             const Variable& recoVariable  = region->variableByName(imatch.first);
             const Variable& truthVariable = itruth->variableByName(imatch.second);
 
-            const std::string name = recoVariable.name() + "_vs_" + truthVariable.name();
+            const std::string name = recoVariable.name() + "_vs_" + itruth->name() + "_" + truthVariable.name();
             VariableHisto2D variableHistoPassed(name);
 
             ROOT::RDF::RResultPtr<TH2D> histogramPassed = passedNode.Histo2D(
@@ -943,8 +943,8 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     // this is now the acceptance
                     passed->Divide(total.get());
 
-                    const std::string selectionEffName = "selection_eff_" + itruth->name() + "_" + truthName + "_" + iregionHist.name();
-                    const std::string acceptanceName   = "acceptance_"    + itruth->name() + "_" + truthName + "_" + iregionHist.name();
+                    const std::string selectionEffName = "selection_eff_" + truthName + "_" + iregionHist.name();
+                    const std::string acceptanceName   = "acceptance_"    + truthName + "_" + iregionHist.name();
 
                     outputFile->cd(isystHist.name().c_str());
                     selectionEff->Write(selectionEffName.c_str());

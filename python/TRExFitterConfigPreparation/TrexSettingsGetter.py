@@ -15,6 +15,7 @@ from python_wrapper.python.logger import Logger
 from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderGeneral import vector_to_list
+from ConfigReaderCpp import VariableWrapper
 
 
 import yaml
@@ -38,6 +39,21 @@ class TrexSettingsGetter:
                     Logger.log_message("ERROR", "Cannot parse yaml file {}".format(trex_settings_yaml))
                     exit(1)
         self._sample_color_counter = 2
+
+        self.run_unfolding = False
+        self.unfolding_sample = ""
+        self.unfolding_level = ""
+        self.unfolding_variable = ""
+        self.unfolding_n_bins = None
+
+    def set_unfolding_settings(self, unfolding_settings_tuple : tuple[str,str,str]) -> None:
+        if unfolding_settings_tuple:
+            self.run_unfolding = True
+            self.unfolding_sample = unfolding_settings_tuple[0]
+            self.unfolding_level = unfolding_settings_tuple[1]
+            self.unfolding_variable = unfolding_settings_tuple[2]
+        else:
+            self.run_unfolding = False
 
     def _get_sample_dict(self, sample_name : str) -> dict:
         if not self.trex_settings_dict:
@@ -226,6 +242,47 @@ class TrexSettingsGetter:
         dictionary["Label"] = region_name       # TODO: proper label
         dictionary["ShortLabel"] = region_name  # TODO: proper label
         return "Region", region_name, dictionary
+
+    def get_unfolding_samples_blocks(self, samples_cpp_objects : list) -> list[tuple]:
+        if not self.run_unfolding:
+            return []
+        result = []
+        for sample in samples_cpp_objects:
+            sample_setting_dict = self._get_sample_dict(sample.name())
+            truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthSharedPtrs())
+            for truth_object in truth_objects:
+                level = truth_object.name()
+                if level != self.unfolding_level:
+                    continue
+                variable_raw_ptrs = truth_object.getVariableRawPtrs()
+                for variable_ptr in variable_raw_ptrs:
+                    variable = VariableWrapper("")
+                    variable.constructFromRawPtr(variable_ptr)
+                    if variable.name() != self.unfolding_variable:
+                        continue
+
+                    if self.unfolding_n_bins is None:
+                        self.unfolding_n_bins = variable.axisNbins()
+                    sample_dict = {}
+                    sample_name = sample.name()
+                    if sample_name != self.unfolding_sample:
+                        sample_dict["Type"] = "GHOST"
+
+                    sample_color = self.get_sample_color()
+                    sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
+                    sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
+                    sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
+
+                    sample_dict["AcceptanceFile"] =  sample_name
+                    sample_dict["MigrationFile"] =  sample_name
+                    sample_dict["SelectionEffFile"] =  sample_name
+
+                    sample_dict["AcceptanceName"]   = "acceptance_eff_" + level + "_" + variable.name()
+                    sample_dict["SelectionEffName"] = "selection_eff_" + level + "_" + variable.name()
+                    sample_dict["MigrationName"]    = "selection_eff_" + level + "_" + variable.name()
+
+                    result.append(("UnfoldingSample", sample.name(), sample_dict))
+        return result
 
     def get_sample_dictionary(self, sample, regions_map) -> tuple[str,str,dict]:
         dictionary = {}

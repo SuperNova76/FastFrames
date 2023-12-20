@@ -46,6 +46,7 @@ if __name__ == "__main__":
 
     config_reader = ConfigReader(config_path)
     block_general = config_reader.block_general
+    unfolding_settings_tuple = cli.get_unfolding_settings()
 
     with open(cli.get_trex_fitter_output_config(),"w") as file:
         trex_settings_getter = TrexSettingsGetter(cli.get_trex_settings_yaml())
