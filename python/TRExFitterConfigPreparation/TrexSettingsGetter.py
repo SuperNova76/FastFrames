@@ -29,6 +29,23 @@ def get_strings_common_part(str1 : str, str2 : str) -> str:
         else:
             return result
 
+def remove_items(dict_to_use : dict, key : str, items_to_remove : list[str]) -> None:
+    if key in dict_to_use:
+        items_list = dict_to_use.get(key, None)
+        if items_list == None:
+            return
+        if items_to_remove == None:
+            return
+        items_list = items_list.strip("'\"")
+        items_list = items_list.split(",")
+        for sample in items_to_remove:
+            if sample in items_list:
+                items_list.remove(sample)
+        if items_list:
+            dict_to_use[key] = ",".join(items_list)
+        else:
+            del dict_to_use[key]
+
 class TrexSettingsGetter:
     def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = ""):
         self.trex_settings_dict = None
@@ -466,34 +483,17 @@ class TrexSettingsGetter:
             else:
                 samples_inclusive.append(sample)
 
-        def remove_samples(dict_to_use : dict, key : str, samples_to_remove : list[str]) -> None:
-            if key in dict_to_use:
-                samples_list = dict_to_use.get(key, None)
-                if samples_list == None:
-                    return
-                if samples_to_remove == None:
-                    return
-                samples_list = samples_list.strip("'\"")
-                samples_list = samples_list.split(",")
-                for sample in samples_to_remove:
-                    if sample in samples_list:
-                        samples_list.remove(sample)
-                if samples_list:
-                    dict_to_use[key] = ",".join(samples_list)
-                else:
-                    del dict_to_use[key]
-
         inclusive_dict = None
         if samples_inclusive:
             inclusive_dict = deepcopy(systematics_dict)
-            remove_samples(inclusive_dict, "Exclude", self._unfolding_MC_samples_names)
-            remove_samples(inclusive_dict, "Samples", self._unfolding_MC_samples_names)
+            remove_items(inclusive_dict, "Exclude", self._unfolding_MC_samples_names)
+            remove_items(inclusive_dict, "Samples", self._unfolding_MC_samples_names)
 
         unfolding_dict = None
         if samples_unfolding:
             unfolding_dict = deepcopy(systematics_dict)
-            remove_samples(unfolding_dict, "Exclude", self._inclusive_MC_samples_names)
-            remove_samples(unfolding_dict, "Samples", self._inclusive_MC_samples_names)
+            remove_items(unfolding_dict, "Exclude", self._inclusive_MC_samples_names)
+            remove_items(unfolding_dict, "Samples", self._inclusive_MC_samples_names)
             histo_folder_up   = unfolding_dict.get("HistoFolderNameUp", None)
             histo_folder_down = unfolding_dict.get("HistoFolderNameDown", None)
             if histo_folder_up:
