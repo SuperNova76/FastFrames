@@ -245,11 +245,16 @@ class TrexSettingsGetter:
         variable_name = variable.name().replace("_NOSYS","")
         region_name = region.name() + "_" + variable_name
         dictionary["Type"] = "SIGNAL"
-        dictionary["NumberOfRecoBins"] = variable.axisNbins()
         dictionary["VariableTitle"] = variable_name # TODO: proper title
         dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
         dictionary["Label"] = region_name       # TODO: proper label
         dictionary["ShortLabel"] = region_name  # TODO: proper label
+        if self.run_unfolding:
+            dictionary["NumberOfRecoBins"] = variable.axisNbins()
+            dictionary["AcceptanceNameSuff"] = "_" + region.name()
+            dictionary["SelectionEffNameSuff"] = "_" + region.name()
+            dictionary["MigrationNameSuff"] = "_" + region.name()
+
         return "Region", region_name, dictionary
 
     def get_unfolding_samples_blocks(self, samples_cpp_objects : list) -> list[tuple]:
