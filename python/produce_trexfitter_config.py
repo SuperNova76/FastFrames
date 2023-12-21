@@ -50,10 +50,10 @@ if __name__ == "__main__":
 
 
     with open(cli.get_trex_fitter_output_config(),"w") as file:
-        trex_settings_getter = TrexSettingsGetter(cli.get_trex_settings_yaml())
+        trex_settings_getter = TrexSettingsGetter(config_reader, cli.get_trex_settings_yaml())
         trex_settings_getter.set_unfolding_settings(unfolding_settings_tuple)
         add_block_comment("JOB", file)
-        job_tuple = trex_settings_getter.get_job_dictionary(block_general)
+        job_tuple = trex_settings_getter.get_job_dictionary()
         dump_dictionary_to_file(*job_tuple, file)
 
         add_block_comment("FIT", file)
@@ -82,9 +82,9 @@ if __name__ == "__main__":
                 dump_dictionary_to_file(*unfolding_sample_block, file)
 
         add_block_comment("SAMPLES", file)
-        for sample in all_samples:
-            sample_dict = trex_settings_getter.get_sample_dictionary(sample, region_map)
-            dump_dictionary_to_file(*sample_dict, file)
+        sample_dicts = trex_settings_getter.get_samples_blocks(region_map)
+        for sample in sample_dicts:
+            dump_dictionary_to_file(*sample, file)
 
 
         add_block_comment("NORM. FACTORS", file)
@@ -100,12 +100,20 @@ if __name__ == "__main__":
             regions_cpp_objects = config_reader.block_general.get_regions_cpp_objects()
             systematics_blocks = trex_settings_getter.get_systematics_blocks(systematics_dicts, samples_cpp_objects, region_map)
             for syst_block in systematics_blocks:
-                dump_dictionary_to_file(*syst_block, file)
+                syst_inclusive, syst_unfolding = trex_settings_getter.split_systematics_into_inclusive_and_unfolding(syst_block)
+                if syst_inclusive:
+                    dump_dictionary_to_file(*syst_inclusive, file)
+                if syst_unfolding:
+                    dump_dictionary_to_file(*syst_unfolding, file)
         else:
             all_MC_samples = [x.name() for x in all_samples if not BlockReaderSample.is_data_sample(x)]
             automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", all_MC_samples, regions)
             for syst_name in automatic_systematics:
-                dump_dictionary_to_file("Systematic", syst_name, automatic_systematics[syst_name], file)
+                syst_inclusive, syst_unfolding = trex_settings_getter.split_systematics_into_inclusive_and_unfolding(("Systematic", syst_name, automatic_systematics[syst_name]))
+                if syst_inclusive:
+                    dump_dictionary_to_file(*syst_inclusive, file)
+                if syst_unfolding:
+                    dump_dictionary_to_file(*syst_unfolding, file)
 
         # systematic uncertainties from trex_settings.yaml
         trex_settings_systematics = trex_settings_getter.get_trex_only_systematics_blocks()
