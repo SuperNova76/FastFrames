@@ -436,6 +436,8 @@ class TrexSettingsGetter:
         return result
 
     def split_systematics_into_inclusive_and_unfolding(self, systematics_tuple : tuple) -> tuple[tuple,tuple]:
+        if self._unfolding_MC_samples_names == None:
+            return (systematics_tuple, None)
         systematics_name = systematics_tuple[1]
         systematics_dict = systematics_tuple[2]
         samples = systematics_dict.get("Samples", "")
@@ -463,6 +465,8 @@ class TrexSettingsGetter:
             if key in dict_to_use:
                 samples_list = dict_to_use.get(key, None)
                 if samples_list == None:
+                    return
+                if samples_to_remove == None:
                     return
                 samples_list = samples_list.strip("'\"")
                 samples_list = samples_list.split(",")
