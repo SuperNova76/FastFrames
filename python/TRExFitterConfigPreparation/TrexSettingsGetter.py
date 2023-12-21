@@ -477,14 +477,14 @@ class TrexSettingsGetter:
         inclusive_dict = None
         if samples_inclusive:
             inclusive_dict = deepcopy(systematics_dict)
-            remove_samples(inclusive_dict, "Exclude", samples_unfolding)
-            remove_samples(inclusive_dict, "Samples", samples_unfolding)
+            remove_samples(inclusive_dict, "Exclude", self._unfolding_MC_samples_names)
+            remove_samples(inclusive_dict, "Samples", self._unfolding_MC_samples_names)
 
         unfolding_dict = None
         if samples_unfolding:
             unfolding_dict = deepcopy(systematics_dict)
-            remove_samples(unfolding_dict, "Exclude", samples_inclusive)
-            remove_samples(unfolding_dict, "Samples", samples_inclusive)
+            remove_samples(unfolding_dict, "Exclude", self._inclusive_MC_samples_names)
+            remove_samples(unfolding_dict, "Samples", self._inclusive_MC_samples_names)
             histo_folder_up   = unfolding_dict.get("HistoFolderNameUp", None)
             histo_folder_down = unfolding_dict.get("HistoFolderNameDown", None)
             if histo_folder_up:
