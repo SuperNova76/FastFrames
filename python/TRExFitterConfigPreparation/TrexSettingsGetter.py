@@ -43,7 +43,8 @@ class TrexSettingsGetter:
         self.run_unfolding = False
         self.unfolding_sample = ""
         self.unfolding_level = ""
-        self.unfolding_variable = ""
+        self.unfolding_variable_truth = ""
+        self.unfolding_variable_reco = ""
         self.unfolding_n_bins = None
 
     def set_unfolding_settings(self, unfolding_settings_tuple : tuple[str,str,str]) -> None:
@@ -51,7 +52,8 @@ class TrexSettingsGetter:
             self.run_unfolding = True
             self.unfolding_sample = unfolding_settings_tuple[0]
             self.unfolding_level = unfolding_settings_tuple[1]
-            self.unfolding_variable = unfolding_settings_tuple[2]
+            self.unfolding_variable_truth = unfolding_settings_tuple[2]
+            self.unfolding_variable_reco = unfolding_settings_tuple[3]
         else:
             self.run_unfolding = False
 
@@ -258,7 +260,7 @@ class TrexSettingsGetter:
                 for variable_ptr in variable_raw_ptrs:
                     truth_variable = VariableWrapper("")
                     truth_variable.constructFromRawPtr(variable_ptr)
-                    if truth_variable.name() != self.unfolding_variable:
+                    if truth_variable.name() != self.unfolding_variable_truth:
                         continue
 
                     if self.unfolding_n_bins is None:
@@ -277,9 +279,9 @@ class TrexSettingsGetter:
                     sample_dict["MigrationFile"] =  sample_name
                     sample_dict["SelectionEffFile"] =  sample_name
 
-                    sample_dict["AcceptanceName"]   = "acceptance_eff_" + level + "_" + truth_variable.name()
-                    sample_dict["SelectionEffName"] = "selection_eff_" + level + "_" + truth_variable.name()
-                    sample_dict["MigrationName"]    = "selection_eff_" + level + "_" + truth_variable.name()
+                    sample_dict["AcceptanceName"]   = "NOSYS/acceptance_eff_" + level + "_" + self.unfolding_variable_reco
+                    sample_dict["SelectionEffName"] = "NOSYS/selection_eff_" + level + "_" + truth_variable.name()
+                    sample_dict["MigrationName"]    = "NOSYS/" + self.unfolding_variable_reco + "_vs_" + level + "_" + truth_variable.name()
 
                     result.append(("UnfoldingSample", sample.name(), sample_dict))
         return result

@@ -76,8 +76,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
 
         self._unfolding_settings = None
         if args.unfolding:
-            if args.unfolding.count(":") != 2:
-                Logger.log_message("ERROR", "unfolding argument must have format 'sample:truth_block_name:truth_variable_name'")
+            if args.unfolding.count(":") != 3:
+                Logger.log_message("ERROR", "unfolding argument must have format 'sample:truth_block_name:truth_variable_name:reco_variable_name'")
                 exit(1)
             self._unfolding_settings = tuple(args.unfolding.split(":"))
 

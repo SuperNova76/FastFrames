@@ -48,8 +48,10 @@ if __name__ == "__main__":
     block_general = config_reader.block_general
     unfolding_settings_tuple = cli.get_unfolding_settings()
 
+
     with open(cli.get_trex_fitter_output_config(),"w") as file:
         trex_settings_getter = TrexSettingsGetter(cli.get_trex_settings_yaml())
+        trex_settings_getter.set_unfolding_settings(unfolding_settings_tuple)
         add_block_comment("JOB", file)
         job_tuple = trex_settings_getter.get_job_dictionary(block_general)
         dump_dictionary_to_file(*job_tuple, file)
@@ -70,14 +72,23 @@ if __name__ == "__main__":
                 region_dict = trex_settings_getter.get_region_dictionary(region,variable_cpp_object)
                 dump_dictionary_to_file(*region_dict, file)
 
+        all_samples = config_reader.block_general.get_samples_objects()
+        unfolding_samples_names = []
+        if trex_settings_getter.run_unfolding:
+            add_block_comment("UNFOLDINGSAMPLES", file)
+            unfolding_sample_blocks = trex_settings_getter.get_unfolding_samples_blocks(all_samples)
+            for unfolding_sample_block in unfolding_sample_blocks:
+                unfolding_samples_names.append(unfolding_sample_block[1])
+                dump_dictionary_to_file(*unfolding_sample_block, file)
+
         add_block_comment("SAMPLES", file)
-        samples = config_reader.block_general.get_samples_objects()
-        for sample in samples:
+        for sample in all_samples:
             sample_dict = trex_settings_getter.get_sample_dictionary(sample, region_map)
             dump_dictionary_to_file(*sample_dict, file)
 
+
         add_block_comment("NORM. FACTORS", file)
-        norm_factor_blocks = trex_settings_getter.get_normfactor_dicts(samples)
+        norm_factor_blocks = trex_settings_getter.get_normfactor_dicts(all_samples)
         for norm_factor_block in norm_factor_blocks:
             dump_dictionary_to_file(*norm_factor_block, file)
 
@@ -91,7 +102,7 @@ if __name__ == "__main__":
             for syst_block in systematics_blocks:
                 dump_dictionary_to_file(*syst_block, file)
         else:
-            all_MC_samples = [x.name() for x in samples if not BlockReaderSample.is_data_sample(x)]
+            all_MC_samples = [x.name() for x in all_samples if not BlockReaderSample.is_data_sample(x)]
             automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", all_MC_samples, regions)
             for syst_name in automatic_systematics:
                 dump_dictionary_to_file("Systematic", syst_name, automatic_systematics[syst_name], file)
