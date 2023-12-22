@@ -1,0 +1,142 @@
+general:
+  debug_level: DEBUG
+  input_filelist_path: "test/input/filelist.txt"
+  input_sumweights_path: "test/input/sum_of_weights.txt"
+  output_path_histograms: "."
+  output_path_ntuples: "~/Documents/temp/20231213_trex_inputs/"
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
+  default_reco_tree_name: "reco"
+  xsection_files: ["data/XSection-MC16-13TeV.data"]
+#  custom_frame_name: "CustomFrame"
+  automatic_systematics: True
+  nominal_only: False
+  create_tlorentz_vectors_for: ["jet", "el"]
+  number_of_cpus: 4
+  luminosity:
+    mc23c: 1
+  define_custom_columns:
+    - name: "jet_pt_GeV_NOSYS"
+      definition: "jet_pt_NOSYS/1e3"
+
+ntuples:
+  selection: "el_pt_NOSYS[0] > 30000" # optional
+  branches: ["weight_total_.*", "jet_pt_.*"] # optional, if not provided, use all branches
+  copy_trees: ["truth"]
+
+regions:
+  - name: "Electron"
+    selection: "el_pt_NOSYS[0] > 30000"
+    histograms_2d:
+      - x: "met_met"
+        y: "met_phi"
+
+    variables:
+      - name: "jet_pt"
+        #title : "histo title;X axis title;Y axis title"
+        definition: "jet_pt_GeV_NOSYS"
+        binning:
+          min: 0
+          max: 300
+          number_of_bins: 10
+      - name: "met_met"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,60000,80000,140000,250000]
+      - name: "met_phi"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_phi_NOSYS"
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 16
+
+  - name: "Muon"
+    selection: "mu_pt_NOSYS[0] > 30000"
+    variables:
+      - name: "jet_pt"
+        #title : "histo title;X axis title;Y axis title"
+        definition: "jet_pt_NOSYS"
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 10
+      - name: "met_met"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,60000,80000,140000,250000]
+      - name: "met_phi"
+        title : "histo title;X axis title;Y axis title"
+        definition: "met_phi_NOSYS"
+        binning:
+          min: -3.2
+          max: 3.2
+          number_of_bins: 16
+
+samples:
+  - name: "ttbar_FS"
+    dsids: [410470]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+    #weight_suffix: "something" # this is an additional weight to be applied (multiplication) to the sample
+    #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
+    #regions: ["Electron", "Muon"] # if not provided, use all regions?
+    truth:
+      - name: parton
+        produce_unfolding: True
+        truth_tree_name: "truth"
+        selection: "" #optional
+        event_weight: "weight_mc_NOSYS"
+        match_variables:
+          - reco: "jet_pt"
+            truth: "Ttbar_MC_t_afterFSR_pt"
+        variables:
+          - name: "Ttbar_MC_t_afterFSR_pt"
+            definition:  "Ttbar_MC_t_afterFSR_pt"
+            binning:
+              min: 0
+              max: 1000000
+              number_of_bins: 20
+
+  - name: "Wjets"
+    dsids: [700341]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim" # mc is full sim
+    exclude_variables: ["met_phi"]
+
+  - name: "Data"
+    dsids: [0]
+    campaigns: ["2017"]
+    simulation_type: "data"
+
+systematics:
+  - campaigns: ["mc20e"]
+    #regions: ["Electron", "Muon"]
+    variation:
+      up: "JET_BJES_Response__1up"
+      #weight_suffix_up: "bootstrap_weight" # additional weight to be applied (multiplication) to the sample
+      down: "JET_BJES_Response__1down"
+
+  - samples: ["ttbar_FS"]
+    campaigns: ["mc20e"]
+    #regions: ["Electron", "Muon"]
+    variation:
+      up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"
+      sum_weights_up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"
+
+  - variation:
+      up: "FT_EFF_B_systematics__1up"
+      down: "FT_EFF_B_systematics__1down"
+
+  - regions: ["Electron"]
+    variation:
+      up: "FT_EFF_C_systematics__1up"
+      down: "FT_EFF_C_systematics__1down"

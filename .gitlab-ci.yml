@@ -199,6 +199,16 @@ config_reader_comparison:
      - python3 test/python/compare_two_files.py log.txt test/reference_files/config_reading/reference_log.txt
   allow_failure: true
 
+trex_fitter_configs_comparison:
+  stage: compare_results
+  needs:
+    - compile
+    - run_filelist
+  script:
+     - python3 python/FastFrames.py --c test/configs/config_TRExFitter_test.yml
+     - python3 test/python/compare_trex_configs.py
+  allow_failure: true
+
 config_reader_comparison_CLI_samples:
   stage: compare_results
   needs:
