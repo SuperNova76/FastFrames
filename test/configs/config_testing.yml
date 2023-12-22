@@ -43,7 +43,7 @@ regions:
   - name: "Electron"
     selection: "el_pt_NOSYS[0] > 30000"
     variables:
-      - name: "jet_pt_NOSYS"
+      - name: "jet_pt"
         #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
         binning:
@@ -69,7 +69,7 @@ regions:
   - name: "Muon"
     selection: "mu_pt_NOSYS[0] > 30000"
     variables:
-      - name: "jet_pt_NOSYS"
+      - name: "jet_pt"
         #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
         binning:
@@ -110,7 +110,7 @@ samples:
         selection: "particle_jet_pt[0] > 10000" #optional
         event_weight: "mc_gen"
         match_variables:
-          - reco: "jet_pt_NOSYS"
+          - reco: "jet_pt"
             truth: "truth_jet_pt"
         variables:
           - name: "truth_jet_pt"
@@ -154,7 +154,7 @@ samples:
     campaigns: ["mc20a","mc20e"]
     simulation_type: "fullsim"
     regions: ["Electron"]
-    exclude_variables: ["jet_pt_NOSYS"]
+    exclude_variables: ["jet_pt"]
 
   - name: "Data"
     simulation_type: "data"

@@ -21,6 +21,12 @@ class BlockReaderVariable:
         self._title = self._options_getter.get("title", "", [str])
         self._definition = self._options_getter.get("definition", None, [str])
 
+        if self._name is None:
+            Logger.log_message("ERROR", "No name specified for variable block")
+            exit(1)
+        elif "NOSYS" in self._name:
+            Logger.log_message("ERROR", "Variable name cannot contain 'NOSYS' string. It was found in the following variable: " + self._name)
+            exit(1)
 
         ## Instance of the VariableWrapper C++ class -> wrapper around C++ Variable class
         self.cpp_class = VariableWrapper(self._name)

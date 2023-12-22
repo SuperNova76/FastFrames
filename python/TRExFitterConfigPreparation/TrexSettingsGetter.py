@@ -16,6 +16,7 @@ from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from BlockReaderGeneral import vector_to_list
 from ConfigReaderCpp import VariableWrapper
+from ConfigReader import ConfigReader
 
 
 import yaml
@@ -28,8 +29,25 @@ def get_strings_common_part(str1 : str, str2 : str) -> str:
         else:
             return result
 
+def remove_items(dict_to_use : dict, key : str, items_to_remove : list[str]) -> None:
+    if key in dict_to_use:
+        items_list = dict_to_use.get(key, None)
+        if items_list == None:
+            return
+        if items_to_remove == None:
+            return
+        items_list = items_list.strip("'\"")
+        items_list = items_list.split(",")
+        for sample in items_to_remove:
+            if sample in items_list:
+                items_list.remove(sample)
+        if items_list:
+            dict_to_use[key] = ",".join(items_list)
+        else:
+            del dict_to_use[key]
+
 class TrexSettingsGetter:
-    def __init__(self, trex_settings_yaml : str = ""):
+    def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = ""):
         self.trex_settings_dict = None
         if trex_settings_yaml:
             with open(trex_settings_yaml, "r") as f:
@@ -40,18 +58,25 @@ class TrexSettingsGetter:
                     exit(1)
         self._sample_color_counter = 2
 
+        self.config_reader = config_reader
         self.run_unfolding = False
         self.unfolding_sample = ""
         self.unfolding_level = ""
-        self.unfolding_variable = ""
+        self.unfolding_variable_truth = ""
+        self.unfolding_variable_reco = ""
         self.unfolding_n_bins = None
+
+        self._all_MC_samples = None
+        self._unfolding_MC_samples_names = None
+        self._inclusive_MC_samples_names = None
 
     def set_unfolding_settings(self, unfolding_settings_tuple : tuple[str,str,str]) -> None:
         if unfolding_settings_tuple:
             self.run_unfolding = True
             self.unfolding_sample = unfolding_settings_tuple[0]
             self.unfolding_level = unfolding_settings_tuple[1]
-            self.unfolding_variable = unfolding_settings_tuple[2]
+            self.unfolding_variable_truth = unfolding_settings_tuple[2]
+            self.unfolding_variable_reco = unfolding_settings_tuple[3]
         else:
             self.run_unfolding = False
 
@@ -213,12 +238,15 @@ class TrexSettingsGetter:
         result = {}
         fit_dict_settings = self._get_fit_dict()
         result["FitType"]   = fit_dict_settings.get("FitType",  "SPLUSB")
+        if self.run_unfolding:
+            result["FitType"] = "UNFOLDING"
         result["FitRegion"] = fit_dict_settings.get("FitRegion","CRSR")
         result["POIAsimov"] = fit_dict_settings.get("POIAsimov",1)
         result["FitBlind"]  = fit_dict_settings.get("FitBlind", "True")
         return "Fit", "fit", result
 
-    def get_job_dictionary(self, block_general) -> tuple[str,str,dict]:
+    def get_job_dictionary(self) -> tuple[str,str,dict]:
+        block_general = self.config_reader.block_general
         dictionary = {}
         histo_path = block_general.cpp_class.outputPathHistograms()
         if histo_path == "":
@@ -236,17 +264,23 @@ class TrexSettingsGetter:
         variable_name = variable.name().replace("_NOSYS","")
         region_name = region.name() + "_" + variable_name
         dictionary["Type"] = "SIGNAL"
-        dictionary["NumberOfRecoBins"] = variable.axisNbins()
         dictionary["VariableTitle"] = variable_name # TODO: proper title
         dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
         dictionary["Label"] = region_name       # TODO: proper label
         dictionary["ShortLabel"] = region_name  # TODO: proper label
+        if self.run_unfolding:
+            dictionary["NumberOfRecoBins"] = variable.axisNbins()
+            dictionary["AcceptanceNameSuff"] = "_" + region.name()
+            dictionary["SelectionEffNameSuff"] = "_" + region.name()
+            dictionary["MigrationNameSuff"] = "_" + region.name()
+
         return "Region", region_name, dictionary
 
     def get_unfolding_samples_blocks(self, samples_cpp_objects : list) -> list[tuple]:
         if not self.run_unfolding:
             return []
         result = []
+        unfolding_samples_cpp_objects = []
         for sample in samples_cpp_objects:
             sample_setting_dict = self._get_sample_dict(sample.name())
             truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthSharedPtrs())
@@ -256,13 +290,13 @@ class TrexSettingsGetter:
                     continue
                 variable_raw_ptrs = truth_object.getVariableRawPtrs()
                 for variable_ptr in variable_raw_ptrs:
-                    variable = VariableWrapper("")
-                    variable.constructFromRawPtr(variable_ptr)
-                    if variable.name() != self.unfolding_variable:
+                    truth_variable = VariableWrapper("")
+                    truth_variable.constructFromRawPtr(variable_ptr)
+                    if truth_variable.name() != self.unfolding_variable_truth:
                         continue
 
                     if self.unfolding_n_bins is None:
-                        self.unfolding_n_bins = variable.axisNbins()
+                        self.unfolding_n_bins = truth_variable.axisNbins()
                     sample_dict = {}
                     sample_name = sample.name()
                     if sample_name != self.unfolding_sample:
@@ -277,14 +311,32 @@ class TrexSettingsGetter:
                     sample_dict["MigrationFile"] =  sample_name
                     sample_dict["SelectionEffFile"] =  sample_name
 
-                    sample_dict["AcceptanceName"]   = "acceptance_eff_" + level + "_" + variable.name()
-                    sample_dict["SelectionEffName"] = "selection_eff_" + level + "_" + variable.name()
-                    sample_dict["MigrationName"]    = "selection_eff_" + level + "_" + variable.name()
+                    sample_dict["AcceptanceName"]   = "NOSYS/acceptance_eff_" + level + "_" + self.unfolding_variable_reco
+                    sample_dict["SelectionEffName"] = "NOSYS/selection_eff_" + level + "_" + truth_variable.name()
+                    sample_dict["MigrationName"]    = "NOSYS/" + self.unfolding_variable_reco + "_vs_" + level + "_" + truth_variable.name()
 
                     result.append(("UnfoldingSample", sample.name(), sample_dict))
+                    unfolding_samples_cpp_objects.append(sample.name())
+
+        self._unfolding_MC_samples_names = unfolding_samples_cpp_objects
         return result
 
-    def get_sample_dictionary(self, sample, regions_map) -> tuple[str,str,dict]:
+
+    def get_samples_blocks(self, regions_map) -> list[tuple[str,str,dict]]:
+        all_samples = self.config_reader.block_general.get_samples_objects()
+        result = []
+        self._inclusive_MC_samples_names = []
+        for sample in all_samples:
+            if self._unfolding_MC_samples_names:
+                if sample.name() in self._unfolding_MC_samples_names:
+                    continue
+            self._inclusive_MC_samples_names.append(sample.name())
+            sample_tuple = self.get_sample_tuple(sample, regions_map)
+            result.append(sample_tuple)
+        self._all_MC_samples = all_samples
+        return result
+
+    def get_sample_tuple(self, sample, regions_map) -> tuple[str,str,dict]:
         dictionary = {}
         is_data = BlockReaderSample.is_data_sample(sample)
         sample_setting_dict = self._get_sample_dict(sample.name())
@@ -406,3 +458,68 @@ class TrexSettingsGetter:
                     result_dict["Samples"] = ",".join(samples_selected)
 
         return result
+
+    def split_systematics_into_inclusive_and_unfolding(self, systematics_tuple : tuple) -> tuple[tuple,tuple]:
+        if self._unfolding_MC_samples_names == None:
+            return (systematics_tuple, None)
+        systematics_name = systematics_tuple[1]
+        systematics_dict = systematics_tuple[2]
+        samples = systematics_dict.get("Samples", "")
+        if samples:
+            samples = samples.split(",")
+        else:
+            samples = [sample.name() for sample in self._all_MC_samples]
+
+        excludes = systematics_dict.get("Exclude", "")
+        if excludes:
+            excludes = excludes.split(",")
+            for exclude in excludes:
+                if exclude in samples:
+                    samples.remove(exclude)
+
+        samples_inclusive = []
+        samples_unfolding = []
+        for sample in samples:
+            if sample in self._unfolding_MC_samples_names:
+                samples_unfolding.append(sample)
+            else:
+                samples_inclusive.append(sample)
+
+        inclusive_dict = None
+        if samples_inclusive:
+            inclusive_dict = deepcopy(systematics_dict)
+            remove_items(inclusive_dict, "Exclude", self._unfolding_MC_samples_names)
+            remove_items(inclusive_dict, "Samples", self._unfolding_MC_samples_names)
+
+        unfolding_dict = None
+        if samples_unfolding:
+            unfolding_dict = deepcopy(systematics_dict)
+            remove_items(unfolding_dict, "Exclude", self._inclusive_MC_samples_names)
+            remove_items(unfolding_dict, "Samples", self._inclusive_MC_samples_names)
+            histo_folder_up   = unfolding_dict.get("HistoFolderNameUp", None)
+            histo_folder_down = unfolding_dict.get("HistoFolderNameDown", None)
+            if histo_folder_up:
+                del unfolding_dict["HistoFolderNameUp"]
+            if histo_folder_down:
+                del unfolding_dict["HistoFolderNameDown"]
+            if "Type" in unfolding_dict:
+                del unfolding_dict["Type"]
+
+            if histo_folder_up:
+                unfolding_dict["MigrationFolderNameUp"] = histo_folder_up
+                unfolding_dict["AcceptanceFolderNameUp"] = histo_folder_up
+                unfolding_dict["SelectionEffFolderNameUp"] = histo_folder_up
+            if histo_folder_down:
+                unfolding_dict["MigrationFolderNameDown"] = histo_folder_down
+                unfolding_dict["AcceptanceFolderNameDown"] = histo_folder_down
+                unfolding_dict["SelectionEffFolderNameDown"] = histo_folder_down
+
+        result_inclusive = None
+        if inclusive_dict:
+            result_inclusive = ("Systematic", systematics_name, inclusive_dict)
+
+        result_unfolding = None
+        if unfolding_dict:
+            result_unfolding = ("UnfoldingSystematic", systematics_name, unfolding_dict)
+
+        return (result_inclusive, result_unfolding)

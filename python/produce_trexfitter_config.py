@@ -17,7 +17,7 @@ from BlockReaderRegion import BlockReaderRegion
 from BlockReaderSample import BlockReaderSample
 from CommandLineOptions import CommandLineOptions
 
-from TRExFitterConfigPreparation.TrexSettingsGetter import TrexSettingsGetter
+from TRExFitterConfigPreparation.TrexSettingsGetter import TrexSettingsGetter, remove_items
 
 def add_block_comment(block_type : str, file) -> None:
     length = len(block_type) + 8
@@ -40,6 +40,10 @@ def dump_dictionary_to_file(block_type : str, block_name : str, dictionary : dic
             file.write("\t" + key + ': ' + str(value) + '\n')
     file.write("\n")
 
+def remove_regions_wo_unfolding(block : tuple[str,str,dict], regions_to_remove : list) -> None:
+    remove_items(block[2], "Regions", regions_to_remove)
+    remove_items(block[2], "Exclude", regions_to_remove)
+
 if __name__ == "__main__":
     cli = CommandLineOptions()
     config_path = cli.get_config_path()
@@ -48,10 +52,12 @@ if __name__ == "__main__":
     block_general = config_reader.block_general
     unfolding_settings_tuple = cli.get_unfolding_settings()
 
+
     with open(cli.get_trex_fitter_output_config(),"w") as file:
-        trex_settings_getter = TrexSettingsGetter(cli.get_trex_settings_yaml())
+        trex_settings_getter = TrexSettingsGetter(config_reader, cli.get_trex_settings_yaml())
+        trex_settings_getter.set_unfolding_settings(unfolding_settings_tuple)
         add_block_comment("JOB", file)
-        job_tuple = trex_settings_getter.get_job_dictionary(block_general)
+        job_tuple = trex_settings_getter.get_job_dictionary()
         dump_dictionary_to_file(*job_tuple, file)
 
         add_block_comment("FIT", file)
@@ -62,23 +68,39 @@ if __name__ == "__main__":
         add_block_comment("REGIONS", file)
         regions = config_reader.block_general.get_regions_cpp_objects()
         region_map = {}
+        region_variable_combinations_wo_unfolding = []
         for region in regions:
             region_name = region.name()
             region_map[region_name] = region
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable_cpp_object in variable_cpp_objects:
+                if trex_settings_getter.run_unfolding:
+                    if variable_cpp_object.name() != trex_settings_getter.unfolding_variable_reco:
+                        region_variable_combinations_wo_unfolding.append(region_name + "_" + variable_cpp_object.name())
+                        continue
                 region_dict = trex_settings_getter.get_region_dictionary(region,variable_cpp_object)
                 dump_dictionary_to_file(*region_dict, file)
 
+        all_samples = config_reader.block_general.get_samples_objects()
+        unfolding_samples_names = []
+        if trex_settings_getter.run_unfolding:
+            add_block_comment("UNFOLDINGSAMPLES", file)
+            unfolding_sample_blocks = trex_settings_getter.get_unfolding_samples_blocks(all_samples)
+            for unfolding_sample_block in unfolding_sample_blocks:
+                unfolding_samples_names.append(unfolding_sample_block[1])
+                dump_dictionary_to_file(*unfolding_sample_block, file)
+
         add_block_comment("SAMPLES", file)
-        samples = config_reader.block_general.get_samples_objects()
-        for sample in samples:
-            sample_dict = trex_settings_getter.get_sample_dictionary(sample, region_map)
-            dump_dictionary_to_file(*sample_dict, file)
+        sample_dicts = trex_settings_getter.get_samples_blocks(region_map)
+        for sample in sample_dicts:
+            remove_regions_wo_unfolding(sample, region_variable_combinations_wo_unfolding)
+            dump_dictionary_to_file(*sample, file)
+
 
         add_block_comment("NORM. FACTORS", file)
-        norm_factor_blocks = trex_settings_getter.get_normfactor_dicts(samples)
+        norm_factor_blocks = trex_settings_getter.get_normfactor_dicts(all_samples)
         for norm_factor_block in norm_factor_blocks:
+            remove_regions_wo_unfolding(norm_factor_block, region_variable_combinations_wo_unfolding)
             dump_dictionary_to_file(*norm_factor_block, file)
 
 
@@ -89,14 +111,27 @@ if __name__ == "__main__":
             regions_cpp_objects = config_reader.block_general.get_regions_cpp_objects()
             systematics_blocks = trex_settings_getter.get_systematics_blocks(systematics_dicts, samples_cpp_objects, region_map)
             for syst_block in systematics_blocks:
-                dump_dictionary_to_file(*syst_block, file)
+                syst_inclusive, syst_unfolding = trex_settings_getter.split_systematics_into_inclusive_and_unfolding(syst_block)
+                if syst_inclusive:
+                    remove_regions_wo_unfolding(syst_inclusive, region_variable_combinations_wo_unfolding)
+                    dump_dictionary_to_file(*syst_inclusive, file)
+                if syst_unfolding:
+                    remove_regions_wo_unfolding(syst_unfolding, region_variable_combinations_wo_unfolding)
+                    dump_dictionary_to_file(*syst_unfolding, file)
         else:
-            all_MC_samples = [x.name() for x in samples if not BlockReaderSample.is_data_sample(x)]
+            all_MC_samples = [x.name() for x in all_samples if not BlockReaderSample.is_data_sample(x)]
             automatic_systematics = trex_settings_getter.get_automatic_systematics_pairs(".", all_MC_samples, regions)
             for syst_name in automatic_systematics:
-                dump_dictionary_to_file("Systematic", syst_name, automatic_systematics[syst_name], file)
+                syst_inclusive, syst_unfolding = trex_settings_getter.split_systematics_into_inclusive_and_unfolding(("Systematic", syst_name, automatic_systematics[syst_name]))
+                if syst_inclusive:
+                    remove_regions_wo_unfolding(syst_inclusive, region_variable_combinations_wo_unfolding)
+                    dump_dictionary_to_file(*syst_inclusive, file)
+                if syst_unfolding:
+                    remove_regions_wo_unfolding(syst_unfolding, region_variable_combinations_wo_unfolding)
+                    dump_dictionary_to_file(*syst_unfolding, file)
 
         # systematic uncertainties from trex_settings.yaml
         trex_settings_systematics = trex_settings_getter.get_trex_only_systematics_blocks()
         for syst in trex_settings_systematics:
+            remove_regions_wo_unfolding(syst, region_variable_combinations_wo_unfolding)
             dump_dictionary_to_file(*syst, file)
