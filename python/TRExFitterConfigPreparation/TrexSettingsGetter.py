@@ -238,6 +238,8 @@ class TrexSettingsGetter:
         result = {}
         fit_dict_settings = self._get_fit_dict()
         result["FitType"]   = fit_dict_settings.get("FitType",  "SPLUSB")
+        if self.run_unfolding:
+            result["FitType"] = "UNFOLDING"
         result["FitRegion"] = fit_dict_settings.get("FitRegion","CRSR")
         result["POIAsimov"] = fit_dict_settings.get("POIAsimov",1)
         result["FitBlind"]  = fit_dict_settings.get("FitBlind", "True")
