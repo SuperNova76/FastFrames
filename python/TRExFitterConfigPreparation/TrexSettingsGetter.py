@@ -47,7 +47,7 @@ def remove_items(dict_to_use : dict, key : str, items_to_remove : list[str]) -> 
             del dict_to_use[key]
 
 class TrexSettingsGetter:
-    def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = ""):
+    def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None):
         self.trex_settings_dict = None
         if trex_settings_yaml:
             with open(trex_settings_yaml, "r") as f:
@@ -58,19 +58,214 @@ class TrexSettingsGetter:
                     exit(1)
         self._sample_color_counter = 2
 
-        self.config_reader = config_reader
-        self.run_unfolding = False
         self.unfolding_sample = ""
         self.unfolding_level = ""
         self.unfolding_variable_truth = ""
         self.unfolding_variable_reco = ""
+        self.run_unfolding = False
+        self._set_unfolding_settings(unfolding_tuple)
+
+        self.config_reader = config_reader
+
         self.unfolding_n_bins = None
 
         self._all_MC_samples = None
         self._unfolding_MC_samples_names = None
         self._inclusive_MC_samples_names = None
 
-    def set_unfolding_settings(self, unfolding_settings_tuple : tuple[str,str,str]) -> None:
+        self._regions_map = {}       # key = region name, value = region C++ object
+        self._region_blocks = []    # list[tuple[str,str,dict]] -> region blocks for trex-fitter config
+        self._region_variable_combinations_wo_unfolding = [] # list[str] list of region_variable combinations used in the unfolding
+        self._initialize_region_variables()
+
+        self._unfolding_samples_blocks = [] # list[tuple[str,str,dict]] -> unfolding samples blocks for trex-fitter config
+        self._inclusive_samples_blocks = [] # list[tuple[str,str,dict]] -> samples blocks for trex-fitter config
+        self._initialize_sample_variables()
+
+        self._systematics_blocks = [] # list[tuple[str,str,dict]] -> systematics blocks for trex-fitter config
+        self._initialize_systematics_variables()
+
+    def get_region_blocks(self) -> list[tuple[str,str,dict]]:
+        return self._region_blocks
+
+    def _initialize_region_variables(self) -> None:
+        regions = self.config_reader.block_general.get_regions_cpp_objects()
+        for region in regions:
+            region_name = region.name()
+            self._regions_map[region_name] = region
+            variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
+            for variable_cpp_object in variable_cpp_objects:
+                if self.run_unfolding:
+                    if variable_cpp_object.name() != self.unfolding_variable_reco:
+                        self._region_variable_combinations_wo_unfolding.append(region_name + "_" + variable_cpp_object.name())
+                        continue
+                region_tuple = self._get_region_tuple(region,variable_cpp_object)
+                self._region_blocks.append(region_tuple)
+
+    def _get_region_tuple(self, region, variable) -> tuple[str,str,dict]:
+        dictionary = {}
+        variable_name = variable.name().replace("_NOSYS","")
+        region_name = region.name() + "_" + variable_name
+        dictionary["Type"] = "SIGNAL"
+        dictionary["VariableTitle"] = variable_name # TODO: proper title
+        dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
+        dictionary["Label"] = region_name       # TODO: proper label
+        dictionary["ShortLabel"] = region_name  # TODO: proper label
+        if self.run_unfolding:
+            dictionary["NumberOfRecoBins"] = variable.axisNbins()
+            dictionary["AcceptanceNameSuff"] = "_" + region.name()
+            dictionary["SelectionEffNameSuff"] = "_" + region.name()
+            dictionary["MigrationNameSuff"] = "_" + region.name()
+
+        return "Region", region_name, dictionary
+
+    def get_unfolding_samples_blocks(self) -> list[tuple[str,str,dict]]:
+        return self._unfolding_samples_blocks
+
+    def get_samples_blocks(self) -> list[tuple[str,str,dict]]:
+        return self._inclusive_samples_blocks
+
+    def _initialize_sample_variables(self) -> None:
+        self._unfolding_MC_samples_names = []
+        if self.run_unfolding:
+            self._unfolding_samples_blocks = self._get_unfolding_samples_blocks()
+        self._inclusive_samples_blocks = self._get_samples_blocks()
+
+        if not self._all_MC_samples:
+            Logger.log_message("ERROR", "No MC samples have been defined. Cannot produce trex-fitter config.")
+            exit(1)
+
+    def _get_unfolding_samples_blocks(self) -> list[tuple]:
+        if not self.run_unfolding:
+            return []
+        samples_cpp_objects = self.config_reader.block_general.get_samples_objects()
+        result = []
+        unfolding_samples_cpp_objects = []
+        for sample in samples_cpp_objects:
+            sample_setting_dict = self._get_sample_dict(sample.name())
+            truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthSharedPtrs())
+            for truth_object in truth_objects:
+                level = truth_object.name()
+                if level != self.unfolding_level:
+                    continue
+                variable_raw_ptrs = truth_object.getVariableRawPtrs()
+                for variable_ptr in variable_raw_ptrs:
+                    truth_variable = VariableWrapper("")
+                    truth_variable.constructFromRawPtr(variable_ptr)
+                    if truth_variable.name() != self.unfolding_variable_truth:
+                        continue
+
+                    if self.unfolding_n_bins is None:
+                        self.unfolding_n_bins = truth_variable.axisNbins()
+                    sample_dict = {}
+                    sample_name = sample.name()
+                    if sample_name != self.unfolding_sample:
+                        sample_dict["Type"] = "GHOST"
+
+                    sample_color = self.get_sample_color()
+                    sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
+                    sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
+                    sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
+
+                    sample_dict["AcceptanceFile"] =  sample_name
+                    sample_dict["MigrationFile"] =  sample_name
+                    sample_dict["SelectionEffFile"] =  sample_name
+
+                    sample_dict["AcceptanceName"]   = "NOSYS/acceptance_eff_" + level + "_" + self.unfolding_variable_reco
+                    sample_dict["SelectionEffName"] = "NOSYS/selection_eff_" + level + "_" + truth_variable.name()
+                    sample_dict["MigrationName"]    = "NOSYS/" + self.unfolding_variable_reco + "_vs_" + level + "_" + truth_variable.name()
+
+                    result.append(("UnfoldingSample", sample.name(), sample_dict))
+                    unfolding_samples_cpp_objects.append(sample.name())
+
+        self._unfolding_MC_samples_names = unfolding_samples_cpp_objects
+        return result
+
+    def _get_samples_blocks(self) -> list[tuple[str,str,dict]]:
+        all_samples = self.config_reader.block_general.get_samples_objects()
+        result = []
+        self._inclusive_MC_samples_names = []
+        for sample in all_samples:
+            if self._unfolding_MC_samples_names:
+                if sample.name() in self._unfolding_MC_samples_names:
+                    continue
+            self._inclusive_MC_samples_names.append(sample.name())
+            sample_tuple = self._get_sample_tuple(sample)
+            result.append(sample_tuple)
+        self._all_MC_samples = [sample for sample in all_samples if not BlockReaderSample.is_data_sample(sample)]
+        return result
+
+    def _get_sample_tuple(self, sample) -> tuple[str,str,dict]:
+        dictionary = {}
+        is_data = BlockReaderSample.is_data_sample(sample)
+        sample_setting_dict = self._get_sample_dict(sample.name())
+        dictionary["Type"] =  sample_setting_dict.get("Type", "BACKGROUND" if not is_data else "DATA")
+        dictionary["Title"] = sample_setting_dict.get("Title", sample.name())
+        dictionary["HistoFile"] = sample.name()
+        sample_color = sample_setting_dict.get("Color", self.get_sample_color())
+        dictionary["FillColor"] = sample_setting_dict.get("FillColor", sample_color) # TODO: FillColor
+        dictionary["LineColor"] = sample_setting_dict.get("LineColor", sample_color)  # TODO: LineColor
+
+        region_names = vector_to_list(sample.regionsNames())
+        selected_regions = []
+        all_regions_list = []
+        variable_names_defined_for_sample = vector_to_list(sample.variables())
+        for region_name in region_names:
+            region = self._regions_map[region_name]
+            variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
+            for variable in variable_cpp_objects:
+                variable_name = variable.name()
+                all_regions_list.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
+                if not variable_name in variable_names_defined_for_sample:
+                    continue
+                variable_name = variable_name.replace("_NOSYS","")
+                selected_regions.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
+
+        # check if there is more included or excluded regions and use the shorter list of these two
+        if (len(selected_regions) > 0.5*len(all_regions_list)):
+            excluded_regions = []
+            for region in all_regions_list:
+                if not region in selected_regions:
+                    excluded_regions.append(region)
+            if excluded_regions:
+                dictionary["Exclude"] = ",".join(excluded_regions)
+        else:
+            dictionary["Regions"] = ",".join(selected_regions)
+
+        result = ("Sample", sample.name(), dictionary)
+        self.remove_regions_wo_unfolding(result)
+        return result
+
+    def get_systematics_blocks(self) -> list[tuple[str,str,dict]]:
+        return self._systematics_blocks
+
+    def _initialize_systematics_variables(self ) -> None:
+        trex_only_systemaics = self.get_trex_only_systematics_blocks()
+        systematics_from_config = []
+        use_automatic_systematics = self.config_reader.block_general.cpp_class.automaticSystematics()
+        if use_automatic_systematics:
+            automatic_sys_map = self.get_automatic_systematics_pairs(self.config_reader.block_general.cpp_class.outputPathHistograms())
+            for syst_name in automatic_sys_map:
+                systematics_from_config.append(("Systematic", syst_name, automatic_sys_map[syst_name]))
+        else:
+            systematics_from_config = self._get_systematics_blocks()
+
+        all_systematics = systematics_from_config + trex_only_systemaics
+        for syst_tuple in all_systematics:
+            syst_inclusive, syst_unfolding = self.split_systematics_into_inclusive_and_unfolding(syst_tuple)
+            if syst_inclusive:
+                self.remove_regions_wo_unfolding(syst_inclusive)
+                self._systematics_blocks.append(syst_inclusive)
+            if syst_unfolding:
+                self.remove_regions_wo_unfolding(syst_unfolding)
+                self._systematics_blocks.append(syst_unfolding)
+
+
+    def remove_regions_wo_unfolding(self, block : tuple[str,str,dict]) -> None:   # TODO: make it private
+        remove_items(block[2], "Regions", self._region_variable_combinations_wo_unfolding)
+        remove_items(block[2], "Exclude", self._region_variable_combinations_wo_unfolding)
+
+    def _set_unfolding_settings(self, unfolding_settings_tuple : tuple[str,str,str,str]) -> None:
         if unfolding_settings_tuple:
             self.run_unfolding = True
             self.unfolding_sample = unfolding_settings_tuple[0]
@@ -94,10 +289,9 @@ class TrexSettingsGetter:
             return {}
         return self.trex_settings_dict.get("Fit", {})
 
-    def _get_all_trexfitter_regions(self, regions_cpp_objects : list) -> list[str]:
+    def _get_all_trexfitter_regions(self) -> list[str]:
         result = []
-        for region in regions_cpp_objects:
-            region_name = region.name()
+        for region_name, region in self._regions_map.items():
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable_cpp_object in variable_cpp_objects:
                 variable_name = variable_cpp_object.name()
@@ -134,13 +328,13 @@ class TrexSettingsGetter:
             result.append(("NormFactor", normfactor_name, normfactor_output_dict))
         return result
 
-    def get_automatic_systematics_list(self, output_root_files_folder : str, sample_names : list, regions_objects : list) -> dict:
-        trex_regions_names = self._get_all_trexfitter_regions(regions_objects)
+    def get_automatic_systematics_list(self, output_root_files_folder : str, sample_names : list) -> dict:
+        trex_regions_names = self._get_all_trexfitter_regions()
         result = {} # key = systematic name, value = list of samples for which it is defined
         for sample_name in sample_names:
             sample_path = os.path.join(output_root_files_folder, sample_name + ".root")
             if not os.path.exists(sample_path):
-                Logger.log_message("ERROR", "Sample {} does not exist".format(sample_name))
+                Logger.log_message("ERROR", "ROOT file for sample {} does not exist".format(sample_name))
                 exit(1)
             root_file = TFile(sample_path, "READ")
             # loop over all TDirectories in the root file
@@ -167,8 +361,9 @@ class TrexSettingsGetter:
             root_file.Close
         return result
 
-    def get_automatic_systematics_pairs(self, output_root_files_folder : str, sample_names : list, regions_objects : list) -> dict[str,dict]:
-        automatic_systematics = self.get_automatic_systematics_list(output_root_files_folder, sample_names, regions_objects)
+    def get_automatic_systematics_pairs(self, output_root_files_folder : str) -> dict[str,dict]:
+        sample_names = [sample.name() for sample in self._all_MC_samples]
+        automatic_systematics = self.get_automatic_systematics_list(output_root_files_folder, sample_names)
         contains_generator_syst = False
         result = {}
         for histo_name in automatic_systematics:
@@ -221,7 +416,7 @@ class TrexSettingsGetter:
         self._sample_color_counter += 1
         return self._sample_color_counter
 
-    def get_normfactor_dicts(self, samples_cpp_objects : list) -> list:
+    def get_normfactor_dicts(self) -> list:
         normfactor_dicts = self.get_normfactors_from_trex_settings()
         if normfactor_dicts:
             return normfactor_dicts
@@ -231,7 +426,7 @@ class TrexSettingsGetter:
         normfactor_dict["Nominal"] =  1
         normfactor_dict["Min"] =  -100
         normfactor_dict["Max"] =  100
-        normfactor_dict["Samples"] = samples_cpp_objects[0].name()
+        normfactor_dict["Samples"] = self._all_MC_samples[0].name()
         return [("NormFactor", "mu_signal", normfactor_dict)]
 
     def get_fit_block(self) -> tuple:
@@ -259,125 +454,11 @@ class TrexSettingsGetter:
         dictionary["HistoChecks"] = "NOCRASH"
         return "Job","my_fit",dictionary
 
-    def get_region_dictionary(self, region, variable) -> tuple[str,str,dict]:
-        dictionary = {}
-        variable_name = variable.name().replace("_NOSYS","")
-        region_name = region.name() + "_" + variable_name
-        dictionary["Type"] = "SIGNAL"
-        dictionary["VariableTitle"] = variable_name # TODO: proper title
-        dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
-        dictionary["Label"] = region_name       # TODO: proper label
-        dictionary["ShortLabel"] = region_name  # TODO: proper label
-        if self.run_unfolding:
-            dictionary["NumberOfRecoBins"] = variable.axisNbins()
-            dictionary["AcceptanceNameSuff"] = "_" + region.name()
-            dictionary["SelectionEffNameSuff"] = "_" + region.name()
-            dictionary["MigrationNameSuff"] = "_" + region.name()
-
-        return "Region", region_name, dictionary
-
-    def get_unfolding_samples_blocks(self, samples_cpp_objects : list) -> list[tuple]:
-        if not self.run_unfolding:
-            return []
-        result = []
-        unfolding_samples_cpp_objects = []
-        for sample in samples_cpp_objects:
-            sample_setting_dict = self._get_sample_dict(sample.name())
-            truth_objects = BlockReaderSample.get_truth_cpp_objects(sample.getTruthSharedPtrs())
-            for truth_object in truth_objects:
-                level = truth_object.name()
-                if level != self.unfolding_level:
-                    continue
-                variable_raw_ptrs = truth_object.getVariableRawPtrs()
-                for variable_ptr in variable_raw_ptrs:
-                    truth_variable = VariableWrapper("")
-                    truth_variable.constructFromRawPtr(variable_ptr)
-                    if truth_variable.name() != self.unfolding_variable_truth:
-                        continue
-
-                    if self.unfolding_n_bins is None:
-                        self.unfolding_n_bins = truth_variable.axisNbins()
-                    sample_dict = {}
-                    sample_name = sample.name()
-                    if sample_name != self.unfolding_sample:
-                        sample_dict["Type"] = "GHOST"
-
-                    sample_color = self.get_sample_color()
-                    sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
-                    sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
-                    sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
-
-                    sample_dict["AcceptanceFile"] =  sample_name
-                    sample_dict["MigrationFile"] =  sample_name
-                    sample_dict["SelectionEffFile"] =  sample_name
-
-                    sample_dict["AcceptanceName"]   = "NOSYS/acceptance_eff_" + level + "_" + self.unfolding_variable_reco
-                    sample_dict["SelectionEffName"] = "NOSYS/selection_eff_" + level + "_" + truth_variable.name()
-                    sample_dict["MigrationName"]    = "NOSYS/" + self.unfolding_variable_reco + "_vs_" + level + "_" + truth_variable.name()
-
-                    result.append(("UnfoldingSample", sample.name(), sample_dict))
-                    unfolding_samples_cpp_objects.append(sample.name())
-
-        self._unfolding_MC_samples_names = unfolding_samples_cpp_objects
-        return result
-
-
-    def get_samples_blocks(self, regions_map) -> list[tuple[str,str,dict]]:
-        all_samples = self.config_reader.block_general.get_samples_objects()
-        result = []
-        self._inclusive_MC_samples_names = []
-        for sample in all_samples:
-            if self._unfolding_MC_samples_names:
-                if sample.name() in self._unfolding_MC_samples_names:
-                    continue
-            self._inclusive_MC_samples_names.append(sample.name())
-            sample_tuple = self.get_sample_tuple(sample, regions_map)
-            result.append(sample_tuple)
-        self._all_MC_samples = all_samples
-        return result
-
-    def get_sample_tuple(self, sample, regions_map) -> tuple[str,str,dict]:
-        dictionary = {}
-        is_data = BlockReaderSample.is_data_sample(sample)
-        sample_setting_dict = self._get_sample_dict(sample.name())
-        dictionary["Type"] =  sample_setting_dict.get("Type", "BACKGROUND" if not is_data else "DATA")
-        dictionary["Title"] = sample_setting_dict.get("Title", sample.name())
-        dictionary["HistoFile"] = sample.name()
-        sample_color = sample_setting_dict.get("Color", self.get_sample_color())
-        dictionary["FillColor"] = sample_setting_dict.get("FillColor", sample_color) # TODO: FillColor
-        dictionary["LineColor"] = sample_setting_dict.get("LineColor", sample_color)  # TODO: LineColor
-
-        region_names = vector_to_list(sample.regionsNames())
-        selected_regions = []
-        all_regions_list = []
-        variable_names_defined_for_sample = vector_to_list(sample.variables())
-        for region_name in region_names:
-            region = regions_map[region_name]
-            variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
-            for variable in variable_cpp_objects:
-                variable_name = variable.name()
-                all_regions_list.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
-                if not variable_name in variable_names_defined_for_sample:
-                    continue
-                variable_name = variable_name.replace("_NOSYS","")
-                selected_regions.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
-
-        # check if there is more included or excluded regions and use the shorter list of these two
-        if (len(selected_regions) > 0.5*len(all_regions_list)):
-            excluded_regions = []
-            for region in all_regions_list:
-                if not region in selected_regions:
-                    excluded_regions.append(region)
-            if excluded_regions:
-                dictionary["Exclude"] = ",".join(excluded_regions)
-        else:
-            dictionary["Regions"] = ",".join(selected_regions)
-
-        return "Sample", sample.name(), dictionary
-
-    def get_systematics_blocks(self, systematics_dicts : list[dict], samples_cpp_objects : list, regions_map : dict) -> list:
+    def _get_systematics_blocks(self) -> list:
+        samples_cpp_objects = self.config_reader.block_general.get_samples_objects()
+        systematics_dicts = self.config_reader.systematics_dicts
         all_regions = []
-        for region in regions_map.values():
+        for region in self._regions_map.values():
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable in variable_cpp_objects:
                 all_regions.append(region.name() + "_" + variable.name().replace("_NOSYS",""))
@@ -421,7 +502,7 @@ class TrexSettingsGetter:
             regions_selected = []
             region_names = vector_to_list(syst_non_empty_cpp_object.regionsNames())
             for region_name in region_names:
-                region = regions_map[region_name]
+                region = self._regions_map[region_name]
                 variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
                 for variable in variable_cpp_objects:
                     variable_name = variable.name()
