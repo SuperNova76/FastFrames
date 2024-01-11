@@ -431,6 +431,21 @@ class ConfigSettingWrapper {
          */
         int currentJobIndex() const {return m_configSetting->currentJobIndex();}
 
+        /**
+         * @brief Set the flag to force acceptance and selection to be within 0 and 1
+         *
+         * @param flag
+         */
+        inline void setCapAcceptanceSelection(const bool flag) {m_configSetting->setCapAcceptanceSelection(flag);}
+
+        /**
+         * @brief Force acceptance and selection to be within 0 and 1?
+         *
+         * @return true
+         * @return false
+         */
+        inline bool capAcceptanceSelection() const {return m_configSetting->capAcceptanceSelection();}
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };

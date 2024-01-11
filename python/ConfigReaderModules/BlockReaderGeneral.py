@@ -45,6 +45,7 @@ class BlockReaderGeneral:
         self._set_luminosity_map(self._options_getter.get("luminosity", None, [dict]))
         self._min_event = self._options_getter.get("min_event", None, [int])
         self._max_event = self._options_getter.get("max_event", None, [int])
+        self._cap_acceptance_selection = self._options_getter.get("cap_acceptance_selection", True, [bool])
 
         ## Default value for sumweights -> can be overriden in sample block
         self.default_sumweights = self._options_getter.get("default_sumweights", "NOSYS", [str])
@@ -105,6 +106,7 @@ class BlockReaderGeneral:
         self.cpp_class.setCustomFrameName(self._custom_frame_name)
         self.cpp_class.setAutomaticSystematics(self._automatic_systematics)
         self.cpp_class.setNominalOnly(self._nominal_only)
+        self.cpp_class.setCapAcceptanceSelection(self._cap_acceptance_selection)
 
         for campaign, lumi_value in self._luminosity_map.items():
             self.cpp_class.setLuminosity(campaign, lumi_value, True)

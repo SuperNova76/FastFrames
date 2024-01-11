@@ -173,6 +173,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setCurrentJobIndex",  &ConfigSettingWrapper::setCurrentJobIndex)
         .def("currentJobIndex",     &ConfigSettingWrapper::currentJobIndex)
 
+        // capAcceptanceSelection
+        .def("setCapAcceptanceSelection",  &ConfigSettingWrapper::setCapAcceptanceSelection)
+        .def("capAcceptanceSelection",     &ConfigSettingWrapper::capAcceptanceSelection)
     ;
 
     /**
