@@ -882,6 +882,12 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     acceptance->Divide(reco.get());
                     acceptance->SetDirectory(nullptr);
 
+                    // correct acceptance and selection eff?
+                    if (m_config->capAcceptanceSelection()) {
+                        Utils::capHisto0And1(selectionEff.get());
+                        Utils::capHisto0And1(acceptance.get());
+                    }
+
                     const std::string selectionEffName = "selection_eff_" + truthName + "_" + iregionHist.name();
                     const std::string acceptanceName   = "acceptance_"    + itruth->name() + "_" + StringOperations::replaceString(recoName, "_NOSYS", "") + "_" + iregionHist.name();
 
