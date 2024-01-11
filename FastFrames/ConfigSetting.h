@@ -346,6 +346,21 @@ public:
    */
   int currentJobIndex() const {return m_currentJobIndex;}
 
+  /**
+   * @brief Set the flag to force acceptance and selection to be within 0 and 1
+   * 
+   * @param flag 
+   */
+  inline void setCapAcceptanceSelection(const bool flag) {m_capAcceptanceSelection = flag;}
+  
+  /**
+   * @brief Force acceptance and selection to be within 0 and 1? 
+   * 
+   * @return true 
+   * @return false 
+   */
+  inline bool capAcceptanceSelection() const {return m_capAcceptanceSelection;}
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -369,5 +384,5 @@ private:
   std::shared_ptr<Ntuple> m_ntuple = nullptr;
   int m_totalJobSplits = -1;
   int m_currentJobIndex = -1;
-
+  bool m_capAcceptanceSelection = false;
 };

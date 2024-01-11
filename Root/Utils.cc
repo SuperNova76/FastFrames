@@ -101,3 +101,15 @@ std::vector<std::string> Utils::selectedFileList(const std::vector<std::string>&
 
     return result;
 }
+
+void Utils::capHisto0And1(TH1D* h) {
+    for (int ibin = 0; ibin <= h->GetNbinsX(); ++ibin) {
+        const double content = h->GetBinContent(ibin);
+        if (content < 0) {
+            h->SetBinContent(ibin, 0.);
+        }
+        if (content > 1.) {
+            h->SetBinContent(ibin, 1.);
+        }
+    }
+}

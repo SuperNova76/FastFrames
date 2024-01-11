@@ -87,4 +87,11 @@ namespace Utils {
   std::vector<std::string> selectedFileList(const std::vector<std::string>& fileList,
                                             const int split,
                                             const int index);
+
+  /**
+   * @brief Set histogram to be between 0 and 1 in each bin
+   * 
+   * @param h 
+   */
+  void capHisto0And1(TH1D* h);
 }
