@@ -102,14 +102,16 @@ std::vector<std::string> Utils::selectedFileList(const std::vector<std::string>&
     return result;
 }
 
-void Utils::capHisto0And1(TH1D* h) {
+void Utils::capHisto0And1(TH1D* h, const std::string& name) {
     for (int ibin = 0; ibin <= h->GetNbinsX(); ++ibin) {
         const double content = h->GetBinContent(ibin);
         if (content < 0) {
             h->SetBinContent(ibin, 0.);
+            LOG(VERBOSE) << "Negative bin content of " << content << " found in " << ibin << " bin of " << name << " histogram, setting it to 0\n";
         }
         if (content > 1.) {
             h->SetBinContent(ibin, 1.);
+            LOG(VERBOSE) << "Bin content of " << content << " found in " << ibin << " bin of " << name << " histogram, setting it to 1\n";
         }
     }
 }

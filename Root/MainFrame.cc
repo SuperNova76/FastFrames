@@ -877,19 +877,20 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     std::unique_ptr<TH1D> selectionEff(migration->ProjectionX(""));
                     selectionEff->Divide(truth.get());
                     selectionEff->SetDirectory(nullptr);
-                    
+
                     std::unique_ptr<TH1D> acceptance(migration->ProjectionY(""));
                     acceptance->Divide(reco.get());
                     acceptance->SetDirectory(nullptr);
 
-                    // correct acceptance and selection eff?
-                    if (m_config->capAcceptanceSelection()) {
-                        Utils::capHisto0And1(selectionEff.get());
-                        Utils::capHisto0And1(acceptance.get());
-                    }
-
                     const std::string selectionEffName = "selection_eff_" + truthName + "_" + iregionHist.name();
                     const std::string acceptanceName   = "acceptance_"    + itruth->name() + "_" + StringOperations::replaceString(recoName, "_NOSYS", "") + "_" + iregionHist.name();
+
+                    // correct acceptance and selection eff?
+                    if (m_config->capAcceptanceSelection()) {
+                        const std::string systematics_name = isystHist.name();
+                        Utils::capHisto0And1(selectionEff.get(), systematics_name + "/" + selectionEffName);
+                        Utils::capHisto0And1(acceptance.get(), systematics_name + "/" + acceptanceName);
+                    }
 
                     outputFile->cd(isystHist.name().c_str());
                     selectionEff->Write(selectionEffName.c_str());

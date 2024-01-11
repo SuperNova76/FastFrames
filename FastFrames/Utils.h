@@ -57,13 +57,13 @@ namespace Utils {
                                                     const std::string& name);
 
   /**
-   * @brief 
+   * @brief
    * @brief Copy a histogram from VariableHistos2d based on a name of the histogram
    * This triggers event loop!
-   * 
-   * @param histos 
-   * @param name 
-   * @return std::unique_ptr<TH2D> 
+   *
+   * @param histos
+   * @param name
+   * @return std::unique_ptr<TH2D>
    */
   std::unique_ptr<TH2D> copyHistoFromVariableHistos2D(const std::vector<VariableHisto2D>& histos,
                                                       const std::string& name);
@@ -90,8 +90,8 @@ namespace Utils {
 
   /**
    * @brief Set histogram to be between 0 and 1 in each bin
-   * 
-   * @param h 
+   *
+   * @param h
    */
-  void capHisto0And1(TH1D* h);
+  void capHisto0And1(TH1D* h, const std::string& name);
 }
