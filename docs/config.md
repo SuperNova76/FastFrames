@@ -24,6 +24,7 @@ The options are case sensitive. Example config files can be found in ```test/con
 | number_of_cpus                | int  | Number of CPUs to use for multithreading. Default is ```1``` |
 | min_event                     | int  | If defined, it will process only events with entry index larger or equal than this |
 | max_event                     | int  | If defined, it will process only events with entry index smaller than this |
+| cap_acceptance_selection      | bool | If set to ```True```, it will keep acceptance and efficiency in interval [0,1]. Default is ```True``` |
 | luminosity                    | dict | Dictionary of luminosity values, where key is MC campaign (for example ```mc20d```) and value is luminosity for that campaign. See example config file. Default values for some MC campaigns are defined already in the code, but they can be overridden from here.  |
 | define_custom_columns         | list of dicts | Default list of custom columns (branches) to create in data-frame (can be overriden in sample block for a given sample). Each custom column has to have 2 options: ```name``` and ```definition```. |
 | exclude_systematics  | list of strings | List of systematic uncertainties to skip when automatic systematic option is selected. It supports regular expressions. It can be overriden for individual samples. |
