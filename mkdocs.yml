@@ -17,8 +17,10 @@ nav:
     - Introduction: index.md
 
     - Config: config.md
-    
+
     - Helper functions: helpers.md
+
+    - TRExFitter config: trex_config.md
 
 
 markdown_extensions:
