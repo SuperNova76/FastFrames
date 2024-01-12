@@ -205,6 +205,8 @@ trex_fitter_configs_comparison:
     - compile
     - run_filelist
   script:
+     - sudo yum makecache --refresh
+     - yum -y install colordiff
      - python3 python/FastFrames.py --c test/configs/config_TRExFitter_test.yml
      - python3 test/python/compare_trex_configs.py
   allow_failure: true
