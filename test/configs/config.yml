@@ -103,8 +103,8 @@ samples:
             definition:  "Ttbar_MC_t_afterFSR_pt"
             binning:
               min: 0
-              max: 1000000
-              number_of_bins: 20
+              max: 500000
+              number_of_bins: 10
 
   - name: "Wjets"
     dsids: [700341]

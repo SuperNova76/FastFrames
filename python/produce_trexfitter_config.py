@@ -61,6 +61,11 @@ if __name__ == "__main__":
         dump_dictionary_to_file(*fit_block, file)
 
 
+        if trex_settings_getter.run_unfolding:
+            add_block_comment("UNFOLDING", file)
+            unfolding_block = trex_settings_getter.get_unfolding_block()
+            dump_dictionary_to_file(*unfolding_block, file)
+
         add_block_comment("REGIONS", file)
         regions_blocks = trex_settings_getter.get_region_blocks()
         for region_block in regions_blocks:
@@ -72,16 +77,23 @@ if __name__ == "__main__":
             for unfolding_sample_block in unfolding_sample_blocks:
                 dump_dictionary_to_file(*unfolding_sample_block, file)
 
+            truth_samples = trex_settings_getter.get_truth_samples_blocks()
+            add_block_comment("TRUTHSAMPLES", file)
+            for truth_sample in truth_samples:
+                dump_dictionary_to_file(*truth_sample, file)
+
         add_block_comment("SAMPLES", file)
         sample_blocks = trex_settings_getter.get_samples_blocks()
         for sample in sample_blocks:
             dump_dictionary_to_file(*sample, file)
 
+
         add_block_comment("NORM. FACTORS", file)
         norm_factor_blocks = trex_settings_getter.get_normfactor_dicts()
-        for norm_factor_block in norm_factor_blocks:
-            trex_settings_getter.remove_regions_wo_unfolding(norm_factor_block)
-            dump_dictionary_to_file(*norm_factor_block, file)
+        if norm_factor_blocks:
+            for norm_factor_block in norm_factor_blocks:
+                trex_settings_getter.remove_regions_wo_unfolding(norm_factor_block)
+                dump_dictionary_to_file(*norm_factor_block, file)
 
         add_block_comment("SYSTEMATICS", file)
         systematics_blocks = trex_settings_getter.get_systematics_blocks()

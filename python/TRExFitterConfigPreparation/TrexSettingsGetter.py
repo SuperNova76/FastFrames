@@ -63,6 +63,14 @@ class TrexSettingsGetter:
         self.unfolding_variable_truth = ""
         self.unfolding_variable_reco = ""
         self.run_unfolding = False
+
+        # TODO: clean this up
+        histo_path = config_reader.block_general.cpp_class.outputPathHistograms()
+        if histo_path == "":
+            histo_path = "."
+        self._files_path = os.path.abspath(histo_path)
+
+
         self._set_unfolding_settings(unfolding_tuple)
 
         self.config_reader = config_reader
@@ -72,6 +80,8 @@ class TrexSettingsGetter:
         self._all_MC_samples = None
         self._unfolding_MC_samples_names = None
         self._inclusive_MC_samples_names = None
+        self._truth_samples_blocks = []
+        self._nominal_truth_sample = None
 
         self._regions_map = {}       # key = region name, value = region C++ object
         self._region_blocks = []    # list[tuple[str,str,dict]] -> region blocks for trex-fitter config
@@ -84,6 +94,8 @@ class TrexSettingsGetter:
 
         self._systematics_blocks = [] # list[tuple[str,str,dict]] -> systematics blocks for trex-fitter config
         self._initialize_systematics_variables()
+
+        self._total_lumi = BlockReaderSample.get_total_luminosity(config_reader.block_general.cpp_class, config_reader.block_general.get_samples_objects())
 
     def get_region_blocks(self) -> list[tuple[str,str,dict]]:
         return self._region_blocks
@@ -122,24 +134,28 @@ class TrexSettingsGetter:
     def get_unfolding_samples_blocks(self) -> list[tuple[str,str,dict]]:
         return self._unfolding_samples_blocks
 
+    def get_truth_samples_blocks(self) -> list[tuple[str,str,dict]]:
+        return self._truth_samples_blocks
+
     def get_samples_blocks(self) -> list[tuple[str,str,dict]]:
         return self._inclusive_samples_blocks
 
     def _initialize_sample_variables(self) -> None:
         self._unfolding_MC_samples_names = []
         if self.run_unfolding:
-            self._unfolding_samples_blocks = self._get_unfolding_samples_blocks()
+            self._initialize_unfolding_and_truth_samples_blocks()
         self._inclusive_samples_blocks = self._get_samples_blocks()
 
         if not self._all_MC_samples:
             Logger.log_message("ERROR", "No MC samples have been defined. Cannot produce trex-fitter config.")
             exit(1)
 
-    def _get_unfolding_samples_blocks(self) -> list[tuple]:
+    def _initialize_unfolding_and_truth_samples_blocks(self) -> None:
         if not self.run_unfolding:
-            return []
+            return
         samples_cpp_objects = self.config_reader.block_general.get_samples_objects()
-        result = []
+        self._unfolding_samples_blocks = []
+        self._truth_samples_blocks = []
         unfolding_samples_cpp_objects = []
         for sample in samples_cpp_objects:
             sample_setting_dict = self._get_sample_dict(sample.name())
@@ -157,29 +173,39 @@ class TrexSettingsGetter:
 
                     if self.unfolding_n_bins is None:
                         self.unfolding_n_bins = truth_variable.axisNbins()
-                    sample_dict = {}
+                    unfolding_sample_dict = {}
                     sample_name = sample.name()
                     if sample_name != self.unfolding_sample:
-                        sample_dict["Type"] = "GHOST"
+                        unfolding_sample_dict["Type"] = "GHOST"
 
                     sample_color = self.get_sample_color()
-                    sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
-                    sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
-                    sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
+                    unfolding_sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
+                    unfolding_sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
+                    unfolding_sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
 
-                    sample_dict["AcceptanceFile"] =  sample_name
-                    sample_dict["MigrationFile"] =  sample_name
-                    sample_dict["SelectionEffFile"] =  sample_name
+                    unfolding_sample_dict["AcceptanceFile"] =  sample_name
+                    unfolding_sample_dict["MigrationFile"] =  sample_name
+                    unfolding_sample_dict["SelectionEffFile"] =  sample_name
 
-                    sample_dict["AcceptanceName"]   = "NOSYS/acceptance_eff_" + level + "_" + self.unfolding_variable_reco
-                    sample_dict["SelectionEffName"] = "NOSYS/selection_eff_" + level + "_" + truth_variable.name()
-                    sample_dict["MigrationName"]    = "NOSYS/" + self.unfolding_variable_reco + "_vs_" + level + "_" + truth_variable.name()
+                    unfolding_sample_dict["AcceptanceName"]   = "NOSYS/acceptance_" + level + "_" + self.unfolding_variable_reco
+                    unfolding_sample_dict["SelectionEffName"] = "NOSYS/selection_eff_" + level + "_" + truth_variable.name()
+                    unfolding_sample_dict["MigrationName"]    = "NOSYS/" + self.unfolding_variable_reco + "_vs_" + level + "_" + truth_variable.name()
 
-                    result.append(("UnfoldingSample", sample.name(), sample_dict))
+                    self._unfolding_samples_blocks.append(("UnfoldingSample", sample.name(), unfolding_sample_dict))
                     unfolding_samples_cpp_objects.append(sample.name())
 
+                    truth_sample_dict = {
+                        "LineColor" : sample_setting_dict.get("LineColor", sample_color),
+                        "Title" : sample_setting_dict.get("Title", sample_name),
+                        "TruthDistributionFile" : sample_name,
+                        "TruthDistributionName" : self.unfolding_level + "_" + truth_variable.name(),
+                        "TruthDistributionPath": self._files_path
+                    }
+
+                    if not self._nominal_truth_sample:
+                        self._nominal_truth_sample = "truth_sample_" + sample.name()
+                    self._truth_samples_blocks.append(("TruthSample", "truth_sample_" + sample.name(), truth_sample_dict))
         self._unfolding_MC_samples_names = unfolding_samples_cpp_objects
-        return result
 
     def _get_samples_blocks(self) -> list[tuple[str,str,dict]]:
         all_samples = self.config_reader.block_general.get_samples_objects()
@@ -288,6 +314,11 @@ class TrexSettingsGetter:
         if not self.trex_settings_dict:
             return {}
         return self.trex_settings_dict.get("Fit", {})
+
+    def _get_unfolding_dict(self) -> dict:
+        if not self.trex_settings_dict:
+            return {}
+        return self.trex_settings_dict.get("Unfolding", {})
 
     def _get_all_trexfitter_regions(self) -> list[str]:
         result = []
@@ -421,6 +452,8 @@ class TrexSettingsGetter:
         if normfactor_dicts:
             return normfactor_dicts
 
+        if self.run_unfolding:
+            return None
         normfactor_dict = {}
         normfactor_dict["Title"] =  '"#mu(signal)"'
         normfactor_dict["Nominal"] =  1
@@ -435,24 +468,46 @@ class TrexSettingsGetter:
         result["FitType"]   = fit_dict_settings.get("FitType",  "SPLUSB")
         if self.run_unfolding:
             result["FitType"] = "UNFOLDING"
+            result["BinnedLikelihoodOptimization"] = fit_dict_settings.get("BinnedLikelihoodOptimization", "TRUE")
+        else:
+            result["POIAsimov"] = fit_dict_settings.get("POIAsimov",1)
         result["FitRegion"] = fit_dict_settings.get("FitRegion","CRSR")
-        result["POIAsimov"] = fit_dict_settings.get("POIAsimov",1)
         result["FitBlind"]  = fit_dict_settings.get("FitBlind", "True")
         return "Fit", "fit", result
 
     def get_job_dictionary(self) -> tuple[str,str,dict]:
-        block_general = self.config_reader.block_general
         dictionary = {}
-        histo_path = block_general.cpp_class.outputPathHistograms()
-        if histo_path == "":
-            histo_path = "."
-        dictionary["HistoPath"] = histo_path
+        dictionary["HistoPath"] = self._files_path
+        if self.run_unfolding:
+            dictionary["AcceptancePath"] = self._files_path
+            dictionary["MigrationPath"] = self._files_path
+            dictionary["SelectionEffPath"] = self._files_path
         dictionary["Lumi"] = 1
         dictionary["ImageFormat"] = "pdf"
         dictionary["ReadFrom"] = "HIST"
-        dictionary["POI"] = "mu_signal"
+        if not self.run_unfolding:
+            dictionary["POI"] = "mu_signal"
         dictionary["HistoChecks"] = "NOCRASH"
         return "Job","my_fit",dictionary
+
+    def get_unfolding_block(self) -> tuple[str,str,dict]:
+        if not self.run_unfolding:
+            return None
+        unfolding_settings_dict = self._get_unfolding_dict()
+        result = {}
+        result["NumberOfTruthBins"] = self.unfolding_n_bins
+        result["UnfoldNormXSec"] = unfolding_settings_dict.get("UnfoldNormXSec", "TRUE")
+        #result["RatioYMin"] = unfolding_settings_dict.get("RatioYMin", 0.6)
+        #result["RatioYMax"] = unfolding_settings_dict.get("RatioYMax", 1.4)
+        result["DivideByBinWidth"] = unfolding_settings_dict.get("DivideByBinWidth", "TRUE")
+        result["DivideByLumi"] = unfolding_settings_dict.get("DivideByLumi", self._total_lumi) # TODO
+        result["LogX"] = unfolding_settings_dict.get("LogX", "FALSE")
+        result["LogY"] = unfolding_settings_dict.get("LogY", "FALSE")
+        result["NominalTruthSample"] = self._nominal_truth_sample
+        result["MatrixOrientation"] = "TRUTHONHORIZONTAL"
+
+        block_name = self.unfolding_level + "_" + self.unfolding_variable_truth
+        return "Unfolding",block_name, result
 
     def _get_systematics_blocks(self) -> list:
         samples_cpp_objects = self.config_reader.block_general.get_samples_objects()

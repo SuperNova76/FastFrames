@@ -257,3 +257,20 @@ class BlockReaderSample:
             if sample_type.lower() != "data":
                 return False
         return True
+
+    def get_total_luminosity(general_block_cpp_object, samples : list[SampleWrapper]) -> float:
+        """! Loop over all MC samples, indentify all MC campaign and sum up their luminosity
+        """
+        result = 0
+        campaigns = []
+        for sample in samples:
+            if BlockReaderSample.is_data_sample(sample):
+                continue
+            n_unique_samples = sample.nUniqueSampleIDs()
+            for i_unique_id in range(n_unique_samples):
+                unique_sample_string = sample.uniqueSampleIDstring(i_unique_id).split(",")
+                campaign = unique_sample_string[1].strip()
+                if campaign not in campaigns:
+                    campaigns.append(campaign)
+                    result += general_block_cpp_object.getLuminosity(campaign)
+        return result
