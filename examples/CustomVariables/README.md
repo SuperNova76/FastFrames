@@ -49,3 +49,5 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/MyCustomFrame/install/lib
 
 You can add this to your .bashrc file.
 
+## Creating empty class template
+To simplify the process of preparing the custom class, you can have a look a this repostiory that allows you to clone and then rename an empty custom class template: [link](https://gitlab.cern.ch/atlas-amglab/FastFramesCustomClassTemplate). This repository is also added as a submodule to this repository.

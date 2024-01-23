@@ -1,0 +1,3 @@
+[submodule "examples/FastFramesCustomClassTemplate"]
+	path = examples/FastFramesCustomClassTemplate
+	url = ../FastFramesCustomClassTemplate.git
