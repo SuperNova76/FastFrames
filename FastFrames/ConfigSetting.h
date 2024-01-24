@@ -11,6 +11,7 @@
 #include "FastFrames/Region.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
+#include "FastFrames/CustomOptions.h"
 
 #include <map>
 #include <memory>
@@ -348,18 +349,25 @@ public:
 
   /**
    * @brief Set the flag to force acceptance and selection to be within 0 and 1
-   * 
-   * @param flag 
+   *
+   * @param flag
    */
   inline void setCapAcceptanceSelection(const bool flag) {m_capAcceptanceSelection = flag;}
-  
+
   /**
-   * @brief Force acceptance and selection to be within 0 and 1? 
-   * 
-   * @return true 
-   * @return false 
+   * @brief Force acceptance and selection to be within 0 and 1?
+   *
+   * @return true
+   * @return false
    */
   inline bool capAcceptanceSelection() const {return m_capAcceptanceSelection;}
+
+  /**
+   * @brief Get the custom options
+   *
+   * @return CustomOptions&
+  */
+  CustomOptions& customOptions() {return m_customOptions;}
 
 private:
   std::string m_outputPathHistograms;
@@ -385,4 +393,6 @@ private:
   int m_totalJobSplits = -1;
   int m_currentJobIndex = -1;
   bool m_capAcceptanceSelection = false;
+
+  CustomOptions m_customOptions;
 };
