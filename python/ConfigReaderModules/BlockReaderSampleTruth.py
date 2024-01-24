@@ -33,22 +33,16 @@ class BlockReaderSampleTruth:
             Logger.log_message("ERROR", "No truth_tree_name specified for truth block {}".format(self._name))
             exit(1)
 
-        self._selection = self._options_getter.get("selection", "")
+        self._selection = self._options_getter.get("selection", "true")
 
         self._event_weight = self._options_getter.get("event_weight", None, [str])
         if self._event_weight is None:
             Logger.log_message("ERROR", "No event_weight specified for truth block {}".format(self._name))
             exit(1)
 
-        self._match_variables = self._options_getter.get("match_variables", None, [list], [dict])
-        if self._match_variables is None:
-            Logger.log_message("ERROR", "No match_variables specified for truth block {}".format(self._name))
-            exit(1)
+        self._match_variables = self._options_getter.get("match_variables", [], [list], [dict])
 
         self._variables = self._options_getter.get("variables", [], [list], [dict])
-        if self._variables == []:
-            Logger.log_message("ERROR", "No variables specified for truth block {}".format(self._name))
-            exit(1)
 
         self._produce_unfolding = self._options_getter.get("produce_unfolding", False, [bool])
 

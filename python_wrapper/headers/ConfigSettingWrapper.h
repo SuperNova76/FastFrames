@@ -446,6 +446,54 @@ class ConfigSettingWrapper {
          */
         inline bool capAcceptanceSelection() const {return m_configSetting->capAcceptanceSelection();}
 
+        /**
+         * @brief Add custom setting option
+         *
+         * @param std::string key, std::string value
+         */
+        void addOption(const std::string& key, const std::string& value) {
+            m_configSetting->customOptions().addOption(key, value);
+        };
+
+        /**
+         * @brief Get custom setting option
+         *
+         * @param std::string key
+         * @return std::string
+         */
+        std::string getOption(const std::string& key) const {
+            return m_configSetting->customOptions().getOption(key);
+        };
+
+        /**
+         * @brief Get custom setting option
+         *
+         * @param std::string key, std::string default_value
+         * @return std::string
+         */
+        std::string getOptionWithDefault(const std::string& key, const std::string& default_value) const {
+            return m_configSetting->customOptions().getOption(key, default_value);
+        };
+
+        /**
+         * @brief Check if custom setting option is defined
+         *
+         * @param std::string key
+         * @return bool
+         */
+        bool hasOption(const std::string& key) const {
+            return m_configSetting->customOptions().hasOption(key);
+        };
+
+        /**
+         * @brief Get vector of all custom keys
+         *
+         * @return std::vector<std::string>
+         */
+        std::vector<std::string> getKeys() const {
+            return m_configSetting->customOptions().getKeys();
+        };
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };

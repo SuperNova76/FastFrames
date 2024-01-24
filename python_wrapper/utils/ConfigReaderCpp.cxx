@@ -176,6 +176,13 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // capAcceptanceSelection
         .def("setCapAcceptanceSelection",  &ConfigSettingWrapper::setCapAcceptanceSelection)
         .def("capAcceptanceSelection",     &ConfigSettingWrapper::capAcceptanceSelection)
+
+        // customOptions
+        .def("addCustomOption",                   &ConfigSettingWrapper::addOption)
+        .def("getCustomOption",                   &ConfigSettingWrapper::getOption)
+        .def("getCustomOptionWithDefault",        &ConfigSettingWrapper::getOptionWithDefault)
+        .def("hasCustomOption",                   &ConfigSettingWrapper::hasOption)
+        .def("getCustomKeys",                     &ConfigSettingWrapper::getKeys)
     ;
 
     /**

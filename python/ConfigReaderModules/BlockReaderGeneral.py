@@ -46,6 +46,7 @@ class BlockReaderGeneral:
         self._min_event = self._options_getter.get("min_event", None, [int])
         self._max_event = self._options_getter.get("max_event", None, [int])
         self._cap_acceptance_selection = self._options_getter.get("cap_acceptance_selection", True, [bool])
+        self._custom_options = self._options_getter.get("custom_options", {}, [dict])
 
         ## Default value for sumweights -> can be overriden in sample block
         self.default_sumweights = self._options_getter.get("default_sumweights", "NOSYS", [str])
@@ -68,6 +69,7 @@ class BlockReaderGeneral:
         ## Instance of the ConfigSettingsWrapper C++ class -> wrapper around C++ ConfigSetting class
         self.cpp_class = ConfigSettingWrapper()
 
+        self._set_custom_options()
         self._set_job_index_and_split_n_jobs()
         self._set_config_reader_cpp()
         self._check_unused_options()
@@ -201,3 +203,28 @@ class BlockReaderGeneral:
             systematic_cpp_object.constructFromSharedPtr(systematic_ptr)
             result.append(systematic_cpp_object)
         return result
+
+    def _set_custom_options(self)   -> None:
+        """
+        Set custom options
+        """
+        for key, value in self._custom_options.items():
+            value_str = str(value)
+            self.cpp_class.addCustomOption(key, value_str)
+
+    def get_list_of_custom_keys(self) -> list:
+        """!Get list of custom keys
+        @return list of custom keys
+        """
+        result = []
+        vector_keys = self.cpp_class.getCustomKeys()
+        for key in vector_keys:
+            result.append(key)
+        return result
+
+    def get_custom_option(self, key : str) -> str:
+        """!Get custom option
+        @param key: key of the option
+        @return value of the option
+        """
+        return self.cpp_class.getCustomOption(key)

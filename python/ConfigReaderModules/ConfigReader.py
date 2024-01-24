@@ -122,6 +122,11 @@ if __name__ == "__main__":
     for tlorentz_vector in tlorentz_vectors:
         print("\t\t", tlorentz_vector)
 
+    print("custom_options:")
+    custom_option_keys = block_general.get_list_of_custom_keys()
+    for custom_option_key in custom_option_keys:
+        print("\t", custom_option_key, ": ", block_general.cpp_class.getCustomOption(custom_option_key))
+
     ntuple_cpp_object = block_general.get_ntuple_object()
     if ntuple_cpp_object:
         print("\nNtuple block:")

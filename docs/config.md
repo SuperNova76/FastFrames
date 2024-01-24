@@ -28,6 +28,7 @@ The options are case sensitive. Example config files can be found in ```test/con
 | luminosity                    | dict | Dictionary of luminosity values, where key is MC campaign (for example ```mc20d```) and value is luminosity for that campaign. See example config file. Default values for some MC campaigns are defined already in the code, but they can be overridden from here.  |
 | define_custom_columns         | list of dicts | Default list of custom columns (branches) to create in data-frame (can be overriden in sample block for a given sample). Each custom column has to have 2 options: ```name``` and ```definition```. |
 | exclude_systematics  | list of strings | List of systematic uncertainties to skip when automatic systematic option is selected. It supports regular expressions. It can be overriden for individual samples. |
+| custom_options | dict | Optional block, which can be used to define additional options, which can then be used from the user's defined custom class (CustomFrame). All values in this block must be convertible to string |
 
 ## `ntuples` block settings
 

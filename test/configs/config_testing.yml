@@ -30,6 +30,9 @@ general:
   define_custom_columns:
     - name: "HT_2_jets"
       definition: "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+  custom_options: # this block can be used to store settings for a derived class. It will be stored in ConfigSettings
+    btagging_WP: 85
+    btagging_algorithm: "DL1"
 
 ntuples:
   samples: ["ttbar_FS", "Zjets_b"] # optional, if not provided, use all samples
