@@ -46,6 +46,31 @@ def get_list_of_root_files_in_folder(folder_path : str) -> list:
             result += get_list_of_root_files_in_folder(os.path.join(folder_path, directory))
     return result
 
+def get_metadata_string(root_file : TFile, key : str) -> str:
+    """!Get given metadata as string from the input ROOT file
+    @param root_file: input ROOT file
+    @param key: key of the metadata
+    @return str
+    """
+    tnamed_object = root_file.Get(key)
+    if tnamed_object == None:
+        raise Exception("Could not find key {} in file {}".format(key, root_file.GetName()))
+    return tnamed_object.GetTitle()
+
+def get_file_metadata_old_format(file_path : str) -> Metadata:
+    """!Get metadata object of the input ROOT file
+    @param file_path: path to the ROOT file
+    @return metadata object
+    """
+    metadata = Metadata()
+    root_file = TFile.Open(file_path)
+    metadata.dsid        = int(get_metadata_string(root_file, "dsid"))
+    metadata.campaign    = get_metadata_string(root_file, "campaign")
+    metadata.data_type = get_metadata_string(root_file, "dataType")
+    root_file.Close()
+    return metadata
+
+
 def get_file_metadata(file_path : str) -> Metadata:
     """!Get metadata object of the input ROOT file
     @param file_path: path to the ROOT file
@@ -55,7 +80,8 @@ def get_file_metadata(file_path : str) -> Metadata:
     root_file = TFile.Open(file_path)
     metadata_histo = root_file.Get("metadata")
     if metadata_histo == None:
-        Logger.log_message("ERROR", "No metadata histogram in file {}".format(file_path))
+        Logger.log_message("WARNING", "No metadata histogram in file {}".format(file_path))
+        return get_file_metadata_old_format(file_path)
         exit()
     metadata.data_type   = metadata_histo.GetXaxis().GetBinLabel(1)
     metadata.campaign    = metadata_histo.GetXaxis().GetBinLabel(2)
