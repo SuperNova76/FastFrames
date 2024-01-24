@@ -33,7 +33,7 @@ class BlockReaderSampleTruth:
             Logger.log_message("ERROR", "No truth_tree_name specified for truth block {}".format(self._name))
             exit(1)
 
-        self._selection = self._options_getter.get("selection", "")
+        self._selection = self._options_getter.get("selection", "true")
 
         self._event_weight = self._options_getter.get("event_weight", None, [str])
         if self._event_weight is None:
