@@ -5,8 +5,6 @@ General block:
 	outputPathNtuples:  
 	inputFilelistPath:  test/input/filelist.txt
 	numCPU:  4
-	automaticSystematics:  False
-	nominalOnly:  False
 	customFrameName:  
 	min_event:  -1
 	max_event:  1000
@@ -88,6 +86,8 @@ Samples block:
 	systematic:  ['NOSYS', 'JET_BJES_Response__1up', 'JET_BJES_Response__1down', '0p5muF_0p5muR_NNPDF31_NLO_0118', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  True
+	nominalOnly:  False
 	variables:
 		 jet_pt
 		 met_met
@@ -127,6 +127,8 @@ Samples block:
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down']
 	selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
 	reco_to_truth_pairing_indices:  ['eventNumber', 'runNumber']
+	automaticSystematics:  False
+	nominalOnly:  False
 	variables:
 		 met_met
 		 met_phi
@@ -145,6 +147,8 @@ Samples block:
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: "n_bjets_truth > 0"
 	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  False
 	variables:
 		 jet_pt
 		 met_met
@@ -164,6 +168,8 @@ Samples block:
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  True
 	variables:
 		 met_met
 		 met_phi
@@ -186,6 +192,8 @@ Samples block:
 	systematic:  ['NOSYS', 'bootstraps1']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  False
 	variables:
 		 met_met
 	Unique samples:

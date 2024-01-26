@@ -267,16 +267,12 @@ class TrexSettingsGetter:
 
     def _initialize_systematics_variables(self ) -> None:
         trex_only_systemaics = self.get_trex_only_systematics_blocks()
-        systematics_from_config = []
-        use_automatic_systematics = self.config_reader.block_general.cpp_class.automaticSystematics()
-        if use_automatic_systematics:
-            automatic_sys_map = self.get_automatic_systematics_pairs(self.config_reader.block_general.cpp_class.outputPathHistograms())
-            for syst_name in automatic_sys_map:
-                systematics_from_config.append(("Systematic", syst_name, automatic_sys_map[syst_name]))
-        else:
-            systematics_from_config = self._get_systematics_blocks()
 
-        all_systematics = systematics_from_config + trex_only_systemaics
+        automatic_syst_dict = self.get_automatic_systematics_blocks(self.config_reader.block_general.cpp_class.outputPathHistograms())
+        config_based_syst_dict = self._get_systematics_blocks_from_config_wo_samples_resolving() #list[tuple[str,str,dict]]
+        all_systematics = self._merge_automatic_and_config_based_systematics_and_resolve_samples_list_and_excludes(automatic_syst_dict, config_based_syst_dict)
+
+        all_systematics = all_systematics + trex_only_systemaics
         for syst_tuple in all_systematics:
             syst_inclusive, syst_unfolding = self.split_systematics_into_inclusive_and_unfolding(syst_tuple)
             if syst_inclusive:
@@ -359,7 +355,10 @@ class TrexSettingsGetter:
             result.append(("NormFactor", normfactor_name, normfactor_output_dict))
         return result
 
-    def get_automatic_systematics_list(self, output_root_files_folder : str, sample_names : list) -> dict:
+    def _get_automatic_systematics_dict_histoname_to_sample_list(self, output_root_files_folder : str, sample_names : list) -> dict[str,list]:
+        """
+        Returns a dictionary with key = systematic name and value = list of samples for which it is defined
+        """
         trex_regions_names = self._get_all_trexfitter_regions()
         result = {} # key = systematic name, value = list of samples for which it is defined
         for sample_name in sample_names:
@@ -392,9 +391,15 @@ class TrexSettingsGetter:
             root_file.Close
         return result
 
-    def get_automatic_systematics_pairs(self, output_root_files_folder : str) -> dict[str,dict]:
-        sample_names = [sample.name() for sample in self._all_MC_samples]
-        automatic_systematics = self.get_automatic_systematics_list(output_root_files_folder, sample_names)
+    def _get_automatic_systematics_dict_systname_to_dict(self, output_root_files_folder : str, sample_names : list[str]) -> dict[str,dict]:
+        """
+        Returns dictionary where key is the name of the systematics (without __1up or __1down suffixes) and value is a dictionary with the following keys:
+        "HistoFolderNameUp" : name of the folder with up variation
+        "HistoFolderNameDown" : name of the folder with down variation
+        "Samples" : list of samples for which the systematic is defined
+        """
+        sample_names = [sample.name() for sample in self._all_MC_samples if sample.automaticSystematics()]
+        automatic_systematics = self._get_automatic_systematics_dict_histoname_to_sample_list(output_root_files_folder, sample_names)
         contains_generator_syst = False
         result = {}
         for histo_name in automatic_systematics:
@@ -420,26 +425,51 @@ class TrexSettingsGetter:
         if contains_generator_syst:
             Logger.log_message("WARNING", "The ROOT files contain generator systematics. These cannot be added automaticaly. Please take a look at it.")
 
-        # add all other info and resolve samples:
+        return result
+
+    def _merge_automatic_and_config_based_systematics_and_resolve_samples_list_and_excludes(self, automatic_systematics_dict : dict[str,dict], config_based_systematics : list[tuple[str,str,dict]]) -> list[tuple[str,str,dict]]:
+        """
+        Returns a list of systematics blocks. The list contains all systematics from the config file and the automatic systematics.
+        The samples list and excludes are resolved.
+        """
+        result = []
+        systematics_present_in_config = {}
+
+        MC_samples_names = [sample.name() for sample in self._all_MC_samples]
+        for syst_tuple in config_based_systematics:
+            syst_name = syst_tuple[1]
+            syst_dict = syst_tuple[2]
+            systematics_present_in_config[syst_name] = True
+            if syst_name in automatic_systematics_dict:
+                automatic_syst_dict = automatic_systematics_dict[syst_name]
+                syst_dict["Samples"] += automatic_syst_dict["Samples"]
+            if syst_dict["Samples"] == []:
+                continue
+            TrexSettingsGetter._resolve_samples_list_and_excludes_for_systematics(syst_dict, MC_samples_names)
+            result.append(("Systematic", syst_name, syst_dict))
+
+        for syst_name in automatic_systematics_dict:
+            if systematics_present_in_config.get(syst_name, False):
+                continue
+            syst_dict = automatic_systematics_dict[syst_name]
+            if syst_dict["Samples"] == []:
+                continue
+            TrexSettingsGetter._resolve_samples_list_and_excludes_for_systematics(syst_dict, MC_samples_names)
+            result.append(("Systematic", syst_name, syst_dict))
+
+        return result
+
+    def get_automatic_systematics_blocks(self, output_root_files_folder : str) -> dict[str,dict]:
+        sample_names = [sample.name() for sample in self._all_MC_samples if sample.automaticSystematics()]
+        result = self._get_automatic_systematics_dict_systname_to_dict(output_root_files_folder, sample_names)
+
+        # add all other info but do not resolve samples:
         for syst_name in result:
             syst_dict = result[syst_name]
             syst_dict["Title"] = syst_name.replace("_"," ")
             syst_dict["Type"] = "HISTO"
             syst_dict["Symmetrisation"] = "TWOSIDED" if (("HistoFolderNameDown" in syst_dict) and ("HistoFolderNameUp" in syst_dict)) else "ONESIDED"
             syst_dict["Smoothing"] = 40
-            samples = syst_dict["Samples"]
-            if len(samples) == len(sample_names):
-                del syst_dict["Samples"]
-            elif len(samples) < 0.5*len(sample_names):
-                syst_dict["Samples"] = ",".join(samples)
-            else:
-                excluded_samples = []
-                del syst_dict["Samples"]
-                for sample in sample_names:
-                    if not sample in samples:
-                        excluded_samples.append(sample)
-                syst_dict["Exclude"] = ",".join(excluded_samples)
-
         return result
 
 
@@ -462,7 +492,7 @@ class TrexSettingsGetter:
         normfactor_dict["Samples"] = self._all_MC_samples[0].name()
         return [("NormFactor", "mu_signal", normfactor_dict)]
 
-    def get_fit_block(self) -> tuple:
+    def get_fit_block(self) -> tuple[str,str,dict]:
         result = {}
         fit_dict_settings = self._get_fit_dict()
         result["FitType"]   = fit_dict_settings.get("FitType",  "SPLUSB")
@@ -497,8 +527,6 @@ class TrexSettingsGetter:
         result = {}
         result["NumberOfTruthBins"] = self.unfolding_n_bins
         result["UnfoldNormXSec"] = unfolding_settings_dict.get("UnfoldNormXSec", "TRUE")
-        #result["RatioYMin"] = unfolding_settings_dict.get("RatioYMin", 0.6)
-        #result["RatioYMax"] = unfolding_settings_dict.get("RatioYMax", 1.4)
         result["DivideByBinWidth"] = unfolding_settings_dict.get("DivideByBinWidth", "TRUE")
         result["DivideByLumi"] = unfolding_settings_dict.get("DivideByLumi", self._total_lumi) # TODO
         result["LogX"] = unfolding_settings_dict.get("LogX", "FALSE")
@@ -509,8 +537,8 @@ class TrexSettingsGetter:
         block_name = self.unfolding_level + "_" + self.unfolding_variable_truth
         return "Unfolding",block_name, result
 
-    def _get_systematics_blocks(self) -> list:
-        samples_cpp_objects = self.config_reader.block_general.get_samples_objects()
+    def _get_systematics_blocks_from_config_wo_samples_resolving(self) -> list[tuple[str,str,dict]]:
+        samples_cpp_objects_wo_automatic_systematics = [sample_cpp for sample_cpp in self.config_reader.block_general.get_samples_objects() if not sample_cpp.automaticSystematics()]
         systematics_dicts = self.config_reader.systematics_dicts
         all_regions = []
         for region in self._regions_map.values():
@@ -519,7 +547,7 @@ class TrexSettingsGetter:
                 all_regions.append(region.name() + "_" + variable.name().replace("_NOSYS",""))
 
         all_MC_samples = []
-        for sample in samples_cpp_objects:
+        for sample in samples_cpp_objects_wo_automatic_systematics:
             if BlockReaderSample.is_data_sample(sample):
                 continue
             all_MC_samples.append(sample.name())
@@ -575,25 +603,39 @@ class TrexSettingsGetter:
 
             # samples
             samples_selected = []
-            for sample in samples_cpp_objects:
+            all_MC_samples = [sample for sample in samples_cpp_objects_wo_automatic_systematics if not BlockReaderSample.is_data_sample(sample)]
+            for sample in samples_cpp_objects_wo_automatic_systematics:
+                if sample.automaticSystematics():
+                    continue
                 if not sample.hasSystematics(non_empty_variation):
                     continue
+                if sample.automaticSystematics():
+                    continue
                 samples_selected.append(sample.name())
-            if len(samples_selected) != len(all_MC_samples):
-                if len(samples_selected) > 0.5*len(all_MC_samples):
-                    excluded_samples = []
-                    for sample in all_MC_samples:
-                        if not sample in samples_selected:
-                            excluded_samples.append(sample)
-                    if excluded_samples:
-                        if "Exclude" in result_dict:
-                            result_dict["Exclude"] += "," + ",".join(excluded_samples)
-                        else:
-                            result_dict["Exclude"] = ",".join(excluded_samples)
-                else:
-                    result_dict["Samples"] = ",".join(samples_selected)
+            result_dict["Samples"] = samples_selected
 
         return result
+
+    def _resolve_samples_list_and_excludes_for_systematics(systematics_dict : dict, MC_samples_names : list[str]) -> dict[str,str]:
+        #if not "Samples" in systematics_dict:
+        #    print(systematics_dict)
+        #    exit(1)
+        if len(systematics_dict["Samples"]) != len(MC_samples_names):
+            if len(systematics_dict["Samples"]) > 0.5*len(MC_samples_names):
+                excluded_samples = []
+                for sample_name in MC_samples_names:
+                    if not sample_name in systematics_dict["Samples"]:
+                        excluded_samples.append(sample_name)
+                if excluded_samples:
+                    if "Exclude" in systematics_dict:
+                        systematics_dict["Exclude"] += "," + ",".join(excluded_samples)
+                    else:
+                        systematics_dict["Exclude"] = ",".join(excluded_samples)
+                del systematics_dict["Samples"]
+            else:
+                systematics_dict["Samples"] = ",".join(systematics_dict["Samples"])
+        else:
+            del systematics_dict["Samples"]
 
     def split_systematics_into_inclusive_and_unfolding(self, systematics_tuple : tuple) -> tuple[tuple,tuple]:
         if self._unfolding_MC_samples_names == None:

@@ -238,6 +238,36 @@ public:
    */
   inline const std::vector<std::string>& excludeAutomaticSystematics() const {return m_excludeAutomaticSystematics;}
 
+  /**
+   * @brief Set to true to only use nominal systematics
+   *
+   * @param flag
+   */
+  void setNominalOnly(const bool flag) {m_nominalOnly = flag;}
+
+  /**
+   * @brief Get is nominal only
+   *
+   * @return true
+   * @return false
+   */
+  bool nominalOnly() const {return m_nominalOnly;}
+
+  /**
+   * @brief Set to true if all systematic uncertainties should be read from the file
+   *
+   * @param flag
+   */
+  void setAutomaticSystematics(const bool flag) {m_automaticSystematics = flag;}
+
+  /**
+   * @brief Get automaticSystematics
+   *
+   * @return true
+   * @return false
+   */
+  bool automaticSystematics() const {return m_automaticSystematics;}
+
 private:
   std::string m_name;
 
@@ -262,4 +292,8 @@ private:
   std::vector<std::string> m_variables;
 
   std::vector<std::string> m_excludeAutomaticSystematics;
+
+  bool m_nominalOnly = false;
+
+  bool m_automaticSystematics = false;
 };

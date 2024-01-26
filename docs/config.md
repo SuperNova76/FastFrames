@@ -19,8 +19,8 @@ The options are case sensitive. Example config files can be found in ```test/con
 | create_tlorentz_vectors_for   | list of strings | List of objects (i.e. "jet", "el", "mu" ...) for which TLorentzVectors will be created for each systematic variations. They will always be sorted by pT (default is empty list) |
 | reco_to_truth_pairing_indices | list of strings   | List of branches which should be used to pair reco-level to truth-level trees. Default is ``` ["eventNumber"]```|
 | custom_frame_name             | string |If you define your own custom class for the analysis which inherits from the base class, this is the place where you should define its name. Default is empty string: i.e. base class will be used   |
-| automatic_systematics         | bool | If set to true, the list of systematic uncertainties in config will be ignored and all uncertainties present in the input ROOT file will be used. Default is ```False```.   |
-| nominal_only                  | bool | Run nominal only. Default is ```False```  |
+| automatic_systematics         | bool | If set to true, the list of systematic uncertainties in config will be ignored and all uncertainties present in the input ROOT file will be used. Default is ```False```. Can be overriden for given samples.  |
+| nominal_only                  | bool | Run nominal only. Default is ```False```. It cannot be true if ```automatic_systematics``` is also true. Can be overriden for given samples. |
 | number_of_cpus                | int  | Number of CPUs to use for multithreading. Default is ```1``` |
 | min_event                     | int  | If defined, it will process only events with entry index larger or equal than this |
 | max_event                     | int  | If defined, it will process only events with entry index smaller than this |
@@ -87,6 +87,8 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | variables         | list of strings   | If specified, only histograms for these variables will be produced for the sample. Regular expressions are supported. |
 | exclude_variables | list of strings   | If specified, histograms containing these variables will not be produced for the sample. Regular expressions are supported. This option cannot be combined with ```variables``` |
 | exclude_systematics  | list of strings | Overrides default from General block for the given sample |
+| automatic_systematics         | bool | Overrides value for this option from general block.  |
+| nominal_only                  | bool | Overrides value for this option from general block.  |
 
 #### `truth` block inside of the `sample` block
 

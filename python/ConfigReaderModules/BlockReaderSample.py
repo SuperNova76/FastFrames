@@ -75,6 +75,14 @@ class BlockReaderSample:
 
         self._exclude_systematics = self._options_getter.get("exclude_systematics", block_reader_general.default_exclude_systematics, [list], [str])
 
+        self._automatic_systematics = self._options_getter.get("automatic_systematics", block_reader_general.automatic_systematics, [bool])
+
+        self._nominal_only = self._options_getter.get("nominal_only", block_reader_general.nominal_only, [bool])
+
+        if self._automatic_systematics and self._nominal_only:
+            Logger.log_message("ERROR", "Both automatic_systematics and nominal_only specified for sample {}. Only one of these options can be True".format(self._name))
+            exit(1)
+
         ## Instance of the SampleWrapper C++ class -> wrapper around C++ Sample class
         self.cpp_class = SampleWrapper(self._name)
 
@@ -230,6 +238,10 @@ class BlockReaderSample:
 
         for syst_regex in self._exclude_systematics:
             self.cpp_class.addExcludeAutomaticSystematic(syst_regex)
+
+
+        self.cpp_class.setAutomaticSystematics(self._automatic_systematics)
+        self.cpp_class.setNominalOnly(self._nominal_only)
 
     def _check_unused_options(self):
         unused = self._options_getter.get_unused_options()

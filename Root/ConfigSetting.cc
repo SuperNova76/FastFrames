@@ -90,3 +90,12 @@ void ConfigSetting::addUniqueSystematic(const std::shared_ptr<Systematic>& syst)
         m_systematics.emplace_back(syst);
     }
 }
+
+bool ConfigSetting::hasAutomaticSystematics() const {
+    for (const auto& isample : m_samples) {
+        if (isample->automaticSystematics()) return true;
+        if (isample->nominalOnly()) return true;
+    }
+
+    return false;
+}

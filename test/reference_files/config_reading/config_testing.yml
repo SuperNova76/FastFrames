@@ -107,6 +107,7 @@ samples:
     weight_suffix: "my_suffix_weight_for_ttbar" # this is an additional weight to be applied (multiplication) to the sample
     #event_weights: "something" # if specified, it will be used instead of the "default_event_weights" from the general block
     #regions: ["Electron", "Muon"] # if not provided, use all regions?
+    automatic_systematics: True
     truth:
       - name: particle
         produce_unfolding: True
@@ -155,6 +156,7 @@ samples:
 
   - name: "Wjets_FS"
     dsids: [700341,700342,700344]
+    nominal_only: True
     campaigns: ["mc20a","mc20e"]
     simulation_type: "fullsim"
     regions: ["Electron"]

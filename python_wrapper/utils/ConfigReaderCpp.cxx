@@ -148,12 +148,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addSystematic",           &ConfigSettingWrapper::addSystematic)
         .def("getSystematicsSharedPtr", &ConfigSettingWrapper::getSystematicsSharedPtr)
 
-        .def("setNominalOnly",  &ConfigSettingWrapper::setNominalOnly)
-        .def("nominalOnly",     &ConfigSettingWrapper::nominalOnly)
-
-        .def("setAutomaticSystematics",  &ConfigSettingWrapper::setAutomaticSystematics)
-        .def("automaticSystematics",     &ConfigSettingWrapper::automaticSystematics)
-
         .def("clearSystematics",  &ConfigSettingWrapper::clearSystematics)
 
         .def("setNtuple",           &ConfigSettingWrapper::setNtuple)
@@ -312,6 +306,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("addExcludeAutomaticSystematic", &SampleWrapper::addExcludeAutomaticSystematic)
         .def("excludeAutomaticSystematics",   &SampleWrapper::excludeAutomaticSystematics)
+
+        .def("setNominalOnly",  &SampleWrapper::setNominalOnly)
+        .def("nominalOnly",     &SampleWrapper::nominalOnly)
+
+        .def("setAutomaticSystematics",  &SampleWrapper::setAutomaticSystematics)
+        .def("automaticSystematics",     &SampleWrapper::automaticSystematics)
 
     ;
 

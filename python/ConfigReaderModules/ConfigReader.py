@@ -105,8 +105,6 @@ if __name__ == "__main__":
     print("\toutputPathNtuples: ", block_general.cpp_class.outputPathNtuples())
     print("\tinputFilelistPath: ", block_general.cpp_class.inputFilelistPath())
     print("\tnumCPU: ", block_general.cpp_class.numCPU())
-    print("\tautomaticSystematics: ", block_general.cpp_class.automaticSystematics())
-    print("\tnominalOnly: ", block_general.cpp_class.nominalOnly())
     print("\tcustomFrameName: ", block_general.cpp_class.customFrameName())
     print("\tmin_event: ", block_general.cpp_class.minEvent())
     print("\tmax_event: ", block_general.cpp_class.maxEvent())
@@ -181,6 +179,8 @@ if __name__ == "__main__":
         print("\tsystematic: ", vector_to_list(sample.systematicsNames()))
         print("\tselection_suffix: \"" + sample.selectionSuffix() + "\"")
         print("\treco_to_truth_pairing_indices: ", vector_to_list(sample.recoToTruthPairingIndices()))
+        print("\tautomaticSystematics: ", sample.automaticSystematics())
+        print("\tnominalOnly: ", sample.nominalOnly())
         print("\tvariables:")
         variable_names = vector_to_list(sample.variables())
         for variable_name in variable_names:
