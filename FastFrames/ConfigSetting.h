@@ -235,36 +235,6 @@ public:
   };
 
   /**
-   * @brief Set to true to only use nominal systematics
-   *
-   * @param flag
-   */
-  void setNominalOnly(const bool flag) {m_nominalOnly = flag;}
-
-  /**
-   * @brief Get is nominal only
-   *
-   * @return true
-   * @return false
-   */
-  bool nominalOnly() const {return m_nominalOnly;}
-
-  /**
-   * @brief Set to true if all systematic uncertainties should be read from the file
-   *
-   * @param flag
-   */
-  void setAutomaticSystematics(const bool flag) {m_automaticSystematics = flag;}
-
-  /**
-   * @brief Get automaticSystematics
-   *
-   * @return true
-   * @return false
-   */
-  bool automaticSystematics() const {return m_automaticSystematics;}
-
-  /**
    * @brief Remove all systematics
    *
    */
@@ -369,6 +339,14 @@ public:
   */
   CustomOptions& customOptions() {return m_customOptions;}
 
+  /**
+   * @brief Returns true if at least one of the samples uses automatic systematic  
+   * 
+   * @return true 
+   * @return false 
+   */
+  bool hasAutomaticSystematics() const;
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -377,8 +355,6 @@ private:
   std::string m_customFrameName;
 
   int           m_numCPU = 1;
-  bool          m_nominalOnly = false;
-  bool          m_automaticSystematics = false;
   long long int m_minEvent = -1;
   long long int m_maxEvent = -1;
 

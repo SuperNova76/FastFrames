@@ -38,22 +38,17 @@ void MainFrame::init() {
         m_metadataManager.addLuminosity(ilumi.first, ilumi.second);
     }
 
-    if (m_config->nominalOnly() && m_config->automaticSystematics()) {
-        LOG(ERROR) << "Nominal only and automatically read systematics from a file are both set to true, please fix!\n";
-        throw std::invalid_argument("");
-    }
-
     // check systematics need to be cleared
-    if (m_config->nominalOnly() || m_config->automaticSystematics()) {
+    if (m_config->hasAutomaticSystematics()) {
         m_config->clearSystematics();
     }
 }
 
 void MainFrame::executeHistograms() {
 
-    if (m_config->nominalOnly() || m_config->automaticSystematics()) {
-        for (auto& isample : m_config->samples()) {
-            this->readAutomaticSystematics(isample, m_config->nominalOnly());
+    for (auto& isample : m_config->samples()) {
+        if (isample->automaticSystematics() || isample->nominalOnly()) {
+            this->readAutomaticSystematics(isample, isample->nominalOnly());
         }
     }
 
@@ -122,9 +117,9 @@ void MainFrame::executeHistograms() {
 }
 
 void MainFrame::executeNtuples() {
-    if (m_config->nominalOnly() || m_config->automaticSystematics()) {
-        for (auto& isample : m_config->ntuple()->samples()) {
-            this->readAutomaticSystematics(isample, m_config->nominalOnly());
+    for (auto& isample : m_config->ntuple()->samples()) {
+        if (isample->automaticSystematics() || isample->nominalOnly()) {
+            this->readAutomaticSystematics(isample, isample->nominalOnly());
         }
     }
 

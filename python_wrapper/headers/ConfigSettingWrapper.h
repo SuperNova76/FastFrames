@@ -312,43 +312,6 @@ class ConfigSettingWrapper {
         };
 
         /**
-         * @brief Set the Nominal Only object
-         *
-         * @param bool nominalOnly
-         */
-        void setNominalOnly(bool nominalOnly) {
-            m_configSetting->setNominalOnly(nominalOnly);
-        };
-
-        /**
-         * @brief Run nominal only?
-         *
-         * @return bool
-         */
-        bool nominalOnly() const {
-            return m_configSetting->nominalOnly();
-        };
-
-        /**
-         * @brief Set the Automatic Systematics flag
-         *
-         * @param automaticSystematics
-         */
-        void setAutomaticSystematics(bool automaticSystematics) {
-            m_configSetting->setAutomaticSystematics(automaticSystematics);
-        };
-
-        /**
-         * @brief Should the systematics be read automatically from the input ROOT file?
-         *
-         * @return true
-         * @return false
-         */
-        bool automaticSystematics() const {
-            return m_configSetting->automaticSystematics();
-        };
-
-        /**
          * @brief Clear list of the added systematics
          *
          */

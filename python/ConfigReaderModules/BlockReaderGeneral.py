@@ -36,8 +36,6 @@ class BlockReaderGeneral:
         self._output_path_histograms = self._options_getter.get("output_path_histograms", "", [str])
         self._output_path_ntuples    = self._options_getter.get("output_path_ntuples", "", [str])
         self._custom_frame_name = self._options_getter.get("custom_frame_name", "", [str])
-        self._automatic_systematics = self._options_getter.get("automatic_systematics", False, [bool])
-        self._nominal_only = self._options_getter.get("nominal_only", False, [bool])
         self._create_tlorentz_vectors_for = self._options_getter.get("create_tlorentz_vectors_for", [], [list], [str])
         self._number_of_cpus = self._options_getter.get("number_of_cpus", 1, [int])
         self._xsection_files = self._options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"], [list], [str])
@@ -65,6 +63,12 @@ class BlockReaderGeneral:
 
         ## List of systematics regexes to exclude from automatic systematics -> can be overriden in sample block
         self.default_exclude_systematics = self._options_getter.get("exclude_systematics", [], [list], [str])
+
+        ## Default automatic systematics option
+        self.automatic_systematics = self._options_getter.get("automatic_systematics", False, [bool])
+
+        ## Default nominal only option
+        self.nominal_only = self._options_getter.get("nominal_only", False, [bool])
 
         ## Instance of the ConfigSettingsWrapper C++ class -> wrapper around C++ ConfigSetting class
         self.cpp_class = ConfigSettingWrapper()
@@ -106,8 +110,6 @@ class BlockReaderGeneral:
         self.cpp_class.setInputFilelistPath(self._input_filelist_path)
         self.cpp_class.setNumCPU(self._number_of_cpus)
         self.cpp_class.setCustomFrameName(self._custom_frame_name)
-        self.cpp_class.setAutomaticSystematics(self._automatic_systematics)
-        self.cpp_class.setNominalOnly(self._nominal_only)
         self.cpp_class.setCapAcceptanceSelection(self._cap_acceptance_selection)
 
         for campaign, lumi_value in self._luminosity_map.items():

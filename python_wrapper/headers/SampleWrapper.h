@@ -330,6 +330,43 @@ class SampleWrapper {
             return m_sample->excludeAutomaticSystematics();
         };
 
+        /**
+         * @brief Set the Nominal Only object
+         *
+         * @param bool nominalOnly
+         */
+        void setNominalOnly(bool nominalOnly) {
+            m_sample->setNominalOnly(nominalOnly);
+        };
+
+        /**
+         * @brief Run nominal only?
+         *
+         * @return bool
+         */
+        bool nominalOnly() const {
+            return m_sample->nominalOnly();
+        };
+
+        /**
+         * @brief Set the Automatic Systematics flag
+         *
+         * @param automaticSystematics
+         */
+        void setAutomaticSystematics(bool automaticSystematics) {
+            m_sample->setAutomaticSystematics(automaticSystematics);
+        };
+
+        /**
+         * @brief Should the systematics be read automatically from the input ROOT file?
+         *
+         * @return true
+         * @return false
+         */
+        bool automaticSystematics() const {
+            return m_sample->automaticSystematics();
+        };
+
 
     private:
         std::shared_ptr<Sample> m_sample;
