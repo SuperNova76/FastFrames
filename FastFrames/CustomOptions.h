@@ -83,6 +83,10 @@ class CustomOptions {
         */
         const std::vector<std::string> getKeys() const {
             std::vector<std::string> keys;
+            if (m_options.empty()) {
+                return keys;
+            }
+
             for (const auto& [key, value] : m_options) {
                 keys.push_back(key);
             }
