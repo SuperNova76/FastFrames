@@ -9,7 +9,7 @@
 #include "TH1D.h"
 #include "TH2D.h"
 
-#include "ROOT/RDataFrame.hxx"
+#include "ROOT/RResultPtr.hxx"
 
 #include <memory>
 #include <vector>

@@ -8,7 +8,7 @@
 
 #include "FastFrames/Binning.h"
 
-#include "ROOT/RDFHelpers.hxx"
+#include "ROOT/RDF/HistoModels.hxx"
 
 #include <string>
 

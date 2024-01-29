@@ -168,7 +168,7 @@ std::tuple<std::vector<SystematicHisto>,
     std::vector<VariableHisto> truthHistos;
 
     if (sample->hasTruth()) {
-        truthHistos = std::move(this->processTruthHistos(selectedFilePaths, sample, uniqueSampleID));
+        truthHistos = this->processTruthHistos(selectedFilePaths, sample, uniqueSampleID);
     }
 
     // we could use any file from the list, use the first one
@@ -412,7 +412,7 @@ ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
 
     const std::vector<std::string> kinematics = {"_pt_NOSYS", "_eta", "_phi", "_e_NOSYS"};
 
-    auto createTLV = [&kinematics](const std::vector<float>& pt,
+    auto createTLV = [](const std::vector<float>& pt,
                                    const std::vector<float>& eta,
                                    const std::vector<float>& phi,
                                    const std::vector<float>& e) {
