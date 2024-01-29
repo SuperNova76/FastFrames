@@ -12,7 +12,11 @@
 #include <exception>
 
 Truth::Truth(const std::string& name) noexcept :
-m_name(name)
+m_name(name),
+m_truthTreeName(""),
+m_selection(""),
+m_eventWeight(""),
+m_produceUnfolding(false)
 {
 }
 

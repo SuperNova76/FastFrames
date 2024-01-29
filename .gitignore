@@ -1,9 +1,10 @@
-build/*
-examples/CustomVariables/build/*
-examples/CustomVariables/install/*
-install/*
-.vscode/*
+build
+examples/CustomVariables/build
+examples/CustomVariables/install
+install
+.vscode
 filelist.txt
 sum_of_weights.txt
 ***/__pycache__/
 www/
+.cache

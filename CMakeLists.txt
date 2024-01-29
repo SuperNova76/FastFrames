@@ -68,12 +68,18 @@ endif (BUILD_DOC)
 # ------------------------------------------------
 # Dependencies and sub-libraries
 # ------------------------------------------------
-
+find_package( Boost COMPONENTS python REQUIRED )
+# hack for homebrew installation and potentially some other platforms
+if( EXISTS "${Boost_INCLUDE_DIR}/root" )
+   set( ROOT_EXTRA_INCLUDE_DIR "${Boost_INCLUDE_DIR}/root" )
+   string( REPLACE "/include/" "/lib/" ROOT_EXTRA_LIB_DIR "${ROOT_EXTRA_INCLUDE_DIR}" )
+   list( APPEND CMAKE_INCLUDE_PATH "${ROOT_EXTRA_INCLUDE_DIR}" )
+   list( APPEND CMAKE_LIBRARY_PATH "${ROOT_EXTRA_LIB_DIR}" )
+endif()
 # Add ROOT system directory and require ROOT.
 find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame ROOTVecOps)
 find_package( Python3 COMPONENTS Development REQUIRED )
 find_package( LCG QUIET )
-find_package( Boost COMPONENTS python REQUIRED )
 
 include_directories(${CMAKE_SOURCE_DIR})
 # ------------------------------------------------
@@ -86,15 +92,15 @@ file(GLOB LIB_HEADERS "FastFrames/*.h" )
 # Build the shared library.
 add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
 set_target_properties(FastFrames PROPERTIES SUFFIX ".so")
-target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> $<INSTALL_INTERFACE:> ${ROOT_INCLUDE_DIRS} )
-target_link_libraries( FastFrames ${ROOT_LIBRARIES} )
+target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> )
+target_link_libraries( FastFrames PUBLIC ROOT::Core ROOT::Hist ROOT::RIO ROOT::Tree ROOT::ROOTDataFrame ROOT::ROOTVecOps )
 set_property( TARGET FastFrames
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 
 # Build the Python module for C++ logger
 add_library( cppLogger SHARED python_wrapper/utils/Logger.cxx )
 set_target_properties(cppLogger PROPERTIES SUFFIX ".so")
-target_link_libraries( cppLogger PRIVATE Python3::Python ${Python3_LIBRARIES} )
+target_link_libraries( cppLogger PRIVATE Python3::Python )
 set_target_properties( cppLogger PROPERTIES
    PREFIX ""
    OUTPUT_NAME "cppLogger" )
@@ -102,7 +108,7 @@ set_target_properties( cppLogger PROPERTIES
 # Build the Python module for config reader
 add_library( ConfigReaderCpp SHARED python_wrapper/utils/ConfigReaderCpp.cxx ${LIB_HEADERS} )
 set_target_properties(ConfigReaderCpp PROPERTIES SUFFIX ".so")
-target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Python3_LIBRARIES} ${Boost_LIBRARIES} FastFrames )
+target_link_libraries( ConfigReaderCpp PRIVATE Python3::Python ${Boost_LIBRARIES} FastFrames )
 set_target_properties( ConfigReaderCpp PROPERTIES
    PREFIX ""
    OUTPUT_NAME "ConfigReaderCpp" )
@@ -148,8 +154,7 @@ install( FILES "${CMAKE_CURRENT_BINARY_DIR}/FastFramesConfig.cmake"
 # Helper macro for building the project's executables.
 macro( FastFrames_add_executable name )
   add_executable( ${name} ${ARGN} )
-  target_include_directories( ${name} PUBLIC ${ROOT_INCLUDE_DIRS} )
-  target_link_libraries( ${name} FastFrames ${ROOT_LIBRARIES} )
+  target_link_libraries( ${name} FastFrames)
   install( TARGETS ${name}
     EXPORT FastFramesTargets
     RUNTIME DESTINATION bin )
@@ -158,4 +163,6 @@ endmacro( FastFrames_add_executable )
 FastFrames_add_executable( fast-frames.exe util/fast-frames.cc )
 
 ROOT_GENERATE_DICTIONARY(FastFrames_dict FastFrames/MainFrame.h MODULE FastFrames LINKDEF Root/LinkDef.h)
+# needed as ROOT_GENERATE_DICTIONARY does not support system includes
+target_compile_options(FastFrames_dict PUBLIC -Wno-shadow)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}_rdict.pcm ${CMAKE_CURRENT_BINARY_DIR}/lib/lib${PROJECT_NAME}.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
