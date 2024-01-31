@@ -87,6 +87,17 @@ public:
                                            const UniqueSampleID& /*sampleID*/) {return node;}
 
   /**
+   * @brief Allows to define new columns for specific regions
+   * These columns will be attached only after the filters
+   * 
+   * @param node The input RDF node (after the filter) 
+   * @return ROOT::RDF::RNode the output node containing the new columns
+   */
+  virtual ROOT::RDF::RNode defineVariablesRegion(ROOT::RDF::RNode node,
+                                                 const UniqueSampleID&,
+                                                 const std::string&) {return node;}
+
+  /**
    * @brief Allows to define new obserbables for truth trees
    *
    * @param node The input RDF node
@@ -118,9 +129,10 @@ public:
       throw std::invalid_argument("");
     }
 
+    bool variableExists(false);
     if (m_systReplacer.branchExists(newVariable)) {
-      LOG(WARNING) << "Variable: " << newVariable << " is already in the input, ignoring\n";
-      return node;
+      LOG(VERBOSE) << "Variable: " << newVariable << " is already in the input, will not add it to the map (but adding it to the node)\n";
+      variableExists = true;
     }
 
     // first add the nominal define
@@ -138,7 +150,9 @@ public:
     }
 
     // tell the replacer about the new columns
-    m_systReplacer.addVariableAndEffectiveSystematics(newVariable, effectiveSystematics);
+    if (!variableExists) {
+      m_systReplacer.addVariableAndEffectiveSystematics(newVariable, effectiveSystematics);
+    }
 
     return node;
   }
@@ -255,10 +269,12 @@ private:
    *
    * @param mainNode current ROOT node
    * @param sample current Sample
+   * @param id unique sample ID
    * @return std::vector<std::vector<ROOT::RDF::RNode> > Filter stored per region, per systematic
    */
   std::vector<std::vector<ROOT::RDF::RNode> > applyFilters(ROOT::RDF::RNode mainNode,
-                                                           const std::shared_ptr<Sample>& sample) const;
+                                                           const std::shared_ptr<Sample>& sample,
+                                                           const UniqueSampleID& id);
 
   /**
    * @brief Add columns representing the systematic event weights

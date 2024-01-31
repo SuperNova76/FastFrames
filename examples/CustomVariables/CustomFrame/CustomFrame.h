@@ -11,6 +11,7 @@
 #include "TClass.h"
 
 #include <memory>
+#include <string>
 
 using TLV = ROOT::Math::PtEtaPhiEVector;
 
@@ -27,6 +28,10 @@ public:
 
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
                                            const UniqueSampleID& id) override final;
+  
+  virtual ROOT::RDF::RNode defineVariablesRegion(ROOT::RDF::RNode mainNode,
+                                                 const UniqueSampleID& id,
+                                                 const std::string& regionName) override final;
   
   virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode mainNode,
                                                  const UniqueSampleID& id) override final;
