@@ -193,6 +193,22 @@ class VariableWrapper   {
             return m_variable->binEdges().size() -1;
         };
 
+          /**
+         * @brief Set the Is Nominal Only flag
+         *
+         * @param flag
+         */
+        void setIsNominalOnly(const bool flag) {m_variable->setIsNominalOnly(flag);};
+
+        /**
+         * @brief is nominal only?
+         *
+         * @return true
+         * @return false
+         */
+        bool isNominalOnly() const {return m_variable->isNominalOnly();};
+
+
     private:
         std::shared_ptr<Variable> m_variable;
 

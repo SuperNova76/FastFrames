@@ -60,6 +60,7 @@ This block is optional.
 | title         | string            | Title of the histogram. One can specify also title of x and y axis, using a sting like this: ```"histo title;X axis title;Y axis title"```
 | definition    | string            | Definition of the variable. All branches affected by systematic uncertainties must have ```_NOSYS``` suffix     |
 | binning       | dict              | Binning of the variable   |
+| is_nominal_only | bool            | If set to true, only histogram for NOSYS will be produced. Default is ```False``` |
 
 ####   `Binning` block inside of the `variable` block
 User has 2 options how to define the binning. Either specify bin edges for irregular binning, or specify number of bins and range of the x-axis for regular binning.

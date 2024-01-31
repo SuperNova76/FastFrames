@@ -155,6 +155,7 @@ if __name__ == "__main__":
             print("\t\tname: ", variable_cpp_object.name())
             print("\t\ttitle: ", variable_cpp_object.title())
             print("\t\tdefinition: ", variable_cpp_object.definition())
+            print("\t\tis_nominal_only: ", variable_cpp_object.isNominalOnly())
             if variable_cpp_object.hasRegularBinning():
                 print(  "\t\tbinning: ",
                         variable_cpp_object.axisNbins(), ", ",

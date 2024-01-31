@@ -138,16 +138,16 @@ public:
 
   /**
    * @brief Set the Is Nominal Only flag
-   * 
-   * @param flag 
+   *
+   * @param flag
    */
   inline void setIsNominalOnly(const bool flag) {m_isNominalOnly = flag;}
 
   /**
    * @brief is nominal only?
-   * 
-   * @return true 
-   * @return false 
+   *
+   * @return true
+   * @return false
    */
   inline bool isNominalOnly() const {return m_isNominalOnly;}
 
