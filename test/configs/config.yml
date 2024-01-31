@@ -35,6 +35,7 @@ regions:
       - name: "jet_pt"
         #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_GeV_NOSYS"
+        is_nominal_only: True
         binning:
           min: 0
           max: 300
@@ -42,6 +43,7 @@ regions:
       - name: "met_met"
         title : "histo title;X axis title;Y axis title"
         definition: "met_met_NOSYS"
+        is_nominal_only: True
         binning:
           #min: 0
           #max: 250000

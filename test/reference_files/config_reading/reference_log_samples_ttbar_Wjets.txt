@@ -36,18 +36,21 @@ Regions block:
 		name:  jet_pt
 		title:  
 		definition:  jet_pt_NOSYS
+		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
 
 
 		name:  met_met
 		title:  histo title;X axis title;Y axis title
 		definition:  met_met_NOSYS
+		is_nominal_only:  False
 		binning:  0.000000,20000.000000,60000.000000,80000.000000,140000.000000,250000.000000
 
 
 		name:  met_phi
 		title:  histo title;X axis title;Y axis title
 		definition:  met_phi_NOSYS
+		is_nominal_only:  False
 		binning:  16 ,  -3.2 ,  3.2
 
 
@@ -57,18 +60,21 @@ Regions block:
 		name:  jet_pt
 		title:  
 		definition:  jet_pt_NOSYS
+		is_nominal_only:  True
 		binning:  10 ,  0.0 ,  300000.0
 
 
 		name:  met_met
 		title:  histo title;X axis title;Y axis title
 		definition:  met_met_NOSYS
+		is_nominal_only:  False
 		binning:  0.000000,20000.000000,60000.000000,80000.000000,140000.000000,250000.000000
 
 
 		name:  met_phi
 		title:  histo title;X axis title;Y axis title
 		definition:  met_phi_NOSYS
+		is_nominal_only:  False
 		binning:  16 ,  -3.2 ,  3.2
 
 

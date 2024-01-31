@@ -240,6 +240,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("axisMin",             &VariableWrapper::axisMin)
         .def("axisMax",             &VariableWrapper::axisMax)
         .def("axisNbins",           &VariableWrapper::axisNbins)
+
+        // isNominalOnly
+        .def("setIsNominalOnly",    &VariableWrapper::setIsNominalOnly)
+        .def("isNominalOnly",       &VariableWrapper::isNominalOnly)
     ;
 
     /**

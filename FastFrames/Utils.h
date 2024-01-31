@@ -7,6 +7,7 @@
 #pragma once
 
 #include "FastFrames/HistoContainer.h"
+#include "FastFrames/Region.h"
 #include "FastFrames/Variable.h"
 
 #include "ROOT/RDFHelpers.hxx"
@@ -94,4 +95,16 @@ namespace Utils {
    * @param h
    */
   void capHisto0And1(TH1D* h, const std::string& name);
+
+  /**
+   * @brief Get variable using region and variable name
+   * 
+   * @param regions list of regions 
+   * @param regionName region name for the variable
+   * @param variableName variable name
+   * @return const Variable&
+   */
+  const Variable& getVariableByName(const std::vector<std::shared_ptr<Region> >& regions,
+                                    const std::string& regionName,
+                                    const std::string& variableName);
 }

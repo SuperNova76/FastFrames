@@ -10,7 +10,8 @@ Variable::Variable(const std::string& name) noexcept :
   m_name(name),
   m_definition(""),
   m_title("title"),
-  m_binning(Binning())
+  m_binning(Binning()),
+  m_isNominalOnly(false)
 {
 }
 

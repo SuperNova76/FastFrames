@@ -20,6 +20,7 @@ class BlockReaderVariable:
         self._name = self._options_getter.get("name", None, [str])
         self._title = self._options_getter.get("title", "", [str])
         self._definition = self._options_getter.get("definition", None, [str])
+        self._is_nominal_only = self._options_getter.get("is_nominal_only", False, [bool])
 
         if self._name is None:
             Logger.log_message("ERROR", "No name specified for variable block")
@@ -37,6 +38,7 @@ class BlockReaderVariable:
     def _set_cpp_class(self):
         self.cpp_class.setDefinition(self._definition)
         self.cpp_class.setTitle(self._title)
+        self.cpp_class.setIsNominalOnly(self._is_nominal_only)
 
     def _read_binning(self, binning_dict : dict):
         if binning_dict is None:
