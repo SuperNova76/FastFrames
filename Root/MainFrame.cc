@@ -410,12 +410,12 @@ ROOT::RDF::RNode MainFrame::addTLorentzVectors(ROOT::RDF::RNode mainNode) {
 ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
                                                     const std::string& object) {
 
-    const std::vector<std::string> kinematics = {"_pt_NOSYS", "_eta", "_phi", "_e_NOSYS"};
+    static const std::vector<std::string> kinematics = {"_pt_NOSYS", "_eta", "_phi", "_e_NOSYS"};
 
     auto createTLV = [](const std::vector<float>& pt,
-                                   const std::vector<float>& eta,
-                                   const std::vector<float>& phi,
-                                   const std::vector<float>& e) {
+                        const std::vector<float>& eta,
+                        const std::vector<float>& phi,
+                        const std::vector<float>& e) {
 
 
         std::vector<ROOT::Math::PtEtaPhiEVector> result;
@@ -655,6 +655,9 @@ void MainFrame::processHistograms1D(RegionHisto* regionHisto,
 
     for (const auto& ivariable : region->variables()) {
         const std::vector<std::string>& variables = sample->variables();
+
+        if (ivariable.isNominalOnly() && systematic->name() != "NOSYS") continue;
+
         auto itrVar = std::find(variables.begin(), variables.end(), ivariable.name());
         if (itrVar == variables.end()) {
             LOG(VERBOSE) << "Skipping variable: " << ivariable.name() << " for sample: " << sample->name() << ", systematic" << systematic->name() << "\n";
@@ -690,6 +693,7 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
         const Variable& v1 = region->variableByName(combinations.first);
         const Variable& v2 = region->variableByName(combinations.second);
         const std::string name = v1.name() + "_vs_" + v2.name();
+        if ((v1.isNominalOnly() || v2.isNominalOnly()) && systematic->name() != "NOSYS") continue;
 
         const std::vector<std::string>& variables = sample->variables();
         auto itrVar1 = std::find(variables.begin(), variables.end(), v1.name());
@@ -734,6 +738,7 @@ void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
         for (const auto& imatch : itruth->matchedVariables()) {
             const Variable& recoVariable  = region->variableByName(imatch.first);
             const Variable& truthVariable = itruth->variableByName(imatch.second);
+            if (recoVariable.isNominalOnly() && systematic->name() != "NOSYS") continue;
 
             const std::string name = recoVariable.name() + "_vs_" + itruth->name() + "_" + truthVariable.name();
             VariableHisto2D variableHistoPassed(name);

@@ -136,9 +136,25 @@ public:
    */
   ROOT::RDF::TH1DModel histoModel1D() const;
 
+  /**
+   * @brief Set the Is Nominal Only flag
+   * 
+   * @param flag 
+   */
+  inline void setIsNominalOnly(const bool flag) {m_isNominalOnly = flag;}
+
+  /**
+   * @brief is nominal only?
+   * 
+   * @return true 
+   * @return false 
+   */
+  inline bool isNominalOnly() const {return m_isNominalOnly;}
+
 private:
   std::string m_name;
   std::string m_definition;
   std::string m_title;
   Binning m_binning;
+  bool m_isNominalOnly;
 };
