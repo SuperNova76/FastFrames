@@ -78,6 +78,26 @@ ROOT::RDF::RNode CustomFrame::defineVariablesTruth(ROOT::RDF::RNode node,
 
   return node;
 }
+  
+ROOT::RDF::RNode CustomFrame::defineVariablesRegion(ROOT::RDF::RNode mainNode,
+                                                    const UniqueSampleID& /*id*/,
+                                                    const std::string& /*regionName*/) {
+
+  // ***** DO NOT USE NOW, USES TOO MUCH MEMORY AND CAN CRASH YOUR MACHINE *****
+  // ***** IT IS BEING INVESTIGATED BY THE ROOT TEAM                       *****
+
+  // now you can add new variables only for some regions
+  
+  //if (regionName == "myRegion") {
+  //  mainNode = MainFrame::systematicDefine(mainNode,
+  //                                         "leading_jet_pt_GeV",
+  //                                         LeadingJetPt,
+  //                                         {"jet_TLV_NOSYS", "jet_select_or_NOSYS"});
+  //}
+
+  return mainNode;
+}
+  
 
 bool CustomFrame::passes4Jets50GeV1Btag(const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec,
                                         const std::vector<char>& selected,

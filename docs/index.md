@@ -15,6 +15,7 @@ mkdir build install
 
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git
 
+cd build
 cmake -DCMAKE_INSTALL_PREFIX=../install/ ../fastframes
 # alternatively, point the path to the install folder
 
@@ -77,7 +78,7 @@ The other file contains sum of weights for each sample and each systematic varia
 In order to produce the metadata files:
 
 ```
-python3 produce_metadata_files.py --root_files_folder <path_to_root_files_folder> --output_path <path_to_output_folder>
+python3 python/produce_metadata_files.py --root_files_folder <path_to_root_files_folder> --output_path <path_to_output_folder>
 ```
 
 where you have to specify the path to the folder with the ROOT files that you are going to reprocess. The second argument is optional, it is the path to the folder where metadata files will be stored.
@@ -89,7 +90,7 @@ To produce the histograms from your ROOT files, one has to set up a config. You 
 To run the histogramming part:
 
 ```
-python3 FastFrames.py --config <path to your config> --step h
+python3 python/FastFrames.py --config <path to your config> --step h
 ```
 
 One can also use ```c``` instead of ```config```
@@ -153,6 +154,8 @@ And providing the new class in the new folder, e.g. you can copy the contents fo
 ```
 cp -r * /your/path/MyCustomFrame/
 ```
+or you can use the template for this [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/NominalOnlyVariable?ref_type=heads)
+
 If you want to use a different name than CustomFrame for the code, you need to change the CMakeLists.txt content appropriately (just renaming) and also the corresponding files and folder. Do not forget about Root/LinkDef.h!
 
 Now you need to compile the code. For the cmake step, you need to tell the code where you want to install the library, so that ROOT can find it during run time and also where you installed FastFrames.

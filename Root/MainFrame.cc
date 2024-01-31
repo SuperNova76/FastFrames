@@ -201,7 +201,7 @@ std::tuple<std::vector<SystematicHisto>,
 
     m_systReplacer.printMaps();
 
-    std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample);
+    std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample, uniqueSampleID);
 
     // retrieve the histograms;
     std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
@@ -329,7 +329,8 @@ std::string MainFrame::systematicWeight(const std::shared_ptr<Systematic>& syste
 }
 
 std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::RNode mainNode,
-                                                                    const std::shared_ptr<Sample>& sample) const {
+                                                                    const std::shared_ptr<Sample>& sample,
+                                                                    const UniqueSampleID& id) {
 
     std::vector<std::vector<ROOT::RDF::RNode> > result;
 
@@ -342,7 +343,8 @@ std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::R
                 continue;
             }
 
-            auto filter = mainNode.Filter(this->systematicFilter(sample, isyst, ireg));
+            ROOT::RDF::RNode filter = mainNode.Filter(this->systematicFilter(sample, isyst, ireg));
+            filter = this->defineVariablesRegion(filter, id, ireg->name());
             perSystFilter.emplace_back(std::move(filter));
         }
         result.emplace_back(std::move(perSystFilter));
