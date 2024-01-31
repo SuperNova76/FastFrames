@@ -47,10 +47,12 @@ file(GLOB LIB_HEADERS "CustomFrame/*.h")
 # Build the shared library.
 add_library( CustomFrame SHARED ${LIB_HEADERS} ${SOURCES} )
 target_include_directories( CustomFrame PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> $<INSTALL_INTERFACE:> ${FastFrames_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} )
-target_link_libraries( CustomFrame ${FastFrames_LIBRARIES} ${ROOT_LIBRARIES} )
+find_library(FastFrames_LIBRARY FastFrames ${CMAKE_SOURCE_DIR}/install)
+target_link_libraries( CustomFrame ${FastFrames_LIBRARY} ${ROOT_LIBRARIES} )
 set_property( TARGET CustomFrame
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 target_include_directories(CustomFrame PUBLIC ${CMAKE_CURRENT_LIST_DIR} )
+target_compile_options(CustomFrame PUBLIC -Wno-shadow)
 
 set(SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup.sh)
 file(WRITE ${SETUP} "#!/bin/bash\n")
