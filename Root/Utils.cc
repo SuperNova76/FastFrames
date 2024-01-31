@@ -115,3 +115,25 @@ void Utils::capHisto0And1(TH1D* h, const std::string& name) {
         }
     }
 }
+  
+const Variable& Utils::getVariableByName(const std::vector<std::shared_ptr<Region> >& regions,
+                                         const std::string& regionName,
+                                         const std::string& variableName) {
+
+    // first find the region
+    auto itrReg = std::find_if(regions.begin(), regions.end(), [&regionName](const auto& element){return element->name() == regionName;});
+    if (itrReg == regions.end()) {
+        LOG(ERROR) << "Cannot find region: " << regionName << "\n";
+        throw std::runtime_error("");
+    }
+
+    auto itrVar = std::find_if((*itrReg)->variables().begin(), (*itrReg)->variables().end(),
+                                [&variableName](const auto& element){return element.name() == variableName;});
+
+    if (itrVar == (*itrReg)->variables().end()) {
+        LOG(ERROR) << "Cannot find variable: " << variableName << " in region: " << regionName <<"\n";
+        throw std::runtime_error("");
+    }
+
+    return *itrVar;
+}

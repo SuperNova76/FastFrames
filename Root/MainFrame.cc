@@ -860,6 +860,7 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
             const std::string& recoName = imatch.first;
             const std::string& migrationName = recoName + "_vs_" + truthName;
 
+
             std::unique_ptr<TH1D> truth = Utils::copyHistoFromVariableHistos(truthHistos, truthName);
             for (const auto& isystHist : histos) {
                 if (isystHist.regionHistos().empty()) {
@@ -871,6 +872,11 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     outputFile->mkdir(isystHist.name().c_str());
                 }
                 for (const auto& iregionHist : isystHist.regionHistos()) {
+
+                    // skip nominal only variables for systematics
+                    const Variable& recoVar = Utils::getVariableByName(sample->regions(), iregionHist.name(), recoName);
+                    if (recoVar.isNominalOnly() && isystHist.name() != "NOSYS") continue;
+
                     std::unique_ptr<TH1D> reco = Utils::copyHistoFromVariableHistos(iregionHist.variableHistos(), recoName);
                     std::unique_ptr<TH2D> migration = Utils::copyHistoFromVariableHistos2D(iregionHist.variableHistos2D(), migrationName);
 
