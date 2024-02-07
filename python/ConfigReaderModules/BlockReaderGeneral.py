@@ -73,6 +73,9 @@ class BlockReaderGeneral:
         ## Instance of the ConfigSettingsWrapper C++ class -> wrapper around C++ ConfigSetting class
         self.cpp_class = ConfigSettingWrapper()
 
+        # Custom defininitions from config come after custom class definitions
+        self.config_define_after_custom_class = self._options_getter.get("config_define_after_custom_class", False, [bool])
+
         self._set_custom_options()
         self._set_job_index_and_split_n_jobs()
         self._set_config_reader_cpp()
@@ -111,6 +114,7 @@ class BlockReaderGeneral:
         self.cpp_class.setNumCPU(self._number_of_cpus)
         self.cpp_class.setCustomFrameName(self._custom_frame_name)
         self.cpp_class.setCapAcceptanceSelection(self._cap_acceptance_selection)
+        self.cpp_class.setConfigDefineAfterCustomClass(self.config_define_after_custom_class)
 
         for campaign, lumi_value in self._luminosity_map.items():
             self.cpp_class.setLuminosity(campaign, lumi_value, True)
