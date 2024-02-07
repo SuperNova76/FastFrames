@@ -3,3 +3,4 @@
  * Overlap removal studies: https://gitlab.cern.ch/mdubovsk/overlap_removal_studies
  * Extraction of JES from W mass: https://gitlab.cern.ch/tdado/wmassjescustomclass
  * Top mass and width measurement: https://gitlab.cern.ch/katharin/topmasswidthfastframes
+ * GN2 (FTag) SFs: https://gitlab.cern.ch/dbaronmo/myanalysis-fastframes
