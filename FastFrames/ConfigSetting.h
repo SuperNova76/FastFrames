@@ -347,6 +347,21 @@ public:
    */
   bool hasAutomaticSystematics() const;
 
+  /**
+   * @brief Set the configDefineAfterCustomClass flag
+   * 
+   * @param flag 
+   */
+  inline void setConfigDefineAfterCustomClass(const bool flag) {m_configDefineAfterCustomClass = flag;}
+
+  /**
+   * @brief configDefineAfterCustomClass flag
+   * 
+   * @return true 
+   * @return false 
+   */
+  inline bool configDefineAfterCustomClass() const {return m_configDefineAfterCustomClass;}
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -369,6 +384,6 @@ private:
   int m_totalJobSplits = -1;
   int m_currentJobIndex = -1;
   bool m_capAcceptanceSelection = false;
-
   CustomOptions m_customOptions;
+  bool m_configDefineAfterCustomClass = false;
 };

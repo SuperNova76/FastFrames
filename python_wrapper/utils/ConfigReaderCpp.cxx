@@ -177,6 +177,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getCustomOptionWithDefault",        &ConfigSettingWrapper::getOptionWithDefault)
         .def("hasCustomOption",                   &ConfigSettingWrapper::hasOption)
         .def("getCustomKeys",                     &ConfigSettingWrapper::getKeys)
+
+        .def("setConfigDefineAfterCustomClass",   &ConfigSettingWrapper::setConfigDefineAfterCustomClass)
+        .def("configDefineAfterCustomClass",      &ConfigSettingWrapper::configDefineAfterCustomClass)
     ;
 
     /**

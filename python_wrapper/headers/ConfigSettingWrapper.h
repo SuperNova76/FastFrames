@@ -457,6 +457,22 @@ class ConfigSettingWrapper {
             return m_configSetting->customOptions().getKeys();
         };
 
+        /**
+         * @brief Set the configDefineAfterCustomClass flag
+         *
+         * @param flag
+         */
+        void setConfigDefineAfterCustomClass(const bool flag) { m_configSetting->setConfigDefineAfterCustomClass(flag);}
+
+        /**
+         * @brief configDefineAfterCustomClass flag
+         *
+         * @return true
+         * @return false
+         */
+        bool configDefineAfterCustomClass() const {return m_configSetting->configDefineAfterCustomClass();}
+
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };

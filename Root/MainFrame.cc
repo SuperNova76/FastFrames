@@ -188,7 +188,9 @@ std::tuple<std::vector<SystematicHisto>,
     // add TLorentzVectors for objects
     mainNode = this->addTLorentzVectors(mainNode);
 
-    mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+    if (!m_config->configDefineAfterCustomClass()) {
+        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+    }
 
     // we also need to add truth variables if provided
     for (const auto& itruth : sample->truths()) {
@@ -198,6 +200,10 @@ std::tuple<std::vector<SystematicHisto>,
 
     // this is the method users will be able to override
     mainNode = this->defineVariables(mainNode, uniqueSampleID);
+
+    if (m_config->configDefineAfterCustomClass()) {
+        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+    }
 
     m_systReplacer.printMaps();
 
@@ -243,10 +249,16 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     // add TLorentzVectors for objects
     mainNode = this->addTLorentzVectors(mainNode);
 
-    mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+    if (!m_config->configDefineAfterCustomClass()) {
+        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+    }
 
     // this is the method users will be able to override
     mainNode = this->defineVariablesNtuple(mainNode, id);
+    
+    if (m_config->configDefineAfterCustomClass()) {
+        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+    }
 
     m_systReplacer.printMaps();
 

@@ -18,6 +18,7 @@ general:
 #  custom_frame_name: "my_custom_frame_name.so"
   #automatic_systematics: True
   nominal_only: False
+  #config_define_after_custom_class: True
   cap_acceptance_selection: False
   number_of_cpus: 4
   max_event: 1000
