@@ -8,10 +8,13 @@ repo_url: https://gitlab.cern.ch/atlas-amglab/fastframes
 edit_uri: 'tree/master/docs/webpage'
 
 theme:
-    name: mkdocs
+    name: material
     palette:
         primary: 'green'
         accent: 'green'
+    logo:
+        icon: 'insert_chart'
+    favicon: 'img/favicon.png'
 
 nav:
     - Introduction: index.md
@@ -26,11 +29,11 @@ nav:
 markdown_extensions:
     - admonition
     - codehilite
-#    - pymdownx.arithmatex
-#    - pymdownx.details
-#    - pymdownx.inlinehilite
-#    - pymdownx.smartsymbols
-#    - pymdownx.superfences
+    - pymdownx.arithmatex
+    - pymdownx.details
+    - pymdownx.inlinehilite
+    - pymdownx.smartsymbols
+    - pymdownx.superfences
 
 extra_javascript:
     - 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'
