@@ -25,6 +25,8 @@ nav:
 
     - TRExFitter config: trex_config.md
 
+    - Tutorial: tutorial.md
+
 
 markdown_extensions:
     - admonition
