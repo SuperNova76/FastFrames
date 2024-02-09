@@ -55,7 +55,11 @@ def find_path_to_main_dir():
     this_file_path = os.path.dirname(this_file_path)
     this_file_path = os.path.dirname(this_file_path)
 
-    return this_file_path
+
+    if os.path.exists(this_file_path + "/build") or os.path.exists(this_file_path + "/bin"):
+        return this_file_path
+    else:
+        return os.path.dirname(this_file_path)
 
 def find_path_to_shared_libs():
     """

@@ -15,8 +15,9 @@ from ConfigReaderModules.BlockReaderCommon import set_paths
 set_paths()
 
 from ConfigReaderCpp import SumWeightsGetter, DoubleVector, StringVector
+from python_wrapper.python.logger import Logger
 
-def read_filelist(filelist_path : str) -> dict:
+def read_filelist(filelist_path : str) -> dict[tuple[str,str], list[str]]:
     """!Reads the filelist.txt file and returns it as a dictionary metadata_tuple -> list of root files
     @param filelist_path: path to the filelist.txt file
     @return dictionary metadata_tuple -> list of root files
@@ -48,6 +49,13 @@ def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
             sum_weights_getter = SumWeightsGetter(root_files_vector)
             sum_weights_values = sum_weights_getter.getSumWeightsValues()
             sum_weights_names  = sum_weights_getter.getSumWeightsNames()
+
+            # error if MC file does not contain the sum of weights
+            if sample[-1].upper() != "DATA" and sample[0] != 0:
+                if len(sum_weights_values) == 0:
+                    error_message = "ROOT files for sample: " +str(sample) + " do not contain the sum of weights"
+                    Logger.log_message("ERROR", error_message)
+                    raise RuntimeError(error_message)
 
             for i in range(len(sum_weights_values)):
                 variation_name = sum_weights_names[i]

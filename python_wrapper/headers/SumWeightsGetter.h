@@ -78,6 +78,7 @@ class SumWeightsGetter {
 
             TIter next(file->GetListOfKeys());
             TKey *key;
+            std::size_t number_of_histograms = 0;
             while ((key = static_cast<TKey*>(next()))) {
                 TObject *obj = key->ReadObj();
                 const std::string name = obj->GetName();
@@ -91,6 +92,7 @@ class SumWeightsGetter {
                     if (sum_weights_value != sum_weights_value || sum_weights_value <= 0 ) {
                         LOG(WARNING) << "Suspicious sum of weights value for variation" + variation_name + " in file " + filename + "\n";
                     }
+                    number_of_histograms++;
                     if (map_uninitialized)  {
                         m_sumWeightsMap[variation_name] = hist->GetBinContent(2);
                     }
@@ -98,6 +100,12 @@ class SumWeightsGetter {
                         m_sumWeightsMap[variation_name] += hist->GetBinContent(2);
                     }
                 }
+            }
+
+            if (number_of_histograms != m_sumWeightsMap.size()) {
+                const std::string message = "Set of cutflow histograms in " + filename + " file differs from other those in other ROOT files of the same sample!";
+                LOG(ERROR) << message << "\n";
+                throw std::runtime_error(message);
             }
         };
 
