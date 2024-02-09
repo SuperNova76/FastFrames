@@ -7,7 +7,6 @@ For the code documentation, please see [doxygen](https://atlas-project-toprecons
 ## Setup
 The tutorial setup assumes you are working on an Alma Linux 9 machine with an access to cvmfs, such as lxplus machines.
 
-<<<<<<< HEAD
 ### Setting up ROOT and Boost
 To setup ROOT and Boost, we can take advantage of the [StatAnalysis](https://gitlab.cern.ch/atlas/StatAnalysis) releases.
 After logging to the machine do
@@ -318,7 +317,7 @@ regions:
           min: 0
           max: 300
           number_of_bins: 10
-      - name: "met_met"
+      - name: "reco_met"
         title : "MET;E_{T}^{miss} [MeV];Events"
         definition: "met_met_NOSYS"
         binning:
@@ -334,7 +333,7 @@ regions:
           min: 0
           max: 300
           number_of_bins: 10
-      - name: "met_met"
+      - name: "reco_met"
         title : "MET;E_{T}^{miss} [MeV];Events"
         definition: "met_met_NOSYS"
         binning:
@@ -396,7 +395,7 @@ The region block for one region:
           min: 0
           max: 300
           number_of_bins: 10
-      - name: "met_met"
+      - name: "reco_met"
         title : "MET;E_{T}^{miss} [MeV];Events"
         definition: "met_met_NOSYS"
         binning:
@@ -461,7 +460,76 @@ And inspect it with `.ls` or `TBrowser`.
 You will see that there is one folder for each systematic variation (the nominal variation is called `NOSYS`).
 Inside each folder, there is a set of histograms with names of a form of `<VariableName>_<RegionName>`.
 
+!!! tip "2D histograms"
+    FastFrames allow to also produce 2D histograms. Have a look at the `histograms_2d` option in the `regions` block. This is also demonstrated in the config file for CI tests [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/test/configs/config.yml?ref_type=heads#L30).
+
 ### Histogram processing (unfolding-like)
+In many analyses, inputs for unfolding need to be generated.
+These are: truth level distributions, election efficiency plots, acceptance plots and 2D migration matrices.
+FastFrames can generate these distributions automatically.
+As an example, we will show the setup for reco level missing transverse momentum (MET) and particle-level MET.
+In order to do this, a new sub-block needs to be added to the `sample` block for the `ttbar_FS` sample.
+Add the following lines to the configuration:
+
+```yaml
+    truth:
+      - name: particle
+        produce_unfolding: True
+        truth_tree_name: "particleLevel"
+        event_weight: "weight_mc_NOSYS"
+        variables:
+          - name: "particle_met"
+            definition: "met_met"
+            binning:
+              min: 0
+              max: 500000
+              number_of_bins: 10
+        match_variables:
+          - reco: "reco_met"
+            truth: "particle_met"
+```
+
+The `truth` sub-block tells the code that some truth information will be processed. 
+Note that multiple truth selections can be defined (e.g. parton and particle).
+Let us describe the settings.
+
+```yaml
+      - name: particle
+        produce_unfolding: True
+        truth_tree_name: "particleLevel"
+        event_weight: "weight_mc_NOSYS"
+```
+The above block tells the code that a new truth configuration called `particle` should be set.
+`produce_unfolding` tells the code to produce the histograms needed for unfolding (selection efficiency and acceptance).
+`truth_tree_name` is the name of the truth level tree in the input ntuple.
+`event_weight` is the event weight used for the truth level (the cross-section and luminosity will be the same as for the reco level).
+
+```yaml
+        variables:
+          - name: "particle_met"
+            definition: "met_met"
+            binning:
+              min: 0
+              max: 500000
+              number_of_bins: 10
+```
+The above block tells the code which variables to plot on the truth level.
+
+```yaml
+        match_variables:
+          - reco: "reco_met"
+            truth: "particle_met"
+```
+The above block tells the code to create the 2D plots for reco and truth variables.
+Since this requires matching reco and truth trees, the code needs to know how to merge the individual events.
+This is done using the `BuildIndex` functionality in TTree and it requires a unique set of variables for event identification.
+These can be set via the `reco_to_truth_pairing_indices` option. The default value is `eventNumber`. 
+
+Similarly to the reco level, you can use the custom class to add new variables/columns to the truth level.
+The relevant method of the custom class is `WmassJESFrame::defineVariablesTruth`.
+
+!!! tip "Truth selection"
+    You can apply selection on the truth level as well by setting the `selection` option in the given `truth` block.
 
 ### Ntuple processing
 
