@@ -7,7 +7,26 @@ For the code documentation, please see [doxygen](https://atlas-project-toprecons
 ## Setup
 The tutorial setup assumes you are working on an Alma Linux 9 machine with an access to cvmfs, such as lxplus machines.
 
-After logging in to this machine, create a new folder called FastFramesTutorial:
+<<<<<<< HEAD
+### Setting up ROOT and Boost
+To setup ROOT and Boost, we can take advantage of the [StatAnalysis](https://gitlab.cern.ch/atlas/StatAnalysis) releases.
+After logging to the machine do
+
+```
+setupATLAS
+lsetup git # to setup newer version of git
+asetup StatAnalysis,0.3,latest
+```
+
+To check the version of ROOT setup, use:
+```
+root --version
+```
+
+You can also run the code on your local machine as long as you have ROOT and Boost (dependancy of FastFrames) installed on the machine.
+
+### FastFrames setup
+Create a new folder called FastFramesTutorial:
 
 ```
 mkdir FastFramesTutorial
@@ -113,6 +132,7 @@ make
 Finally, set the path with
 ```
 source setup.sh
+cd --
 ```
 
 The last step, setting the paths is needed in every new shell. The paths are needed for the FastFrames code to find your custom class.
@@ -122,8 +142,8 @@ Now we have everything prepared to start adding some new variables that we can u
 Note that in RDataFrame, every variable you want to plot needs to be added via `Define()`. This includes the variables for applying selection or weights.
 In this example, we will add a leading jet pT variable so that we can plot it later on.
 
-The changes relevant for histogramming go into `defineVariables` method of your class. This is the method we will modify.
-There are two general ways in RDataFrame how to add varaibles via Define(). The first one uses strings to define a formula the second approach uses c++ pointer to functions (functors). The c++ version leads to a better performance as it will be compiled, while the string version will be only Just-In-Time(JIT) compiled.
+The changes relevant for histogramming go into `defineVariables` method of your class. This is the method we will modify in Root/TutorialClass.cxx.
+There are two general ways in RDataFrame how to add variables via Define(). The first one uses strings to define a formula the second approach uses c++ pointer to functions (functors). The c++ version leads to a better performance as it will be compiled, while the string version will be only Just-In-Time(JIT) compiled.
 
 The following conceptual steps are needed to add a leading jet pT variable:
 
@@ -164,7 +184,7 @@ The steps needed could be implemented using RDataFrame's Define() functions, but
                                          {"jet1_TLV_NOSYS"});
 ```
 
-The code above does what we need, but in a slightly more convenient/efficient way. Let us go throught the different parts
+The code above does what we need, but in a slightly more convenient/efficient way. Let us go through the different parts
 
 ```c++
   auto SortedTLVs = [](const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec,
@@ -173,7 +193,7 @@ The code above does what we need, but in a slightly more convenient/efficient wa
   };
 ```
 
-The above code snipper defined a lambda (`std::function`) that takes a vector of lorentz vectors, a vector of chars and then returns a sorted vector (based on pT) for selected elements (where the char is == 1). The code uses a helper function `DefineHelpers::sortedPassedVector` defined in FastFrames, see [this](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/Root/DefineHelpers.cc?ref_type=heads).
+The above code snippet defined a lambda (`std::function`) that takes a vector of lorentz vectors, a vector of chars and then returns a sorted vector (based on pT) for selected elements (where the char is == 1). The code uses a helper function `DefineHelpers::sortedPassedVector` defined in FastFrames, see [this](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/Root/DefineHelpers.cc?ref_type=heads).
 
 ```c++
   auto LeadingTLV = [](const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec) {
@@ -188,7 +208,7 @@ The above code takes a vector of lorentz vectors and of it is not empty it retur
     return tlv.pt()/1.e3;
   };
 ```
-The above code takes a lorentz vector and then returns the pT cimponent divided by 1000.
+The above code takes a lorentz vector and then returns the pT component divided by 1000.
 
 ```c++
   // add sorted passed jet TLV vector
@@ -197,7 +217,7 @@ The above code takes a lorentz vector and then returns the pT cimponent divided 
                                          SortedTLVs,
                                          {"jet_TLV_NOSYS", "jet_select_or_NOSYS"});
 ```
-The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTLVs` lambda (function) and it relies on the two columns(variables): `jet_TLV_NOSYS` and `jet_select_or_NOSYS`, wher the first variable is provided by FastFrames (configurable) for convenience.
+The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTLVs` lambda (function) and it relies on the two columns(variables): `jet_TLV_NOSYS` and `jet_select_or_NOSYS`, where the first variable is provided by FastFrames (configurable) for convenience.
 
 ```c++
   // add leading jet TLV
@@ -206,7 +226,7 @@ The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTL
                                         LeadingTLV,
                                         {"sorted_jet_TLV_NOSYS"});
 ```
-The above code adds a variable `jet1_TLV_NOSYS` based on lambda `LeadingTLV` and it relies on the varaible we have just created, `sorted_jet_TLV_NOSYS`.
+The above code adds a variable `jet1_TLV_NOSYS` based on lambda `LeadingTLV` and it relies on the variable we have just created, `sorted_jet_TLV_NOSYS`.
 
 ```c++
   mainNode = MainFrame::systematicDefine(mainNode,
@@ -216,17 +236,31 @@ The above code adds a variable `jet1_TLV_NOSYS` based on lambda `LeadingTLV` and
 ```
 
 The above code adds a variable `jet1_pt_GEV_NOSYS` based on lambda `tlvPtGEV` and as an input uses `jet1_TLV_NOSYS`. 
-This is the varaible we wanted to plot.
+This is the variable we wanted to plot.
 
-You could add the variable directly in one lambda however, the presented aprpoach has multiple advantanges:
+You could add the variable directly in one lambda however, the presented approach has multiple advantages:
 
-* If you want to also add leading jet eta, you can use the `jet1_TLV_NOSYS` without rerunning the other steps that would have added computatin overhead (the filtering and sriting would have to be rerun)
+* If you want to also add leading jet eta, you can use the `jet1_TLV_NOSYS` without rerunning the other steps that would have added computation overhead (the filtering and sorting would have to be rerun)
 * You can also easily look at the second leading jet using `sorted_jet_TLV_NOSYS`
 
 Please check also other helper functions, they are quite useful!
+
+Now you need to compile and install the code again with
+```
+cd build
+make
+make install
+cd ..
+```
+
+!!! tip "UniqueSampleID"
+    The `customDefine` method of the class also provides `UniqueSampleID` parameter (`id`). This is a very simple class that allows to do per-sample specific operations. It has methods such as `id.dsid()`, `id.isData()`, `id.campaign()` that you can use to provide special defines based on these properties. See the class documentation [here](https://atlas-project-topreconstruction.web.cern.ch/fastframesdoxygen/classUniqueSampleID.html).
+
+!!! tip "On variable validity"
+    The new variables/columns are added to the main node, i.e. before any selection. Make sure that the variables you define are always valid. For example if you access zeroth element of a vector, make sure it is not empty. For the undefined cases, you can put some dummy values.
   
 !!! tip "Using standard Define()"
-    You can still use the standard RDataFrame Define(). This will add the varaibles only for the nominal copy, but if you want to only plot the histogram for nominal only this is okay.
+    You can still use the standard RDataFrame Define(). This will add the variables only for the nominal copy, but if you want to only plot the histogram for nominal only this is okay.
 
 !!! tip "Debugging"
     Debugging in these custom functions can be tricky. Standard printout methods work, but due to multithreading, the outputs might be shuffled. It is recommended to switch to just one thread when debugging.
@@ -236,7 +270,7 @@ Please check also other helper functions, they are quite useful!
 We are now ready to write the configuration file that will steer the processing of the ntuple into histograms.
 Go back to the main FastFrames repository
 ```
-cd ../../FastFrames/
+cd ../FastFrames/
 ```
 
 And create the following `tutorial_config.yml` file:
@@ -252,12 +286,12 @@ general:
 
   # weights
   default_sumweights: "NOSYS"
-  default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
+  default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_Continuous_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
 
   default_reco_tree_name: "reco"
 
   # path to the file with cross-sections
-  xsection_files: ["data/XSection-MC16-13TeV.data"]
+  xsection_files: ["data/XSection-MC21-13p6TeV.data"]
 
   # name of the custom class
   custom_frame_name: "TutorialClass"
@@ -277,9 +311,9 @@ regions:
   - name: "Electron"
     selection: "pass_ejets_NOSYS"
     variables:
-      - name: "jet1_pt_GEV_NOSYS"
+      - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
-        definition: "jet_pt_GeV_NOSYS"
+        definition: "jet1_pt_GEV_NOSYS"
         binning:
           min: 0
           max: 300
@@ -293,9 +327,9 @@ regions:
   - name: "Muon"
     selection: "pass_mujets_NOSYS"
     variables:
-      - name: "jet1_pt_GEV_NOSYS"
+      - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
-        definition: "jet_pt_GeV_NOSYS"
+        definition: "jet1_pt_GEV_NOSYS"
         binning:
           min: 0
           max: 300
@@ -311,7 +345,7 @@ regions:
 samples:
   - name: "ttbar_FS"
     dsids: [601229]
-    campaigns: ["mc21a"]
+    campaigns: ["mc23a"]
     simulation_type: "fullsim"
 ```
 
@@ -320,15 +354,16 @@ Let us now go through the some of the less intuitive configurations options.
 ```yaml
   # weights
   default_sumweights: "NOSYS"
-  default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
+  default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_Continuous_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
 ```
 The above block sets the weights for normalisation. `default_sumweights` tell the code which sumweights to use for normalisation. `default_event_weights` tells the code what the formula for the event weights is. Note that the code will automatically add the luminosity, cross-section and sumweights values.
 
 ```yaml
   # path to the file with cross-sections
-  xsection_files: ["data/XSection-MC16-13TeV.data"]
+  xsection_files: ["data/XSection-MC21-13p6TeV.data"]
 ```
-The above block tells the code where to look for the file that contains the cross-section for files
+The above block tells the code where to look for the file that contains the cross-section for files.
+These are just copied from TopDataPreparation, feel free to update them locally!
 
 ```yaml
   # name of the custom class
@@ -354,9 +389,9 @@ The region block for one region:
   - name: "Electron"
     selection: "pass_ejets_NOSYS"
     variables:
-      - name: "jet1_pt_GEV_NOSYS"
+      - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
-        definition: "jet_pt_GeV_NOSYS"
+        definition: "jet1_pt_GEV_NOSYS"
         binning:
           min: 0
           max: 300
@@ -367,9 +402,9 @@ The region block for one region:
         binning:
           bin_edges: [0,20000,60000,80000,140000,250000]
 ```
-specifies the region definition. It has the name of the region (to be used in the output) and a selection. The selection can be a formula but only simple formuale are encouraged (e.g. simple AND or OR).
+specifies the region definition. It has the name of the region (to be used in the output) and a selection. The selection can be a formula but only simple formulae are encouraged (e.g. simple AND or OR).
 Then, each region has a list of variables for which histograms will be created.
-The variables have a name (to be used in the output), title (the format is `title: x axis title: y axis title`), definition which is a name of the column, i.e. it cannot be a formula. and the bining.
+The variables have a name (to be used in the output), title (the format is `title: x axis title: y axis title`), definition which is a name of the column (i.e. it cannot be a formula) and binning.
 
 The sample definition:
 ```yaml
@@ -377,7 +412,7 @@ The sample definition:
 samples:
   - name: "ttbar_FS"
     dsids: [601229]
-    campaigns: ["mc21a"]
+    campaigns: ["mc23a"]
     simulation_type: "fullsim"
 ```
 
@@ -399,6 +434,32 @@ Computer:
 ```
 
 ### Histogram processing (1D)
+
+Now everything is ready to produce the histograms. First create the output folder (defined in the config with: `output_path_histograms`)
+```
+mkdir ../output
+```
+
+And then run the FastFrames code by providing the config file
+```
+python python/FastFrames.py -c tutorial_config.yml
+```
+
+Please, check that the terminal output says:
+```
+Number of event loops: 1. For an optimal run, this number should be 1
+```
+To make sure only one event loop has been run.
+
+After the code finishes, we can inspect the output files.
+Open the produced root file
+```
+root -l ../output/ttbar_FS.root
+```
+
+And inspect it with `.ls` or `TBrowser`.
+You will see that there is one folder for each systematic variation (the nominal variation is called `NOSYS`).
+Inside each folder, there is a set of histograms with names of a form of `<VariableName>_<RegionName>`.
 
 ### Histogram processing (unfolding-like)
 

@@ -559,7 +559,9 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         }
     }
 
-    LOG(INFO) << "Writing truth histograms, triggers event loop for the truth tree!\n";
+    if (!truthHistos.empty()) {
+        LOG(INFO) << "Writing truth histograms, triggers event loop for the truth tree!\n";
+    }
     // Write truth histograms
     for (const auto& itruthHist : truthHistos) {
         const std::string truthHistoName = StringOperations::replaceString(itruthHist.name(), "_NOSYS", "");
