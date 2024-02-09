@@ -53,7 +53,6 @@ def find_path_to_main_dir():
     # 2 folders up
     this_file_path = os.path.dirname(this_file_path)
     this_file_path = os.path.dirname(this_file_path)
-    this_file_path = os.path.dirname(this_file_path)
 
 
     if os.path.exists(this_file_path + "/build") or os.path.exists(this_file_path + "/bin"):
