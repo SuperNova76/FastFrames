@@ -53,12 +53,9 @@ def find_path_to_main_dir():
     # 2 folders up
     this_file_path = os.path.dirname(this_file_path)
     this_file_path = os.path.dirname(this_file_path)
+    this_file_path = os.path.dirname(this_file_path)
 
-
-    if os.path.exists(this_file_path + "/build") or os.path.exists(this_file_path + "/bin"):
-        return this_file_path
-    else:
-        return os.path.dirname(this_file_path)
+    return this_file_path
 
 def find_path_to_shared_libs():
     """
@@ -66,6 +63,9 @@ def find_path_to_shared_libs():
     """
     path_to_main_dir = find_path_to_main_dir()
     paths_to_check = [path_to_main_dir + "/build/lib", path_to_main_dir + "/bin/lib"]
+    path_to_main_dir = os.path.dirname(path_to_main_dir)
+    paths_to_check.append(path_to_main_dir + "/build/lib")
+    paths_to_check.append(path_to_main_dir + "/bin/lib")
 
     LD_LIBRARY_PATH = os.environ.get("LD_LIBRARY_PATH")
     lib_paths = LD_LIBRARY_PATH.split(":")
