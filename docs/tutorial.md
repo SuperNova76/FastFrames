@@ -49,7 +49,7 @@ cp /eos/user/r/ravinab/TopCPToolkit/example_files/tutorial_file.root .
 cd ../
 ```
 
-The ROOT file is obtained by running a single-lepton ttbar selection on a ttbar non-allhadronic file using the 2022-like setup (mc23 campaign).
+The ROOT file is obtained by running a single-lepton ttbar selection on a ttbar non-allhadronic file using the 2022-like setup (mc23a campaign).
 
 ### Compilation
 Run the cmake step:
@@ -532,5 +532,42 @@ The relevant method of the custom class is `WmassJESFrame::defineVariablesTruth`
     You can apply selection on the truth level as well by setting the `selection` option in the given `truth` block.
 
 ### Ntuple processing
+
+FastFrames also allows you to process the input ntuple into an output ntuple that is self-similar, i.e. it will have the same structure as the input ntuple so it can be used as an input to the histogram processing using FastFrames.
+To do this, first provide the path to the output folder for ntuples in the `general` block
+
+```yaml
+output_path_ntuples: "../output/"
+```
+
+And then add the following block:
+```yaml
+ntuples:
+  selection: "pass_ejets_NOSYS"
+  copy_trees: ["particleLevel"]
+```
+
+The `ntuples` block is used only for the output ntuple processing.
+The `selection` option is optional and allows you to apply a selection for this step.
+The code will automatically create a logical OR between all systematic variations for the selection and this will be used for the selection.
+`copy_trees` tells the code to copy some other trees that are not the reco trees to be copied (for the self-similarity).
+You can also control which variables to be included in the output ntuple via `branches` option, e.g. `branches: ["weight_total_.*", "jet_pt_.*"]` will only select branches that match the regular-expressions.
+Alternatively, you can also use `exclude_branches` options to select the branches to store.
+
+Similarly to the histogramming part, you can define custom variables in your custom class for the ntupling step.
+The relevant method in the custom class is `WmassJESFrame::defineVariablesNtuple`.
+
+To run the ntupling step, do:
+```
+python python/FastFrames.py -c tutorial_config.yml --step n
+```
+
+Where the `--step n` argument tells the code to run the ntupling part instead of the histogramming part (the default `--step h`).
+There will be some overhead in the processing due to the complex (many ORs) selections.
+After the processing is done, you should find a new file called `ttbar_FS_601229_mc23a_fullsim.root` in the `../output` folder.
+Note that the code will generate one output root file for each DSID, campaign and the simulation type. 
+
+!!! alert "100 GB per tree limitation"
+    Currently, the self-similarity for the output files will be broken if the processed tree is larger than 100 GBs as that is an internal limitation for a TTree in ROOT.
 
 ## Generating the TRExFitter config file
