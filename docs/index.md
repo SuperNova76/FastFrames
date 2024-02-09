@@ -42,7 +42,7 @@ If you do not have git large file storage (LFS) installed on your machine, you n
 
 ```
 sudo apt install git-lfs #or similar
-git install lfs
+git lfs install
 git lfs pull
 ```
 
