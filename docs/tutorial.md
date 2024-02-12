@@ -131,7 +131,7 @@ make
 Finally, set the path with
 ```
 source setup.sh
-cd --
+cd -
 ```
 
 The last step, setting the paths is needed in every new shell. The paths are needed for the FastFrames code to find your custom class.
@@ -432,6 +432,31 @@ Computer:
   Price: 3000 
 ```
 
+### Manual systematic uncertainties in the config file
+The previous setup showed how to define systematic uncertainties automatically (taking the metadata information from the input file).
+However, it might be important/convenient to provide a list of systematic uncertainties manually in the config file.
+For this, FastFrames provides an option block `systematics` that allows you to manually define systematic variations.
+For example the following block:
+
+```yaml
+systematics:
+  - campaigns: ["mc23a"]
+    regions: ["Electron", "Muon"]
+    variation:
+      up: "JET_BJES_Response__1up"
+      down: "JET_BJES_Response__1down"
+```
+
+represents a manual definition of `JET_BJES_Response__1up` and `JET_BJES_Response__1down` systematics.
+The up and down variation is not important here, but might be important when producing the TRExFitter config file (if automatic systematics are not switched on).
+The above definition will replace all occurrences of `NOSYS` with `JET_BJES_Response__1up` and `JET_BJES_Response__1down` to define two systematic variations.
+This includes the event weights, sumWeights and selections.
+You can restrict a given variation only to some regions, samples or campaigns.
+For the list of provided options see the [documentation](https://atlas-project-topreconstruction.web.cern.ch/fastframesdocumentation/config/#systematics-block-settings).
+When automatic systematics are turned on and some systematics are defined in the config file, the definition in the config file will be used in case of identical names as the automatic systematic.
+If the systematic variation in the config file does not match any automatic systematic it will still be included as defined in the config file.
+
+
 ### Histogram processing (1D)
 
 Now everything is ready to produce the histograms. First create the output folder (defined in the config with: `output_path_histograms`)
@@ -569,5 +594,28 @@ Note that the code will generate one output root file for each DSID, campaign an
 
 !!! alert "100 GB per tree limitation"
     Currently, the self-similarity for the output files will be broken if the processed tree is larger than 100 GBs as that is an internal limitation for a TTree in ROOT.
+
+## Distributed computing
+RDataFrame supports multi-threading when processing the input files (both when the output is an ntuple or a set of histograms).
+The number of threads used is controlled by the `number_of_cpus` parameter.
+The multi-threading of RDataFrame is extremely efficient, see e.g. this [presentation](https://indico.fnal.gov/event/23628/contributions/241029/attachments/154864/201541/RDF%20%40%20ROOT%20workshop%202022.pdf).
+
+However, you can still benefit from a distributed system (multiple physical/virtual machines).
+The easiest way to parallelise the processing is to use a command line option to specify which samples (as defined in the config file) to process.
+This can be achieved by passing the following parameter when running FastFrames:
+
+```
+--samples sample1,sample2,sample3
+```
+
+In some cases, even processing one sample can take a long time and it would be desirable to split it even further.
+FastFrames provides an option for this.
+Passing the following parameter:
+```
+--split_n_jobs <N jobs total> --job_index <current job index>
+```
+
+tells the code to split the processing of the individual input files into `<N jobs total>` where `<current job index>` can be used to control which set of the files is being processed.
+The output of each of the jobs will contain these two parameter in the output name.
 
 ## Generating the TRExFitter config file
