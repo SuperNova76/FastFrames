@@ -22,7 +22,7 @@ To check the version of ROOT setup, use:
 root --version
 ```
 
-You can also run the code on your local machine as long as you have ROOT and Boost (dependancy of FastFrames) installed on the machine.
+You can also run the code on your local machine as long as you have ROOT and Boost (dependency of FastFrames) installed on the machine.
 
 ### FastFrames setup
 Create a new folder called FastFramesTutorial:
@@ -32,10 +32,12 @@ mkdir FastFramesTutorial
 cd FastFramesTutorial
 ```
 
-Now, clone the repository using ssh:
+Now, clone the [repository](https://gitlab.cern.ch/atlas-amglab/fastframes) using ssh:
 ```
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git FastFrames
 ```
+
+You can also use other communication protocol like html or kerberos.
 
 And create the input, build and install folders
 ```
@@ -52,8 +54,9 @@ cd ../
 The ROOT file is obtained by running a single-lepton ttbar selection on a ttbar non-allhadronic file using the 2022-like setup (mc23a campaign).
 
 ### Compilation
-Run the cmake step:
+Run the cmake step in the `build` folder:
 ```
+cd build
 cmake -DCMAKE_INSTALL_PREFIX=../install/ ../FastFrames/
 ```
 
@@ -67,23 +70,40 @@ Install the code
 make install
 ```
 
-And, finnaly, setup the paths with:
+And, finally, setup the paths with:
 ```
 source setup.sh
 ```
 
 ## Generating file metadata
-First we need to generate the metedata needed for futher processing.
+First we need to generate the metedata needed for further processing.
 A set of python scripts is provided that will search a given folder and all of it subfolders for ROOT files, inspect them and then create two text files.
-The first file contains the list of all the ROOT files, the paths to the individual files, the DSID (6 digit unique identifier for each MC sample) and the simulation type (ful lsimulation or fast simulation).
+The first file contains the list of all the ROOT files, the paths to the individual files, the DSID (6 digit unique identifier for each MC sample) and the simulation type (full simulation or fast simulation).
 The second file contains the total sumweights for each weight for a given DSID, campaign and the simulation type.
 To generate these files, do
 ```
-cd FastFrames
+cd ../FastFrames
 python python/produce_metadata_files.py --root_files_folder ../input/
 ```
 
-You can inspect the new txt files in `../input/` 
+Let us inspect the new txt files in the `../input/` folder.
+The `filelist.txt` file contains only one line (only one input file):
+```
+601229  mc23a   fullsim /home/tomas/RDataFrame/tutorial/input/tutorial_file.root
+```
+which shows the DSID, campaign, simulation type and the absolute path to the file.
+
+The `sum_of_weights.txt` file contains a lot of lines, one line per MC weight variation.
+The beginning of the file looks like this:
+```
+601229  mc23a   fullsim GEN_AUX_bare_not_for_analyses -1.0
+601229  mc23a   fullsim GEN_MUR05_MUF05_PDF260000 9131887.0
+601229  mc23a   fullsim GEN_MUR05_MUF1_PDF260000 8988519.0
+601229  mc23a   fullsim GEN_MUR05_MUF2_PDF260000 8904727.0
+601229  mc23a   fullsim GEN_MUR1_MUF05_PDF260000 8302779.0
+```
+
+Where the first columns represent: DSID, campaign, simulation type, name of the variation and the corresponding sum weights.
 
 ## Adding custom variables
 As the format of the ROOT file makes direct histogramming difficult, it is very likely you will need to use your own code to add more variables/columns to the input file.
@@ -96,7 +116,7 @@ cd ../
 ```
 
 A helper repository is provided that contain a skeleton code needed for the custom class.
-Clone it with
+Clone the [repository](https://gitlab.cern.ch/atlas-amglab/FastFramesCustomClassTemplate) with
 ```
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/FastFramesCustomClassTemplate.git TutorialClass
 ```
@@ -113,14 +133,15 @@ Now, you can remove the script as well as the `.git` folder
 rm renameFiles.sh
 rm -rf .git
 ```
-To make it easier to turn the folder into your own repository (recommended).
-You can also let us know if you have your own repostiory and we can add it to the list of custom classes so that the new users can have a look how other analyses use it, see [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/main/examples?ref_type=heads). 
+To make it easier to turn the folder into your own repository (recommended) on gitlab.
+You can also let us know if you have your own repository and we can add it to the list of custom classes so that the new users can have a look how other analyses use it, see [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/main/examples?ref_type=heads). 
 
-Now, let us compile the custom class and link to the main FastFrames code
+Now, let us compile the custom class and link to the main FastFrames code.
+**Please, adjust the absolute path to the install folder of the FastFrames code.**
 ```
 mkdir build install
 cd build
-cmake -DCMAKE_PREFIX_PATH=/afs/cern.ch/user/t/tdado/FastFramesTutorial/install -DCMAKE_INSTALL_PREFIX=../install ../ # UPDATE THE PATH TO THE FASTFRAMES INSTALL
+cmake -DCMAKE_PREFIX_PATH=/afs/cern.ch/user/t/tdado/FastFramesTutorial/install -DCMAKE_INSTALL_PREFIX=../install ../
 ```
 
 Compile the code
@@ -131,10 +152,14 @@ make
 Finally, set the path with
 ```
 source setup.sh
+```
+
+and return to the previous folder
+```
 cd -
 ```
 
-The last step, setting the paths is needed in every new shell. The paths are needed for the FastFrames code to find your custom class.
+**The last step, setting the paths is needed in every new shell. The paths are needed for the FastFrames code to find your custom class.**
 
 ### Adding leading jet pT variable
 Now we have everything prepared to start adding some new variables that we can use for plotting.
@@ -150,7 +175,8 @@ The following conceptual steps are needed to add a leading jet pT variable:
 2. Sort the vector based on jet pT - the vectors are never sorted - they cannot be as systematic variations could change the order
 3. Take the first element and store this as a new variable
 
-The steps needed could be implemented using RDataFrame's Define() functions, but this would have to be repeated for all systematic variation making it very inconvenient. Fort his, FastFrames has a method that does this for you! You only need to define this for the nominal variables, everything else will be automatically provided for you. The relevant function is `MainFrame::systematicDefine`. Let us now add the leading jet pT variable. The following code can be added to the `defineVariables` method:
+The steps needed could be implemented using RDataFrame's Define() functions, but this would have to be repeated for all systematic variation making it very inconvenient.
+For this, FastFrames has a method that does this for you! You only need to define this for the nominal variables, everything else will be automatically provided for you. The relevant function is `MainFrame::systematicDefine`. Let us now add the leading jet pT variable. The following code can be added to the `defineVariables` method:
 ```c++
   auto SortedTLVs = [](const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec,
                        const std::vector<char>& selected) {
@@ -244,7 +270,7 @@ You could add the variable directly in one lambda however, the presented approac
 
 Please check also other helper functions, they are quite useful!
 
-Now you need to compile and install the code again with
+Now you need to re-compile and install the code for the custom class again in the build directory of the custom class with
 ```
 cd build
 make
@@ -490,7 +516,7 @@ Inside each folder, there is a set of histograms with names of a form of `<Varia
 
 ### Histogram processing (unfolding-like)
 In many analyses, inputs for unfolding need to be generated.
-These are: truth level distributions, election efficiency plots, acceptance plots and 2D migration matrices.
+These are: truth level distributions, selection efficiency plots, acceptance plots and 2D migration matrices.
 FastFrames can generate these distributions automatically.
 As an example, we will show the setup for reco level missing transverse momentum (MET) and particle-level MET.
 In order to do this, a new sub-block needs to be added to the `sample` block for the `ttbar_FS` sample.
