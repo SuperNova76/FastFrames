@@ -268,6 +268,24 @@ public:
    */
   bool automaticSystematics() const {return m_automaticSystematics;}
 
+  /**
+   * @brief Does the sample have the systematic already included?
+   * 
+   * @param systematicName Name of the systematic to check
+   * @return true 
+   * @return false 
+   */
+  bool hasSystematic(const std::string& systematicName) const;
+
+  /**
+   * @brief Should the given systematic be skipped as it is excluded? 
+   * 
+   * @param systematicName Name of the systematic to check
+   * @return true 
+   * @return false 
+   */
+  bool skipExcludedSystematic(const std::string& systematicName) const;
+
 private:
   std::string m_name;
 

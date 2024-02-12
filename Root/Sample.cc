@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <regex>
 
 Sample::Sample(const std::string& name) noexcept :
   m_name(name),
@@ -52,4 +53,23 @@ const std::shared_ptr<Systematic>& Sample::nominalSystematic() const {
   }
 
   return *itr;
+}
+  
+bool Sample::hasSystematic(const std::string& systematicName) const {
+  auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [&systematicName](const auto& element){return element->name() == systematicName;});
+
+  return itr != m_systematics.end();
+}
+  
+bool Sample::skipExcludedSystematic(const std::string& systematicName) const {
+    bool skip(false);
+    for (const auto& iexclude : this->m_excludeAutomaticSystematics) {
+        std::regex match(iexclude);
+        if (std::regex_match(systematicName, match)) {
+            skip = true;
+            break;
+        }
+    }
+
+    return skip;
 }

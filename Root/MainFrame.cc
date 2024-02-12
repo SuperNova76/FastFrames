@@ -580,20 +580,22 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
 
 void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const bool isNominalOnly) const {
 
-    // clear current systematics
-    sample->clearSystematics();
+    if (isNominalOnly) {
+        // clear current systematics
+        sample->clearSystematics();
 
-    // add nominal "systematic"
-    auto nominal = std::make_shared<Systematic>("NOSYS");
-    nominal->setSumWeights("NOSYS");
-    for (const auto& ireg : m_config->regions()) {
-        nominal->addRegion(ireg);
+        // add nominal "systematic"
+        auto nominal = std::make_shared<Systematic>("NOSYS");
+        nominal->setSumWeights("NOSYS");
+        for (const auto& ireg : m_config->regions()) {
+            nominal->addRegion(ireg);
+        }
+        sample->addSystematic(nominal);
+
+        m_config->addUniqueSystematic(nominal);
+
+        return;
     }
-    sample->addSystematic(nominal);
-
-    m_config->addUniqueSystematic(nominal);
-
-    if (isNominalOnly) return;
 
     // add systematics now
     for (const auto& iuniqueSample : sample->uniqueSampleIDs()) {
@@ -604,20 +606,18 @@ void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const 
         const std::vector<std::string> listOfSystematics = this->automaticSystematicNames(fileList.at(0));
         // now add the systematics
         for (const auto& isyst : listOfSystematics) {
-
-            bool skip(false);
-            for (const auto& iexclude : sample->excludeAutomaticSystematics()) {
-                std::regex match(iexclude);
-                if (std::regex_match(isyst, match)) {
-                    skip = true;
-                    break;
-                }
-            }
-
-            if (skip) {
-                LOG(VERBOSE) << "Sample: " << sample->name() << " skipping automatic systematic: " << isyst << "\n";
+            if (sample->skipExcludedSystematic(isyst)) {
+                LOG(VERBOSE) << "Sample: " << sample->name() << " skipping automatic systematic: " << isyst << " as it is excluded\n";
                 continue;
             }
+
+            const bool isSystematicAlreadyPresent = sample->hasSystematic(isyst);
+            if (isSystematicAlreadyPresent) {
+                LOG(INFO) << "Sample: " << sample->name() << ", systematic: " << isyst << " provided in the config file, will not automatically add it\n";
+                continue;
+            }
+
+            LOG(VERBOSE) << "Sample: " << sample->name() << ", adding automatic systematic: " << isyst << "\n";
 
             auto syst = std::make_shared<Systematic>(isyst);
             if (m_metadataManager.sumWeightsExist(iuniqueSample, syst)) {
