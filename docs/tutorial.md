@@ -677,15 +677,11 @@ python3 python/produce_trexfitter_config.py --config test/configs/config.yml --o
 
 Where first 3 arguments are the same as for inclusive fit. Additional argument ```--unfolding``` (or ```-u```) specifies the unfolding setup. There are 4 values separated by colon:
 
-```<signal sample>``` - Name of the signal sample - the name must match name in the ```fastframes``` config
+```ttbar_FS``` - Name of the signal sample - the name must match name in the ```fastframes``` config
 
-```<truth block>``` - Name of the truth block to be used. This is used, for example, to specify if you want to unfold to particle or parton level.
+```parton``` - Name of the truth block to be used. This is used, for example, to specify if you want to unfold to particle or parton level.
 
-```<truth level variable>``` - Variable you want to unfold at the truth level.
+```Ttbar_MC_t_afterFSR_pt``` - Variable you want to unfold at the truth level.
 
-```<detector level variable>``` - Detector level variable you want to use in the unfolding.
-
-Example of the unfolding command, using the example config file and ROOT files from this repository:
-
-```"python3 python/produce_trexfitter_config.py --c test/configs/config_testing.yml --u ttbar_FS:particle:truth_jet_pt:jet_pt --output config_testing_unfolding.config"```
+```jet_pt``` - Detector level variable you want to use in the unfolding.
 
