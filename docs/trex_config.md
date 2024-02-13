@@ -44,6 +44,20 @@ The following options are allowed, there override the default vaues. The meaning
 
   ```FitBlind:```
 
+### Unfolding block:
+
+The  following options are supported:
+
+```UnfoldNormXSec```
+
+```DivideByBinWidth```
+
+```DivideByLumi```
+
+```LogX```
+
+```LogY```
+
 #### samples block:
 
 ```name:``` this specifies the name of the sample - for which the block will be applied. It must match the name from the ```fastframes``` config.
