@@ -9,6 +9,8 @@ The tutorial setup assumes you are working on an Alma Linux 9 machine with an ac
 
 ### Setting up ROOT and Boost
 To setup ROOT and Boost, we can take advantage of the [StatAnalysis](https://gitlab.cern.ch/atlas/StatAnalysis) releases.
+If you want to run ```fastframes``` on a machine without access to [StatAnalysis](https://gitlab.cern.ch/atlas/StatAnalysis),
+you will need ROOT 6.28 or newer, as well as Boost.
 After logging to the machine do
 
 ```
@@ -134,7 +136,7 @@ rm renameFiles.sh
 rm -rf .git
 ```
 To make it easier to turn the folder into your own repository (recommended) on gitlab.
-You can also let us know if you have your own repository and we can add it to the list of custom classes so that the new users can have a look how other analyses use it, see [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/main/examples?ref_type=heads). 
+You can also let us know if you have your own repository and we can add it to the list of custom classes so that the new users can have a look how other analyses use it, see [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/main/examples?ref_type=heads).
 
 Now, let us compile the custom class and link to the main FastFrames code.
 **Please, adjust the absolute path to the install folder of the FastFrames code.**
@@ -260,7 +262,7 @@ The above code adds a variable `jet1_TLV_NOSYS` based on lambda `LeadingTLV` and
                                          {"jet1_TLV_NOSYS"});
 ```
 
-The above code adds a variable `jet1_pt_GEV_NOSYS` based on lambda `tlvPtGEV` and as an input uses `jet1_TLV_NOSYS`. 
+The above code adds a variable `jet1_pt_GEV_NOSYS` based on lambda `tlvPtGEV` and as an input uses `jet1_TLV_NOSYS`.
 This is the variable we wanted to plot.
 
 You could add the variable directly in one lambda however, the presented approach has multiple advantages:
@@ -283,7 +285,7 @@ cd ..
 
 !!! tip "On variable validity"
     The new variables/columns are added to the main node, i.e. before any selection. Make sure that the variables you define are always valid. For example if you access zeroth element of a vector, make sure it is not empty. For the undefined cases, you can put some dummy values.
-  
+
 !!! tip "Using standard Define()"
     You can still use the standard RDataFrame Define(). This will add the variables only for the nominal copy, but if you want to only plot the histogram for nominal only this is okay.
 
@@ -447,7 +449,7 @@ Please, check the list of all config options [here](https://atlas-project-toprec
 As well as a config file used in out CI tests [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/test/configs/config.yml?ref_type=heads).
 
 The yaml format allows to use some "tricks". E.g. it is possible to copy a block of settings (such as variables):
-  
+
 ```yaml
 Defaults: &defaults
   Company: foo
@@ -455,7 +457,7 @@ Defaults: &defaults
 
 Computer:
   <<: *defaults
-  Price: 3000 
+  Price: 3000
 ```
 
 ### Manual systematic uncertainties in the config file
@@ -540,7 +542,7 @@ Add the following lines to the configuration:
             truth: "particle_met"
 ```
 
-The `truth` sub-block tells the code that some truth information will be processed. 
+The `truth` sub-block tells the code that some truth information will be processed.
 Note that multiple truth selections can be defined (e.g. parton and particle).
 Let us describe the settings.
 
@@ -574,7 +576,7 @@ The above block tells the code which variables to plot on the truth level.
 The above block tells the code to create the 2D plots for reco and truth variables.
 Since this requires matching reco and truth trees, the code needs to know how to merge the individual events.
 This is done using the `BuildIndex` functionality in TTree and it requires a unique set of variables for event identification.
-These can be set via the `reco_to_truth_pairing_indices` option. The default value is `eventNumber`. 
+These can be set via the `reco_to_truth_pairing_indices` option. The default value is `eventNumber`.
 
 Similarly to the reco level, you can use the custom class to add new variables/columns to the truth level.
 The relevant method of the custom class is `WmassJESFrame::defineVariablesTruth`.
@@ -616,7 +618,7 @@ python python/FastFrames.py -c tutorial_config.yml --step n
 Where the `--step n` argument tells the code to run the ntupling part instead of the histogramming part (the default `--step h`).
 There will be some overhead in the processing due to the complex (many ORs) selections.
 After the processing is done, you should find a new file called `ttbar_FS_601229_mc23a_fullsim.root` in the `../output` folder.
-Note that the code will generate one output root file for each DSID, campaign and the simulation type. 
+Note that the code will generate one output root file for each DSID, campaign and the simulation type.
 
 !!! alert "100 GB per tree limitation"
     Currently, the self-similarity for the output files will be broken if the processed tree is larger than 100 GBs as that is an internal limitation for a TTree in ROOT.
@@ -645,3 +647,41 @@ tells the code to split the processing of the individual input files into `<N jo
 The output of each of the jobs will contain these two parameter in the output name.
 
 ## Generating the TRExFitter config file
+
+```fastframes``` offers a possibility to automatically generate a config file for TRExFitter. Please keep in mind that the config include all regions, samples and systematics from the ```fastframes``` config, which does not have to be what you want to do in the fit. The resulting TRExFitter config should be properly reviewed before the use.
+
+### Generating the config file for inclusive fit
+
+The following command will generate config file for inclusive cross-section (not unfolding) fit:
+
+```
+python3 python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml
+```
+
+where:
+
+```--config``` argument is the address of the config file used by ```FastFrames.py```. If you enabled automatic systematics, you have to run ```FastFrames.py``` first and keep the output ROOT files in the folder specified in the config. The script will need it to read the list of the systematic uncertainties.
+
+```--output``` argument is the address of the output TRExFitter config file to be produced.
+
+```--trex_settings``` argument is optional. It is the address of a yaml file providing additional settings for ```TRExFitter``` config, which cannot be automatically deduced from fastframes config, such as colors and titles used for individual samples, normalization uncertainties, norm. factors, type of the fit, used regions etc. The example of this file can be found in ```test/configs/trex_settings.yml```. The complete set of the available options can be found in the [FastFrames documentation](https://atlas-project-topreconstruction.web.cern.ch/fastframesdocumentation/trex_config/).
+
+### Generating the config file for unfolding
+
+
+The following command will generate config file for unfolding:
+
+```
+python3 python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml --unfolding ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt
+```
+
+Where first 3 arguments are the same as for inclusive fit. Additional argument ```--unfolding``` (or ```-u```) specifies the unfolding setup. There are 4 values separated by colon:
+
+```ttbar_FS``` - Name of the signal sample - the name must match name in the ```fastframes``` config
+
+```parton``` - Name of the truth block to be used. This is used, for example, to specify if you want to unfold to particle or parton level.
+
+```Ttbar_MC_t_afterFSR_pt``` - Variable you want to unfold at the truth level.
+
+```jet_pt``` - Detector level variable you want to use in the unfolding.
+

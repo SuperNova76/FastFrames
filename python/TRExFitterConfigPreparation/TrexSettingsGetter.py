@@ -182,6 +182,8 @@ class TrexSettingsGetter:
                     unfolding_sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
                     unfolding_sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
                     unfolding_sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
+                    if "Type" in sample_setting_dict:
+                        unfolding_sample_dict["Type"] = sample_setting_dict["Type"]
 
                     unfolding_sample_dict["AcceptanceFile"] =  sample_name
                     unfolding_sample_dict["MigrationFile"] =  sample_name
