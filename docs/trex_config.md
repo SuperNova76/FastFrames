@@ -34,7 +34,7 @@ The overview of the supported blocks and options inside these blocks:
 
 #### Fit block:
 
-The following options are allowed, there override the default vaues. The meaning of these options (as well for all the other TRExFitter options), ca be found in the [TRExFitter config documentation](https://trexfitter-docs.web.cern.ch/trexfitter-docs/settings/).
+The following options are allowed, there override the default values. The meaning of these options (as well for all the other TRExFitter options), ca be found in the [TRExFitter config documentation](https://trexfitter-docs.web.cern.ch/trexfitter-docs/settings/).
 
   ```FitType:```
 
@@ -46,7 +46,7 @@ The following options are allowed, there override the default vaues. The meaning
 
 ### Unfolding block:
 
-The  following options are supported:
+The following options are supported, they override options in ```Unfolding``` block:
 
 ```UnfoldNormXSec```
 
@@ -59,6 +59,8 @@ The  following options are supported:
 ```LogY```
 
 #### samples block:
+
+This allows a user to override some of the options for a given sample from config (it does not add a new sample).
 
 ```name:``` this specifies the name of the sample - for which the block will be applied. It must match the name from the ```fastframes``` config.
 
@@ -96,7 +98,7 @@ Systematics:
 
 #### NormFactors block:
 
-Similarly to ```Systematics``` block, the name identifies the norm. factor, the other options will be copied to the ```TRExFitter``` config.
+Similarly to ```Systematics``` block, the name identifies the norm. factor, which will be added to the config, the other options will be copied to the ```TRExFitter``` config.
 
 An example of such block:
 

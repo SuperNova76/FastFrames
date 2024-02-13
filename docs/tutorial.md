@@ -652,10 +652,10 @@ The output of each of the jobs will contain these two parameter in the output na
 
 ### Generating the config file for inclusive fit
 
-The following command will generate config file for inclusive cross-section (not unfolding) fit:
+The following command will generate config file for inclusive cross-section profile-likelihood fit:
 
 ```
-python3 python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml
+python python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml
 ```
 
 where:
@@ -664,15 +664,15 @@ where:
 
 ```--output``` argument is the address of the output TRExFitter config file to be produced.
 
-```--trex_settings``` argument is optional. It is the address of a yaml file providing additional settings for ```TRExFitter``` config, which cannot be automatically deduced from fastframes config, such as colors and titles used for individual samples, normalization uncertainties, norm. factors, type of the fit, used regions etc. The example of this file can be found in ```test/configs/trex_settings.yml```. The complete set of the available options can be found in the [FastFrames documentation](https://atlas-project-topreconstruction.web.cern.ch/fastframesdocumentation/trex_config/).
+```--trex_settings``` argument is optional. It is the address of a yaml file providing additional settings for ```TRExFitter``` config, which cannot be automatically deduced from fastframes config, such as colors and titles used for individual samples, fit type, unfolding settings, etc. It can be also used to add new blocks to the config file, such as systematic uncertainties and norm. factors. The example of this file can be found in ```test/configs/trex_settings.yml```. The complete set of the available options can be found in the [FastFrames documentation](https://atlas-project-topreconstruction.web.cern.ch/fastframesdocumentation/trex_config/).
 
 ### Generating the config file for unfolding
 
 
-The following command will generate config file for unfolding:
+The following command will generate config file for profile-likelihood unfolding in TRExFitter:
 
 ```
-python3 python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml --unfolding ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt
+python python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml --unfolding ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt
 ```
 
 Where first 3 arguments are the same as for inclusive fit. Additional argument ```--unfolding``` (or ```-u```) specifies the unfolding setup. There are 4 values separated by colon:
