@@ -14,6 +14,7 @@
 
 #include "TChain.h"
 #include "TSystem.h"
+#include "TTreeIndex.h"
 #include "Math/Vector4D.h"
 #include "ROOT/RDFHelpers.hxx"
 
@@ -64,6 +65,7 @@ void MainFrame::executeHistograms() {
         std::vector<VariableHisto> finalTruthHistos;
         std::size_t uniqueSampleN(1);
         ROOT::RDF::RNode* node(nullptr);
+        std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
             LOG(INFO) << "\n";
             LOG(INFO) << "Processing unique sample: " << iUniqueSampleID << ", " << uniqueSampleN << " out of " << isample->uniqueSampleIDs().size() << " unique samples\n";
@@ -72,6 +74,7 @@ void MainFrame::executeHistograms() {
             auto& systematicHistos = std::get<0>(currentHistos);
             auto& truthHistos      = std::get<1>(currentHistos);
             node                   = &std::get<2>(currentHistos);
+            truthChains            = std::move(std::get<3>(currentHistos));
             // this happens when there are no files provided
             if (systematicHistos.empty()) continue;
 
@@ -113,6 +116,10 @@ void MainFrame::executeHistograms() {
         bool printEventLoop = isample->uniqueSampleIDs().size() == 1;
         this->writeHistosToFile(finalSystHistos, finalTruthHistos, isample, node, printEventLoop && node);
         ++sampleN;
+
+        if (!truthChains.empty()) {
+            LOG(DEBUG) << "Deleting truth chains and the TTree indices\n";
+        }
     }
 }
 
@@ -143,11 +150,13 @@ void MainFrame::executeNtuples() {
 
 std::tuple<std::vector<SystematicHisto>,
            std::vector<VariableHisto>,
-           ROOT::RDF::RNode> MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
-                                                            const UniqueSampleID& uniqueSampleID) {
+           ROOT::RDF::RNode,
+           std::vector<std::pair<std::unique_ptr<TChain> , std::unique_ptr<TTreeIndex> > > > MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
+                                                                                                                            const UniqueSampleID& uniqueSampleID) {
 
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
     std::vector<std::string> selectedFilePaths(filePaths);
+    std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
     if (Utils::sampleHasUnfolding(sample) && m_config->totalJobSplits() > 0) {
         LOG(WARNING) << "Sample: " << sample->name() << " has unfolding set, cannot split into more jobs\n";
     } else if (m_config->totalJobSplits() > 0) {
@@ -156,13 +165,13 @@ std::tuple<std::vector<SystematicHisto>,
     if (selectedFilePaths.empty()) {
         LOG(WARNING) << "UniqueSample: " << uniqueSampleID << " has no files, will not produce histograms\n";
         ROOT::RDataFrame tmp("", {});
-        return std::make_tuple(std::vector<SystematicHisto>{}, std::vector<VariableHisto>{}, tmp);
+        return std::make_tuple(std::vector<SystematicHisto>{}, std::vector<VariableHisto>{}, tmp, std::move(truthChains));
     }
 
     std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
 
     if (sample->hasTruth()) {
-        this->connectTruthTrees(recoChain, sample, selectedFilePaths);
+        truthChains = this->connectTruthTrees(recoChain, sample, selectedFilePaths);
     }
 
     std::vector<VariableHisto> truthHistos;
@@ -195,11 +204,15 @@ std::tuple<std::vector<SystematicHisto>,
     // we also need to add truth variables if provided
     for (const auto& itruth : sample->truths()) {
         mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+        LOG(DEBUG) << "Adding custom truth variables from the code for truth: " << itruth->name() << "\n";
         mainNode = this->defineVariablesTruth(mainNode, itruth, uniqueSampleID);
+        LOG(DEBUG) << "Finished adding custom truth variables\n";
     }
 
     // this is the method users will be able to override
+    LOG(DEBUG) << "Adding custom reco variables from the code\n";
     mainNode = this->defineVariables(mainNode, uniqueSampleID);
+    LOG(DEBUG) << "Finished adding custom reco variables\n";
 
     if (m_config->configDefineAfterCustomClass()) {
         mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
@@ -212,7 +225,7 @@ std::tuple<std::vector<SystematicHisto>,
     // retrieve the histograms;
     std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
 
-    return std::make_tuple(std::move(histoContainer), std::move(truthHistos), mainNode);
+    return std::make_tuple(std::move(histoContainer), std::move(truthHistos), mainNode, std::move(truthChains));
 }
 
 void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
@@ -230,8 +243,9 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
 
     auto chain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
 
+    std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
     if (sample->hasTruth()) {
-        this->connectTruthTrees(chain, sample, selectedFilePaths);
+        truthChains = this->connectTruthTrees(chain, sample, selectedFilePaths);
     }
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
@@ -254,7 +268,9 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     }
 
     // this is the method users will be able to override
+    LOG(DEBUG) << "Adding custom reco variables from the code\n";
     mainNode = this->defineVariablesNtuple(mainNode, id);
+    LOG(DEBUG) << "Finished adding custom reco variables\n";
     
     if (m_config->configDefineAfterCustomClass()) {
         mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
@@ -287,6 +303,10 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     LOG(INFO) << "Copying metadata from the original files\n";
     copier.copyObjectsTo(fileName);
     LOG(INFO) << "Finished copying metadata from the original files\n";
+
+    if (!truthChains.size()) {
+        LOG(DEBUG) << "Deleting truth chains\n";
+    }
 }
 
 std::string MainFrame::systematicFilter(const std::shared_ptr<Sample>& sample,
@@ -779,9 +799,11 @@ void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
     }
 }
 
-void MainFrame::connectTruthTrees(std::unique_ptr<TChain>& chain,
-                                  const std::shared_ptr<Sample>& sample,
-                                  const std::vector<std::string>& filePaths) const {
+std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > MainFrame::connectTruthTrees(std::unique_ptr<TChain>& chain,
+                                                                                                            const std::shared_ptr<Sample>& sample,
+                                                                                                            const std::vector<std::string>& filePaths) const {
+
+    std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > result;
 
     for (const auto& itruth : sample->uniqueTruthTreeNames()) {
 
@@ -792,16 +814,30 @@ void MainFrame::connectTruthTrees(std::unique_ptr<TChain>& chain,
         }
 
         LOG(INFO) << "Attaching tree: " << itruth << " to the reco tree\n";
-        TChain* truthChain = Utils::chainFromFiles(itruth, filePaths).release();
+        std::unique_ptr<TChain> truthChain = Utils::chainFromFiles(itruth, filePaths);
+        std::unique_ptr<TTreeIndex> t(nullptr);
         if (indexNames.size() == 1 ) {
             LOG(INFO) << "Building reco truth index with: " << indexNames.at(0) << "\n";
-            truthChain->BuildIndex(indexNames.at(0).c_str());
+            t = std::make_unique<TTreeIndex>(truthChain.get(), indexNames.at(0).c_str(), "0");
+            if (t->IsZombie()) {
+                LOG(ERROR) << "The TTreeIndex is a zombie!\n";
+                throw std::runtime_error("");
+            }
+            truthChain->SetTreeIndex(t.get());
         } else {
             LOG(INFO) << "Building reco truth index with: " << indexNames.at(0) << " and " << indexNames.at(1) << "\n";
-            truthChain->BuildIndex(indexNames.at(0).c_str(), indexNames.at(1).c_str());
+            t = std::make_unique<TTreeIndex>(truthChain.get(), indexNames.at(0).c_str(), indexNames.at(1).c_str());
+            if (t->IsZombie()) {
+                LOG(ERROR) << "The TTreeIndex is a zombie!\n";
+                throw std::runtime_error("");
+            }
+            truthChain->SetTreeIndex(t.get());
         }
-        chain->AddFriend(truthChain);
+        chain->AddFriend(truthChain.get());
+        result.emplace_back(std::make_pair(std::move(truthChain), std::move(t)));
     }
+
+    return result;
 }
 
 std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::string>& filePaths,

@@ -21,6 +21,7 @@
 #include <tuple>
 
 class Variable;
+class TTreeIndex;
 
 /**
  * @brief Main class that does all the hard work
@@ -209,12 +210,14 @@ private:
    *
    * @param sample
    * @param uniqueSampleID
-   * @return std::tuple<std::vector<SystematicHisto>, std::vector<VariableHisto>, ROOT::RDF::RNode> The histograms, truth histograms and the main RDF node for logging
+   * @return std::tuple<std::vector<SystematicHisto>, std::vector<VariableHisto>, ROOT::RDF::RNode, std::vector<std::pair<TChain*, TTreeIndex*> > >
+   * The histograms, truth histograms, the main RDF node for logging, and truth tchain pointers for memory management
    */
   std::tuple<std::vector<SystematicHisto>,
              std::vector<VariableHisto>,
-             ROOT::RDF::RNode> processUniqueSample(const std::shared_ptr<Sample>& sample,
-                                                   const UniqueSampleID& uniqueSampleID);
+             ROOT::RDF::RNode,
+             std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > > processUniqueSample(const std::shared_ptr<Sample>& sample,
+                                                                                                                  const UniqueSampleID& uniqueSampleID);
 
   /**
    * @brief Main processing function for ntuples
@@ -431,10 +434,11 @@ private:
    * @param chain The reco chain
    * @param sample Current Sample
    * @param filePaths Paths to the files
+   * @result std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > the pointers for deleting
    */
-  void connectTruthTrees(std::unique_ptr<TChain>& chain,
-                         const std::shared_ptr<Sample>& sample,
-                         const std::vector<std::string>& filePaths) const;
+  std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > connectTruthTrees(std::unique_ptr<TChain>& chain,
+                                                                                                   const std::shared_ptr<Sample>& sample,
+                                                                                                   const std::vector<std::string>& filePaths) const;
 
   /**
    * @brief Process truth histograms
