@@ -71,15 +71,6 @@ std::unique_ptr<TH2D> Utils::copyHistoFromVariableHistos2D(const std::vector<Var
     return result;
 }
 
-bool Utils::sampleHasUnfolding(const std::shared_ptr<Sample>& sample) {
-
-    for (const auto& itruth : sample->truths()) {
-        if (itruth->produceUnfolding()) return true;
-    }
-
-    return false;
-}
-
 std::vector<std::string> Utils::selectedFileList(const std::vector<std::string>& fileList,
                                                  const int split,
                                                  const int index) {

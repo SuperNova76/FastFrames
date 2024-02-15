@@ -295,6 +295,14 @@ public:
    */
   bool matchTruthTree(const std::string& treeName) const;
 
+  /**
+   * @brief Does sample have unfolding? 
+   * 
+   * @return true 
+   * @return false 
+   */
+  bool hasUnfolding() const;
+
 private:
   std::string m_name;
 

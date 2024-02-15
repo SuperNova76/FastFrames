@@ -85,3 +85,11 @@ bool Sample::matchTruthTree(const std::string& treeName) const {
 
     return false;
 }
+
+bool Sample::hasUnfolding() const {
+    for (const auto& itruth : m_truths) {
+        if (itruth->produceUnfolding()) return true;
+    }
+
+    return false;
+}
