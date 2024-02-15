@@ -73,3 +73,15 @@ bool Sample::skipExcludedSystematic(const std::string& systematicName) const {
 
     return skip;
 }
+  
+bool Sample::matchTruthTree(const std::string& treeName) const {
+    for (const auto& itruth : m_truths) {
+        if (itruth->truthTreeName() != treeName) continue;
+        if (!itruth->matchRecoTruth()) continue;
+
+        // this truth matches the tree name and uses truth
+        return true;
+    }
+
+    return false;
+}

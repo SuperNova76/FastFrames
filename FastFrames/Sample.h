@@ -286,6 +286,15 @@ public:
    */
   bool skipExcludedSystematic(const std::string& systematicName) const;
 
+  /**
+   * @brief At least one truth object that uses a given tree name matched to the reco tree? 
+   * 
+   * @param treeName Name of the tree
+   * @return true 
+   * @return false 
+   */
+  bool matchTruthTree(const std::string& treeName) const;
+
 private:
   std::string m_name;
 

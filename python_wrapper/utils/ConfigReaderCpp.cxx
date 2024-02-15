@@ -432,6 +432,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("addCustomDefine",     &TruthWrapper::addCustomDefine)
         .def("customDefines",       &TruthWrapper::customDefines)
+
+        .def("setMatchRecoTruth",   &TruthWrapper::setMatchRecoTruth)
+        .def("matchRecoTruth",      &TruthWrapper::matchRecoTruth)
     ;
 
 
