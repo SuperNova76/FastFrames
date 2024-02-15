@@ -153,6 +153,22 @@ public:
    * @return const std::vector<std::pair<std::string, std::string> >&
    */
   inline const std::vector<std::pair<std::string, std::string> >& customDefines() const {return m_customDefines;}
+
+  /**
+   * @brief Set the Match Reco Truth flag
+   * 
+   * @param flag 
+   */
+  inline void setMatchRecoTruth(const bool flag) {m_matchRecoTruth = flag;}
+
+  /**
+   * @brief match reco and truth?
+   * 
+   * @return true 
+   * @return false 
+   */
+  inline bool matchRecoTruth() const {return m_matchRecoTruth;}
+
 private:
 
   std::string m_name;
@@ -163,4 +179,5 @@ private:
   std::vector<Variable> m_variables;
   bool m_produceUnfolding;
   std::vector<std::pair<std::string, std::string> > m_customDefines;
+  bool m_matchRecoTruth;
 };

@@ -107,6 +107,7 @@ Samples block:
 		truth_tree_name:  truth
 		selection:  particle_jet_pt[0] > 10000
 		event_weight:  mc_gen
+		pair_reco_and_truth_trees:  True
 		match_variables:
 			 ('jet_pt', 'truth_jet_pt')
 		variables:

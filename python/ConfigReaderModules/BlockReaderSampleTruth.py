@@ -42,6 +42,12 @@ class BlockReaderSampleTruth:
 
         self._match_variables = self._options_getter.get("match_variables", [], [list], [dict])
 
+        self._pair_reco_and_truth_trees = self._options_getter.get("pair_reco_and_truth_trees", bool(self._match_variables), [bool])
+        if self._pair_reco_and_truth_trees == False and len(self._match_variables) > 0:
+            Logger.log_message("WARNING", "pair_reco_and_truth_trees is set to False, but match_variables are specified for truth block {}, setting pair_reco_and_truth_trees to True".format(self._name))
+            self._pair_reco_and_truth_trees = True
+
+
         self._variables = self._options_getter.get("variables", [], [list], [dict])
 
         self._produce_unfolding = self._options_getter.get("produce_unfolding", False, [bool])
@@ -71,6 +77,7 @@ class BlockReaderSampleTruth:
         self.cpp_class.setSelection(self._selection)
         self.cpp_class.setEventWeight(self._event_weight)
         self.cpp_class.setProduceUnfolding(self._produce_unfolding)
+        self.cpp_class.setMatchRecoTruth(self._pair_reco_and_truth_trees)
 
         if self._define_custom_columns:
             for custom_column_dict in self._define_custom_columns:

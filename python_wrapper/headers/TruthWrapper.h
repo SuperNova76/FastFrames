@@ -191,6 +191,21 @@ class TruthWrapper  {
             return result;
         };
 
+        /**
+         * @brief Set the Match Reco Truth flag
+         *
+         * @param flag
+         */
+        void setMatchRecoTruth(const bool flag) {m_truth->setMatchRecoTruth(flag);}
+
+        /**
+         * @brief match reco and truth?
+         *
+         * @return true
+         * @return false
+         */
+        bool matchRecoTruth() const {return m_truth->matchRecoTruth();}
+
     private:
         std::shared_ptr<Truth> m_truth;
 

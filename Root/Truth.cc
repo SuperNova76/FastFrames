@@ -16,7 +16,8 @@ m_name(name),
 m_truthTreeName(""),
 m_selection(""),
 m_eventWeight(""),
-m_produceUnfolding(false)
+m_produceUnfolding(false),
+m_matchRecoTruth(false)
 {
 }
 

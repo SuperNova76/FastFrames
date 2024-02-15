@@ -807,6 +807,11 @@ std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > M
 
     for (const auto& itruth : sample->uniqueTruthTreeNames()) {
 
+        if (!sample->matchTruthTree(itruth)) {
+            LOG(INFO) << "Truth tree: \"" << itruth << "\" not requested to be matched to the reco tree\n";
+            continue;
+        }
+
         const std::vector<std::string>& indexNames = sample->recoToTruthPairingIndices();
         if (indexNames.empty() || indexNames.size() > 2) {
             LOG(ERROR) << "Reco to truth index names for sample: " << sample->name() << " are 0 or > 2\n";

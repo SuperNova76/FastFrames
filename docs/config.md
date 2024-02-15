@@ -104,6 +104,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | match variables   | list of dicts     | Pair of variables (reco - truth) to be used for the unfolding. The dictionary has to have 2 keys: ```reco``` and ```truth``` for corresponding names of the variables. The truth variable must be defined in this truth block and ```reco``` variable must be defined in at least one region  |
 | variables         | list of dicts     | The same as ```variable``` block for region |
 | define_custom_columns | list of dicts | The same as ```define_custom_columns ``` in general block |
+| pair_reco_and_truth_trees | bool      | Should be truth and reco-level trees be paired? This is needed when truth level variables is needed in reco-level tree, for example to prepare migration matrices or apply reweighting in reco tree, based on a parton-level variable. The default value is ```False``` if ```match variables``` block is empty, otherwise it is ```True``` |
 
 ## `systematics` block settings
 

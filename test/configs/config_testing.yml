@@ -112,6 +112,7 @@ samples:
     automatic_systematics: True
     truth:
       - name: particle
+        #pair_reco_and_truth_trees: False
         produce_unfolding: True
         truth_tree_name: "truth"
         selection: "particle_jet_pt[0] > 10000" #optional
