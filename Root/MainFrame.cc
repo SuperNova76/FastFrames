@@ -157,9 +157,13 @@ std::tuple<std::vector<SystematicHisto>,
     const std::vector<std::string>& filePaths = m_metadataManager.filePaths(uniqueSampleID);
     std::vector<std::string> selectedFilePaths(filePaths);
     std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
-    if (Utils::sampleHasUnfolding(sample) && m_config->totalJobSplits() > 0) {
-        LOG(WARNING) << "Sample: " << sample->name() << " has unfolding set, cannot split into more jobs\n";
-    } else if (m_config->totalJobSplits() > 0) {
+    if (m_config->totalJobSplits() > 0) {
+        if (sample->hasUnfolding()) {
+            LOG(WARNING) << "#############################################################################################\n";
+            LOG(WARNING) << "Sample " << sample->name() << ", has unfolding histograms requested and split processing is used\n";
+            LOG(WARNING) << "You will not be able to \"hadd\" the output to get the efficiency and acceptance histograms\n";
+            LOG(WARNING) << "#############################################################################################\n";
+        }
         selectedFilePaths = Utils::selectedFileList(filePaths, m_config->totalJobSplits(), m_config->currentJobIndex());
     }
     if (selectedFilePaths.empty()) {
@@ -523,7 +527,7 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
     }
 
     std::string suffix("");
-    if (!Utils::sampleHasUnfolding(sample) && m_config->totalJobSplits() > 0) {
+    if (m_config->totalJobSplits() > 0) {
         suffix = "_Njobs_" + std::to_string(m_config->totalJobSplits()) + "_jobIndex_" + std::to_string(m_config->currentJobIndex());
     }
 
@@ -589,7 +593,11 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         itruthHist.histo()->Write(truthHistoName.c_str());
     }
 
-    this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
+    if (m_config->totalJobSplits() > 0 && sample->hasUnfolding()) {
+        LOG(WARNING) << "Sample: " << sample->name() << " has unfolding, but split processing is requested. Will not produce acceptance and selection efficiency histograms\n";
+    } else {
+        this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
+    }
 
     if (printEventLoopCount) {
         LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
@@ -916,7 +924,6 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
             const std::string& truthName = itruth->name() + "_" + imatch.second;
             const std::string& recoName = imatch.first;
             const std::string& migrationName = recoName + "_vs_" + truthName;
-
 
             std::unique_ptr<TH1D> truth = Utils::copyHistoFromVariableHistos(truthHistos, truthName);
             for (const auto& isystHist : histos) {

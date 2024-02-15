@@ -68,14 +68,6 @@ namespace Utils {
    */
   std::unique_ptr<TH2D> copyHistoFromVariableHistos2D(const std::vector<VariableHisto2D>& histos,
                                                       const std::string& name);
-  /**
-   * @brief Does the given sample have unfolding specified?
-   *
-   * @param sample
-   * @return true
-   * @return false
-   */
-  bool sampleHasUnfolding(const std::shared_ptr<Sample>& sample);
 
   /**
    * @brief Take only N files from the input file list based on an approximate split and the current index
