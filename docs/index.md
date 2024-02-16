@@ -55,14 +55,14 @@ When using Alma Linux 9 (lxplus default)
 
 ```
 setupATLAS
-asetup StatAnalysis,0.3,latest 
+asetup StatAnalysis,0.3,latest
 ```
 
 When using CentOS 7 (lxplus7)
 
 ```
 setupATLAS
-asetup StatAnalysis,0.2,latest 
+asetup StatAnalysis,0.2,latest
 ```
 
 This will setup an appropriate version of ROOT (you can check the ROOT version with `root --version`)
@@ -116,6 +116,12 @@ In order to split the sample into multiple jobs, you can use the following comma
 
 ```
 --split_n_jobs <N jobs total> --job_index <current job index>
+```
+
+In order to merge the output ROOT files from all jobs into one file, one can use the following command:
+
+```
+python3 python/merge_jobs.py --c <config address>
 ```
 
 ## Adding custom class for custom Define() call
