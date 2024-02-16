@@ -14,7 +14,7 @@ from ConfigReaderModules.BlockReaderCommon import set_paths
 set_paths()
 
 from python_wrapper.python.logger import Logger
-from ConfigReader import ConfigReader
+from ConfigReader import ConfigReader, vector_to_list
 from ConfigReaderModules.BlockReaderSample import BlockReaderSample
 from CommandLineOptions import CommandLineOptions
 
@@ -85,7 +85,7 @@ def merge_files(input_files : list[str], output_file : str, truth_blocks : dict[
     file = TFile.Open(output_file, "UPDATE")
     directories = [key.GetName() for key in file.GetListOfKeys() if key.GetClassName() == "TDirectoryFile"]
     for directory in directories:
-        histograms_names = [key.GetName() for key in file.Get(directory).GetListOfKeys() if key.GetClassName() == "TH1D"]
+        histograms_names = [key.GetName() for key in file.Get(directory).GetListOfKeys() if key.GetClassName() == "TH1D" or key.GetClassName() == "TH2D"]
         for region in regions:
             for truth_block_name in truth_blocks:
                 for reco_truth_tuple in truth_blocks[truth_block_name]:
@@ -95,6 +95,7 @@ def merge_files(input_files : list[str], output_file : str, truth_blocks : dict[
                     migration_matrix_name   = reco + "_vs_" + truth_histogram_name + "_" + region
                     if (migration_matrix_name not in histograms_names) or (reco_histogram_name not in histograms_names):
                         Logger.log_message("DEBUG", "Skipping histogram: " + reco_histogram_name + " in folder " + directory)
+                        continue
                     truth_histo = file.Get(truth_histogram_name)
                     reco_histo  = file.Get(directory + "/" + reco_histogram_name)
                     migration_matrix = file.Get(directory + "/" + migration_matrix_name) # truth on x-axis, reco on y-axis
@@ -109,17 +110,6 @@ def merge_files(input_files : list[str], output_file : str, truth_blocks : dict[
                     acceptance.Write("acceptance_{}_{}_{}".format(truth_block_name, reco, region), 1)
                     efficiency.Write("selection_eff_{}_{}".format(truth_histogram_name, region), 1)
     file.Close()
-
-def decode_matched_variables(matched_variables : str) -> tuple[str,str]:
-    """!Decode matched variables
-    @param matched_variables: string with matched variables
-    @return tuple[str,str] - reco-level name and truth-level name
-    """
-    # example: ('jet_pt', 'truth_jet_pt')
-    matched_variables = matched_variables.replace("(", "").replace(")", "").replace("'", "")
-    reco_level_name = matched_variables.split(",")[0].strip()
-    truth_level_name = matched_variables.split(",")[1].strip()
-    return reco_level_name, truth_level_name
 
 def get_unfolding_info(config_reader : ConfigReader, sample_name : str) -> dict[str, list[tuple[str,str]]]:
     """!Get dictionary with truth blocks as keys and list of tuples, each containing two strings: reco-level name and truth-level name
@@ -155,9 +145,9 @@ if __name__ == "__main__":
     original_root_files = [file for file in os.listdir(output_path) if file.endswith(".root")]
     sample_names = [sample_object.name() for sample_object in sample_objects]
     sample_to_unmerged_files_list_dict = get_sample_name_to_list_of_subjob_outputs(original_root_files, sample_names)
-    regions = [region.name() for region in config_reader.block_general.get_regions_cpp_objects()]
 
     for sample_object in sample_objects:
+        regions = vector_to_list(sample_object.regionsNames())
         sample_name = sample_object.name()
         merged_file_address = output_path + "/" + sample_name + ".root"
 
