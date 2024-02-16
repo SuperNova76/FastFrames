@@ -85,7 +85,7 @@ The second file contains the total sumweights for each weight for a given DSID, 
 To generate these files, do
 ```
 cd ../FastFrames
-python python/produce_metadata_files.py --root_files_folder ../input/
+python3 python/produce_metadata_files.py --root_files_folder ../input/
 ```
 
 Let us inspect the new txt files in the `../input/` folder.
@@ -494,7 +494,7 @@ mkdir ../output
 
 And then run the FastFrames code by providing the config file
 ```
-python python/FastFrames.py -c tutorial_config.yml
+python3 python/FastFrames.py -c tutorial_config.yml
 ```
 
 Please, check that the terminal output says:
@@ -577,6 +577,8 @@ The above block tells the code to create the 2D plots for reco and truth variabl
 Since this requires matching reco and truth trees, the code needs to know how to merge the individual events.
 This is done using the `BuildIndex` functionality in TTree and it requires a unique set of variables for event identification.
 These can be set via the `reco_to_truth_pairing_indices` option. The default value is `eventNumber`.
+You can control if the reco to truth matching between the input trees should be applied or not with: `pair_reco_and_truth_trees`.
+This option is set to `False` by default and is automatically turned on when `match_variables` are provided.
 
 Similarly to the reco level, you can use the custom class to add new variables/columns to the truth level.
 The relevant method of the custom class is `WmassJESFrame::defineVariablesTruth`.
@@ -612,7 +614,7 @@ The relevant method in the custom class is `WmassJESFrame::defineVariablesNtuple
 
 To run the ntupling step, do:
 ```
-python python/FastFrames.py -c tutorial_config.yml --step n
+python3 python/FastFrames.py -c tutorial_config.yml --step n
 ```
 
 Where the `--step n` argument tells the code to run the ntupling part instead of the histogramming part (the default `--step h`).
@@ -646,6 +648,15 @@ Passing the following parameter:
 tells the code to split the processing of the individual input files into `<N jobs total>` where `<current job index>` can be used to control which set of the files is being processed.
 The output of each of the jobs will contain these two parameter in the output name.
 
+When unfolding plots are requested while the split processing is used, the selection efficiency and acceptance histograms will **not** be produced as they cannot be simply "hadd"-ed from the individual jobs.
+Instead, a merging script is provided that allows to not only merge the output files in case of split processing but also to produce the selection efficiency and acceptange histograms if requested.
+To use the script simply do
+```
+python3 python/merge_jobs.py -c <config_file>
+```
+
+where `<config_file>` is the path to the config file used for running FastFrames.
+
 ## Generating the TRExFitter config file
 
 ```fastframes``` offers a possibility to automatically generate a config file for TRExFitter. Please keep in mind that the config include all regions, samples and systematics from the ```fastframes``` config, which does not have to be what you want to do in the fit. The resulting TRExFitter config should be properly reviewed before the use.
@@ -655,7 +666,7 @@ The output of each of the jobs will contain these two parameter in the output na
 The following command will generate config file for inclusive cross-section profile-likelihood fit:
 
 ```
-python python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml
+python3 python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml
 ```
 
 where:
@@ -672,7 +683,7 @@ where:
 The following command will generate config file for profile-likelihood unfolding in TRExFitter:
 
 ```
-python python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml --unfolding ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt
+python3 python/produce_trexfitter_config.py --config test/configs/config.yml --output trex_config.yaml --trex_settings test/configs/trex_settings.yml --unfolding ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt
 ```
 
 Where first 3 arguments are the same as for inclusive fit. Additional argument ```--unfolding``` (or ```-u```) specifies the unfolding setup. There are 4 values separated by colon:
