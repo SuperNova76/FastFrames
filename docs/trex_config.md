@@ -32,6 +32,10 @@ This is an optional yaml file, which provides additional settings for ```TRExFit
 
 The overview of the supported blocks and options inside these blocks:
 
+## Selecting regions
+
+In order to use only some regions from the ```fastframes``` config in the resulting ```TRExFitter``` config, one can use ```--regions``` flag with comma separated list of regions to be used. Regular expressions are supported.
+
 #### Fit block:
 
 The following options are allowed, there override the default values. The meaning of these options (as well for all the other TRExFitter options), ca be found in the [TRExFitter config documentation](https://trexfitter-docs.web.cern.ch/trexfitter-docs/settings/).

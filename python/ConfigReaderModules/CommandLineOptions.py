@@ -35,6 +35,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
         self._step = None
         self._split_n_jobs = None
         self._job_index = None
+        self._regions = None
         self._set_options()
 
     def _set_options(self) -> None:
@@ -50,6 +51,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("--trex_settings", help="Path to the yaml with TRExFitter specific settings, it is used to create config", default="")
         parser.add_argument("-o", "--output", help="Output config file for TRExFitter", default = "trex_config.config")
         parser.add_argument("-u", "--unfolding", help="Unfolding configuration: 'sample:truth_block_name:truth_variable_name'", default = "")
+        parser.add_argument("--regions", help="Comma separated list of regions include to TRExFitter config. Regular expressions are allowed. Default: .*", default=".*")
+
 
         args = parser.parse_args()
 
@@ -82,6 +85,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
             self._unfolding_settings = tuple(args.unfolding.split(":"))
 
         self._read_splits(args)
+        self._read_regions(args)
 
     def _read_splits(self, args) -> None:
         if (args.split_n_jobs):
@@ -105,6 +109,15 @@ class CommandLineOptions(metaclass=SingletonMeta):
         if (self._job_index < 0 | self._split_n_jobs < 0):
             Logger.log_message("ERROR", "job_index and split_n_jobs must be positive")
             exit(1)
+
+    def _read_regions(self, args) -> None:
+        self._regions = [reg.strip() for reg in args.regions.split(",")]
+
+    def get_regions(self) -> list:
+        """
+        Get list of regions specified from command line.
+        """
+        return self._regions
 
     def get_split_n_jobs(self) -> int:
         """
