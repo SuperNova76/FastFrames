@@ -2,6 +2,7 @@
 import os
 import sys
 from copy import deepcopy
+import re
 
 from ROOT import TFile
 
@@ -47,7 +48,7 @@ def remove_items(dict_to_use : dict, key : str, items_to_remove : list[str]) -> 
             del dict_to_use[key]
 
 class TrexSettingsGetter:
-    def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None):
+    def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
         self.trex_settings_dict = None
         if trex_settings_yaml:
             with open(trex_settings_yaml, "r") as f:
@@ -72,6 +73,7 @@ class TrexSettingsGetter:
 
 
         self._set_unfolding_settings(unfolding_tuple)
+        self._region_variable_regexes = deepcopy(regions)
 
         self.config_reader = config_reader
 
@@ -100,19 +102,31 @@ class TrexSettingsGetter:
     def get_region_blocks(self) -> list[tuple[str,str,dict]]:
         return self._region_blocks
 
+    def _match_selected_regions(self, region_and_variable : str) -> bool:
+        for regex in self._region_variable_regexes:
+            if re.match(regex, region_and_variable):
+                return True
+        return False
+
     def _initialize_region_variables(self) -> None:
         regions = self.config_reader.block_general.get_regions_cpp_objects()
         for region in regions:
             region_name = region.name()
-            self._regions_map[region_name] = region
+            region_selected = False
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable_cpp_object in variable_cpp_objects:
+                region_variable = region_name + "_" + variable_cpp_object.name()
+                if not self._match_selected_regions(region_variable):
+                    continue
+                region_selected = True
                 if self.run_unfolding:
                     if variable_cpp_object.name() != self.unfolding_variable_reco:
-                        self._region_variable_combinations_wo_unfolding.append(region_name + "_" + variable_cpp_object.name())
+                        self._region_variable_combinations_wo_unfolding.append(region_variable)
                         continue
                 region_tuple = self._get_region_tuple(region,variable_cpp_object)
                 self._region_blocks.append(region_tuple)
+            if region_selected:
+                self._regions_map[region_name] = region
 
     def _get_region_tuple(self, region, variable) -> tuple[str,str,dict]:
         dictionary = {}
@@ -239,15 +253,19 @@ class TrexSettingsGetter:
         all_regions_list = []
         variable_names_defined_for_sample = vector_to_list(sample.variables())
         for region_name in region_names:
+            if not region_name in self._regions_map:
+                continue
             region = self._regions_map[region_name]
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable in variable_cpp_objects:
                 variable_name = variable.name()
-                all_regions_list.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
+                region_variable = region.name() + "_" + variable_name.replace("_NOSYS","")
+                if not self._match_selected_regions(region_variable):
+                    continue
+                all_regions_list.append(region_variable)
                 if not variable_name in variable_names_defined_for_sample:
                     continue
-                variable_name = variable_name.replace("_NOSYS","")
-                selected_regions.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
+                selected_regions.append(region_variable)
 
         # check if there is more included or excluded regions and use the shorter list of these two
         if (len(selected_regions) > 0.5*len(all_regions_list)):
@@ -324,6 +342,10 @@ class TrexSettingsGetter:
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable_cpp_object in variable_cpp_objects:
                 variable_name = variable_cpp_object.name()
+                variable_name = variable_name.replace("_NOSYS","")
+                region_variable = region_name + "_" + variable_name
+                if not self._match_selected_regions(region_variable):
+                    continue
                 result.append(variable_name + "_" + region_name)
         return result
 
@@ -390,7 +412,7 @@ class TrexSettingsGetter:
                 syst_list = result[systematic_name]
                 if histogram_found:
                     syst_list.append(sample_name)
-            root_file.Close
+            root_file.Close()
         return result
 
     def _get_automatic_systematics_dict_systname_to_dict(self, output_root_files_folder : str, sample_names : list[str]) -> dict[str,dict]:
@@ -546,7 +568,10 @@ class TrexSettingsGetter:
         for region in self._regions_map.values():
             variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
             for variable in variable_cpp_objects:
-                all_regions.append(region.name() + "_" + variable.name().replace("_NOSYS",""))
+                region_variable = region.name() + "_" + variable.name().replace("_NOSYS","")
+                if not self._match_selected_regions(region_variable):
+                    continue
+                all_regions.append(region_variable)
 
         all_MC_samples = []
         for sample in samples_cpp_objects_wo_automatic_systematics:
@@ -587,11 +612,16 @@ class TrexSettingsGetter:
             regions_selected = []
             region_names = vector_to_list(syst_non_empty_cpp_object.regionsNames())
             for region_name in region_names:
+                if not region_name in self._regions_map:
+                    continue
                 region = self._regions_map[region_name]
                 variable_cpp_objects = BlockReaderRegion.get_variable_cpp_objects(region.getVariableRawPtrs())
                 for variable in variable_cpp_objects:
                     variable_name = variable.name()
-                    regions_selected.append(region.name() + "_" + variable_name.replace("_NOSYS",""))
+                    region_variable = region.name() + "_" + variable_name.replace("_NOSYS","")
+                    if not self._match_selected_regions(region_variable):
+                        continue
+                    regions_selected.append(region_variable)
             if len(regions_selected) != len(all_regions):
                 if len(regions_selected) > 0.5*len(all_regions):
                     excluded_regions = []
@@ -619,9 +649,6 @@ class TrexSettingsGetter:
         return result
 
     def _resolve_samples_list_and_excludes_for_systematics(systematics_dict : dict, MC_samples_names : list[str]) -> dict[str,str]:
-        #if not "Samples" in systematics_dict:
-        #    print(systematics_dict)
-        #    exit(1)
         if len(systematics_dict["Samples"]) != len(MC_samples_names):
             if len(systematics_dict["Samples"]) > 0.5*len(MC_samples_names):
                 excluded_samples = []
