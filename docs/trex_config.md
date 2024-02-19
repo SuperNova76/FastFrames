@@ -34,7 +34,14 @@ The overview of the supported blocks and options inside these blocks:
 
 ## Selecting regions
 
-In order to use only some regions from the ```fastframes``` config in the resulting ```TRExFitter``` config, one can use ```--regions``` flag with comma separated list of regions to be used. Regular expressions are supported.
+In order to use only some ```region + variable``` pairs from the ```fastframes``` config in the resulting ```TRExFitter``` config, one can use ```--regions``` flag with comma separated list of ```region + variable``` pairs to be used. The ```region + variable``` syntax is ```region_name + "_" variable_name``` - these are the names of "regions" in the resulting TRExFitter config. Regular expressions are supported.
+
+Few examples:
+```
+python3 python/produce_trexfitter_config.py --config test/configs/config_testing.yml --regions *met_met
+
+python3 python/produce_trexfitter_config.py --config test/configs/config_testing.yml --regions Electron_jet_pt,Muon_met_met
+```
 
 #### Fit block:
 

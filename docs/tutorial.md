@@ -659,7 +659,7 @@ where `<config_file>` is the path to the config file used for running FastFrames
 
 ## Generating the TRExFitter config file
 
-```fastframes``` offers a possibility to automatically generate a config file for TRExFitter. Please keep in mind that the config include all regions, samples and systematics from the ```fastframes``` config, which does not have to be what you want to do in the fit. The resulting TRExFitter config should be properly reviewed before the use.
+```fastframes``` offers a possibility to automatically generate a config file for TRExFitter. Please keep in mind that the config include all samples and systematics from the ```fastframes``` config, which does not have to be what you want to do in the fit. There might be also other analysis specific aspects that cannot be automatized. Thus the resulting TRExFitter config should be properly reviewed before the use.
 
 ### Generating the config file for inclusive fit
 
