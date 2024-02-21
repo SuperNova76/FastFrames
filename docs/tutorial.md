@@ -245,6 +245,8 @@ The above code takes a lorentz vector and then returns the pT component divided 
                                          {"jet_TLV_NOSYS", "jet_select_or_NOSYS"});
 ```
 The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTLVs` lambda (function) and it relies on the two columns(variables): `jet_TLV_NOSYS` and `jet_select_or_NOSYS`, where the first variable is provided by FastFrames (configurable) for convenience.
+Note here that we only require that the jets passed the selection and overlap-removal for a given systematic variation, but there might be other selections needed, e.g. JVT selection.
+However, this is something which is still actively being developed in TopCPToolkit/CP algorithms.
 
 ```c++
   // add leading jet TLV
