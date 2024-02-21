@@ -494,6 +494,7 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
         for (const auto& ireg : sample->regions()) {
             if (sample->skipSystematicRegionCombination(isyst, ireg)) {
                 LOG(DEBUG) << "Skipping region: " << ireg->name() << ", systematic: " << isyst->name() << " combination for sample: " << sample->name() << " (histogram)\n";
+                ++regIndex;
                 continue;
             }
             RegionHisto regionHisto(ireg->name());
