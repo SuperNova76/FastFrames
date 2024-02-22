@@ -462,6 +462,45 @@ Computer:
   Price: 3000
 ```
 
+An anchor (&) is used to define the configuration block to be repeated and the alias (*) is used when referring to the repeated configuration elsewhere. FastFrames also supports a nice feature for extending and re-using variables in different analysis regions. To reproduce the following setup:
+```yaml
+Region1:
+  Variables:
+    - var1
+    - var2
+
+Region2:
+  Variables:
+    - var1
+    - var2
+    - var3
+
+Region3:
+  Variables:
+    - var1
+    - var2
+    - var3
+    - var4
+```
+We can write
+```yaml
+Region1: 
+  Variables: &alias1 # Use this anchor to refer to var1 and var2
+    - var1
+    - var2
+
+Region2:
+  Variables: &alias2 # Use this anchor to refer to var1, var2 and var3
+    - *alias1 # Resolves to var1 and var2
+    - var3    # Extend this region with var3
+
+Region3:
+  Variables:
+    - *alias2 # Resolves to var1, var2 and var3
+    - var4 
+```
+
+
 ### Manual systematic uncertainties in the config file
 The previous setup showed how to define systematic uncertainties automatically (taking the metadata information from the input file).
 However, it might be important/convenient to provide a list of systematic uncertainties manually in the config file.

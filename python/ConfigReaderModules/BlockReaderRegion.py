@@ -11,6 +11,37 @@ from BlockReaderGeneral import BlockReaderGeneral
 from BlockOptionsGetter import BlockOptionsGetter
 from python_wrapper.python.logger import Logger
 
+def flatToListOfDicts(input_list):
+    """!Function to flatten a list of lists of dictionaries -> list of dictionaries
+    @param input_list: list of lists of dictionaries
+    @returns: list of dictionaries
+    """
+    result = []
+    for element in input_list:
+        if type(element) is dict:
+            result.append(element)
+        elif type(element) is list:
+            result += flatToListOfDicts(element)
+    return result
+
+def flattenContainerOfVariables(originalContainer):
+    """!Function to get a container of variables from the original container
+    @param originalContainer: list of dictionaries OR list of lists of dictionaries
+    @returns: list of dictionaries via flatToListOfDicts function
+    """
+    # First, check if nested notation using YAML anchers have been used. If so, we need to flatten the list of dictionaries.
+    needsMerge = False
+    for containerElement in originalContainer:
+        if type(containerElement) is list:
+            needsMerge = True
+            break # If we find at least one list, we need to merge the list of dictionaries
+
+    #If necesary, inform the user merging is happening and flatten the list of dictionaries
+    if needsMerge:    
+        Logger.log_message("WARNING", "Region defined using nested anchors... merging!")
+        return flatToListOfDicts(originalContainer)
+    else :
+        return originalContainer 
 
 class BlockReaderRegion:
     """!Class for reading region block of the config, equivalent of C++ class Region
@@ -29,7 +60,12 @@ class BlockReaderRegion:
         if block_reader_general is not None:
             self.__merge_settings(block_reader_general)
 
-        for variable_dict in self._options_getter.get("variables", [], [list], [dict]):
+        # Get the variables from the region and flat the container if nested anchors are used
+        originalContainer = self._options_getter.get("variables", [], [list], [dict,list])
+        newContainer = flattenContainerOfVariables(originalContainer)
+                  
+        # Add the variables to the region
+        for variable_dict in newContainer:
             variable = BlockReaderVariable(variable_dict)
             self._variables.append(variable)
 
