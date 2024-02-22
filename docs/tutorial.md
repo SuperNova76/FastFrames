@@ -228,7 +228,7 @@ The above code snippet defined a lambda (`std::function`) that takes a vector of
   };
 ```
 
-The above code takes a vector of lorentz vectors and of it is not empty it returns the first element.
+The above code takes a vector of lorentz vectors and if it is not empty it returns the first element.
 
 ```c++
   auto tlvPtGEV = [this](const ROOT::Math::PtEtaPhiEVector& tlv) {
@@ -433,7 +433,7 @@ The region block for one region:
 ```
 specifies the region definition. It has the name of the region (to be used in the output) and a selection. The selection can be a formula but only simple formulae are encouraged (e.g. simple AND or OR).
 Then, each region has a list of variables for which histograms will be created.
-The variables have a name (to be used in the output), title (the format is `title: x axis title: y axis title`), definition which is a name of the column (i.e. it cannot be a formula) and binning.
+The variables have a name (to be used in the output), title (the format is `title; x axis title; y axis title`), definition which is a name of the column (i.e. it cannot be a formula) and binning.
 
 The sample definition:
 ```yaml
@@ -448,7 +448,7 @@ samples:
 Defines the list of samples. Each sample requires a name (that will be used in the file name for each sample), list of DSIDs (these will be combined!), list of campaigns (these will be combined) and the simulation type.
 
 Please, check the list of all config options [here](https://atlas-project-topreconstruction.web.cern.ch/fastframesdocumentation/config/).
-As well as a config file used in out CI tests [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/test/configs/config.yml?ref_type=heads).
+As well as a config file used in our CI tests [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/test/configs/config.yml?ref_type=heads).
 
 The yaml format allows to use some "tricks". E.g. it is possible to copy a block of settings (such as variables):
 
@@ -630,6 +630,7 @@ The relevant method of the custom class is `WmassJESFrame::defineVariablesTruth`
 ### Ntuple processing
 
 FastFrames also allows you to process the input ntuple into an output ntuple that is self-similar, i.e. it will have the same structure as the input ntuple so it can be used as an input to the histogram processing using FastFrames.
+In this section, a simple ntupling step will be shown that just applies a selection on the input ntuple.
 To do this, first provide the path to the output folder for ntuples in the `general` block
 
 ```yaml
