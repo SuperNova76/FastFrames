@@ -1,0 +1,78 @@
+# For the purpose of testing, do not use in analysis
+general:
+  debug_level: ERROR 
+  input_filelist_path: "../../metadata/filelist.txt"
+  input_sumweights_path: "../../metadata/sum_of_weights.txt"
+  output_path_histograms: "../../results/"
+  output_path_ntuples: "../../results/"
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS"
+  default_reco_tree_name: "reco"
+  xsection_files: ["../data/XSection-MC21-13p6TeV.data","../data/XSection-MC16-13TeV.data"]
+  automatic_systematics: False
+  nominal_only: True
+  number_of_cpus: 10
+
+ntuples:
+  selection: "el_pt_NOSYS[0] > 30000" # optional
+  branches: ["weight_total_.*", "jet_pt_.*"] # optional, if not provided, use all branches
+  copy_trees: ["truth"]  
+
+regions:
+  # Define first anchor.
+  - name: "Region1"
+    selection: "Electron_pass_basic_NOSYS"
+    variables: &variables
+      - name: "Variable1"
+        title : "Electron transverse momentum; e1 pT [GeV];Events"
+        definition: "el1_pt_NOSYS"
+        binning:
+          min: 0
+          max: 200
+          number_of_bins: 40
+      - name: "Variable2"
+        title : "Electron pseudorapidity; e1(eta);Events"
+        definition: "el1_eta_NOSYS"
+        binning:
+          min: -3
+          max: 3
+          number_of_bins: 60
+
+  # Use the anchor simply to copy the variables.
+  - name: "Region2"
+    selection: "Electron_pass_basic_NOSYS && Electron_pass_met_NOSYS && Electron_pass_btag_NOSYS && Electron_pass_klf_NOSYS"
+    variables: *variables
+
+  # Usage of nested anchors.
+  - name: "Region3"
+    selection: "Electron_pass_basic_NOSYS && Electron_pass_transverseMass_NOSYS && Electron_pass_met_NOSYS && Electron_pass_btag_NOSYS && Electron_pass_klf_NOSYS"
+    variables: &variables_extended
+      - *variables
+      - name: "variable3"
+        title : "Missing transverse energy;MET [GeV]; Events"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,40000,60000,80000,140000,250000]
+
+  - name: "Region4"
+    selection: "Electron_pass_basic_NOSYS && Electron_pass_btag_NOSYS && Electron_pass_klf_NOSYS"
+    variables: 
+      - *variables_extended
+      - name: "variable4"
+        title : "Missing transverse energy;MET [GeV]; Events"
+        definition: "met_met_NOSYS"
+        binning:
+          #min: 0
+          #max: 250000
+          #number_of_bins: 100
+          bin_edges: [0,20000,40000,60000,80000,140000,250000]
+
+samples:
+  - name: "ttbar_2023"
+    dsids: [601229]
+    campaigns: ["mc23a"]
+    simulation_type: "fullsim" # mc is full sim
+    #exclude_variables: ["met_phi"]

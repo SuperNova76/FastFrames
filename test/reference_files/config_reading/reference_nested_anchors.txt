@@ -1,0 +1,150 @@
+
+General block:
+	inputSumWeightsPath:  ../../metadata/sum_of_weights.txt
+	outputPathHistograms:  ../../results/
+	outputPathNtuples:  ../../results/
+	inputFilelistPath:  ../../metadata/filelist.txt
+	numCPU:  10
+	customFrameName:  
+	min_event:  -1
+	max_event:  -1
+	--split_n_jobs:  -1
+	--job_index:  -1
+	xSectionFiles:  ['../data/XSection-MC21-13p6TeV.data', '../data/XSection-MC16-13TeV.data']
+	cap_acceptance_selection: True
+	config_define_after_custom_class: False
+	luminosity, mc20a:  36646.73828125
+	luminosity, mc20d:  44630.6015625
+	create_tlorentz_vectors_for:
+custom_options:
+
+Ntuple block:
+	selection:  el_pt_NOSYS[0] > 30000
+	samples: [ ttbar_2023 ]
+	branches: [ weight_total_.*,jet_pt_.* ]
+	excluded_branches: [  ]
+	copy_trees:  ['truth']
+
+
+Regions block:
+
+	name:  Region1
+	selection:  Electron_pass_basic_NOSYS
+	variables:
+		name:  Variable1
+		title:  Electron transverse momentum; e1 pT [GeV];Events
+		definition:  el1_pt_NOSYS
+		is_nominal_only:  False
+		binning:  40 ,  0.0 ,  200.0
+
+
+		name:  Variable2
+		title:  Electron pseudorapidity; e1(eta);Events
+		definition:  el1_eta_NOSYS
+		is_nominal_only:  False
+		binning:  60 ,  -3.0 ,  3.0
+
+
+	name:  Region2
+	selection:  Electron_pass_basic_NOSYS && Electron_pass_met_NOSYS && Electron_pass_btag_NOSYS && Electron_pass_klf_NOSYS
+	variables:
+		name:  Variable1
+		title:  Electron transverse momentum; e1 pT [GeV];Events
+		definition:  el1_pt_NOSYS
+		is_nominal_only:  False
+		binning:  40 ,  0.0 ,  200.0
+
+
+		name:  Variable2
+		title:  Electron pseudorapidity; e1(eta);Events
+		definition:  el1_eta_NOSYS
+		is_nominal_only:  False
+		binning:  60 ,  -3.0 ,  3.0
+
+
+	name:  Region3
+	selection:  Electron_pass_basic_NOSYS && Electron_pass_transverseMass_NOSYS && Electron_pass_met_NOSYS && Electron_pass_btag_NOSYS && Electron_pass_klf_NOSYS
+	variables:
+		name:  Variable1
+		title:  Electron transverse momentum; e1 pT [GeV];Events
+		definition:  el1_pt_NOSYS
+		is_nominal_only:  False
+		binning:  40 ,  0.0 ,  200.0
+
+
+		name:  Variable2
+		title:  Electron pseudorapidity; e1(eta);Events
+		definition:  el1_eta_NOSYS
+		is_nominal_only:  False
+		binning:  60 ,  -3.0 ,  3.0
+
+
+		name:  variable3
+		title:  Missing transverse energy;MET [GeV]; Events
+		definition:  met_met_NOSYS
+		is_nominal_only:  False
+		binning:  0.000000,20000.000000,40000.000000,60000.000000,80000.000000,140000.000000,250000.000000
+
+
+	name:  Region4
+	selection:  Electron_pass_basic_NOSYS && Electron_pass_btag_NOSYS && Electron_pass_klf_NOSYS
+	variables:
+		name:  Variable1
+		title:  Electron transverse momentum; e1 pT [GeV];Events
+		definition:  el1_pt_NOSYS
+		is_nominal_only:  False
+		binning:  40 ,  0.0 ,  200.0
+
+
+		name:  Variable2
+		title:  Electron pseudorapidity; e1(eta);Events
+		definition:  el1_eta_NOSYS
+		is_nominal_only:  False
+		binning:  60 ,  -3.0 ,  3.0
+
+
+		name:  variable3
+		title:  Missing transverse energy;MET [GeV]; Events
+		definition:  met_met_NOSYS
+		is_nominal_only:  False
+		binning:  0.000000,20000.000000,40000.000000,60000.000000,80000.000000,140000.000000,250000.000000
+
+
+		name:  variable4
+		title:  Missing transverse energy;MET [GeV]; Events
+		definition:  met_met_NOSYS
+		is_nominal_only:  False
+		binning:  0.000000,20000.000000,40000.000000,60000.000000,80000.000000,140000.000000,250000.000000
+
+
+
+
+Samples block:
+
+	name:  ttbar_2023
+	regions:  ['Region1', 'Region2', 'Region3', 'Region4']
+	weight:  weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS
+	systematic:  ['NOSYS']
+	selection_suffix: ""
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  True
+	variables:
+		 Variable1
+		 Variable2
+		 variable3
+		 variable4
+	Unique samples:
+		 (601229,mc23a,fullsim)
+
+
+
+
+Systematics block:
+
+	name:  NOSYS
+	regions:  ['Region1', 'Region2', 'Region3', 'Region4']
+	weight_suffix:  
+	sum_weights:  NOSYS
+
+
