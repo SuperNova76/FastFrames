@@ -19,7 +19,7 @@ namespace DefineHelpers {
 
   /**
    * @brief Helper function to take TLorentzVector, select only elements
-   * that paased the selection and sort the resulting vector based on pT
+   * that passed the selection and sort the resulting vector based on pT
    *
    * @param tlv
    * @param passedSelection
@@ -30,7 +30,7 @@ namespace DefineHelpers {
 
   /**
    * @brief Helper function to take TLorentzVector, select only elements
-   * that paased the selection and sort the resulting vector based on pT
+   * that passed the selection and sort the resulting vector based on pT
    *
    * @param tlv
    * @param passedSelection
@@ -40,9 +40,25 @@ namespace DefineHelpers {
   std::vector<TLV> sortedPassedVector(const std::vector<TLV>& tlv,
                                       const std::vector<char>& passedSelection,
                                       const std::vector<char>& passedOR);
-
+  
   /**
-   * @brief Return a vector of indices the elements that passed a selection sorted by pT
+   * @brief Helper function to take TLorentzVector, select only elements
+   * that passed the selection and sort the resulting vector based on pT
+   *
+   * @param tlv
+   * @param passedSelection1
+   * @param passedSelection2
+   * @param passedOR
+   * @return std::vector<TLV>
+   */
+  
+  std::vector<TLV> sortedPassedVector(const std::vector<TLV>& tlv,
+                                      const std::vector<char>& passedSelection1,
+                                      const std::vector<char>& passedSelection2,
+                                      const std::vector<char>& passedOR);
+                                      
+  /**
+   * @brief Return a vector of indices of the elements that passed a selection sorted by pT
    *
    * @param tlv TLorentzVector for the object
    * @param selection Selection vector
@@ -52,7 +68,7 @@ namespace DefineHelpers {
                                                const std::vector<char>& selection);
 
   /**
-   * @brief Return a vector of indices the the elements that passed a selection sorted by pT
+   * @brief Return a vector of indices of the elements that passed a selection sorted by pT
    *
    * @param tlv TLorentzVector for the object
    * @param selection Selection1 vector
