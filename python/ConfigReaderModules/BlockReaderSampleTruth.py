@@ -11,6 +11,7 @@ from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
 from BlockReaderVariable import BlockReaderVariable
+from AutomaticRangeGenerator import AutomaticRangeGenerator
 
 
 class BlockReaderSampleTruth:
@@ -49,6 +50,7 @@ class BlockReaderSampleTruth:
 
 
         self._variables = self._options_getter.get("variables", [], [list], [dict])
+        self._variables = BlockReaderVariable.unroll_variable_sequences(self._variables)
 
         self._produce_unfolding = self._options_getter.get("produce_unfolding", False, [bool])
 
@@ -96,6 +98,7 @@ class BlockReaderSampleTruth:
             self.cpp_class.addVariable(variable.cpp_class.getPtr())
 
     def _read_match_variables(self) -> None:
+        self._match_variables = AutomaticRangeGenerator.unroll_sequence(self._match_variables, ["reco", "truth"])
         for match_variable_dict in self._match_variables:
             options_getter = BlockOptionsGetter(match_variable_dict)
             reco = options_getter.get("reco", None, [str])

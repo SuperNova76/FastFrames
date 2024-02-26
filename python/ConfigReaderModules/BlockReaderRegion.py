@@ -9,9 +9,10 @@ from ConfigReaderCpp import RegionWrapper, VariableWrapper
 from BlockReaderVariable import BlockReaderVariable
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockOptionsGetter import BlockOptionsGetter
+from AutomaticRangeGenerator import AutomaticRangeGenerator
 from python_wrapper.python.logger import Logger
 
-def flatToListOfDicts(input_list):
+def flat_to_list_of_dicts(input_list):
     """!Function to flatten a list of lists of dictionaries -> list of dictionaries
     @param input_list: list of lists of dictionaries
     @returns: list of dictionaries
@@ -21,27 +22,27 @@ def flatToListOfDicts(input_list):
         if type(element) is dict:
             result.append(element)
         elif type(element) is list:
-            result += flatToListOfDicts(element)
+            result += flat_to_list_of_dicts(element)
     return result
 
-def flattenContainerOfVariables(originalContainer):
+def flatten_container_of_variables(original_container):
     """!Function to get a container of variables from the original container
-    @param originalContainer: list of dictionaries OR list of lists of dictionaries
-    @returns: list of dictionaries via flatToListOfDicts function
+    @param original_container: list of dictionaries OR list of lists of dictionaries
+    @returns: list of dictionaries via flat_to_list_of_dicts function
     """
     # First, check if nested notation using YAML anchers have been used. If so, we need to flatten the list of dictionaries.
-    needsMerge = False
-    for containerElement in originalContainer:
+    needs_merge = False
+    for containerElement in original_container:
         if type(containerElement) is list:
-            needsMerge = True
+            needs_merge = True
             break # If we find at least one list, we need to merge the list of dictionaries
 
     #If necesary, inform the user merging is happening and flatten the list of dictionaries
-    if needsMerge:    
+    if needs_merge:
         Logger.log_message("WARNING", "Region defined using nested anchors... merging!")
-        return flatToListOfDicts(originalContainer)
+        return flat_to_list_of_dicts(original_container)
     else :
-        return originalContainer 
+        return original_container
 
 class BlockReaderRegion:
     """!Class for reading region block of the config, equivalent of C++ class Region
@@ -61,15 +62,17 @@ class BlockReaderRegion:
             self.__merge_settings(block_reader_general)
 
         # Get the variables from the region and flat the container if nested anchors are used
-        originalContainer = self._options_getter.get("variables", [], [list], [dict,list])
-        newContainer = flattenContainerOfVariables(originalContainer)
-                  
+        original_container = self._options_getter.get("variables", [], [list], [dict,list])
+        new_container = flatten_container_of_variables(original_container)
+        new_container = BlockReaderVariable.unroll_variable_sequences(new_container)
+
         # Add the variables to the region
-        for variable_dict in newContainer:
+        for variable_dict in new_container:
             variable = BlockReaderVariable(variable_dict)
             self._variables.append(variable)
 
         self._histograms_2d = self._options_getter.get("histograms_2d", [], [list], [dict])
+        self._histograms_2d = AutomaticRangeGenerator.unroll_sequence(self._histograms_2d, ["x", "y"])
 
         ## Instance of the RegionWrapper C++ class -> wrapper around C++ Region class
         self.cpp_class = RegionWrapper(self._name)
@@ -80,7 +83,6 @@ class BlockReaderRegion:
         variables_names = []
         self.cpp_class.setSelection(self._selection)
         for variable in self._variables:
-            ptr = variable.cpp_class.getPtr()
             self.cpp_class.addVariable(variable.cpp_class.getPtr())
             variables_names.append(variable.cpp_class.name())
 

@@ -8,6 +8,7 @@ from python_wrapper.python.logger import Logger
 
 from ConfigReaderCpp import VariableWrapper, DoubleVector
 from BlockOptionsGetter import BlockOptionsGetter
+from AutomaticRangeGenerator import AutomaticRangeGenerator
 
 class BlockReaderVariable:
     """!Class for reading variable block from config file, equivalent of C++ class Variable
@@ -82,3 +83,10 @@ class BlockReaderVariable:
         if len(unused) > 0:
             Logger.log_message("ERROR", "Key {} used in variable block is not supported!".format(unused))
             exit(1)
+
+    def unroll_variable_sequences(variables_dicts : list[dict]) -> list[dict]:
+        """!If numbering_sequence block is defined in the variable block, unroll the variable block into multiple variable blocks with different names, titles and definitions based on the numbering sequence
+        @param variables_dicts: list[dict]
+        @return list[dict]
+        """
+        return AutomaticRangeGenerator.unroll_sequence(variables_dicts, ["name", "title", "definition"])
