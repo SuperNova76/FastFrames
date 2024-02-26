@@ -80,8 +80,11 @@ void MainFrame::executeHistograms() {
 
             // merge the histograms or take them if it is the first set
             if (finalSystHistos.empty())  {
-                LOG(DEBUG) << "First set of histograms for this sample, this will NOT trigger event loop\n";
-                finalSystHistos = std::move(systematicHistos);
+                LOG(INFO) << "Triggering event loop for the reco tree\n";
+                for (const auto& isystHist : systematicHistos) {
+                    finalSystHistos.emplace_back(isystHist.copy());
+                }
+                LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
             } else {
                 if (systematicHistos.size() != finalSystHistos.size()) {
                     LOG(ERROR) << "Number of the systematic histograms do not match\n";
@@ -97,8 +100,12 @@ void MainFrame::executeHistograms() {
             }
             if (!truthHistos.empty()) {
                 if (finalTruthHistos.empty()) {
-                    LOG(DEBUG) << "First set of histograms for this sample for truth, this will NOT trigger event loop\n";
-                    finalTruthHistos = std::move(truthHistos);
+                    LOG(INFO) << "Triggering event loop for the truth tree\n";
+                    for (const auto& ivariable : truthHistos) {
+                        finalTruthHistos.emplace_back(ivariable.name());
+                        finalTruthHistos.back().copyHisto(ivariable.histo());
+                    }
+                    LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
                 } else {
                     LOG(INFO) << "Merging truth, triggers event loop for the truth trees!\n";
                     if (finalTruthHistos.size() != truthHistos.size()) {
@@ -108,13 +115,13 @@ void MainFrame::executeHistograms() {
                     for (std::size_t ihist = 0; ihist < truthHistos.size(); ++ihist) {
                         finalTruthHistos.at(ihist).mergeHisto(truthHistos.at(ihist).histo());
                     }
+                    LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
                 }
             }
             ++uniqueSampleN;
         }
 
-        bool printEventLoop = isample->uniqueSampleIDs().size() == 1;
-        this->writeHistosToFile(finalSystHistos, finalTruthHistos, isample, node, printEventLoop && node);
+        this->writeHistosToFile(finalSystHistos, finalTruthHistos, isample);
         ++sampleN;
 
         if (!truthChains.empty()) {
@@ -519,9 +526,7 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 
 void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
                                   const std::vector<VariableHisto>& truthHistos,
-                                  const std::shared_ptr<Sample>& sample,
-                                  const ROOT::RDF::RNode* node,
-                                  const bool printEventLoopCount) const {
+                                  const std::shared_ptr<Sample>& sample) const {
 
     if (histos.empty()) {
         LOG(WARNING) << "No histograms available for sample: " << sample->name() << "\n";
@@ -545,9 +550,6 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
 
     LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
 
-    if (printEventLoopCount) {
-        LOG(INFO) << "Triggering event loop for the reco tree!\n";
-    }
     bool first(true);
     for (const auto& isystHist : histos) {
         if (isystHist.regionHistos().empty()) {
@@ -564,14 +566,14 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
             for (const auto& ivariableHist : iregionHist.variableHistos()) {
                 const std::string histoName = StringOperations::replaceString(ivariableHist.name(), "_NOSYS", "") + "_" + iregionHist.name();
                 if (first) {
-                    std::unique_ptr<TH1D> histoCopy(static_cast<TH1D*>(ivariableHist.histo()->Clone()));
+                    std::unique_ptr<TH1D> histoCopy(static_cast<TH1D*>(ivariableHist.histoUniquePtr()->Clone()));
                     histoCopy->SetDirectory(nullptr);
                     out->cd(isystHist.name().c_str());
                     histoCopy->Write(histoName.c_str());
                     first = false;
                 } else {
                     out->cd(isystHist.name().c_str());
-                    ivariableHist.histo()->Write(histoName.c_str());
+                    ivariableHist.histoUniquePtr()->Write(histoName.c_str());
                 }
             }
 
@@ -579,29 +581,25 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
             for (const auto& ivariableHist2D : iregionHist.variableHistos2D()) {
                 const std::string histo2DName = StringOperations::replaceString(ivariableHist2D.name(), "_NOSYS", "") + "_" + iregionHist.name();
                 out->cd(isystHist.name().c_str());
-                ivariableHist2D.histo()->Write(histo2DName.c_str());
+                ivariableHist2D.histoUniquePtr()->Write(histo2DName.c_str());
             }
         }
     }
 
     if (!truthHistos.empty()) {
-        LOG(INFO) << "Writing truth histograms, triggers event loop for the truth tree!\n";
+        LOG(INFO) << "Writing truth histograms!\n";
     }
     // Write truth histograms
     for (const auto& itruthHist : truthHistos) {
         const std::string truthHistoName = StringOperations::replaceString(itruthHist.name(), "_NOSYS", "");
         out->cd();
-        itruthHist.histo()->Write(truthHistoName.c_str());
+        itruthHist.histoUniquePtr()->Write(truthHistoName.c_str());
     }
 
     if (m_config->totalJobSplits() > 0 && sample->hasUnfolding()) {
         LOG(WARNING) << "Sample: " << sample->name() << " has unfolding, but split processing is requested. Will not produce acceptance and selection efficiency histograms\n";
     } else {
         this->writeUnfoldingHistos(out.get(), histos, truthHistos, sample);
-    }
-
-    if (printEventLoopCount) {
-        LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
     }
 
     out->Close();

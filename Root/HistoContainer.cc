@@ -11,11 +11,19 @@
 #include <exception>
 
 void VariableHisto::mergeHisto(ROOT::RDF::RResultPtr<TH1D> h) {
-    m_histo->Add(h.GetPtr());
+    m_histoUniquePtr->Add(h.GetPtr());
 }
 
 void VariableHisto2D::mergeHisto(ROOT::RDF::RResultPtr<TH2D> h) {
-    m_histo->Add(h.GetPtr());
+    m_histoUniquePtr->Add(h.GetPtr());
+}
+  
+void VariableHisto::copyHisto(ROOT::RDF::RResultPtr<TH1D> h) {
+    m_histoUniquePtr.reset(static_cast<TH1D*>(h->Clone()));
+}
+
+void VariableHisto2D::copyHisto(ROOT::RDF::RResultPtr<TH2D> h) {
+    m_histoUniquePtr.reset(static_cast<TH2D*>(h->Clone()));
 }
 
 void SystematicHisto::merge(const SystematicHisto& other) {
@@ -51,4 +59,21 @@ void SystematicHisto::merge(const SystematicHisto& other) {
                      .mergeHisto(other.regionHistos().at(ireg).variableHistos2D().at(ivariable2D).histo());
         }
     }
+}
+
+SystematicHisto SystematicHisto::copy() const {
+    SystematicHisto result(name());
+    for (const auto& ireg : m_regions) {
+        result.m_regions.emplace_back(RegionHisto(ireg.name()));
+        for (const auto& ivariable : ireg.variableHistos()) {
+            result.m_regions.back().variableHistos().emplace_back(ivariable.name());
+            result.m_regions.back().variableHistos().back().copyHisto(ivariable.histo());
+        }
+        for (const auto& ivariable : ireg.variableHistos2D()) {
+            result.m_regions.back().variableHistos2D().emplace_back(ivariable.name());
+            result.m_regions.back().variableHistos2D().back().copyHisto(ivariable.histo());
+        }
+    }
+
+    return result;
 }
