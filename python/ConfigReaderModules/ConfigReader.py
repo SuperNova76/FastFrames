@@ -12,6 +12,7 @@ from BlockReaderNtuple import BlockReaderNtuple
 from BlockOptionsGetter import BlockOptionsGetter
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 from CommandLineOptions import CommandLineOptions
+from AutomaticRangeGenerator import AutomaticRangeGenerator
 
 from python_wrapper.python.logger import Logger
 from ConfigReaderCpp import VariableWrapper
@@ -59,7 +60,12 @@ class ConfigReader:
             self.systematics[nominal.cpp_class.name()] = nominal
 
             self.systematics_dicts = [] # for creation of TRExFitter config
-            for systematic_dict in self.block_getter.get("systematics", []):
+            systematic_blocks_from_config = self.block_getter.get("systematics", [])
+            systematic_blocks_from_config = AutomaticRangeGenerator.unroll_sequence(systematic_blocks_from_config,
+                                                [["variation", "up"], ["variation", "sum_weights_up"],
+                                                ["variation", "down"], ["variation", "sum_weights_down"]]
+                                            )
+            for systematic_dict in systematic_blocks_from_config:
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general, self.systematics_dicts)
                 for systematic in systematic_list:
                     systematic.adjust_regions(self.regions)

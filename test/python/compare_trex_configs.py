@@ -11,10 +11,10 @@ if __name__ == "__main__":
     diff_app = "colordiff" if colordiff_installed else "diff"
 
     commands = [
-        "python3 python/produce_trexfitter_config.py --c test/configs/config_testing.yml --u ttbar_FS:particle:truth_jet_pt:jet_pt --output config_testing_unfolding.config",
-        "python3 python/produce_trexfitter_config.py --c test/configs/config_testing.yml --output config_testing_inclusive.config",
-        "python3 python/produce_trexfitter_config.py --c test/configs/config_TRExFitter_test.yml --output config_TRExFitter_test_inclusive.config",
-        "python3 python/produce_trexfitter_config.py --c test/configs/config_TRExFitter_test.yml --u ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt --output config_TRExFitter_test_unfolding.config",
+        "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_testing.yml --u ttbar_FS:particle:truth_jet_pt:jet_pt --output config_testing_unfolding.config",
+        "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_testing.yml --output config_testing_inclusive.config",
+        "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_TRExFitter_test.yml --output config_TRExFitter_test_inclusive.config",
+        "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_TRExFitter_test.yml --u ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt --output config_TRExFitter_test_unfolding.config",
     ]
 
     for command in commands:

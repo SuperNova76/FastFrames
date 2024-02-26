@@ -79,8 +79,97 @@ Regions block:
 		binning:  16 ,  -3.2 ,  3.2
 
 
+		name:  jet1_pt
+		title:  ;Transverse momentum of jet #1;Y axis title
+		definition:  jet_pt_index_1_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  jet2_pt
+		title:  ;Transverse momentum of jet #2;Y axis title
+		definition:  jet_pt_index_2_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  jet3_pt
+		title:  ;Transverse momentum of jet #3;Y axis title
+		definition:  jet_pt_index_3_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  jet4_pt
+		title:  ;Transverse momentum of jet #4;Y axis title
+		definition:  jet_pt_index_4_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  particle_jet1_pt
+		title:  ;Transverse momentum of particle-level jet #1;Y axis title
+		definition:  particle_jet_pt_index_1_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  particle_jet2_pt
+		title:  ;Transverse momentum of particle-level jet #2;Y axis title
+		definition:  particle_jet_pt_index_2_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  particle_jet3_pt
+		title:  ;Transverse momentum of particle-level jet #3;Y axis title
+		definition:  particle_jet_pt_index_3_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  particle_jet4_pt
+		title:  ;Transverse momentum of particle-level jet #4;Y axis title
+		definition:  particle_jet_pt_index_4_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  top_pt_mass_170
+		title:  ;Transverse momentum of top-quark, m_top = 170 GeV;Y axis title
+		definition:  pt_top_mass_170_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  top_pt_mass_172.5
+		title:  ;Transverse momentum of top-quark, m_top = 172.5 GeV;Y axis title
+		definition:  pt_top_mass_172.5_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
+		name:  top_pt_mass_175.0
+		title:  ;Transverse momentum of top-quark, m_top = 175.0 GeV;Y axis title
+		definition:  pt_top_mass_175.0_NOSYS
+		is_nominal_only:  False
+		binning:  10 ,  0.0 ,  300000.0
+
+
 	2d combinations:
 		 met_met, met_phi
+		 particle_jet1_pt, jet1_pt
+		 particle_jet2_pt, jet1_pt
+		 particle_jet3_pt, jet1_pt
+		 particle_jet1_pt, jet2_pt
+		 particle_jet2_pt, jet2_pt
+		 particle_jet3_pt, jet2_pt
+		 particle_jet1_pt, jet3_pt
+		 particle_jet2_pt, jet3_pt
+		 particle_jet3_pt, jet3_pt
+		 particle_jet1_pt, jet4_pt
+		 particle_jet2_pt, jet4_pt
+		 particle_jet3_pt, jet4_pt
 
 
 
@@ -99,6 +188,17 @@ Samples block:
 		 jet_pt
 		 met_met
 		 met_phi
+		 jet1_pt
+		 jet2_pt
+		 jet3_pt
+		 jet4_pt
+		 particle_jet1_pt
+		 particle_jet2_pt
+		 particle_jet3_pt
+		 particle_jet4_pt
+		 top_pt_mass_170
+		 top_pt_mass_172.5
+		 top_pt_mass_175.0
 	Unique samples:
 		 (410470,mc20e,fullsim)
 	Truth objects:
@@ -109,11 +209,31 @@ Samples block:
 		event_weight:  mc_gen
 		pair_reco_and_truth_trees:  True
 		match_variables:
+			 ('jet1_pt', 'truth_jet1_pt')
+			 ('jet2_pt', 'truth_jet1_pt')
+			 ('jet3_pt', 'truth_jet1_pt')
+			 ('jet4_pt', 'truth_jet1_pt')
 			 ('jet_pt', 'truth_jet_pt')
 		variables:
 			name:  truth_jet_pt
 			title:  
 			definition:  particle_jet_pt
+			binning:  10 ,  0.0 ,  10.0
+			name:  truth_jet1_pt
+			title:  
+			definition:  particle_jet1_pt
+			binning:  10 ,  0.0 ,  10.0
+			name:  truth_jet2_pt
+			title:  
+			definition:  particle_jet2_pt
+			binning:  10 ,  0.0 ,  10.0
+			name:  truth_jet3_pt
+			title:  
+			definition:  particle_jet3_pt
+			binning:  10 ,  0.0 ,  10.0
+			name:  truth_jet4_pt
+			title:  
+			definition:  particle_jet4_pt
 			binning:  10 ,  0.0 ,  10.0
 			name:  truth_el_pt
 			title:  

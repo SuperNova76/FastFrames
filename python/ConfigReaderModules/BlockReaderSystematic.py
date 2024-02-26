@@ -157,35 +157,11 @@ def read_systematics_variations(input_dict : dict, block_reader_general : BlockR
         Logger.log_message("ERROR", "No variations specified for systematic {}".format(input_dict_getter["name"]))
         exit(1)
 
-    replacement_string = NPmin = NPmax = None
-    numbering_sequence_dict = input_dict_getter.get("numbering_sequence",None, [dict])
-    if numbering_sequence_dict is not None:
-        numbering_sequence_opt_getter = BlockOptionsGetter(numbering_sequence_dict)
-        replacement_string = numbering_sequence_opt_getter.get("replacement_string",None, [str])
-        NPmin = numbering_sequence_opt_getter.get("min",None, [int])
-        NPmax = numbering_sequence_opt_getter.get("max",None, [int])
-        if NPmin is None or NPmax is None or replacement_string is None:
-            Logger.log_message("ERROR", "Invalid numbering_sequence options for systematic {}".format(input_dict_getter["name"]))
-            exit(1)
-
-    if replacement_string is None:
-        result = []
-        dictionary = {}
-        for variation in variations:
-            result.append(BlockReaderSystematic(input_dict, variation, block_reader_general))
-            dictionary[variation] = result[-1].cpp_class
-        if not systematics_pairs_list is None:
-            systematics_pairs_list.append(dictionary)
-        return result
-    else:
-        result = []
-        for i_NP in range(NPmin, NPmax+1):
-            replecement_tuple = (replacement_string, str(i_NP))
-            dictionary = {}
-            for variation in variations:
-                result.append(BlockReaderSystematic(input_dict, variation, block_reader_general, replecement_tuple))
-                dictionary[variation] = result[-1].cpp_class
-
-            if not systematics_pairs_list is None:
-                systematics_pairs_list.append(dictionary)
-        return result
+    result = []
+    dictionary = {}
+    for variation in variations:
+        result.append(BlockReaderSystematic(input_dict, variation, block_reader_general))
+        dictionary[variation] = result[-1].cpp_class
+    if not systematics_pairs_list is None:
+        systematics_pairs_list.append(dictionary)
+    return result

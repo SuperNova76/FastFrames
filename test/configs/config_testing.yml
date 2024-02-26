@@ -97,10 +97,50 @@ regions:
           min: -3.2
           max: 3.2
           number_of_bins: 16
+      - name: "jet#N_pt"
+        title : ";Transverse momentum of jet ##N;Y axis title"
+        definition: "jet_pt_index_#N_NOSYS"
+        numbering_sequence:
+          - replacement_string: "#N"
+            min: 1
+            max: 4
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 10
+      - name: "particle_jet#N_pt"
+        title : ";Transverse momentum of particle-level jet ##N;Y axis title"
+        definition: "particle_jet_pt_index_#N_NOSYS"
+        numbering_sequence:
+          - replacement_string: "#N"
+            min: 1
+            max: 4
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 10
+      - name: "top_pt_mass_#MASS"
+        title : ";Transverse momentum of top-quark, m_top = #MASS GeV;Y axis title"
+        definition: "pt_top_mass_#MASS_NOSYS"
+        numbering_sequence:
+          - replacement_string: "#MASS"
+            values: ["170", "172.5", "175.0"]
+        binning:
+          min: 0
+          max: 300000
+          number_of_bins: 10
     histograms_2d:
       - x: "met_met"
         y: "met_phi"
-
+      - x: "particle_jet#INDEX_PARTICLE_pt"
+        y: "jet#INDEX_RECO_pt"
+        numbering_sequence:
+          - replacement_string: "#INDEX_RECO"
+            min: 1
+            max: 4
+          - replacement_string: "#INDEX_PARTICLE"
+            min: 1
+            max: 3
 samples:
   - name: "ttbar_FS"
     dsids: [410470]
@@ -118,11 +158,27 @@ samples:
         selection: "particle_jet_pt[0] > 10000" #optional
         event_weight: "mc_gen"
         match_variables:
+          - reco: "jet#N_pt"
+            truth: "truth_jet1_pt"
+            numbering_sequence:
+            - replacement_string: "#N"
+              min: 1
+              max: 4
           - reco: "jet_pt"
             truth: "truth_jet_pt"
         variables:
           - name: "truth_jet_pt"
             definition:  "particle_jet_pt"
+            binning:
+              min: 0
+              max: 10
+              number_of_bins: 10
+          - name: "truth_jet#N_pt"
+            definition:  "particle_jet#N_pt"
+            numbering_sequence:
+            - replacement_string: "#N"
+              min: 1
+              max: 4
             binning:
               min: 0
               max: 10
@@ -202,7 +258,7 @@ systematics:
   - exclude_samples: ["Zjets_light"]
     exclude_regions: ["Muon"]
     numbering_sequence:
-        replacement_string: "#N"
+      - replacement_string: "#N"
         min: 1
         max: 4
     variation:

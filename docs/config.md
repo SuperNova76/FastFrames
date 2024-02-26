@@ -52,7 +52,7 @@ This block is optional.
 | name          | string            | Region name   |
 | selection     | string            | Selection     |
 | variables     | list of dicts     | List of variables defined for the region  |
-| histograms_2d     | list of dicts     | List of 2D histograms between 2 reco-level variables to produce. The dict must have 2 keys: ```x``` and ```y``` for variables on x and y axes. |
+| histograms_2d     | list of dicts     | List of 2D histograms between 2 reco-level variables to produce. The dict must have 2 keys: ```x``` and ```y``` for variables on x and y axes. ```numbering_sequence``` block is supported (see details bellow). |
 
 ####   `Variable` block inside of the `region` block
 | **Option**    | **Value type**    | **Function** |
@@ -62,6 +62,7 @@ This block is optional.
 | definition    | string            | Definition of the variable. All branches affected by systematic uncertainties must have ```_NOSYS``` suffix     |
 | binning       | dict              | Binning of the variable   |
 | is_nominal_only | bool            | If set to true, only histogram for NOSYS will be produced. Default is ```False``` |
+| numbering_sequence| list of dicts     | It can be used to automatically add more variables in one block, if they differ by a single value (for example index). More information can be found bellow in ```numbering_sequence``` block description.
 
 ####   `Binning` block inside of the `variable` block
 User has 2 options how to define the binning. Either specify bin edges for irregular binning, or specify number of bins and range of the x-axis for regular binning.
@@ -101,7 +102,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | truth_tree_name   | string            | Name of the truth-level tree to be used, i.e. ```truth``` or ```particleLevel```  |
 | selection         | string            | Selection |
 | event_weight      | string            | Event weight to use for the truth level. Terms corresponding to x-section, luminosity and sum of weights will be added automatically |
-| match variables   | list of dicts     | Pair of variables (reco - truth) to be used for the unfolding. The dictionary has to have 2 keys: ```reco``` and ```truth``` for corresponding names of the variables. The truth variable must be defined in this truth block and ```reco``` variable must be defined in at least one region  |
+| match variables   | list of dicts     | Pair of variables (reco - truth) to be used for the unfolding. The dictionary has to have 2 keys: ```reco``` and ```truth``` for corresponding names of the variables. The truth variable must be defined in this truth block and ```reco``` variable must be defined in at least one region. ```numbering_sequence``` block is supported (see details bellow).  |
 | variables         | list of dicts     | The same as ```variable``` block for region |
 | define_custom_columns | list of dicts | The same as ```define_custom_columns ``` in general block |
 | pair_reco_and_truth_trees | bool      | Should be truth and reco-level trees be paired? This is needed when truth level variables is needed in reco-level tree, for example to prepare migration matrices or apply reweighting in reco tree, based on a parton-level variable. The default value is ```False``` if ```match variables``` block is empty, otherwise it is ```True``` |
@@ -117,6 +118,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | campaigns         | list of strings   | List of campaigns where the systematic should be used |
 | regions           | list of strings   | List of regions where the systematic should be used   |
 | exclude_regions   | list of strings   | If specified, the systematics will be used in all regions except for these. The option cannot be combined with option ```regions```   |
+| numbering_sequence| list of dicts     | It can be used to automatically add more systematic uncertainties in one block, if they differ by a single value (for example index). More information can be found bellow in ```numbering_sequence``` block description.
 
 #### `variation` block inside of `systematics` block
 
@@ -130,11 +132,14 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | weight_suffix_down| string            | Similar to ```weight_suffix_up``` |
 
 
-#### `numbering_sequence` block inside of `systematics` block
+## `numbering_sequence` block inside of `systematics`, `Variable` or `histograms_2d``` blocks
+
+In order to automatically add multiple variables, systematic uncertainties or 2D histograms, one can use ```numbering_sequence``` block.
+It contains list of dictionaries, each of them having the values defined in the table before. If you want to add for example pT of first 4 jets in an event, you can use just one block and put ```numbering_sequence``` inside it to achieve it. You can also use it when producing migration matrices or 2D histograms. If you define multiple dictionaries inside the ```numbering_sequence``` block, it will create a nested loop over all combinations.
 
 | **Option**        | **Value type**    | **Function** |
 | ----------------- | ----------------- | ------------ |
-| replacement_string| string            | If the string is found in ```up``` or ```down``` options (as well as in corresponding sum of weights or weight_suffix) for the systematic variations, it will be replaced by the number. This will add new systematics for each value from min to max (including), where the replacement string will be replaced by the integer number (see lines bellow) |
+| replacement_string| string            | If the string is found in ```up``` or ```down``` options (as well as in corresponding sum of weights or weight_suffix) for the systematic variations, it will be replaced by the number. This will add new systematics for each value from min to max (including), where the replacement string will be replaced by the integer number (see lines bellow). Alternativelly, one can specify directly the list of values to be used for replacement |
 | min               | int               | Minimal value of the number in the name that should be used for the replacement.   |
 | max               | int               | Maximal value of the number in the name that should be used for the replacement.   |
-
+| values            | list of strings   | This can be used instead of ```min``` and ```max``` options, to define a sequence of values to use for replacement, for example ```["170", "172.5", "175"]``` |
