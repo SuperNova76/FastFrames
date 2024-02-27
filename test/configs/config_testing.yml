@@ -51,6 +51,7 @@ regions:
       - name: "jet_pt"
         #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
+        type: "float"
         binning:
           min: 0
           max: 300000
@@ -58,6 +59,7 @@ regions:
       - name: "met_met"
         title : "histo title;X axis title;Y axis title"
         definition: "met_met_NOSYS"
+        type: "float"
         binning:
           #min: 0
           #max: 250000
@@ -66,6 +68,7 @@ regions:
       - name: "met_phi"
         title : "histo title;X axis title;Y axis title"
         definition: "met_phi_NOSYS"
+        type: "float"
         binning:
           min: -3.2
           max: 3.2
@@ -77,6 +80,7 @@ regions:
       - name: "jet_pt"
         #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
+        type: "float"
         is_nominal_only: True
         binning:
           min: 0
@@ -85,6 +89,7 @@ regions:
       - name: "met_met"
         title : "histo title;X axis title;Y axis title"
         definition: "met_met_NOSYS"
+        type: "float"
         binning:
           #min: 0
           #max: 250000
@@ -93,6 +98,7 @@ regions:
       - name: "met_phi"
         title : "histo title;X axis title;Y axis title"
         definition: "met_phi_NOSYS"
+        type: "float"
         binning:
           min: -3.2
           max: 3.2
@@ -100,6 +106,7 @@ regions:
       - name: "jet#N_pt"
         title : ";Transverse momentum of jet ##N;Y axis title"
         definition: "jet_pt_index_#N_NOSYS"
+        type: "float"
         numbering_sequence:
           - replacement_string: "#N"
             min: 1
@@ -111,6 +118,7 @@ regions:
       - name: "particle_jet#N_pt"
         title : ";Transverse momentum of particle-level jet ##N;Y axis title"
         definition: "particle_jet_pt_index_#N_NOSYS"
+        type: "float"
         numbering_sequence:
           - replacement_string: "#N"
             min: 1
@@ -122,6 +130,7 @@ regions:
       - name: "top_pt_mass_#MASS"
         title : ";Transverse momentum of top-quark, m_top = #MASS GeV;Y axis title"
         definition: "pt_top_mass_#MASS_NOSYS"
+        type: "float"
         numbering_sequence:
           - replacement_string: "#MASS"
             values: ["170", "172.5", "175.0"]
@@ -169,12 +178,14 @@ samples:
         variables:
           - name: "truth_jet_pt"
             definition:  "particle_jet_pt"
+            type: "float"
             binning:
               min: 0
               max: 10
               number_of_bins: 10
           - name: "truth_jet#N_pt"
             definition:  "particle_jet#N_pt"
+            type: "float"
             numbering_sequence:
             - replacement_string: "#N"
               min: 1
@@ -184,6 +195,7 @@ samples:
               max: 10
               number_of_bins: 10
           - name: "truth_el_pt"
+            type: "float"
             definition:  "particle_el_pt"
             binning:
               bin_edges: [0,2,5,7,8,10,15]

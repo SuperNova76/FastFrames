@@ -1,6 +1,6 @@
 # For the purpose of testing, do not use in analysis
 general:
-  debug_level: ERROR 
+  debug_level: ERROR
   input_filelist_path: "../../metadata/filelist.txt"
   input_sumweights_path: "../../metadata/sum_of_weights.txt"
   output_path_histograms: "../../results/"
@@ -16,7 +16,7 @@ general:
 ntuples:
   selection: "el_pt_NOSYS[0] > 30000" # optional
   branches: ["weight_total_.*", "jet_pt_.*"] # optional, if not provided, use all branches
-  copy_trees: ["truth"]  
+  copy_trees: ["truth"]
 
 regions:
   # Define first anchor.
@@ -26,6 +26,7 @@ regions:
       - name: "Variable1"
         title : "Electron transverse momentum; e1 pT [GeV];Events"
         definition: "el1_pt_NOSYS"
+        type: "float"
         binning:
           min: 0
           max: 200
@@ -33,6 +34,7 @@ regions:
       - name: "Variable2"
         title : "Electron pseudorapidity; e1(eta);Events"
         definition: "el1_eta_NOSYS"
+        type: "int"
         binning:
           min: -3
           max: 3
@@ -51,6 +53,7 @@ regions:
       - name: "variable3"
         title : "Missing transverse energy;MET [GeV]; Events"
         definition: "met_met_NOSYS"
+        type: "double"
         binning:
           #min: 0
           #max: 250000
@@ -59,11 +62,12 @@ regions:
 
   - name: "Region4"
     selection: "Electron_pass_basic_NOSYS && Electron_pass_btag_NOSYS && Electron_pass_klf_NOSYS"
-    variables: 
+    variables:
       - *variables_extended
       - name: "variable4"
         title : "Missing transverse energy;MET [GeV]; Events"
         definition: "met_met_NOSYS"
+        type: "float"
         binning:
           #min: 0
           #max: 250000

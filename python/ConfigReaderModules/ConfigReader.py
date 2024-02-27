@@ -161,6 +161,7 @@ if __name__ == "__main__":
         for variable_cpp_object in variable_cpp_objects:
             print("\t\tname: ", variable_cpp_object.name())
             print("\t\ttitle: ", variable_cpp_object.title())
+            print("\t\ttype: ", variable_cpp_object.type())
             print("\t\tdefinition: ", variable_cpp_object.definition())
             print("\t\tis_nominal_only: ", variable_cpp_object.isNominalOnly())
             if variable_cpp_object.hasRegularBinning():
@@ -218,6 +219,7 @@ if __name__ == "__main__":
                     variable.constructFromRawPtr(variable_ptr)
                     print("\t\t\tname: ", variable.name())
                     print("\t\t\ttitle: ", variable.title())
+                    print("\t\t\ttype: ", variable.type())
                     print("\t\t\tdefinition: ", variable.definition())
                     if variable.hasRegularBinning():
                         print(  "\t\t\tbinning: ",

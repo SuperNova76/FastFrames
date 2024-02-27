@@ -23,6 +23,10 @@ class BlockReaderVariable:
         self._definition = self._options_getter.get("definition", None, [str])
         self._is_nominal_only = self._options_getter.get("is_nominal_only", False, [bool])
 
+        self._variable_type = self._options_getter.get("type", "undefined", [str]).lower()
+        if self._variable_type == "undefined":
+            Logger.log_message("WARNING", "No type specified for '" + self._name + "' variable. This will lead to suboptimal performance. Please consider specifying the type.")
+
         if self._name is None:
             Logger.log_message("ERROR", "No name specified for variable block")
             exit(1)
@@ -40,6 +44,7 @@ class BlockReaderVariable:
         self.cpp_class.setDefinition(self._definition)
         self.cpp_class.setTitle(self._title)
         self.cpp_class.setIsNominalOnly(self._is_nominal_only)
+        self.cpp_class.setType(self._variable_type)
 
     def _read_binning(self, binning_dict : dict):
         if binning_dict is None:
