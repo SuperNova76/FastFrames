@@ -474,6 +474,31 @@ private:
    */
   ROOT::RDF::RNode minMaxRange(ROOT::RDF::RNode node) const;
 
+  /**
+   * @brief Book 1D histogram with proper templates
+   * 
+   * @param node 
+   * @param variable 
+   * @param systematic 
+   * @return ROOT::RDF::RResultPtr<TH1D> 
+   */
+  ROOT::RDF::RResultPtr<TH1D> book1Dhisto(ROOT::RDF::RNode node,
+                                          const Variable& variable,
+                                          const std::shared_ptr<Systematic>& systematic) const;
+
+  /**
+   * @brief Book 2D histograms with proper templates
+   * 
+   * @param node 
+   * @param variable1 
+   * @param variable2 
+   * @param systematic 
+   * @return ROOT::RDF::RResultPtr<TH2D> 
+   */
+  ROOT::RDF::RResultPtr<TH2D> book2Dhisto(ROOT::RDF::RNode node,
+                                          const Variable& variable1,
+                                          const Variable& variable2,
+                                          const std::shared_ptr<Systematic>& systematic) const;
 protected:
 
   /**

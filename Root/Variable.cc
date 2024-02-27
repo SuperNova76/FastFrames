@@ -11,7 +11,8 @@ Variable::Variable(const std::string& name) noexcept :
   m_definition(""),
   m_title("title"),
   m_binning(Binning()),
-  m_isNominalOnly(false)
+  m_isNominalOnly(false),
+  m_type(VariableType::UNDEFINED)
 {
 }
 
