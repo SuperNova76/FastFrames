@@ -64,7 +64,6 @@ void MainFrame::executeHistograms() {
         std::vector<SystematicHisto> finalSystHistos;
         std::vector<VariableHisto> finalTruthHistos;
         std::size_t uniqueSampleN(1);
-        ROOT::RDF::RNode* node(nullptr);
         std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
             LOG(INFO) << "\n";
@@ -73,7 +72,7 @@ void MainFrame::executeHistograms() {
             auto currentHistos = this->processUniqueSample(isample, iUniqueSampleID);
             auto& systematicHistos = std::get<0>(currentHistos);
             auto& truthHistos      = std::get<1>(currentHistos);
-            node                   = &std::get<2>(currentHistos);
+            auto& node             = std::get<2>(currentHistos);
             truthChains            = std::move(std::get<3>(currentHistos));
             // this happens when there are no files provided
             if (systematicHistos.empty()) continue;
@@ -84,7 +83,7 @@ void MainFrame::executeHistograms() {
                 for (const auto& isystHist : systematicHistos) {
                     finalSystHistos.emplace_back(isystHist.copy());
                 }
-                LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
+                LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
             } else {
                 if (systematicHistos.size() != finalSystHistos.size()) {
                     LOG(ERROR) << "Number of the systematic histograms do not match\n";
@@ -96,7 +95,7 @@ void MainFrame::executeHistograms() {
                 for (std::size_t isyst = 0; isyst < finalSystHistos.size(); ++isyst) {
                     finalSystHistos.at(isyst).merge(systematicHistos.at(isyst));
                 }
-                LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
+                LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
             }
             if (!truthHistos.empty()) {
                 if (finalTruthHistos.empty()) {
@@ -105,7 +104,7 @@ void MainFrame::executeHistograms() {
                         finalTruthHistos.emplace_back(ivariable.name());
                         finalTruthHistos.back().copyHisto(ivariable.histo());
                     }
-                    LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
+                    LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
                 } else {
                     LOG(INFO) << "Merging truth, triggers event loop for the truth trees!\n";
                     if (finalTruthHistos.size() != truthHistos.size()) {
@@ -115,7 +114,7 @@ void MainFrame::executeHistograms() {
                     for (std::size_t ihist = 0; ihist < truthHistos.size(); ++ihist) {
                         finalTruthHistos.at(ihist).mergeHisto(truthHistos.at(ihist).histo());
                     }
-                    LOG(INFO) << "Number of event loops: " << node->GetNRuns() << ". For an optimal run, this number should be 1\n";
+                    LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
                 }
             }
             ++uniqueSampleN;
@@ -550,7 +549,6 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
 
     LOG(INFO) << "Writing histograms to file: " << fileName << "\n";
 
-    bool first(true);
     for (const auto& isystHist : histos) {
         if (isystHist.regionHistos().empty()) {
             LOG(WARNING) << "No histograms available for sample: " << sample->name() << ", systematic: " << isystHist.name() << "\n";
@@ -565,16 +563,8 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
             // 1D histograms
             for (const auto& ivariableHist : iregionHist.variableHistos()) {
                 const std::string histoName = StringOperations::replaceString(ivariableHist.name(), "_NOSYS", "") + "_" + iregionHist.name();
-                if (first) {
-                    std::unique_ptr<TH1D> histoCopy(static_cast<TH1D*>(ivariableHist.histoUniquePtr()->Clone()));
-                    histoCopy->SetDirectory(nullptr);
-                    out->cd(isystHist.name().c_str());
-                    histoCopy->Write(histoName.c_str());
-                    first = false;
-                } else {
-                    out->cd(isystHist.name().c_str());
-                    ivariableHist.histoUniquePtr()->Write(histoName.c_str());
-                }
+                out->cd(isystHist.name().c_str());
+                ivariableHist.histoUniquePtr()->Write(histoName.c_str());
             }
 
             // 2D histograms
