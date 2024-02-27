@@ -93,3 +93,11 @@ bool Sample::hasUnfolding() const {
 
     return false;
 }
+
+bool Sample::isData() const {
+  for (const auto& id : m_uniqueSampleIDs) {
+    if (id.isData()) return true;
+  }
+
+  return false;
+}

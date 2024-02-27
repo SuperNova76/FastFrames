@@ -119,10 +119,10 @@ samples:
     simulation_type: "fullsim" # mc is full sim
     exclude_variables: ["met_phi"]
 
-#  - name: "Data"
-#    dsids: [0]
-#    campaigns: ["2017"]
-#    simulation_type: "data"
+  - name: "Data"
+    dsids: [0]
+    campaigns: ["2017"]
+    simulation_type: "data"
 
 systematics:
   - campaigns: ["mc20e"]
