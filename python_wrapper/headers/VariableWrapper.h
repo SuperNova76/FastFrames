@@ -233,17 +233,17 @@ class VariableWrapper   {
         static std::vector<std::tuple<std::string, VariableType> > s_variableTypes;
 
         static std::string variableTypeToString(VariableType type) {
-            for (const auto& [name, varType] : s_variableTypes) {
+            for (const auto& [varName, varType] : s_variableTypes) {
                 if (varType == type) {
-                    return name;
+                    return varName;
                 }
             }
             return "undefined";
         };
 
         static VariableType stringToVariableType(const std::string& type) {
-            for (const auto& [name, varType] : s_variableTypes) {
-                if (name == type) {
+            for (const auto& [varName, varType] : s_variableTypes) {
+                if (varName == type) {
                     return varType;
                 }
             }
