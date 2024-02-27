@@ -255,7 +255,7 @@ std::vector<std::tuple<std::string, VariableType> > VariableWrapper::s_variableT
     {"undefined",               VariableType::UNDEFINED},
     {"int",                     VariableType::INT},
     {"long long int",           VariableType::LONG_INT},
-    {"unsigned int",            VariableType::UNSIGNED},
+    {"unsigned long",           VariableType::UNSIGNED},
     {"unsigned long long int",  VariableType::LONG_UNSIGNED},
     {"float",                   VariableType::FLOAT},
     {"double",                  VariableType::DOUBLE}
