@@ -347,7 +347,7 @@ private:
    * @param systematic Systematic
    */
   void processHistograms1D(RegionHisto* regionHisto,
-                           ROOT::RDF::RNode& node,
+                           const ROOT::RDF::RNode& node,
                            const std::shared_ptr<Sample>& sample,
                            const std::shared_ptr<Region>& region,
                            const std::shared_ptr<Systematic>& systematic) const;
@@ -362,7 +362,7 @@ private:
    * @param systematic Systematic
    */
   void processHistograms2D(RegionHisto* regionHisto,
-                           ROOT::RDF::RNode& node,
+                           const ROOT::RDF::RNode& node,
                            const std::shared_ptr<Sample>& sample,
                            const std::shared_ptr<Region>& region,
                            const std::shared_ptr<Systematic>& systematic) const;

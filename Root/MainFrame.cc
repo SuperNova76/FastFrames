@@ -692,7 +692,7 @@ std::vector<std::string> MainFrame::automaticSystematicNames(const std::string& 
 }
 
 void MainFrame::processHistograms1D(RegionHisto* regionHisto,
-                                    ROOT::RDF::RNode& node,
+                                    const ROOT::RDF::RNode& node,
                                     const std::shared_ptr<Sample>& sample,
                                     const std::shared_ptr<Region>& region,
                                     const std::shared_ptr<Systematic>& systematic) const {
@@ -724,7 +724,7 @@ void MainFrame::processHistograms1D(RegionHisto* regionHisto,
 }
 
 void MainFrame::processHistograms2D(RegionHisto* regionHisto,
-                                    ROOT::RDF::RNode& node,
+                                    const ROOT::RDF::RNode& node,
                                     const std::shared_ptr<Sample>& sample,
                                     const std::shared_ptr<Region>& region,
                                     const std::shared_ptr<Systematic>& systematic) const {
