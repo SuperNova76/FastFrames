@@ -50,7 +50,7 @@ std::unique_ptr<TH1D> Utils::copyHistoFromVariableHistos(const std::vector<Varia
         throw std::runtime_error("");
     }
 
-    std::unique_ptr<TH1D> result(static_cast<TH1D*>(itr->histo()->Clone()));
+    std::unique_ptr<TH1D> result(static_cast<TH1D*>(itr->histoUniquePtr()->Clone()));
     result->SetDirectory(nullptr);
 
     return result;
@@ -65,7 +65,7 @@ std::unique_ptr<TH2D> Utils::copyHistoFromVariableHistos2D(const std::vector<Var
         throw std::runtime_error("");
     }
 
-    std::unique_ptr<TH2D> result(static_cast<TH2D*>(itr->histo()->Clone()));
+    std::unique_ptr<TH2D> result(static_cast<TH2D*>(itr->histoUniquePtr()->Clone()));
     result->SetDirectory(nullptr);
 
     return result;

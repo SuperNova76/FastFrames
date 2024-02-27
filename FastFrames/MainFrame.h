@@ -384,20 +384,14 @@ private:
 
   /**
    * @brief Write histogram container to a ROOT file
-   * This triggers event loop in case of just one UniqueSampleID per Sample!
    *
    * @param histos histogram container
    * @param truthHistos truth histogram container
    * @param sample current sample
-   * @param node Main RDF node - needed for printouts
-   * @param printEventLoopCount Print event loop count? This is interesting only when just one UniqueSampleID was processed per Sample
-   * @param
    */
   void writeHistosToFile(const std::vector<SystematicHisto>& histos,
                          const std::vector<VariableHisto>& truthHistos,
-                         const std::shared_ptr<Sample>& sample,
-                         const ROOT::RDF::RNode* node,
-                         const bool printEventLoopCount) const;
+                         const std::shared_ptr<Sample>& sample) const;
 
   /**
    * @brief Store efficiency and acceptance histograms

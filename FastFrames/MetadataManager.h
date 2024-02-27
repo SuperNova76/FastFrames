@@ -8,6 +8,7 @@
 
 #include "FastFrames/UniqueSampleID.h"
 #include "FastFrames/Metadata.h"
+#include "FastFrames/Sample.h"
 
 #include <map>
 #include <memory>
@@ -116,7 +117,25 @@ public:
    */
   const std::vector<std::string>& filePaths(const UniqueSampleID& id) const;
 
+  /**
+   * @brief Check if all sample metadata is available 
+   * 
+   * @param samples 
+   * @return true 
+   * @return false 
+   */
+  bool checkSamplesMetadata(const std::vector<std::shared_ptr<Sample> >& samples) const;
+
 private:
+
+  /**
+   * @brief Check metadata for a single UniqueSampleID 
+   * 
+   * @param id 
+   * @return true 
+   * @return false 
+   */
+  bool checkUniqueSampleIDMetadata(const UniqueSampleID& id) const;
 
   std::map<UniqueSampleID, Metadata> m_metadata;
   std::map<std::string, double> m_luminosity;

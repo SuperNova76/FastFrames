@@ -90,15 +90,31 @@ public:
   inline ROOT::RDF::RResultPtr<TH1D> histo() const {return m_histo;}
 
   /**
+   * @brief Get the unique ptr histogram
+   * 
+   * @return const std::unique_ptr<TH1D>& 
+   */
+  inline const std::unique_ptr<TH1D>& histoUniquePtr() const {return m_histoUniquePtr;}
+
+  /**
    * @brief Merge histograms (add them)
    *
    * @param h Other histogram
    */
   void mergeHisto(ROOT::RDF::RResultPtr<TH1D> h);
 
+  /**
+   * @brief Copy the RResultsPtr to the unique ptr 
+   * 
+   * @param h 
+   * @return * void 
+   */
+  void copyHisto(ROOT::RDF::RResultPtr<TH1D> h);
+
 private:
   std::string m_name;
   ROOT::RDF::RResultPtr<TH1D> m_histo;
+  std::unique_ptr<TH1D> m_histoUniquePtr;
 
 };
 
@@ -177,15 +193,30 @@ public:
   inline ROOT::RDF::RResultPtr<TH2D> histo() const {return m_histo;}
 
   /**
+   * @brief Get the unique ptr histogram
+   * 
+   * @return const std::unique_ptr<TH2D>& 
+   */
+  inline const std::unique_ptr<TH2D>& histoUniquePtr() const {return m_histoUniquePtr;}
+
+  /**
    * @brief Merge histograms (add them)
    *
    * @param h Other histogram
    */
   void mergeHisto(ROOT::RDF::RResultPtr<TH2D> h);
 
+  /**
+   * @brief Copy the RResultsPtr to the unique ptr 
+   * 
+   * @param h 
+   */
+  void copyHisto(ROOT::RDF::RResultPtr<TH2D> h);
+
 private:
   std::string m_name;
   ROOT::RDF::RResultPtr<TH2D> m_histo;
+  std::unique_ptr<TH2D> m_histoUniquePtr;
 };
 
 /**
@@ -366,6 +397,13 @@ public:
    * @param histo
    */
   void merge(const SystematicHisto& histo);
+
+  /**
+   * @brief Copy the histos without the RResultsPts (allows to free it) 
+   * 
+   * @return SystematicHisto 
+   */
+  SystematicHisto copy() const;
 
 private:
 
