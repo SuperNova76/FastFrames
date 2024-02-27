@@ -34,7 +34,7 @@ public:
    *
    * @param xSec
    */
-  inline void setCrossSection(const double xSec) {m_crossSection = xSec;}
+  inline void setCrossSection(const double xSec) {m_crossSection = xSec; m_crossSectionSet = true;}
 
   /**
    * @brief Get cross-section
@@ -42,6 +42,13 @@ public:
    * @return double
    */
   inline double crossSection() const {return m_crossSection;}
+
+  /**
+   * @brief Is the cross-section set?
+   * 
+   * @return double 
+   */
+  inline double crossSectionSet() const {return m_crossSectionSet;}
 
   /**
    * @brief Add sumWeights for this sample
@@ -69,6 +76,14 @@ public:
   bool sumWeightExist(const std::string& name) const;
 
   /**
+   * @brief Is sum weights map empty? 
+   * 
+   * @return true 
+   * @return false 
+   */
+  inline bool sumWeightsIsEmpty() const {return m_sumWeights.empty();}
+
+  /**
    * @brief Add a path to a ROOT file belonging to this sample
    *
    * @param path
@@ -84,6 +99,7 @@ public:
 
 private:
   double m_crossSection;
+  bool m_crossSectionSet;
   std::map<std::string, double> m_sumWeights;
   std::vector<std::string> m_filePaths;
 };

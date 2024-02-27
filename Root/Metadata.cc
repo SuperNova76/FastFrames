@@ -13,6 +13,7 @@
 
 Metadata::Metadata() noexcept :
 m_crossSection(-1),
+m_crossSectionSet(false),
 m_sumWeights({})
 {
 }

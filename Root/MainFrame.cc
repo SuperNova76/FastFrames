@@ -53,6 +53,12 @@ void MainFrame::executeHistograms() {
         }
     }
 
+    // run the check for metadata
+    if (!m_metadataManager.checkSamplesMetadata(m_config->samples())) {
+        LOG(ERROR) << "Metadata information missing, please fix\n";
+        throw std::invalid_argument("");
+    }
+
     LOG(INFO) << "-------------------------------------\n";
     LOG(INFO) << "Started the main histogram processing\n";
     LOG(INFO) << "-------------------------------------\n";
@@ -64,16 +70,15 @@ void MainFrame::executeHistograms() {
         std::vector<SystematicHisto> finalSystHistos;
         std::vector<VariableHisto> finalTruthHistos;
         std::size_t uniqueSampleN(1);
-        std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
             LOG(INFO) << "\n";
             LOG(INFO) << "Processing unique sample: " << iUniqueSampleID << ", " << uniqueSampleN << " out of " << isample->uniqueSampleIDs().size() << " unique samples\n";
 
             auto currentHistos = this->processUniqueSample(isample, iUniqueSampleID);
-            auto& systematicHistos = std::get<0>(currentHistos);
-            auto& truthHistos      = std::get<1>(currentHistos);
-            auto& node             = std::get<2>(currentHistos);
-            truthChains            = std::move(std::get<3>(currentHistos));
+            auto&& systematicHistos = std::get<0>(currentHistos);
+            auto&& truthHistos      = std::get<1>(currentHistos);
+            auto node               = std::get<2>(currentHistos);
+            auto truthChains        = std::move(std::get<3>(currentHistos));
             // this happens when there are no files provided
             if (systematicHistos.empty()) continue;
 
@@ -118,14 +123,14 @@ void MainFrame::executeHistograms() {
                 }
             }
             ++uniqueSampleN;
+            if (!truthChains.empty()) {
+                LOG(DEBUG) << "Deleting truth chains and the TTree indices\n";
+            }
+            LOG(DEBUG) << "Deleting RDF objects (out of scope)\n";
         }
 
         this->writeHistosToFile(finalSystHistos, finalTruthHistos, isample);
         ++sampleN;
-
-        if (!truthChains.empty()) {
-            LOG(DEBUG) << "Deleting truth chains and the TTree indices\n";
-        }
     }
 }
 
@@ -134,6 +139,12 @@ void MainFrame::executeNtuples() {
         if (isample->automaticSystematics() || isample->nominalOnly()) {
             this->readAutomaticSystematics(isample, isample->nominalOnly());
         }
+    }
+    
+    // run the check for metadata
+    if (!m_metadataManager.checkSamplesMetadata(m_config->samples())) {
+        LOG(ERROR) << "Metadata information missing, please fix\n";
+        throw std::invalid_argument("");
     }
 
     LOG(INFO) << "----------------------------------\n";
@@ -231,11 +242,13 @@ std::tuple<std::vector<SystematicHisto>,
     m_systReplacer.printMaps();
 
     std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample, uniqueSampleID);
+    LOG(DEBUG) << "Finished booking filters\n";
 
     // retrieve the histograms;
     std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
+    LOG(DEBUG) << "Finished booking histograms\n";
 
-    return std::make_tuple(std::move(histoContainer), std::move(truthHistos), mainNode, std::move(truthChains));
+    return std::make_tuple(std::move(histoContainer), std::move(truthHistos), std::move(mainNode), std::move(truthChains));
 }
 
 void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,

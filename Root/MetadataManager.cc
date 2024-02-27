@@ -177,3 +177,37 @@ const std::vector<std::string>& MetadataManager::filePaths(const UniqueSampleID&
 
     return itr->second.filePaths();
 }
+
+bool MetadataManager::checkSamplesMetadata(const std::vector<std::shared_ptr<Sample> >& samples) const {
+
+    for (const auto& isample : samples) {
+        for (const auto& id : isample->uniqueSampleIDs()) {
+           if (!this->checkUniqueSampleIDMetadata(id)) return false;
+        }
+    }
+
+    return true;
+}
+
+bool MetadataManager::checkUniqueSampleIDMetadata(const UniqueSampleID& id) const {
+    
+    if (id.isData()) return true;
+    
+    auto itrXsec = m_metadata.find(id);
+    if (itrXsec == m_metadata.end()) {
+        LOG(ERROR) << "Cannot find metadata for unique sample : " << id << "!\n";
+        return false;
+    }
+
+    if (itrXsec->second.sumWeightsIsEmpty()) {
+        LOG(ERROR) << "Sum weights for unique sample: " << id << " are empty\n";
+        return false;
+    }
+
+    if (!itrXsec->second.crossSectionSet()) {
+        LOG(ERROR) << "Cross-section for unique sample: " << id << " is not set\n";
+        return false;
+    }
+
+    return true;
+}
