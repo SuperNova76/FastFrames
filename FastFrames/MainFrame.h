@@ -487,6 +487,16 @@ private:
                                           const std::shared_ptr<Systematic>& systematic) const;
 
   /**
+   * @brief Book 1d histograms with proper templates
+   * 
+   * @param node 
+   * @param variable 
+   * @return ROOT::RDF::RResultPtr<TH1D> 
+   */
+  ROOT::RDF::RResultPtr<TH1D> book1DhistoTruth(ROOT::RDF::RNode node,
+                                               const Variable& variable) const;
+
+  /**
    * @brief Book 2D histograms with proper templates
    * 
    * @param node 

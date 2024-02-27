@@ -778,12 +778,7 @@ void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
             const std::string name = recoVariable.name() + "_vs_" + itruth->name() + "_" + truthVariable.name();
             VariableHisto2D variableHistoPassed(name);
 
-            ROOT::RDF::RResultPtr<TH2D> histogramPassed = passedNode.Histo2D(
-                                                            Utils::histoModel2D(truthVariable, recoVariable),
-                                                            this->systematicVariable(truthVariable, systematic),
-                                                            this->systematicVariable(recoVariable, systematic),
-                                                            this->systematicWeight(systematic)
-                                                          );
+            ROOT::RDF::RResultPtr<TH2D> histogramPassed = this->book2Dhisto(passedNode, truthVariable, recoVariable, systematic);
 
             if (!histogramPassed) {
                 LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
@@ -893,7 +888,7 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
             // get histograms (will NOT trigger event loop)
             const std::string name = itruth->name() + "_" + ivariable.name();
             VariableHisto hist(name);
-            auto rdfHist = customNode.Histo1D(ivariable.histoModel1D(), ivariable.definition(), "weight_truth_TOTAL");
+            auto rdfHist = this->book1DhistoTruth(customNode, ivariable);
 
             hist.setHisto(rdfHist);
 
@@ -1075,6 +1070,51 @@ ROOT::RDF::RResultPtr<TH1D> MainFrame::book1Dhisto(ROOT::RDF::RNode node,
     return node.Histo1D<int, double>(variable.histoModel1D(),
                                      this->systematicVariable(variable, systematic),
                                      this->systematicWeight(systematic));
+}
+
+ROOT::RDF::RResultPtr<TH1D> MainFrame::book1DhistoTruth(ROOT::RDF::RNode node,
+                                                        const Variable& variable) const {
+
+    switch (variable.type()) {
+        case VariableType::UNDEFINED:
+            return node.Histo1D(variable.histoModel1D(),
+                                variable.definition(),
+                                "weight_truth_TOTAL");
+            break;
+        case VariableType::INT:
+            return node.Histo1D<int, double>(variable.histoModel1D(),
+                                             variable.definition(),
+                                "weight_truth_TOTAL");
+            break;
+        case VariableType::LONG_INT:
+            return node.Histo1D<long long int, double>(variable.histoModel1D(),
+                                                       variable.definition(),
+                                                       "weight_truth_TOTAL");
+            break;
+        case VariableType::UNSIGNED:
+            return node.Histo1D<unsigned int, double>(variable.histoModel1D(),
+                                                      variable.definition(),
+                                                      "weight_truth_TOTAL");
+            break;
+        case VariableType::LONG_UNSIGNED:
+            return node.Histo1D<unsigned long long, int>(variable.histoModel1D(),
+                                                         variable.definition(),
+                                                         "weight_truth_TOTAL");
+            break;
+        case VariableType::FLOAT:
+            return node.Histo1D<float, double>(variable.histoModel1D(),
+                                               variable.definition(),
+                                               "weight_truth_TOTAL");
+            break;
+        case VariableType::DOUBLE:
+            return node.Histo1D<double, double>(variable.histoModel1D(),
+                                                variable.definition(),
+                                                "weight_truth_TOTAL");
+            break;
+    }
+    return node.Histo1D(variable.histoModel1D(),
+                        variable.definition(),
+                        "weight_truth_TOTAL");
 }
 
 ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
