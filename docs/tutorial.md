@@ -343,6 +343,7 @@ regions:
       - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
         definition: "jet1_pt_GEV_NOSYS"
+        type: "double"
         binning:
           min: 0
           max: 300
@@ -350,6 +351,7 @@ regions:
       - name: "reco_met"
         title : "MET;E_{T}^{miss} [MeV];Events"
         definition: "met_met_NOSYS"
+        type: "float"
         binning:
           bin_edges: [0,20000,60000,80000,140000,250000]
 
@@ -359,6 +361,7 @@ regions:
       - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
         definition: "jet1_pt_GEV_NOSYS"
+        type: "double"
         binning:
           min: 0
           max: 300
@@ -366,6 +369,7 @@ regions:
       - name: "reco_met"
         title : "MET;E_{T}^{miss} [MeV];Events"
         definition: "met_met_NOSYS"
+        type: "float"
         binning:
           bin_edges: [0,20000,60000,80000,140000,250000]
 
@@ -421,6 +425,7 @@ The region block for one region:
       - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
         definition: "jet1_pt_GEV_NOSYS"
+        type: "double"
         binning:
           min: 0
           max: 300
@@ -428,12 +433,18 @@ The region block for one region:
       - name: "reco_met"
         title : "MET;E_{T}^{miss} [MeV];Events"
         definition: "met_met_NOSYS"
+        type: "float"
         binning:
           bin_edges: [0,20000,60000,80000,140000,250000]
 ```
-specifies the region definition. It has the name of the region (to be used in the output) and a selection. The selection can be a formula but only simple formulae are encouraged (e.g. simple AND or OR).
+specifies the region definition. It has the name of the region (to be used in the output) and a selection.
+The selection can be a formula but only simple formulae are encouraged (e.g. simple AND or OR).
 Then, each region has a list of variables for which histograms will be created.
 The variables have a name (to be used in the output), title (the format is `title; x axis title; y axis title`), definition which is a name of the column (i.e. it cannot be a formula) and binning.
+The `type` of the variable tells the c++ code which c++ template type to pass.
+This allows to reduce the need for JITing, thus reducing memory and the time before the event loop os being executed.
+Only some types are supported: "int", "long long int", "unsigned long", "unsigned long long int", "float" and "double".
+For other types, or if you do not care about this performance part, you can leave this empty and the code will JIT the correct type.
 
 The sample definition:
 ```yaml
@@ -574,6 +585,7 @@ Add the following lines to the configuration:
         variables:
           - name: "particle_met"
             definition: "met_met"
+            type: "float"
             binning:
               min: 0
               max: 500000
@@ -602,6 +614,7 @@ The above block tells the code that a new truth configuration called `particle` 
         variables:
           - name: "particle_met"
             definition: "met_met"
+            type: "float"
             binning:
               min: 0
               max: 500000
