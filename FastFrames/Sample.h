@@ -303,6 +303,14 @@ public:
    */
   bool hasUnfolding() const;
 
+  /**
+   * @brief Sample is data? 
+   * 
+   * @return true 
+   * @return false 
+   */
+  bool isData() const;
+
 private:
   std::string m_name;
 
@@ -331,4 +339,6 @@ private:
   bool m_nominalOnly = false;
 
   bool m_automaticSystematics = false;
+
+  bool m_isData = false;
 };

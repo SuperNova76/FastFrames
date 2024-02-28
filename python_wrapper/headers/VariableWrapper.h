@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <tuple>
 
 /**
  * @brief Wrapper around variable class, to be able to use it in python
@@ -209,7 +210,53 @@ class VariableWrapper   {
         bool isNominalOnly() const {return m_variable->isNominalOnly();};
 
 
+        /**
+         * @brief Set the Type object
+         *
+         * @param type
+         */
+        inline void setType(const std::string &type) {
+            m_variable->setType(stringToVariableType(type));
+        };
+
+        /**
+         * @brief variable type
+         *
+         * @return std::string
+         */
+        inline std::string type() const {return variableTypeToString(m_variable->type());};
+
+
     private:
         std::shared_ptr<Variable> m_variable;
 
+        static std::vector<std::tuple<std::string, VariableType> > s_variableTypes;
+
+        static std::string variableTypeToString(VariableType type) {
+            for (const auto& [varName, varType] : s_variableTypes) {
+                if (varType == type) {
+                    return varName;
+                }
+            }
+            return "undefined";
+        };
+
+        static VariableType stringToVariableType(const std::string& type) {
+            for (const auto& [varName, varType] : s_variableTypes) {
+                if (varName == type) {
+                    return varType;
+                }
+            }
+            throw std::runtime_error("Unknown variable type: " + type);
+        };
+};
+
+std::vector<std::tuple<std::string, VariableType> > VariableWrapper::s_variableTypes = {
+    {"undefined",               VariableType::UNDEFINED},
+    {"int",                     VariableType::INT},
+    {"long long int",           VariableType::LONG_INT},
+    {"unsigned long",           VariableType::UNSIGNED},
+    {"unsigned long long int",  VariableType::LONG_UNSIGNED},
+    {"float",                   VariableType::FLOAT},
+    {"double",                  VariableType::DOUBLE}
 };

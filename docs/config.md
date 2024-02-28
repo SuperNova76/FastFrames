@@ -62,6 +62,7 @@ This block is optional.
 | definition    | string            | Definition of the variable. All branches affected by systematic uncertainties must have ```_NOSYS``` suffix     |
 | binning       | dict              | Binning of the variable   |
 | is_nominal_only | bool            | If set to true, only histogram for NOSYS will be produced. Default is ```False``` |
+| type          | string            | Allows to tell the code to define the c++ template arguments for the histograms. This prevents JITing thus saving some CPU time and memory. Allowed options are "int", "long long int", "unsigned long", "unsigned long long int", "float", "double". If not provided the JITed version will be used. |
 | numbering_sequence| list of dicts     | It can be used to automatically add more variables in one block, if they differ by a single value (for example index). More information can be found bellow in ```numbering_sequence``` block description.
 
 ####   `Binning` block inside of the `variable` block

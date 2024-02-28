@@ -347,7 +347,7 @@ private:
    * @param systematic Systematic
    */
   void processHistograms1D(RegionHisto* regionHisto,
-                           ROOT::RDF::RNode& node,
+                           const ROOT::RDF::RNode& node,
                            const std::shared_ptr<Sample>& sample,
                            const std::shared_ptr<Region>& region,
                            const std::shared_ptr<Systematic>& systematic) const;
@@ -362,7 +362,7 @@ private:
    * @param systematic Systematic
    */
   void processHistograms2D(RegionHisto* regionHisto,
-                           ROOT::RDF::RNode& node,
+                           const ROOT::RDF::RNode& node,
                            const std::shared_ptr<Sample>& sample,
                            const std::shared_ptr<Region>& region,
                            const std::shared_ptr<Systematic>& systematic) const;
@@ -474,6 +474,45 @@ private:
    */
   ROOT::RDF::RNode minMaxRange(ROOT::RDF::RNode node) const;
 
+  /**
+   * @brief Book 1D histogram with proper templates
+   * 
+   * @param node 
+   * @param variable 
+   * @param systematic 
+   * @param sample
+   * @return ROOT::RDF::RResultPtr<TH1D> 
+   */
+  ROOT::RDF::RResultPtr<TH1D> book1Dhisto(ROOT::RDF::RNode node,
+                                          const Variable& variable,
+                                          const std::shared_ptr<Systematic>& systematic,
+                                          const std::shared_ptr<Sample>& sample) const;
+
+  /**
+   * @brief Book 1d histograms with proper templates
+   * 
+   * @param node 
+   * @param variable 
+   * @return ROOT::RDF::RResultPtr<TH1D> 
+   */
+  ROOT::RDF::RResultPtr<TH1D> book1DhistoTruth(ROOT::RDF::RNode node,
+                                               const Variable& variable) const;
+
+  /**
+   * @brief Book 2D histograms with proper templates
+   * 
+   * @param node 
+   * @param variable1 
+   * @param variable2 
+   * @param systematic 
+   * @param sample
+   * @return ROOT::RDF::RResultPtr<TH2D> 
+   */
+  ROOT::RDF::RResultPtr<TH2D> book2Dhisto(ROOT::RDF::RNode node,
+                                          const Variable& variable1,
+                                          const Variable& variable2,
+                                          const std::shared_ptr<Systematic>& systematic,
+                                          const std::shared_ptr<Sample>& sample) const;
 protected:
 
   /**

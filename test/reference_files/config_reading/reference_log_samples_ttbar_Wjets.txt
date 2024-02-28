@@ -36,6 +36,7 @@ Regions block:
 	variables:
 		name:  jet_pt
 		title:  
+		type:  float
 		definition:  jet_pt_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -43,6 +44,7 @@ Regions block:
 
 		name:  met_met
 		title:  histo title;X axis title;Y axis title
+		type:  float
 		definition:  met_met_NOSYS
 		is_nominal_only:  False
 		binning:  0.000000,20000.000000,60000.000000,80000.000000,140000.000000,250000.000000
@@ -50,6 +52,7 @@ Regions block:
 
 		name:  met_phi
 		title:  histo title;X axis title;Y axis title
+		type:  float
 		definition:  met_phi_NOSYS
 		is_nominal_only:  False
 		binning:  16 ,  -3.2 ,  3.2
@@ -60,6 +63,7 @@ Regions block:
 	variables:
 		name:  jet_pt
 		title:  
+		type:  float
 		definition:  jet_pt_NOSYS
 		is_nominal_only:  True
 		binning:  10 ,  0.0 ,  300000.0
@@ -67,6 +71,7 @@ Regions block:
 
 		name:  met_met
 		title:  histo title;X axis title;Y axis title
+		type:  float
 		definition:  met_met_NOSYS
 		is_nominal_only:  False
 		binning:  0.000000,20000.000000,60000.000000,80000.000000,140000.000000,250000.000000
@@ -74,6 +79,7 @@ Regions block:
 
 		name:  met_phi
 		title:  histo title;X axis title;Y axis title
+		type:  float
 		definition:  met_phi_NOSYS
 		is_nominal_only:  False
 		binning:  16 ,  -3.2 ,  3.2
@@ -81,6 +87,7 @@ Regions block:
 
 		name:  jet1_pt
 		title:  ;Transverse momentum of jet #1;Y axis title
+		type:  float
 		definition:  jet_pt_index_1_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -88,6 +95,7 @@ Regions block:
 
 		name:  jet2_pt
 		title:  ;Transverse momentum of jet #2;Y axis title
+		type:  float
 		definition:  jet_pt_index_2_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -95,6 +103,7 @@ Regions block:
 
 		name:  jet3_pt
 		title:  ;Transverse momentum of jet #3;Y axis title
+		type:  float
 		definition:  jet_pt_index_3_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -102,6 +111,7 @@ Regions block:
 
 		name:  jet4_pt
 		title:  ;Transverse momentum of jet #4;Y axis title
+		type:  float
 		definition:  jet_pt_index_4_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -109,6 +119,7 @@ Regions block:
 
 		name:  particle_jet1_pt
 		title:  ;Transverse momentum of particle-level jet #1;Y axis title
+		type:  float
 		definition:  particle_jet_pt_index_1_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -116,6 +127,7 @@ Regions block:
 
 		name:  particle_jet2_pt
 		title:  ;Transverse momentum of particle-level jet #2;Y axis title
+		type:  float
 		definition:  particle_jet_pt_index_2_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -123,6 +135,7 @@ Regions block:
 
 		name:  particle_jet3_pt
 		title:  ;Transverse momentum of particle-level jet #3;Y axis title
+		type:  float
 		definition:  particle_jet_pt_index_3_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -130,6 +143,7 @@ Regions block:
 
 		name:  particle_jet4_pt
 		title:  ;Transverse momentum of particle-level jet #4;Y axis title
+		type:  float
 		definition:  particle_jet_pt_index_4_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -137,6 +151,7 @@ Regions block:
 
 		name:  top_pt_mass_170
 		title:  ;Transverse momentum of top-quark, m_top = 170 GeV;Y axis title
+		type:  float
 		definition:  pt_top_mass_170_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -144,6 +159,7 @@ Regions block:
 
 		name:  top_pt_mass_172.5
 		title:  ;Transverse momentum of top-quark, m_top = 172.5 GeV;Y axis title
+		type:  float
 		definition:  pt_top_mass_172.5_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -151,6 +167,7 @@ Regions block:
 
 		name:  top_pt_mass_175.0
 		title:  ;Transverse momentum of top-quark, m_top = 175.0 GeV;Y axis title
+		type:  float
 		definition:  pt_top_mass_175.0_NOSYS
 		is_nominal_only:  False
 		binning:  10 ,  0.0 ,  300000.0
@@ -217,26 +234,32 @@ Samples block:
 		variables:
 			name:  truth_jet_pt
 			title:  
+			type:  float
 			definition:  particle_jet_pt
 			binning:  10 ,  0.0 ,  10.0
 			name:  truth_jet1_pt
 			title:  
+			type:  float
 			definition:  particle_jet1_pt
 			binning:  10 ,  0.0 ,  10.0
 			name:  truth_jet2_pt
 			title:  
+			type:  float
 			definition:  particle_jet2_pt
 			binning:  10 ,  0.0 ,  10.0
 			name:  truth_jet3_pt
 			title:  
+			type:  float
 			definition:  particle_jet3_pt
 			binning:  10 ,  0.0 ,  10.0
 			name:  truth_jet4_pt
 			title:  
+			type:  float
 			definition:  particle_jet4_pt
 			binning:  10 ,  0.0 ,  10.0
 			name:  truth_el_pt
 			title:  
+			type:  float
 			definition:  particle_el_pt
 			binning:  0.000000,2.000000,5.000000,7.000000,8.000000,10.000000,15.000000
 		Custom defines:

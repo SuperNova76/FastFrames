@@ -247,6 +247,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // isNominalOnly
         .def("setIsNominalOnly",    &VariableWrapper::setIsNominalOnly)
         .def("isNominalOnly",       &VariableWrapper::isNominalOnly)
+
+        // type
+        .def("type",               &VariableWrapper::type)
+        .def("setType",            &VariableWrapper::setType)
     ;
 
     /**

@@ -109,7 +109,6 @@ void MainFrame::executeHistograms() {
                         finalTruthHistos.emplace_back(ivariable.name());
                         finalTruthHistos.back().copyHisto(ivariable.histo());
                     }
-                    LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
                 } else {
                     LOG(INFO) << "Merging truth, triggers event loop for the truth trees!\n";
                     if (finalTruthHistos.size() != truthHistos.size()) {
@@ -119,7 +118,6 @@ void MainFrame::executeHistograms() {
                     for (std::size_t ihist = 0; ihist < truthHistos.size(); ++ihist) {
                         finalTruthHistos.at(ihist).mergeHisto(truthHistos.at(ihist).histo());
                     }
-                    LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
                 }
             }
             ++uniqueSampleN;
@@ -694,7 +692,7 @@ std::vector<std::string> MainFrame::automaticSystematicNames(const std::string& 
 }
 
 void MainFrame::processHistograms1D(RegionHisto* regionHisto,
-                                    ROOT::RDF::RNode& node,
+                                    const ROOT::RDF::RNode& node,
                                     const std::shared_ptr<Sample>& sample,
                                     const std::shared_ptr<Region>& region,
                                     const std::shared_ptr<Systematic>& systematic) const {
@@ -711,11 +709,7 @@ void MainFrame::processHistograms1D(RegionHisto* regionHisto,
         }
         VariableHisto variableHisto(ivariable.name());
 
-        ROOT::RDF::RResultPtr<TH1D> histogram = node.Histo1D(
-                                                    ivariable.histoModel1D(),
-                                                    this->systematicVariable(ivariable, systematic),
-                                                    this->systematicWeight(systematic)
-                                                );
+        ROOT::RDF::RResultPtr<TH1D> histogram = this->book1Dhisto(node, ivariable, systematic, sample); 
 
         if (!histogram) {
             LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
@@ -730,7 +724,7 @@ void MainFrame::processHistograms1D(RegionHisto* regionHisto,
 }
 
 void MainFrame::processHistograms2D(RegionHisto* regionHisto,
-                                    ROOT::RDF::RNode& node,
+                                    const ROOT::RDF::RNode& node,
                                     const std::shared_ptr<Sample>& sample,
                                     const std::shared_ptr<Region>& region,
                                     const std::shared_ptr<Systematic>& systematic) const {
@@ -750,12 +744,7 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
         }
 
         VariableHisto2D variableHisto2D(name);
-        ROOT::RDF::RResultPtr<TH2D> histogram2D = node.Histo2D(
-                                                    Utils::histoModel2D(v1, v2),
-                                                    this->systematicVariable(v1, systematic),
-                                                    this->systematicVariable(v2, systematic),
-                                                    this->systematicWeight(systematic)
-                                                );
+        ROOT::RDF::RResultPtr<TH2D> histogram2D = this->book2Dhisto(node, v1, v2, systematic, sample);
 
         if (!histogram2D) {
             LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
@@ -789,12 +778,7 @@ void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
             const std::string name = recoVariable.name() + "_vs_" + itruth->name() + "_" + truthVariable.name();
             VariableHisto2D variableHistoPassed(name);
 
-            ROOT::RDF::RResultPtr<TH2D> histogramPassed = passedNode.Histo2D(
-                                                            Utils::histoModel2D(truthVariable, recoVariable),
-                                                            this->systematicVariable(truthVariable, systematic),
-                                                            this->systematicVariable(recoVariable, systematic),
-                                                            this->systematicWeight(systematic)
-                                                          );
+            ROOT::RDF::RResultPtr<TH2D> histogramPassed = this->book2Dhisto(passedNode, truthVariable, recoVariable, systematic, sample);
 
             if (!histogramPassed) {
                 LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
@@ -904,7 +888,7 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
             // get histograms (will NOT trigger event loop)
             const std::string name = itruth->name() + "_" + ivariable.name();
             VariableHisto hist(name);
-            auto rdfHist = customNode.Histo1D(ivariable.histoModel1D(), ivariable.definition(), "weight_truth_TOTAL");
+            auto rdfHist = this->book1DhistoTruth(customNode, ivariable);
 
             hist.setHisto(rdfHist);
 
@@ -1039,4 +1023,597 @@ ROOT::RDF::RNode MainFrame::minMaxRange(ROOT::RDF::RNode node) const {
     }
 
     return node;
+}
+
+ROOT::RDF::RResultPtr<TH1D> MainFrame::book1Dhisto(ROOT::RDF::RNode node,
+                                                   const Variable& variable,
+                                                   const std::shared_ptr<Systematic>& systematic,
+                                                   const std::shared_ptr<Sample>& sample) const {
+
+    if (sample->isData()) {
+        switch (variable.type()) {
+            case VariableType::UNDEFINED:
+                return node.Histo1D(variable.histoModel1D(),
+                                    this->systematicVariable(variable, systematic),
+                                    this->systematicWeight(systematic));
+                break;
+            case VariableType::INT:
+                return node.Histo1D<int, int>(variable.histoModel1D(),
+                                              this->systematicVariable(variable, systematic),
+                                              this->systematicWeight(systematic));
+                break;
+            case VariableType::LONG_INT:
+                return node.Histo1D<long long int, int>(variable.histoModel1D(),
+                                                        this->systematicVariable(variable, systematic),
+                                                        this->systematicWeight(systematic));
+                break;
+            case VariableType::UNSIGNED:
+                return node.Histo1D<unsigned long, int>(variable.histoModel1D(),
+                                                       this->systematicVariable(variable, systematic),
+                                                       this->systematicWeight(systematic));
+                break;
+            case VariableType::LONG_UNSIGNED:
+                return node.Histo1D<unsigned long long, int>(variable.histoModel1D(),
+                                                             this->systematicVariable(variable, systematic),
+                                                             this->systematicWeight(systematic));
+                break;
+            case VariableType::FLOAT:
+                return node.Histo1D<float, int>(variable.histoModel1D(),
+                                                this->systematicVariable(variable, systematic),
+                                                this->systematicWeight(systematic));
+                break;
+            case VariableType::DOUBLE:
+                return node.Histo1D<double, int>(variable.histoModel1D(),
+                                                 this->systematicVariable(variable, systematic),
+                                                 this->systematicWeight(systematic));
+                break;
+        }
+    }
+
+    switch (variable.type()) {
+        case VariableType::UNDEFINED:
+            return node.Histo1D(variable.histoModel1D(),
+                                this->systematicVariable(variable, systematic),
+                                this->systematicWeight(systematic));
+            break;
+        case VariableType::INT:
+            return node.Histo1D<int, double>(variable.histoModel1D(),
+                                             this->systematicVariable(variable, systematic),
+                                             this->systematicWeight(systematic));
+            break;
+        case VariableType::LONG_INT:
+            return node.Histo1D<long long int, double>(variable.histoModel1D(),
+                                                       this->systematicVariable(variable, systematic),
+                                                       this->systematicWeight(systematic));
+            break;
+        case VariableType::UNSIGNED:
+            return node.Histo1D<unsigned long, double>(variable.histoModel1D(),
+                                                      this->systematicVariable(variable, systematic),
+                                                      this->systematicWeight(systematic));
+            break;
+        case VariableType::LONG_UNSIGNED:
+            return node.Histo1D<unsigned long long, double>(variable.histoModel1D(),
+                                                            this->systematicVariable(variable, systematic),
+                                                            this->systematicWeight(systematic));
+            break;
+        case VariableType::FLOAT:
+            return node.Histo1D<float, double>(variable.histoModel1D(),
+                                               this->systematicVariable(variable, systematic),
+                                               this->systematicWeight(systematic));
+            break;
+        case VariableType::DOUBLE:
+            return node.Histo1D<double, double>(variable.histoModel1D(),
+                                                this->systematicVariable(variable, systematic),
+                                                this->systematicWeight(systematic));
+            break;
+    }
+
+    return node.Histo1D<int, double>(variable.histoModel1D(),
+                                     this->systematicVariable(variable, systematic),
+                                     this->systematicWeight(systematic));
+}
+
+ROOT::RDF::RResultPtr<TH1D> MainFrame::book1DhistoTruth(ROOT::RDF::RNode node,
+                                                        const Variable& variable) const {
+
+    switch (variable.type()) {
+        case VariableType::UNDEFINED:
+            return node.Histo1D(variable.histoModel1D(),
+                                variable.definition(),
+                                "weight_truth_TOTAL");
+            break;
+        case VariableType::INT:
+            return node.Histo1D<int, double>(variable.histoModel1D(),
+                                             variable.definition(),
+                                "weight_truth_TOTAL");
+            break;
+        case VariableType::LONG_INT:
+            return node.Histo1D<long long int, double>(variable.histoModel1D(),
+                                                       variable.definition(),
+                                                       "weight_truth_TOTAL");
+            break;
+        case VariableType::UNSIGNED:
+            return node.Histo1D<unsigned long, double>(variable.histoModel1D(),
+                                                      variable.definition(),
+                                                      "weight_truth_TOTAL");
+            break;
+        case VariableType::LONG_UNSIGNED:
+            return node.Histo1D<unsigned long long, int>(variable.histoModel1D(),
+                                                         variable.definition(),
+                                                         "weight_truth_TOTAL");
+            break;
+        case VariableType::FLOAT:
+            return node.Histo1D<float, double>(variable.histoModel1D(),
+                                               variable.definition(),
+                                               "weight_truth_TOTAL");
+            break;
+        case VariableType::DOUBLE:
+            return node.Histo1D<double, double>(variable.histoModel1D(),
+                                                variable.definition(),
+                                                "weight_truth_TOTAL");
+            break;
+    }
+    return node.Histo1D(variable.histoModel1D(),
+                        variable.definition(),
+                        "weight_truth_TOTAL");
+}
+
+ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
+                                                   const Variable& variable1,
+                                                   const Variable& variable2,
+                                                   const std::shared_ptr<Systematic>& systematic,
+                                                   const std::shared_ptr<Sample>& sample) const {
+
+    const auto type1 = variable1.type();
+    const auto type2 = variable2.type();
+
+    if (type1 == VariableType::UNDEFINED || type2 == VariableType::UNDEFINED) {
+        return node.Histo2D(Utils::histoModel2D(variable1, variable2),
+                            this->systematicVariable(variable1, systematic),
+                            this->systematicVariable(variable2, systematic),
+                            this->systematicWeight(systematic));
+    }
+
+    if (sample->isData()) {
+        if (type1 == VariableType::INT && type2 == VariableType::INT) {
+            return node.Histo2D<int, int, int>(Utils::histoModel2D(variable1, variable2),
+                                               this->systematicVariable(variable1, systematic),
+                                               this->systematicVariable(variable2, systematic),
+                                               this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::INT && type2 == VariableType::LONG_INT) {
+            return node.Histo2D<int, long long int, int>(Utils::histoModel2D(variable1, variable2),
+                                                          this->systematicVariable(variable1, systematic),
+                                                          this->systematicVariable(variable2, systematic),
+                                                          this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::INT && type2 == VariableType::UNSIGNED) {
+            return node.Histo2D<int, unsigned long, int>(Utils::histoModel2D(variable1, variable2),
+                                                        this->systematicVariable(variable1, systematic),
+                                                        this->systematicVariable(variable2, systematic),
+                                                        this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::INT && type2 == VariableType::LONG_UNSIGNED) {
+            return node.Histo2D<int, unsigned long long, int>(Utils::histoModel2D(variable1, variable2),
+                                                              this->systematicVariable(variable1, systematic),
+                                                              this->systematicVariable(variable2, systematic),
+                                                              this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::INT && type2 == VariableType::FLOAT) {
+            return node.Histo2D<int, float, int>(Utils::histoModel2D(variable1, variable2),
+                                                 this->systematicVariable(variable1, systematic),
+                                                 this->systematicVariable(variable2, systematic),
+                                                 this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::INT && type2 == VariableType::DOUBLE) {
+            return node.Histo2D<int, double, int>(Utils::histoModel2D(variable1, variable2),
+                                                  this->systematicVariable(variable1, systematic),
+                                                  this->systematicVariable(variable2, systematic),
+                                                  this->systematicWeight(systematic));
+        }
+
+        if (type1 == VariableType::LONG_INT && type2 == VariableType::INT) {
+            return node.Histo2D<long long int, int, int>(Utils::histoModel2D(variable1, variable2),
+                                                         this->systematicVariable(variable1, systematic),
+                                                         this->systematicVariable(variable2, systematic),
+                                                         this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_INT && type2 == VariableType::LONG_INT) {
+            return node.Histo2D<long long int, long long int, int>(Utils::histoModel2D(variable1, variable2),
+                                                                   this->systematicVariable(variable1, systematic),
+                                                                   this->systematicVariable(variable2, systematic),
+                                                                   this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_INT && type2 == VariableType::UNSIGNED) {
+            return node.Histo2D<long long int, unsigned long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                  this->systematicVariable(variable1, systematic),
+                                                                  this->systematicVariable(variable2, systematic),
+                                                                  this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_INT && type2 == VariableType::LONG_UNSIGNED) {
+            return node.Histo2D<long long int, unsigned long long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                        this->systematicVariable(variable1, systematic),
+                                                                        this->systematicVariable(variable2, systematic),
+                                                                        this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_INT && type2 == VariableType::FLOAT) {
+            return node.Histo2D<long long int, float, int>(Utils::histoModel2D(variable1, variable2),
+                                                           this->systematicVariable(variable1, systematic),
+                                                           this->systematicVariable(variable2, systematic),
+                                                           this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_INT && type2 == VariableType::DOUBLE) {
+            return node.Histo2D<long long int, double, int>(Utils::histoModel2D(variable1, variable2),
+                                                            this->systematicVariable(variable1, systematic),
+                                                            this->systematicVariable(variable2, systematic),
+                                                            this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::UNSIGNED && type2 == VariableType::INT) {
+            return node.Histo2D<unsigned long, long, int>(Utils::histoModel2D(variable1, variable2),
+                                                        this->systematicVariable(variable1, systematic),
+                                                        this->systematicVariable(variable2, systematic),
+                                                        this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::UNSIGNED && type2 == VariableType::LONG_INT) {
+            return node.Histo2D<unsigned long, long long int, int>(Utils::histoModel2D(variable1, variable2),
+                                                                  this->systematicVariable(variable1, systematic),
+                                                                  this->systematicVariable(variable2, systematic),
+                                                                  this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::UNSIGNED && type2 == VariableType::UNSIGNED) {
+            return node.Histo2D<unsigned long, unsigned long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                 this->systematicVariable(variable1, systematic),
+                                                                 this->systematicVariable(variable2, systematic),
+                                                                 this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::UNSIGNED && type2 == VariableType::LONG_UNSIGNED) {
+            return node.Histo2D<unsigned long, unsigned long long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                       this->systematicVariable(variable1, systematic),
+                                                                       this->systematicVariable(variable2, systematic),
+                                                                       this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::UNSIGNED && type2 == VariableType::FLOAT) {
+            return node.Histo2D<unsigned long, float, int>(Utils::histoModel2D(variable1, variable2),
+                                                          this->systematicVariable(variable1, systematic),
+                                                          this->systematicVariable(variable2, systematic),
+                                                          this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::UNSIGNED && type2 == VariableType::DOUBLE) {
+            return node.Histo2D<unsigned long, double, int>(Utils::histoModel2D(variable1, variable2),
+                                                           this->systematicVariable(variable1, systematic),
+                                                           this->systematicVariable(variable2, systematic),
+                                                           this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::INT) {
+            return node.Histo2D<unsigned long long, int, int>(Utils::histoModel2D(variable1, variable2),
+                                                              this->systematicVariable(variable1, systematic),
+                                                              this->systematicVariable(variable2, systematic),
+                                                              this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::LONG_INT) {
+            return node.Histo2D<unsigned long long, long long int, int>(Utils::histoModel2D(variable1, variable2),
+                                                                        this->systematicVariable(variable1, systematic),
+                                                                        this->systematicVariable(variable2, systematic),
+                                                                        this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::UNSIGNED) {
+            return node.Histo2D<unsigned long long, unsigned long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                       this->systematicVariable(variable1, systematic),
+                                                                       this->systematicVariable(variable2, systematic),
+                                                                       this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::LONG_UNSIGNED) {
+            return node.Histo2D<unsigned long long, unsigned long long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                             this->systematicVariable(variable1, systematic),
+                                                                             this->systematicVariable(variable2, systematic),
+                                                                             this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::FLOAT) {
+            return node.Histo2D<unsigned long long, float, int>(Utils::histoModel2D(variable1, variable2),
+                                                                this->systematicVariable(variable1, systematic),
+                                                                this->systematicVariable(variable2, systematic),
+                                                                this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::DOUBLE) {
+            return node.Histo2D<unsigned long long, double, int>(Utils::histoModel2D(variable1, variable2),
+                                                                 this->systematicVariable(variable1, systematic),
+                                                                 this->systematicVariable(variable2, systematic),
+                                                                 this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::FLOAT && type2 == VariableType::INT) {
+            return node.Histo2D<float, int, int>(Utils::histoModel2D(variable1, variable2),
+                                                 this->systematicVariable(variable1, systematic),
+                                                 this->systematicVariable(variable2, systematic),
+                                                 this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::FLOAT && type2 == VariableType::LONG_INT) {
+            return node.Histo2D<float, long long int, int>(Utils::histoModel2D(variable1, variable2),
+                                                           this->systematicVariable(variable1, systematic),
+                                                           this->systematicVariable(variable2, systematic),
+                                                           this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::FLOAT && type2 == VariableType::UNSIGNED) {
+            return node.Histo2D<float, unsigned long, int>(Utils::histoModel2D(variable1, variable2),
+                                                          this->systematicVariable(variable1, systematic),
+                                                          this->systematicVariable(variable2, systematic),
+                                                          this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::FLOAT && type2 == VariableType::LONG_UNSIGNED) {
+            return node.Histo2D<float, unsigned long long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                this->systematicVariable(variable1, systematic),
+                                                                this->systematicVariable(variable2, systematic),
+                                                                this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::FLOAT && type2 == VariableType::FLOAT) {
+            return node.Histo2D<float, float, int>(Utils::histoModel2D(variable1, variable2),
+                                                   this->systematicVariable(variable1, systematic),
+                                                   this->systematicVariable(variable2, systematic),
+                                                   this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::FLOAT && type2 == VariableType::DOUBLE) {
+            return node.Histo2D<float, double, int>(Utils::histoModel2D(variable1, variable2),
+                                                    this->systematicVariable(variable1, systematic),
+                                                    this->systematicVariable(variable2, systematic),
+                                                    this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::DOUBLE && type2 == VariableType::INT) {
+            return node.Histo2D<double, int, int>(Utils::histoModel2D(variable1, variable2),
+                                                  this->systematicVariable(variable1, systematic),
+                                                  this->systematicVariable(variable2, systematic),
+                                                  this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::DOUBLE && type2 == VariableType::LONG_INT) {
+            return node.Histo2D<double, long long int, int>(Utils::histoModel2D(variable1, variable2),
+                                                            this->systematicVariable(variable1, systematic),
+                                                            this->systematicVariable(variable2, systematic),
+                                                            this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::DOUBLE && type2 == VariableType::UNSIGNED) {
+            return node.Histo2D<double, unsigned long, int>(Utils::histoModel2D(variable1, variable2),
+                                                           this->systematicVariable(variable1, systematic),
+                                                           this->systematicVariable(variable2, systematic),
+                                                           this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::DOUBLE && type2 == VariableType::LONG_UNSIGNED) {
+            return node.Histo2D<double, unsigned long long, int>(Utils::histoModel2D(variable1, variable2),
+                                                                 this->systematicVariable(variable1, systematic),
+                                                                 this->systematicVariable(variable2, systematic),
+                                                                 this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::DOUBLE && type2 == VariableType::FLOAT) {
+            return node.Histo2D<double, float, int>(Utils::histoModel2D(variable1, variable2),
+                                                    this->systematicVariable(variable1, systematic),
+                                                    this->systematicVariable(variable2, systematic),
+                                                    this->systematicWeight(systematic));
+        }
+        if (type1 == VariableType::DOUBLE && type2 == VariableType::DOUBLE) {
+            return node.Histo2D<double, double, int>(Utils::histoModel2D(variable1, variable2),
+                                                     this->systematicVariable(variable1, systematic),
+                                                     this->systematicVariable(variable2, systematic),
+                                                     this->systematicWeight(systematic));
+        }
+
+    }
+    
+    if (type1 == VariableType::INT && type2 == VariableType::INT) {
+        return node.Histo2D<int, int, double>(Utils::histoModel2D(variable1, variable2),
+                                              this->systematicVariable(variable1, systematic),
+                                              this->systematicVariable(variable2, systematic),
+                                              this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::INT && type2 == VariableType::LONG_INT) {
+        return node.Histo2D<int, long long int, double>(Utils::histoModel2D(variable1, variable2),
+                                                        this->systematicVariable(variable1, systematic),
+                                                        this->systematicVariable(variable2, systematic),
+                                                        this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::INT && type2 == VariableType::UNSIGNED) {
+        return node.Histo2D<int, unsigned long, double>(Utils::histoModel2D(variable1, variable2),
+                                                       this->systematicVariable(variable1, systematic),
+                                                       this->systematicVariable(variable2, systematic),
+                                                       this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::INT && type2 == VariableType::LONG_UNSIGNED) {
+        return node.Histo2D<int, unsigned long long, double>(Utils::histoModel2D(variable1, variable2),
+                                                             this->systematicVariable(variable1, systematic),
+                                                             this->systematicVariable(variable2, systematic),
+                                                             this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::INT && type2 == VariableType::FLOAT) {
+        return node.Histo2D<int, float, double>(Utils::histoModel2D(variable1, variable2),
+                                                this->systematicVariable(variable1, systematic),
+                                                this->systematicVariable(variable2, systematic),
+                                                this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::INT && type2 == VariableType::DOUBLE) {
+        return node.Histo2D<int, double, double>(Utils::histoModel2D(variable1, variable2),
+                                                 this->systematicVariable(variable1, systematic),
+                                                 this->systematicVariable(variable2, systematic),
+                                                 this->systematicWeight(systematic));
+    }
+
+    if (type1 == VariableType::LONG_INT && type2 == VariableType::INT) {
+        return node.Histo2D<long long int, int, double>(Utils::histoModel2D(variable1, variable2),
+                                                        this->systematicVariable(variable1, systematic),
+                                                        this->systematicVariable(variable2, systematic),
+                                                        this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_INT && type2 == VariableType::LONG_INT) {
+        return node.Histo2D<long long int, long long int, double>(Utils::histoModel2D(variable1, variable2),
+                                                                  this->systematicVariable(variable1, systematic),
+                                                                  this->systematicVariable(variable2, systematic),
+                                                                  this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_INT && type2 == VariableType::UNSIGNED) {
+        return node.Histo2D<long long int, unsigned long, double>(Utils::histoModel2D(variable1, variable2),
+                                                                 this->systematicVariable(variable1, systematic),
+                                                                 this->systematicVariable(variable2, systematic),
+                                                                 this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_INT && type2 == VariableType::LONG_UNSIGNED) {
+        return node.Histo2D<long long int, unsigned long long, double>(Utils::histoModel2D(variable1, variable2),
+                                                                       this->systematicVariable(variable1, systematic),
+                                                                       this->systematicVariable(variable2, systematic),
+                                                                       this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_INT && type2 == VariableType::FLOAT) {
+        return node.Histo2D<long long int, float, double>(Utils::histoModel2D(variable1, variable2),
+                                                          this->systematicVariable(variable1, systematic),
+                                                          this->systematicVariable(variable2, systematic),
+                                                          this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_INT && type2 == VariableType::DOUBLE) {
+        return node.Histo2D<long long int, double, double>(Utils::histoModel2D(variable1, variable2),
+                                                           this->systematicVariable(variable1, systematic),
+                                                           this->systematicVariable(variable2, systematic),
+                                                           this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::UNSIGNED && type2 == VariableType::INT) {
+        return node.Histo2D<unsigned long, int, double>(Utils::histoModel2D(variable1, variable2),
+                                                       this->systematicVariable(variable1, systematic),
+                                                       this->systematicVariable(variable2, systematic),
+                                                       this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::UNSIGNED && type2 == VariableType::LONG_INT) {
+        return node.Histo2D<unsigned long, long long int, double>(Utils::histoModel2D(variable1, variable2),
+                                                                 this->systematicVariable(variable1, systematic),
+                                                                 this->systematicVariable(variable2, systematic),
+                                                                 this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::UNSIGNED && type2 == VariableType::UNSIGNED) {
+        return node.Histo2D<unsigned long, unsigned long, double>(Utils::histoModel2D(variable1, variable2),
+                                                                this->systematicVariable(variable1, systematic),
+                                                                this->systematicVariable(variable2, systematic),
+                                                                this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::UNSIGNED && type2 == VariableType::LONG_UNSIGNED) {
+        return node.Histo2D<unsigned long, unsigned long long, double>(Utils::histoModel2D(variable1, variable2),
+                                                                      this->systematicVariable(variable1, systematic),
+                                                                      this->systematicVariable(variable2, systematic),
+                                                                      this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::UNSIGNED && type2 == VariableType::FLOAT) {
+        return node.Histo2D<unsigned long, float, double>(Utils::histoModel2D(variable1, variable2),
+                                                         this->systematicVariable(variable1, systematic),
+                                                         this->systematicVariable(variable2, systematic),
+                                                         this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::UNSIGNED && type2 == VariableType::DOUBLE) {
+        return node.Histo2D<unsigned long, double, double>(Utils::histoModel2D(variable1, variable2),
+                                                          this->systematicVariable(variable1, systematic),
+                                                          this->systematicVariable(variable2, systematic),
+                                                          this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::INT) {
+        return node.Histo2D<unsigned long long, int, double>(Utils::histoModel2D(variable1, variable2),
+                                                             this->systematicVariable(variable1, systematic),
+                                                             this->systematicVariable(variable2, systematic),
+                                                             this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::LONG_INT) {
+        return node.Histo2D<unsigned long long, long long int, double>(Utils::histoModel2D(variable1, variable2),
+                                                                       this->systematicVariable(variable1, systematic),
+                                                                       this->systematicVariable(variable2, systematic),
+                                                                       this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::UNSIGNED) {
+        return node.Histo2D<unsigned long long, unsigned long, double>(Utils::histoModel2D(variable1, variable2),
+                                                                      this->systematicVariable(variable1, systematic),
+                                                                      this->systematicVariable(variable2, systematic),
+                                                                      this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::LONG_UNSIGNED) {
+        return node.Histo2D<unsigned long long, unsigned long long, double>(Utils::histoModel2D(variable1, variable2),
+                                                                            this->systematicVariable(variable1, systematic),
+                                                                            this->systematicVariable(variable2, systematic),
+                                                                            this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::FLOAT) {
+        return node.Histo2D<unsigned long long, float, double>(Utils::histoModel2D(variable1, variable2),
+                                                               this->systematicVariable(variable1, systematic),
+                                                               this->systematicVariable(variable2, systematic),
+                                                               this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::LONG_UNSIGNED && type2 == VariableType::DOUBLE) {
+        return node.Histo2D<unsigned long long, double, double>(Utils::histoModel2D(variable1, variable2),
+                                                                this->systematicVariable(variable1, systematic),
+                                                                this->systematicVariable(variable2, systematic),
+                                                                this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::FLOAT && type2 == VariableType::INT) {
+        return node.Histo2D<float, int, double>(Utils::histoModel2D(variable1, variable2),
+                                                this->systematicVariable(variable1, systematic),
+                                                this->systematicVariable(variable2, systematic),
+                                                this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::FLOAT && type2 == VariableType::LONG_INT) {
+        return node.Histo2D<float, long long int, double>(Utils::histoModel2D(variable1, variable2),
+                                                          this->systematicVariable(variable1, systematic),
+                                                          this->systematicVariable(variable2, systematic),
+                                                          this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::FLOAT && type2 == VariableType::UNSIGNED) {
+        return node.Histo2D<float, unsigned long, double>(Utils::histoModel2D(variable1, variable2),
+                                                         this->systematicVariable(variable1, systematic),
+                                                         this->systematicVariable(variable2, systematic),
+                                                         this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::FLOAT && type2 == VariableType::LONG_UNSIGNED) {
+        return node.Histo2D<float, unsigned long long, double>(Utils::histoModel2D(variable1, variable2),
+                                                               this->systematicVariable(variable1, systematic),
+                                                               this->systematicVariable(variable2, systematic),
+                                                               this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::FLOAT && type2 == VariableType::FLOAT) {
+        return node.Histo2D<float, float, double>(Utils::histoModel2D(variable1, variable2),
+                                                  this->systematicVariable(variable1, systematic),
+                                                  this->systematicVariable(variable2, systematic),
+                                                  this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::FLOAT && type2 == VariableType::DOUBLE) {
+        return node.Histo2D<float, double, double>(Utils::histoModel2D(variable1, variable2),
+                                                   this->systematicVariable(variable1, systematic),
+                                                   this->systematicVariable(variable2, systematic),
+                                                   this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::DOUBLE && type2 == VariableType::INT) {
+        return node.Histo2D<double, int, double>(Utils::histoModel2D(variable1, variable2),
+                                                 this->systematicVariable(variable1, systematic),
+                                                 this->systematicVariable(variable2, systematic),
+                                                 this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::DOUBLE && type2 == VariableType::LONG_INT) {
+        return node.Histo2D<double, long long int, double>(Utils::histoModel2D(variable1, variable2),
+                                                           this->systematicVariable(variable1, systematic),
+                                                           this->systematicVariable(variable2, systematic),
+                                                           this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::DOUBLE && type2 == VariableType::UNSIGNED) {
+        return node.Histo2D<double, unsigned long, double>(Utils::histoModel2D(variable1, variable2),
+                                                          this->systematicVariable(variable1, systematic),
+                                                          this->systematicVariable(variable2, systematic),
+                                                          this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::DOUBLE && type2 == VariableType::LONG_UNSIGNED) {
+        return node.Histo2D<double, unsigned long long, double>(Utils::histoModel2D(variable1, variable2),
+                                                                this->systematicVariable(variable1, systematic),
+                                                                this->systematicVariable(variable2, systematic),
+                                                                this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::DOUBLE && type2 == VariableType::FLOAT) {
+        return node.Histo2D<double, float, double>(Utils::histoModel2D(variable1, variable2),
+                                                   this->systematicVariable(variable1, systematic),
+                                                   this->systematicVariable(variable2, systematic),
+                                                   this->systematicWeight(systematic));
+    }
+    if (type1 == VariableType::DOUBLE && type2 == VariableType::DOUBLE) {
+        return node.Histo2D<double, double, double>(Utils::histoModel2D(variable1, variable2),
+                                                    this->systematicVariable(variable1, systematic),
+                                                    this->systematicVariable(variable2, systematic),
+                                                    this->systematicWeight(systematic));
+    }
+    return node.Histo2D(Utils::histoModel2D(variable1, variable2),
+                        this->systematicVariable(variable1, systematic),
+                        this->systematicVariable(variable2, systematic),
+                        this->systematicWeight(systematic));
 }

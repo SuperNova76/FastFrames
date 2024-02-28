@@ -13,6 +13,20 @@
 #include <string>
 
 /**
+ * @brief Type of varaible needed to avoid JITing
+ * 
+ */
+enum class VariableType {
+  UNDEFINED = 0,
+  INT = 1,
+  LONG_INT = 2,
+  UNSIGNED = 3,
+  LONG_UNSIGNED = 4,
+  FLOAT = 5,
+  DOUBLE = 6
+};
+
+/**
  * @brief Class responsible for the varaible definition
  *
  */
@@ -151,10 +165,25 @@ public:
    */
   inline bool isNominalOnly() const {return m_isNominalOnly;}
 
+  /**
+   * @brief Set the Type object
+   * 
+   * @param type 
+   */
+  inline void setType(const VariableType type) {m_type = type;}
+
+  /**
+   * @brief variable type
+   * 
+   * @return VariableType 
+   */
+  inline VariableType type() const {return m_type;}
+
 private:
   std::string m_name;
   std::string m_definition;
   std::string m_title;
   Binning m_binning;
   bool m_isNominalOnly;
+  VariableType m_type;
 };
