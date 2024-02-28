@@ -94,7 +94,8 @@ class AutomaticRangeGenerator:
         @return list[dict]
         """
         result = []
-        for block_dict in list_of_block_dicts:
+        list_of_block_dicts_copy = deepcopy(list_of_block_dicts)
+        for block_dict in list_of_block_dicts_copy:
             if "numbering_sequence" not in block_dict:
                 result.append(block_dict)
                 continue
