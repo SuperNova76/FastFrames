@@ -13,7 +13,7 @@ The options are case sensitive. Example config files can be found in ```test/con
 | output_path_histograms        | string | Path to the output histograms. Default value is empty string, i.e. current directory will be used. |
 | output_path_ntuples           | string | Path to the output ntuples. Default value is empty string, i.e. current directory will be used.  |
 | default_sumweights            | string | Default sum of weights to be used (can be overridden from Sample block). Default value is ```NOSYS```.        |
-| default_event_weights         | string | Default weight of events - i.e. product of mc_weights and all scale factors. The term corresponding to luminosity, sum of weights and x-section will be added automatically  |
+| default_event_weights         | string | Default weight of events - i.e. product of mc_weights and all scale factors. The term corresponding to luminosity, sum of weights and x-section will be added automatically. For data, by default this is set to `1.`  |
 | default_reco_tree_name        | string |Default name of the reco-level tree. It can be overwritten in Sample block for a given sample.   |
 | xsection_files                | list of strings | List of x-section files to use (example of these files can be found in ```data/```). Default value is ``` ["data/XSection-MC16-13TeV.data"]``` . The same DSID cannot be defined multiple times in the same file, nor in multiple files.    |
 | create_tlorentz_vectors_for   | list of strings | List of objects (i.e. "jet", "el", "mu" ...) for which TLorentzVectors will be created for each systematic variations. They will always be sorted by pT (default is empty list) |
@@ -83,7 +83,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | dsids             | list of ints      | list od DSIDs corresponding to this sample    |
 | campaigns         | list of strings   | list of campaigns for which this sample is defined   |
 | simulation_type   | string            | Allowed options: "data", "fullsim", "AFII" |
-| event_weights     | string            | Event weight to use. If defined, it will replace ```default_event_weights``` from general block   |
+| event_weights     | string            | Event weight to use. If defined, it will replace ```default_event_weights``` from general block. Expects double as a type for the weight. For data, this defaults to `1.`.   |
 | selection_suffix  | string            | Additional selection to use for this sample, for example to split based on flavor composition |
 | regions           | list of strings   | List of regions where the sample should be defined. If not specified, use all regions. |
 | exclude_regions   | list of strings   | If specified, all regions except for these will be added for the sample. Cannot be used together with options ```regions```   |
