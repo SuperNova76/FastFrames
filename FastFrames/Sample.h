@@ -339,6 +339,4 @@ private:
   bool m_nominalOnly = false;
 
   bool m_automaticSystematics = false;
-
-  bool m_isData = false;
 };
