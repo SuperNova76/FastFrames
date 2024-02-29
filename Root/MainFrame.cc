@@ -680,7 +680,7 @@ std::vector<std::string> MainFrame::automaticSystematicNames(const std::string& 
 
     std::vector<std::string> result;
 
-    for (int ibin = 1; ibin < hist->GetNbinsX(); ++ibin) {
+    for (int ibin = 1; ibin <= hist->GetNbinsX(); ++ibin) {
         const std::string name = hist->GetXaxis()->GetBinLabel(ibin);
         if (name == "NOSYS") continue;
 
