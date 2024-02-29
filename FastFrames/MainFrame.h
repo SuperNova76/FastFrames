@@ -480,13 +480,11 @@ private:
    * @param node 
    * @param variable 
    * @param systematic 
-   * @param sample
    * @return ROOT::RDF::RResultPtr<TH1D> 
    */
   ROOT::RDF::RResultPtr<TH1D> book1Dhisto(ROOT::RDF::RNode node,
                                           const Variable& variable,
-                                          const std::shared_ptr<Systematic>& systematic,
-                                          const std::shared_ptr<Sample>& sample) const;
+                                          const std::shared_ptr<Systematic>& systematic) const;
 
   /**
    * @brief Book 1d histograms with proper templates
@@ -505,14 +503,12 @@ private:
    * @param variable1 
    * @param variable2 
    * @param systematic 
-   * @param sample
    * @return ROOT::RDF::RResultPtr<TH2D> 
    */
   ROOT::RDF::RResultPtr<TH2D> book2Dhisto(ROOT::RDF::RNode node,
                                           const Variable& variable1,
                                           const Variable& variable2,
-                                          const std::shared_ptr<Systematic>& systematic,
-                                          const std::shared_ptr<Sample>& sample) const;
+                                          const std::shared_ptr<Systematic>& systematic) const;
 protected:
 
   /**
