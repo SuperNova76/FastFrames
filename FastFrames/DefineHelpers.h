@@ -67,6 +67,16 @@ namespace DefineHelpers {
   std::vector<std::size_t> sortedPassedIndices(const std::vector<TLV>& tlv,
                                                const std::vector<char>& selection);
 
+/**
+   * @brief Return a vector of indices the elements that passed a selection sorted by pT
+   *
+   * @param pt pt of the object
+   * @param selection Selection vector
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedPassedIndices(const std::vector<float>& pt,
+                                               const std::vector<char>& selection);
+
   /**
    * @brief Return a vector of indices of the elements that passed a selection sorted by pT
    *
@@ -76,6 +86,18 @@ namespace DefineHelpers {
    * @return std::vector<std::size_t>
    */
   std::vector<std::size_t> sortedPassedIndices(const std::vector<TLV>& tlv,
+                                               const std::vector<char>& selection1,
+                                               const std::vector<char>& selection2);
+
+/**
+   * @brief Return a vector of indices the the elements that passed a selection sorted by pT
+   *
+   * @param pt pt of the object
+   * @param selection Selection1 vector
+   * @param selection Selection2 vector
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedPassedIndices(const std::vector<float>& pt,
                                                const std::vector<char>& selection1,
                                                const std::vector<char>& selection2);
 
