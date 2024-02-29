@@ -350,7 +350,7 @@ Samples block:
 
 	name:  Data
 	regions:  ['Electron', 'Muon']
-	weight:  1
+	weight:  1.
 	systematic:  ['NOSYS', 'bootstraps1']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
