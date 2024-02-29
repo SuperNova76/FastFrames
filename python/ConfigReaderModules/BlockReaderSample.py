@@ -62,7 +62,7 @@ class BlockReaderSample:
 
         self._systematic = []
 
-        self._event_weights = self._options_getter.get("event_weights", block_reader_general.default_event_weights if not self._is_data else "1", [str])
+        self._event_weights = self._options_getter.get("event_weights", block_reader_general.default_event_weights if not self._is_data else "1.", [str])
         self._weight_suffix = self._options_getter.get("weight_suffix", None, [str])
 
         self._reco_tree_name = self._options_getter.get("reco_tree_name", block_reader_general.default_reco_tree_name, [str])
