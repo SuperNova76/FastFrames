@@ -38,6 +38,10 @@ class BlockReaderNtuple:
             Logger.log_message("ERROR", "Both regions and selection specified for ntuple block")
             exit(1)
 
+        if self._selection == None and self._regions == None:
+            Logger.log_message("INFO", "Neither selection nor regions specified for ntuple block, setting selection to 'true'")
+            self._selection = "true"
+
         self._branches = self._options_getter.get("branches",[], [list], [str])
         self._exclude_branches = self._options_getter.get("exclude_branches",[], [list], [str])
         self._copy_trees = self._options_getter.get("copy_trees",[], [list], [str])
