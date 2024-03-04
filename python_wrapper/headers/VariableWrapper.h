@@ -253,6 +253,8 @@ class VariableWrapper   {
 
 std::vector<std::tuple<std::string, VariableType> > VariableWrapper::s_variableTypes = {
     {"undefined",               VariableType::UNDEFINED},
+    {"char",                     VariableType::CHAR},
+    {"bool",                     VariableType::BOOL},
     {"int",                     VariableType::INT},
     {"long long int",           VariableType::LONG_INT},
     {"unsigned long",           VariableType::UNSIGNED},
