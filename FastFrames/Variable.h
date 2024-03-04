@@ -18,12 +18,14 @@
  */
 enum class VariableType {
   UNDEFINED = 0,
-  INT = 1,
-  LONG_INT = 2,
-  UNSIGNED = 3,
-  LONG_UNSIGNED = 4,
-  FLOAT = 5,
-  DOUBLE = 6
+  CHAR,
+  BOOL,
+  INT,
+  LONG_INT,
+  UNSIGNED,
+  LONG_UNSIGNED,
+  FLOAT,
+  DOUBLE
 };
 
 /**
