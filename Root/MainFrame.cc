@@ -301,17 +301,22 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
 
     // apply filter
     if (!m_config->ntuple()->selection().empty()) {
-        mainNode.Filter(this->systematicOrFilter(sample));
+        mainNode = mainNode.Filter(this->systematicOrFilter(sample));
     }
 
     //store the file
     const std::string folder = m_config->outputPathNtuples().empty() ? "" : m_config->outputPathNtuples() + "/";
-    const std::string fileName = folder + sample->name() + "_" + std::to_string(id.dsid())+"_" + id.campaign() + "_"+id.simulation() + ".root";
+    std::string suffix("");
+    if (m_config->totalJobSplits() > 0) {
+        suffix = "_Njobs_" + std::to_string(m_config->totalJobSplits()) + "_jobIndex_" + std::to_string(m_config->currentJobIndex());
+    }
+    const std::string fileName = folder + sample->name() + "_" + std::to_string(id.dsid())+"_" + id.campaign() + "_"+id.simulation() + suffix + ".root";
     const std::vector<std::string> selectedBranches = m_config->ntuple()->listOfSelectedBranches(m_systReplacer.allBranches());
     LOG(VERBOSE) << "List of selected branches:\n";
     for (const auto& iselected : selectedBranches) {
         LOG(VERBOSE) << "\t" << iselected << "\n";
     }
+    LOG(INFO) << "Writing the ntuple to: " << fileName << "\n";
     LOG(INFO) << "Triggering event loop for the reco tree!\n";
     mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
     LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
