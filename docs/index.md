@@ -55,14 +55,14 @@ When using Alma Linux 9 (lxplus default)
 
 ```
 setupATLAS
-asetup StatAnalysis,0.3,latest
+asetup StatAnalysis,0.3.0
 ```
 
 When using CentOS 7 (lxplus7)
 
 ```
 setupATLAS
-asetup StatAnalysis,0.2,latest
+asetup StatAnalysis,0.2.5
 ```
 
 This will setup an appropriate version of ROOT (you can check the ROOT version with `root --version`)
