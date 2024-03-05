@@ -188,6 +188,7 @@ std::tuple<std::vector<SystematicHisto>,
     }
 
     std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
+    const bool hasZeroEvents = recoChain->GetEntries() == 0;
 
     if (sample->hasTruth()) {
         truthChains = this->connectTruthTrees(recoChain, sample, selectedFilePaths);
@@ -198,13 +199,19 @@ std::tuple<std::vector<SystematicHisto>,
     if (sample->hasTruth()) {
         truthHistos = this->processTruthHistos(selectedFilePaths, sample, uniqueSampleID);
     }
-
+    
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
 
     ROOT::RDataFrame df(*recoChain.release());
     ROOT::RDF::RNode mainNode = df;
-
+    
+    if (hasZeroEvents) {
+        LOG(WARNING) << "UniqueSampleID: " << uniqueSampleID << ", has 0 reco trees, skipping it\n";
+        std::vector<SystematicHisto> tmp;
+        return std::make_tuple(std::move(tmp), std::move(truthHistos), std::move(mainNode), std::move(truthChains));
+    }
+    
     #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
     ROOT::RDF::Experimental::AddProgressBar(mainNode);
     #endif
@@ -636,7 +643,7 @@ void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const 
         const auto fileList = m_metadataManager.filePaths(iuniqueSample);
         if (fileList.empty()) continue;
 
-        const std::vector<std::string> listOfSystematics = this->automaticSystematicNames(fileList.at(0));
+        const std::vector<std::string> listOfSystematics = this->automaticSystematicNames(fileList);
         // now add the systematics
         for (const auto& isyst : listOfSystematics) {
             if (sample->skipExcludedSystematic(isyst)) {
@@ -669,28 +676,37 @@ void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const 
     }
 }
 
-std::vector<std::string> MainFrame::automaticSystematicNames(const std::string& path) const {
-    std::unique_ptr<TFile> in(TFile::Open(path.c_str(), "READ"));
-    if (!in) {
-        LOG(ERROR) << "Cannot open ROOT file at: " << path << "\n";
-        throw std::invalid_argument("");
-    }
-
-    std::unique_ptr<TH1F> hist(in->Get<TH1F>("listOfSystematics"));
-    if (!hist) {
-        LOG(ERROR) << "Cannot read histogram: listOfSystematics\n";
-        throw std::invalid_argument("");
-    }
-    hist->SetDirectory(nullptr);
-
+std::vector<std::string> MainFrame::automaticSystematicNames(const std::vector<std::string>& paths) const {
     std::vector<std::string> result;
+    std::size_t nPaths(0);
+    for (const auto& ipath : paths) {
+        std::unique_ptr<TFile> in(TFile::Open(ipath.c_str(), "READ"));
+        if (!in) {
+            LOG(ERROR) << "Cannot open ROOT file at: " << ipath << "\n";
+            throw std::invalid_argument("");
+        }
 
-    for (int ibin = 1; ibin <= hist->GetNbinsX(); ++ibin) {
-        const std::string name = hist->GetXaxis()->GetBinLabel(ibin);
-        if (name == "NOSYS") continue;
+        std::unique_ptr<TH1F> hist(in->Get<TH1F>("listOfSystematics"));
+        if (!hist) {
+            ++nPaths;
+            if (nPaths == paths.size()) {
+                LOG(WARNING) << "None of the files have \"listOfSystematics\" histogram. This can happen for cases of zero events passing, but please check the inputs\n";
+            } else {
+                LOG(WARNING) << "Cannot read histogram \"listOfSystematics\". Will try the next file\n";
+            }
+            continue;
+        }
+        hist->SetDirectory(nullptr);
 
-        LOG(VERBOSE) << "Adding systematic from histogram: " << name << "\n";
-        result.emplace_back(name);
+        for (int ibin = 1; ibin <= hist->GetNbinsX(); ++ibin) {
+            const std::string name = hist->GetXaxis()->GetBinLabel(ibin);
+            if (name == "NOSYS") continue;
+
+            LOG(VERBOSE) << "Adding systematic from histogram: " << name << "\n";
+            result.emplace_back(name);
+        }
+        in->Close();
+        return result;
     }
 
     return result;
