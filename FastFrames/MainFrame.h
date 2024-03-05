@@ -417,10 +417,10 @@ private:
   /**
    * @brief Read all systematics from a ROOT file (stored in listOfSystematics histogram)
    *
-   * @param filePath Path to the ROOT file
+   * @param filePath Paths to the ROOT files
    * @return std::vector<std::string>
    */
-  std::vector<std::string> automaticSystematicNames(const std::string& filePath) const;
+  std::vector<std::string> automaticSystematicNames(const std::vector<std::string>& filePath) const;
 
   /**
    * @brief Connect truth trees to the reco tree
