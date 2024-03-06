@@ -45,6 +45,20 @@ This block is optional.
 | regions           | list of strings   | Only the events passing the selection in at least one of the regions will be saved. Cannot be used together with ```selection``` option |
 | copy_trees        | list of strings   | Trees to be copied from input to output ntuples.  |
 
+## `cutflows` block settings
+
+This block is optional.
+
+| **Option** | **Value type** | **Function** |
+| ---------- | -------------- | ------------ |
+| name              | string   | Name of the cutflow.  |
+| samples           | list of strings   | If specified, the cutflow will be provided only for the listed samples. If not provided, all samples will be used. |
+
+####   `selections` block inside of the `cutflow` block
+| **Option**    | **Value type**    | **Function** |
+| ------------- | ----------------- | ------------ |
+| selection     | string            | Selection to be applied for the cutflow. The order of the selection will follow the order in the config file. |
+| title         | string            | Title for the selection. Will be used as the bin name in the cutflow histogram. |
 
 ## `regions` block settings
 | **Option**    | **Value type**    | **Function** |
@@ -54,7 +68,7 @@ This block is optional.
 | variables     | list of dicts     | List of variables defined for the region  |
 | histograms_2d     | list of dicts     | List of 2D histograms between 2 reco-level variables to produce. The dict must have 2 keys: ```x``` and ```y``` for variables on x and y axes. ```numbering_sequence``` block is supported (see details bellow). |
 
-####   `Variable` block inside of the `region` block
+####   `variable` block inside of the `region` block
 | **Option**    | **Value type**    | **Function** |
 | ------------- | ----------------- | ------------ |
 | name          | string            | Variable name   |
@@ -65,7 +79,7 @@ This block is optional.
 | type          | string            | Allows to tell the code to define the c++ template arguments for the histograms. This prevents JITing thus saving some CPU time and memory. Allowed options are "char", "bool", "int", "long long int","unsigned int", "unsigned long", "unsigned long long int", "float", "double". The vector version of all of this variables (except for vector<bool>) are also supported - one example us "vector<float>". If not provided the JITed version will be used. |
 | numbering_sequence| list of dicts     | It can be used to automatically add more variables in one block, if they differ by a single value (for example index). More information can be found bellow in ```numbering_sequence``` block description.
 
-####   `Binning` block inside of the `variable` block
+####   `binning` block inside of the `variable` block
 User has 2 options how to define the binning. Either specify bin edges for irregular binning, or specify number of bins and range of the x-axis for regular binning.
 
 | **Option**    | **Value type**    | **Function** |
