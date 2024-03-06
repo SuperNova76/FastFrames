@@ -256,9 +256,18 @@ std::vector<std::tuple<std::string, VariableType> > VariableWrapper::s_variableT
     {"char",                     VariableType::CHAR},
     {"bool",                     VariableType::BOOL},
     {"int",                     VariableType::INT},
+    {"unsigned int",                     VariableType::UNSIGNED_INT},
     {"long long int",           VariableType::LONG_INT},
     {"unsigned long",           VariableType::UNSIGNED},
     {"unsigned long long int",  VariableType::LONG_UNSIGNED},
     {"float",                   VariableType::FLOAT},
-    {"double",                  VariableType::DOUBLE}
+    {"double",                  VariableType::DOUBLE},
+    {"vector<char>",                     VariableType::VECTOR_CHAR},
+    {"vector<int>",                     VariableType::VECTOR_INT},
+    {"vector<unsigned int>",                     VariableType::VECTOR_UNSIGNED_INT},
+    {"vector<long long int>",           VariableType::VECTOR_LONG_INT},
+    {"vector<unsigned long>",           VariableType::VECTOR_UNSIGNED},
+    {"vector<unsigned long long int>",  VariableType::VECTOR_LONG_UNSIGNED},
+    {"vector<float>",                   VariableType::VECTOR_FLOAT},
+    {"vector<double>",                  VariableType::VECTOR_DOUBLE}  
 };

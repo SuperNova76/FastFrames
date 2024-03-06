@@ -103,7 +103,7 @@ cppcheck:
   stage: check
   # image is from https://hub.docker.com/r/neszt/cppcheck-docker
   image:
-    name: registry.cern.ch/docker.io/neszt/cppcheck-docker:latest
+    name: registry.cern.ch/docker.io/neszt/cppcheck-docker:2.12.1
     entrypoint: [""]
   before_script:
     - "" # overwrite default, do nothing
