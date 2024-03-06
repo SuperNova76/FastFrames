@@ -368,6 +368,39 @@ class SampleWrapper {
         };
 
 
+        /**
+         * @brief Add cutflow
+         *
+         * @param cutflow
+         */
+        inline void addCutflow(unsigned long long int cutflow_shared_ptr_int) {
+            const std::shared_ptr<Cutflow> *cutflow = reinterpret_cast<std::shared_ptr<Cutflow> *>(cutflow_shared_ptr_int);
+            m_sample->addCutflow(*cutflow);
+        }
+
+        /**
+         * @brief Get the cutflows shared pointers
+         *
+         * @return const std::vector<std::shared_ptr<Cutflow> >&
+         */
+        inline const std::vector<unsigned long long int> getCutflowSharedPtrs() {
+            const std::vector<std::shared_ptr<Cutflow>> &cutflows = m_sample->cutflows();
+            std::vector<unsigned long long int> cutflow_ptrs;
+            for (const std::shared_ptr<Cutflow> &cutflow : cutflows) {
+                cutflow_ptrs.push_back(reinterpret_cast<unsigned long long int>(&cutflow));
+            }
+            return cutflow_ptrs;
+        }
+
+        /**
+         * @brief Has cutflows?
+         *
+         * @return true
+         * @return false
+         */
+        inline bool hasCutflows() const {return m_sample->hasCutflows();};
+
+
     private:
         std::shared_ptr<Sample> m_sample;
 
