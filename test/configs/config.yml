@@ -24,6 +24,22 @@ ntuples:
   branches: ["weight_total_.*", "jet_pt_.*"] # optional, if not provided, use all branches
   copy_trees: ["truth"]
 
+cutflows:
+  - name: "selection_el"
+    samples: [""] # optional, default is all samples
+    selections:
+      - selection: "el_pt_NOSYS[0] > 30000"
+        title: "el_pt_30"
+      - selection: "el_pt_NOSYS[0] > 40000"
+        title: "el_pt_40"
+  - name: "selection_mu"
+    samples: [""] # optional, default is all samples
+    selections:
+      - selection: "mu_pt_NOSYS[0] > 30000"
+        title: "mu_pt_30"
+      - selection: "mu_pt_NOSYS[0] > 40000"
+        title: "mu_pt_40"
+
 regions:
   - name: "Electron"
     selection: "el_pt_NOSYS[0] > 30000"
