@@ -26,14 +26,13 @@ ntuples:
 
 cutflows:
   - name: "selection_el"
-    samples: [""] # optional, default is all samples
+    samples: ["ttbar_FS"] # optional, default is all samples
     selections:
-      - selection: "el_pt_NOSYS[0] > 30000"
+      - selection: "el_pt_NOSYS[0] > 70000"
         title: "el_pt_30"
-      - selection: "el_pt_NOSYS[0] > 40000"
+      - selection: "el_pt_NOSYS[0] > 80000"
         title: "el_pt_40"
   - name: "selection_mu"
-    samples: [""] # optional, default is all samples
     selections:
       - selection: "mu_pt_NOSYS[0] > 30000"
         title: "mu_pt_30"
