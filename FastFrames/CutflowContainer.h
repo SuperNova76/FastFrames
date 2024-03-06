@@ -77,13 +77,13 @@ public:
   inline const std::string& name() const {return m_name;}
 
   /**
-   * @brief Set the Booked Yields object
+   * @brief Add the Booked Yields object
    *
    * @param yields
    * @param error
    * @param title
    */
-  void setBookedYields(const ROOT::RDF::RResultPtr<double>& yields,
+  void addBookedYields(const ROOT::RDF::RResultPtr<double>& yields,
                        const ROOT::RDF::RResultPtr<double>& error,
                        const std::string& title) {
 

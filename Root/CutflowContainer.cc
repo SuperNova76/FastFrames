@@ -43,11 +43,11 @@ void CutflowContainer::mergeValues(CutflowContainer& other) {
 
 std::unique_ptr<TH1D> CutflowContainer::cutflowHisto() const {
     const int nbins = m_yields.size();
-    std::unique_ptr<TH1D> h = std::make_unique<TH1D>("","", 0, nbins, nbins);
+    std::unique_ptr<TH1D> h = std::make_unique<TH1D>("","", nbins, 0, nbins);
 
     for (int ibin = 1; ibin <= nbins; ++ibin) {
         h->SetBinContent(ibin, m_yields.at(ibin - 1));
-        h->SetBinError  (ibin, m_yieldErrors.at(ibin - 1));
+        h->SetBinError  (ibin, std::sqrt(m_yieldErrors.at(ibin - 1)));
         h->GetXaxis()->SetBinLabel(ibin, m_titles.at(ibin - 1).c_str());
     }
 

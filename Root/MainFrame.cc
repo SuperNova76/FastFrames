@@ -83,7 +83,10 @@ void MainFrame::executeHistograms() {
             auto node               = std::get<3>(currentHistos);
             auto truthChains        = std::move(std::get<4>(currentHistos));
             // this happens when there are no files provided
-            if (systematicHistos.empty()) continue;
+            if (systematicHistos.empty()) {
+                ++uniqueSampleN;
+                continue;
+            }
 
             // merge the histograms or take them if it is the first set
             if (finalSystHistos.empty())  {
@@ -1171,13 +1174,14 @@ std::vector<CutflowContainer> MainFrame::bookCutflows(ROOT::RDF::RNode node,
         // add initial set
         auto initialWeight        = node.Sum("weight_total_NOSYS");
         auto initialWeightSquared = node.Sum("weight_total_squared_NOSYS");
-        container.setBookedYields(initialWeight, initialWeightSquared, "Initial");
+        container.addBookedYields(initialWeight, initialWeightSquared, "Initial");
 
+        auto filteredNode = node;
         for (const auto& iselection : cutflow->selections()) {
-            node = node.Filter(iselection.first);
-            auto weight        = node.Sum("weight_total_NOSYS");
-            auto weightSquared = node.Sum("weight_total_squared_NOSYS");
-            container.setBookedYields(weight, weightSquared, iselection.second);
+            filteredNode       = filteredNode.Filter(iselection.first);
+            auto weight        = filteredNode.Sum("weight_total_NOSYS");
+            auto weightSquared = filteredNode.Sum("weight_total_squared_NOSYS");
+            container.addBookedYields(weight, weightSquared, iselection.second);
         }
 
         result.emplace_back(std::move(container));
