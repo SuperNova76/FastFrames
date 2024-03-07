@@ -7,6 +7,7 @@
 #pragma once
 
 #include "FastFrames/ConfigSetting.h"
+#include "FastFrames/CutflowContainer.h"
 #include "FastFrames/HistoContainer.h"
 #include "FastFrames/MetadataManager.h"
 #include "FastFrames/StringOperations.h"
@@ -90,8 +91,8 @@ public:
   /**
    * @brief Allows to define new columns for specific regions
    * These columns will be attached only after the filters
-   * 
-   * @param node The input RDF node (after the filter) 
+   *
+   * @param node The input RDF node (after the filter)
    * @return ROOT::RDF::RNode the output node containing the new columns
    */
   virtual ROOT::RDF::RNode defineVariablesRegion(ROOT::RDF::RNode node,
@@ -210,11 +211,12 @@ private:
    *
    * @param sample
    * @param uniqueSampleID
-   * @return std::tuple<std::vector<SystematicHisto>, std::vector<VariableHisto>, ROOT::RDF::RNode, std::vector<std::pair<TChain*, TTreeIndex*> > >
+   * @return std::tuple<std::vector<SystematicHisto>, std::vector<VariableHisto>, std::vector<CutflowContainer>, ROOT::RDF::RNode, std::vector<std::pair<TChain*, TTreeIndex*> > >
    * The histograms, truth histograms, the main RDF node for logging, and truth tchain pointers for memory management
    */
   std::tuple<std::vector<SystematicHisto>,
              std::vector<VariableHisto>,
+             std::vector<CutflowContainer>,
              ROOT::RDF::RNode,
              std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > > processUniqueSample(const std::shared_ptr<Sample>& sample,
                                                                                                                   const UniqueSampleID& uniqueSampleID);
@@ -387,10 +389,12 @@ private:
    *
    * @param histos histogram container
    * @param truthHistos truth histogram container
+   * @param cutflowHistos cutflow container
    * @param sample current sample
    */
   void writeHistosToFile(const std::vector<SystematicHisto>& histos,
                          const std::vector<VariableHisto>& truthHistos,
+                         const std::vector<CutflowContainer>& cutflowHistos,
                          const std::shared_ptr<Sample>& sample) const;
 
   /**
@@ -476,11 +480,11 @@ private:
 
   /**
    * @brief Book 1D histogram with proper templates
-   * 
-   * @param node 
-   * @param variable 
-   * @param systematic 
-   * @return ROOT::RDF::RResultPtr<TH1D> 
+   *
+   * @param node
+   * @param variable
+   * @param systematic
+   * @return ROOT::RDF::RResultPtr<TH1D>
    */
   ROOT::RDF::RResultPtr<TH1D> book1Dhisto(ROOT::RDF::RNode node,
                                           const Variable& variable,
@@ -488,27 +492,38 @@ private:
 
   /**
    * @brief Book 1d histograms with proper templates
-   * 
-   * @param node 
-   * @param variable 
-   * @return ROOT::RDF::RResultPtr<TH1D> 
+   *
+   * @param node
+   * @param variable
+   * @return ROOT::RDF::RResultPtr<TH1D>
    */
   ROOT::RDF::RResultPtr<TH1D> book1DhistoTruth(ROOT::RDF::RNode node,
                                                const Variable& variable) const;
 
   /**
    * @brief Book 2D histograms with proper templates
-   * 
-   * @param node 
-   * @param variable1 
-   * @param variable2 
-   * @param systematic 
-   * @return ROOT::RDF::RResultPtr<TH2D> 
+   *
+   * @param node
+   * @param variable1
+   * @param variable2
+   * @param systematic
+   * @return ROOT::RDF::RResultPtr<TH2D>
    */
   ROOT::RDF::RResultPtr<TH2D> book2Dhisto(ROOT::RDF::RNode node,
                                           const Variable& variable1,
                                           const Variable& variable2,
                                           const std::shared_ptr<Systematic>& systematic) const;
+
+  /**
+   * @brief Book results ptr for cutflows
+   *
+   * @param node
+   * @param sample
+   * @return std::vector<CutflowContainer>
+   */
+  std::vector<CutflowContainer> bookCutflows(ROOT::RDF::RNode node,
+                                             const std::shared_ptr<Sample>& sample) const;
+
 protected:
 
   /**

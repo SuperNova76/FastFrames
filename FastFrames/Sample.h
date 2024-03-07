@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "FastFrames/Cutflow.h"
 #include "FastFrames/Truth.h"
 #include "FastFrames/UniqueSampleID.h"
 
@@ -226,15 +227,15 @@ public:
 
   /**
    * @brief Add regex for exclude systematics from automatic systematics
-   * 
-   * @param name 
+   *
+   * @param name
    */
   inline void addExcludeAutomaticSystematic(const std::string& name) {m_excludeAutomaticSystematics.emplace_back(name);}
 
   /**
-   * @brief Get the vector of regexes for automatic systematics exclusion 
-   * 
-   * @return const std::vector<std::string>& 
+   * @brief Get the vector of regexes for automatic systematics exclusion
+   *
+   * @return const std::vector<std::string>&
    */
   inline const std::vector<std::string>& excludeAutomaticSystematics() const {return m_excludeAutomaticSystematics;}
 
@@ -270,46 +271,68 @@ public:
 
   /**
    * @brief Does the sample have the systematic already included?
-   * 
+   *
    * @param systematicName Name of the systematic to check
-   * @return true 
-   * @return false 
+   * @return true
+   * @return false
    */
   bool hasSystematic(const std::string& systematicName) const;
 
   /**
-   * @brief Should the given systematic be skipped as it is excluded? 
-   * 
+   * @brief Should the given systematic be skipped as it is excluded?
+   *
    * @param systematicName Name of the systematic to check
-   * @return true 
-   * @return false 
+   * @return true
+   * @return false
    */
   bool skipExcludedSystematic(const std::string& systematicName) const;
 
   /**
-   * @brief At least one truth object that uses a given tree name matched to the reco tree? 
-   * 
+   * @brief At least one truth object that uses a given tree name matched to the reco tree?
+   *
    * @param treeName Name of the tree
-   * @return true 
-   * @return false 
+   * @return true
+   * @return false
    */
   bool matchTruthTree(const std::string& treeName) const;
 
   /**
-   * @brief Does sample have unfolding? 
-   * 
-   * @return true 
-   * @return false 
+   * @brief Does sample have unfolding?
+   *
+   * @return true
+   * @return false
    */
   bool hasUnfolding() const;
 
   /**
-   * @brief Sample is data? 
-   * 
-   * @return true 
-   * @return false 
+   * @brief Sample is data?
+   *
+   * @return true
+   * @return false
    */
   bool isData() const;
+
+  /**
+   * @brief Add cutflow
+   *
+   * @param cutflow
+   */
+  inline void addCutflow(const std::shared_ptr<Cutflow>& cutflow) {m_cutflows.emplace_back(cutflow);}
+
+  /**
+   * @brief Get the cutflows
+   *
+   * @return const std::vector<std::shared_ptr<Cutflow> >&
+   */
+  inline const std::vector<std::shared_ptr<Cutflow> >& cutflows() {return m_cutflows;}
+
+  /**
+   * @brief Has cutflows?
+   *
+   * @return true
+   * @return false
+   */
+  inline bool hasCutflows() const {return !m_cutflows.empty();}
 
 private:
   std::string m_name;
@@ -339,4 +362,6 @@ private:
   bool m_nominalOnly = false;
 
   bool m_automaticSystematics = false;
+
+  std::vector<std::shared_ptr<Cutflow> > m_cutflows;
 };

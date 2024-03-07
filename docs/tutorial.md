@@ -680,6 +680,29 @@ Note that the code will generate one output root file for each DSID, campaign an
 !!! alert "100 GB per tree limitation"
     Currently, the self-similarity for the output files will be broken if the processed tree is larger than 100 GBs as that is an internal limitation for a TTree in ROOT.
 
+## Producing cutflows
+FastFrames allow to produce cutflow histograms in a convenient way.
+To tell the code to produce the cutflow, you need to add a new block to the setting.
+E.g.:
+
+```yaml
+cutflows:
+  - name: "selection_jet_pt"
+    samples: ["ttbar_FS"] # optional, default is all samples
+    selections:
+      - selection: "jet1_pt_GEV_NOSYS > 40"
+        title: "jet_pt_40"
+      - selection: "jet1_pt_GEV_NOSYS > 50"
+        title: "jet_pt_50"
+      - selection: "jet1_pt_GEV_NOSYS > 60"
+        title: "jet_pt_60"
+```
+
+When running the standard histogram processing step an additional cutflow histogram will be created showing the weighted (with the nominal weight) events passing all specified selections.
+The cutflow selection will follow the order of the selections in the config file.
+You can provide multiple cutflows in the config file.
+Note that you need to create at least one "stamndard" histogram if you want to run the cutflows.
+
 ## Distributed computing
 RDataFrame supports multi-threading when processing the input files (both when the output is an ntuple or a set of histograms).
 The number of threads used is controlled by the `number_of_cpus` parameter.

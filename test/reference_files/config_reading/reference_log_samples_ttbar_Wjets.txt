@@ -201,6 +201,18 @@ Samples block:
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	automaticSystematics:  True
 	nominalOnly:  False
+	hasCutflows:  True
+	cutflows:
+		selection_el
+		- selection:el_pt_NOSYS[0] > 30000
+		  title:el_pt_30
+		- selection:el_pt_NOSYS[0] > 40000
+		  title:el_pt_40
+		selection_mu
+		- selection:mu_pt_NOSYS[0] > 70000
+		  title:mu_pt_70
+		- selection:mu_pt_NOSYS[0] > 90000
+		  title:mu_pt_90
 	variables:
 		 jet_pt
 		 met_met
@@ -280,6 +292,7 @@ Samples block:
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  True
+	hasCutflows:  False
 	variables:
 		 met_met
 		 met_phi

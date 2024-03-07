@@ -13,6 +13,7 @@ from BlockOptionsGetter import BlockOptionsGetter
 from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variations
 from CommandLineOptions import CommandLineOptions
 from AutomaticRangeGenerator import AutomaticRangeGenerator
+from BlockReaderCutflow import BlockReaderCutflow
 
 from python_wrapper.python.logger import Logger
 from ConfigReaderCpp import VariableWrapper
@@ -51,6 +52,14 @@ class ConfigReader:
                     Logger.log_message("ERROR", "Duplicate sample name: {}".format(sample_name))
                     exit(1)
                 self.samples[sample_name] = sample
+
+            self.cutflows = []
+            cutflows_config_blocks = self.block_getter.get("cutflows", [])
+            for cutflow_dict in cutflows_config_blocks:
+                cutflow = BlockReaderCutflow(cutflow_dict)
+                cutflow.adjust_samples(self.samples)
+                self.cutflows.append(cutflow)
+
 
             self.systematics = {}
             # nominal
@@ -190,6 +199,13 @@ if __name__ == "__main__":
         print("\treco_to_truth_pairing_indices: ", vector_to_list(sample.recoToTruthPairingIndices()))
         print("\tautomaticSystematics: ", sample.automaticSystematics())
         print("\tnominalOnly: ", sample.nominalOnly())
+        has_cutflows = sample.hasCutflows()
+        print("\thasCutflows: ", has_cutflows)
+        if has_cutflows:
+            cutflows = sample.getCutflowSharedPtrs()
+            print("\tcutflows:")
+            for cutflow in cutflows:
+                BlockReaderCutflow.print_cutflow(cutflow, "\t\t")
         print("\tvariables:")
         variable_names = vector_to_list(sample.variables())
         for variable_name in variable_names:

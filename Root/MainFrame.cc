@@ -70,6 +70,7 @@ void MainFrame::executeHistograms() {
 
         std::vector<SystematicHisto> finalSystHistos;
         std::vector<VariableHisto> finalTruthHistos;
+        std::vector<CutflowContainer> finalCutflowContainers;
         std::size_t uniqueSampleN(1);
         for (const auto& iUniqueSampleID : isample->uniqueSampleIDs()) {
             LOG(INFO) << "\n";
@@ -78,10 +79,14 @@ void MainFrame::executeHistograms() {
             auto currentHistos = this->processUniqueSample(isample, iUniqueSampleID);
             auto&& systematicHistos = std::get<0>(currentHistos);
             auto&& truthHistos      = std::get<1>(currentHistos);
-            auto node               = std::get<2>(currentHistos);
-            auto truthChains        = std::move(std::get<3>(currentHistos));
+            auto&& cutflows         = std::get<2>(currentHistos);
+            auto node               = std::get<3>(currentHistos);
+            auto truthChains        = std::move(std::get<4>(currentHistos));
             // this happens when there are no files provided
-            if (systematicHistos.empty()) continue;
+            if (systematicHistos.empty()) {
+                ++uniqueSampleN;
+                continue;
+            }
 
             // merge the histograms or take them if it is the first set
             if (finalSystHistos.empty())  {
@@ -89,7 +94,6 @@ void MainFrame::executeHistograms() {
                 for (const auto& isystHist : systematicHistos) {
                     finalSystHistos.emplace_back(isystHist.copy());
                 }
-                LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
             } else {
                 if (systematicHistos.size() != finalSystHistos.size()) {
                     LOG(ERROR) << "Number of the systematic histograms do not match\n";
@@ -101,8 +105,22 @@ void MainFrame::executeHistograms() {
                 for (std::size_t isyst = 0; isyst < finalSystHistos.size(); ++isyst) {
                     finalSystHistos.at(isyst).merge(systematicHistos.at(isyst));
                 }
-                LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
             }
+            if (!cutflows.empty()) {
+                LOG(DEBUG) << "Processing cutflows\n";
+                if (finalCutflowContainers.empty()) {
+                    for (auto& cutflow : cutflows) {
+                        finalCutflowContainers.emplace_back(cutflow.name());
+                        finalCutflowContainers.back().copyValues(cutflow);
+                    }
+                } else {
+                    for (std::size_t i = 0; i < cutflows.size(); ++i) {
+                        finalCutflowContainers.at(i).mergeValues(cutflows.at(i));
+                    }
+                }
+                LOG(DEBUG) << "Finished processing cutflows\n";
+            }
+            LOG(INFO) << "Number of event loops: " << node.GetNRuns() << ". For an optimal run, this number should be 1\n";
             if (!truthHistos.empty()) {
                 if (finalTruthHistos.empty()) {
                     LOG(INFO) << "Triggering event loop for the truth tree\n";
@@ -128,7 +146,7 @@ void MainFrame::executeHistograms() {
             LOG(DEBUG) << "Deleting RDF objects (out of scope)\n";
         }
 
-        this->writeHistosToFile(finalSystHistos, finalTruthHistos, isample);
+        this->writeHistosToFile(finalSystHistos, finalTruthHistos, finalCutflowContainers, isample);
         ++sampleN;
     }
 }
@@ -139,7 +157,7 @@ void MainFrame::executeNtuples() {
             this->readAutomaticSystematics(isample, isample->nominalOnly());
         }
     }
-    
+
     // run the check for metadata
     if (!m_metadataManager.checkSamplesMetadata(m_config->samples())) {
         LOG(ERROR) << "Metadata information missing, please fix\n";
@@ -166,6 +184,7 @@ void MainFrame::executeNtuples() {
 
 std::tuple<std::vector<SystematicHisto>,
            std::vector<VariableHisto>,
+           std::vector<CutflowContainer>,
            ROOT::RDF::RNode,
            std::vector<std::pair<std::unique_ptr<TChain> , std::unique_ptr<TTreeIndex> > > > MainFrame::processUniqueSample(const std::shared_ptr<Sample>& sample,
                                                                                                                             const UniqueSampleID& uniqueSampleID) {
@@ -185,7 +204,7 @@ std::tuple<std::vector<SystematicHisto>,
     if (selectedFilePaths.empty()) {
         LOG(WARNING) << "UniqueSample: " << uniqueSampleID << " has no files, will not produce histograms\n";
         ROOT::RDataFrame tmp("", {});
-        return std::make_tuple(std::vector<SystematicHisto>{}, std::vector<VariableHisto>{}, tmp, std::move(truthChains));
+        return std::make_tuple(std::vector<SystematicHisto>{}, std::vector<VariableHisto>{}, std::vector<CutflowContainer>{}, tmp, std::move(truthChains));
     }
 
     std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
@@ -200,19 +219,18 @@ std::tuple<std::vector<SystematicHisto>,
     if (sample->hasTruth()) {
         truthHistos = this->processTruthHistos(selectedFilePaths, sample, uniqueSampleID);
     }
-    
+
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
 
     ROOT::RDataFrame df(*recoChain.release());
     ROOT::RDF::RNode mainNode = df;
-    
+
     if (hasZeroEvents) {
         LOG(WARNING) << "UniqueSampleID: " << uniqueSampleID << ", has 0 reco trees, skipping it\n";
-        std::vector<SystematicHisto> tmp;
-        return std::make_tuple(std::move(tmp), std::move(truthHistos), std::move(mainNode), std::move(truthChains));
+        return std::make_tuple(std::vector<SystematicHisto>{}, std::move(truthHistos), std::vector<CutflowContainer>{}, std::move(mainNode), std::move(truthChains));
     }
-    
+
     #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
     ROOT::RDF::Experimental::AddProgressBar(mainNode);
     #endif
@@ -247,6 +265,9 @@ std::tuple<std::vector<SystematicHisto>,
 
     m_systReplacer.printMaps();
 
+    // book cutflows
+    std::vector<CutflowContainer> cutflows = this->bookCutflows(mainNode, sample);
+
     std::vector<std::vector<ROOT::RDF::RNode> > filterStore = this->applyFilters(mainNode, sample, uniqueSampleID);
     LOG(DEBUG) << "Finished booking filters\n";
 
@@ -254,7 +275,7 @@ std::tuple<std::vector<SystematicHisto>,
     std::vector<SystematicHisto> histoContainer = this->processHistograms(filterStore, sample);
     LOG(DEBUG) << "Finished booking histograms\n";
 
-    return std::make_tuple(std::move(histoContainer), std::move(truthHistos), std::move(mainNode), std::move(truthChains));
+    return std::make_tuple(std::move(histoContainer), std::move(truthHistos), std::move(cutflows), std::move(mainNode), std::move(truthChains));
 }
 
 void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
@@ -300,7 +321,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     LOG(DEBUG) << "Adding custom reco variables from the code\n";
     mainNode = this->defineVariablesNtuple(mainNode, id);
     LOG(DEBUG) << "Finished adding custom reco variables\n";
-    
+
     if (m_config->configDefineAfterCustomClass()) {
         mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
     }
@@ -549,6 +570,7 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 
 void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
                                   const std::vector<VariableHisto>& truthHistos,
+                                  const std::vector<CutflowContainer>& cutflowHistos,
                                   const std::shared_ptr<Sample>& sample) const {
 
     if (histos.empty()) {
@@ -597,6 +619,16 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
                 out->cd(isystHist.name().c_str());
                 ivariableHist2D.histoUniquePtr()->Write(histo2DName.c_str());
             }
+        }
+    }
+
+    if (sample->hasCutflows()) {
+        LOG(DEBUG) << "Writing cutflow histograms\n";
+        for (const auto& icutflow : cutflowHistos) {
+            out->cd();
+            auto hist = icutflow.cutflowHisto();
+            const std::string histoName = "Cutflow_" + icutflow.name();
+            hist->Write(histoName.c_str());
         }
     }
 
@@ -731,7 +763,7 @@ void MainFrame::processHistograms1D(RegionHisto* regionHisto,
         }
         VariableHisto variableHisto(ivariable.name());
 
-        ROOT::RDF::RResultPtr<TH1D> histogram = this->book1Dhisto(node, ivariable, systematic); 
+        ROOT::RDF::RResultPtr<TH1D> histogram = this->book1Dhisto(node, ivariable, systematic);
 
         if (!histogram) {
             LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
@@ -1124,4 +1156,36 @@ ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
                         this->systematicVariable(variable1, systematic),
                         this->systematicVariable(variable2, systematic),
                         this->systematicWeight(systematic));
+}
+
+std::vector<CutflowContainer> MainFrame::bookCutflows(ROOT::RDF::RNode node,
+                                                      const std::shared_ptr<Sample>& sample) const {
+
+    std::vector<CutflowContainer> result;
+
+    if (!sample->hasCutflows()) return result;
+
+    // add weight squared for stat uncertainty
+    node = node.Define("weight_total_squared_NOSYS", [](const double weight){return weight*weight;}, {"weight_total_NOSYS"});
+
+    for (const auto& cutflow : sample->cutflows()) {
+        CutflowContainer container(cutflow->name());
+
+        // add initial set
+        auto initialWeight        = node.Sum("weight_total_NOSYS");
+        auto initialWeightSquared = node.Sum("weight_total_squared_NOSYS");
+        container.addBookedYields(initialWeight, initialWeightSquared, "Initial");
+
+        auto filteredNode = node;
+        for (const auto& iselection : cutflow->selections()) {
+            filteredNode       = filteredNode.Filter(iselection.first);
+            auto weight        = filteredNode.Sum("weight_total_NOSYS");
+            auto weightSquared = filteredNode.Sum("weight_total_squared_NOSYS");
+            container.addBookedYields(weight, weightSquared, iselection.second);
+        }
+
+        result.emplace_back(std::move(container));
+    }
+
+    return result;
 }

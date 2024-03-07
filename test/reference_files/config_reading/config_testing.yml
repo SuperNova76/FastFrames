@@ -35,6 +35,22 @@ general:
     btagging_WP: 85
     btagging_algorithm: "DL1"
 
+cutflows:
+  - name: "selection_el"
+    samples: ["Data", "ttbar_FS"] # optional, default is all samples
+    selections:
+      - selection: "el_pt_NOSYS[0] > 30000"
+        title: "el_pt_30"
+      - selection: "el_pt_NOSYS[0] > 40000"
+        title: "el_pt_40"
+  - name: "selection_mu"
+    samples: ["ttbar_FS"] # optional, default is all samples
+    selections:
+      - selection: "mu_pt_NOSYS[0] > 70000"
+        title: "mu_pt_70"
+      - selection: "mu_pt_NOSYS[0] > 90000"
+        title: "mu_pt_90"
+
 ntuples:
   samples: ["ttbar_FS", "Zjets_b"] # optional, if not provided, use all samples
   #exclude_samples: []

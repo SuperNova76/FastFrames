@@ -16,6 +16,7 @@
 #include "python_wrapper/headers/SystematicWrapper.h"
 #include "python_wrapper/headers/NtupleWrapper.h"
 #include "python_wrapper/headers/TruthWrapper.h"
+#include "python_wrapper/headers/CutflowWrapper.h"
 
 #include "python_wrapper/headers/SumWeightsGetter.h"
 
@@ -324,6 +325,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setAutomaticSystematics",  &SampleWrapper::setAutomaticSystematics)
         .def("automaticSystematics",     &SampleWrapper::automaticSystematics)
 
+        .def("addCutflow",          &SampleWrapper::addCutflow)
+        .def("getCutflowSharedPtrs",&SampleWrapper::getCutflowSharedPtrs)
+        .def("hasCutflows",         &SampleWrapper::hasCutflows)
     ;
 
     /**
@@ -440,6 +444,30 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setMatchRecoTruth",   &TruthWrapper::setMatchRecoTruth)
         .def("matchRecoTruth",      &TruthWrapper::matchRecoTruth)
     ;
+
+
+    /**
+     * @brief Python wrapper around Truth
+     *
+     */
+    class_<CutflowWrapper>("CutflowWrapper",
+        init<std::string> ())
+
+        // getPtr
+        .def("getPtr",          &CutflowWrapper::getPtr)
+        .def("constructFromSharedPtr", &CutflowWrapper::constructFromSharedPtr)
+
+        // name
+        .def("name",            &CutflowWrapper::name)
+
+        // addSelection
+        .def("addSelection",    &CutflowWrapper::addSelection)
+
+        // selections
+        .def("selectionsDefinition",      &CutflowWrapper::selectionsDefinition)
+        .def("selectionsTitles",          &CutflowWrapper::selectionsTitles)
+    ;
+
 
 
     /**

@@ -140,6 +140,7 @@ Samples block:
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  True
+	hasCutflows:  False
 	variables:
 		 Variable1
 		 Variable2
