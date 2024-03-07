@@ -1,6 +1,9 @@
 // This file contains the macros used to define histogram templates, preventing JIT compilation when user specifies the histogram type.
 #pragma once
 
+#include "ROOT/RVec.hxx"
+
+
 // The scalar case is for the case where we want to add support for TYPE but not for VECTOR_TYPE.
 // This is important for BOOL, where no good implementation of std::vector<bool> is available.
 #define ADD_HISTO_1D_SUPPORT_SCALAR(CodeType, CppType) \
@@ -20,7 +23,13 @@
         return node.Histo1D<std::vector<CppType>, double>(variable.histoModel1D(), \
                                             this->systematicVariable(variable, systematic), \
                                             this->systematicWeight(systematic)); \
+        break; \
+    case VariableType::RVEC_##CodeType : \
+        return node.Histo1D<ROOT::VecOps::RVec<CppType>, double>(variable.histoModel1D(), \
+                                            this->systematicVariable(variable, systematic), \
+                                            this->systematicWeight(systematic)); \
         break; 
+    
 
 #define ADD_HISTO_1D_SUPPORT_SCALAR_TRUTH(CodeType, CppType) \
     case VariableType::CodeType : \
@@ -39,7 +48,15 @@
         return node.Histo1D<std::vector<CppType>, double>(variable.histoModel1D(), \
                                              variable.definition(), \
                                 "weight_truth_TOTAL"); \
+        break; \
+    case VariableType::RVEC_##CodeType : \
+        return node.Histo1D<ROOT::VecOps::RVec<CppType>, double>(variable.histoModel1D(), \
+                                             variable.definition(), \
+                                "weight_truth_TOTAL"); \
         break; 
+
+#define NOT_JIT_2D_HISTOGRAMS
+#ifndef NOT_JIT_2D_HISTOGRAMS
 
 // Auxiliar macro to generate all the 2D histogram templates.
 #define ADD_HISTO_2D_PAIR_NO_VECTOR(CodeTypeOne,CppTypeOne,CodeTypeTwo,CppTypeTwo) \
@@ -88,3 +105,5 @@
     ADD_HISTO_2D_PAIR_NO_VECTOR(VECTOR_##CodeType,std::vector<CppType>,BOOL,bool) \
     ADD_HISTO_2D_PAIR_NO_VECTOR(BOOL,bool,CodeType,CppType) \
     ADD_HISTO_2D_PAIR_NO_VECTOR(BOOL,bool,VECTOR_##CodeType,std::vector<CppType>) 
+
+#endif

@@ -76,7 +76,7 @@ This block is optional.
 | definition    | string            | Definition of the variable. All branches affected by systematic uncertainties must have ```_NOSYS``` suffix     |
 | binning       | dict              | Binning of the variable   |
 | is_nominal_only | bool            | If set to true, only histogram for NOSYS will be produced. Default is ```False``` |
-| type          | string            | Allows to tell the code to define the c++ template arguments for the histograms. This prevents JITing thus saving some CPU time and memory. Allowed options are "char", "bool", "int", "long long int","unsigned int", "unsigned long", "unsigned long long int", "float", "double". The vector version of all of this variables (except for vector<bool>) are also supported - one example us "vector<float>". If not provided the JITed version will be used. |
+| type          | string            | Allows to tell the code to define the c++ template arguments for the histograms. This prevents JITing thus saving some CPU time and memory. Allowed options are "char", "bool", "int", "long long int","unsigned int", "unsigned long", "unsigned long long int", "float", "double". The vector version of all of these types (except for "vector\<bool>") are also supported - one example is "vector\<float>". ROOT::RVec<type> are also supported, see [here](https://root.cern/doc/master/classROOT_1_1VecOps_1_1RVec.html). If not provided the JITed version will be used. |
 | numbering_sequence| list of dicts     | It can be used to automatically add more variables in one block, if they differ by a single value (for example index). More information can be found bellow in ```numbering_sequence``` block description.
 
 ####   `binning` block inside of the `variable` block
