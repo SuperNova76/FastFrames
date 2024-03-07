@@ -216,7 +216,7 @@ config_reader_comparison_CLI_samples:
   needs:
     - compile
   script:
-     - python3 python/ConfigReaderModules/ConfigReader.py --config test/reference_files/config_reading/config_testing.yml --samples Wjets_FS,ttbar_FS,Data --split_n_jobs 10 --job_index 1 > log.txt
+     - python3 python/ConfigReaderModules/ConfigReader.py --config test/reference_files/config_reading/config_testing.yml --samples Wjets_FS,ttbar_FS --split_n_jobs 10 --job_index 1 > log.txt
      - python3 test/python/compare_two_files.py log.txt test/reference_files/config_reading/reference_log_samples_ttbar_Wjets.txt
   allow_failure: true
 

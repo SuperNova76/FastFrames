@@ -309,31 +309,6 @@ Samples block:
 		 GEN_*.
 
 
-	name:  Data
-	regions:  ['Electron', 'Muon']
-	weight:  1.
-	systematic:  ['NOSYS', 'bootstraps1']
-	selection_suffix: ""
-	reco_to_truth_pairing_indices:  ['eventNumber']
-	automaticSystematics:  False
-	nominalOnly:  False
-	hasCutflows:  True
-	cutflows:
-		selection_el
-		- selection:el_pt_NOSYS[0] > 30000
-		  title:el_pt_30
-		- selection:el_pt_NOSYS[0] > 40000
-		  title:el_pt_40
-	variables:
-		 met_met
-	Unique samples:
-		 (0,2018,data)
-	Custom defines:
-		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
-	Excluded systematics:
-		 GEN_*.
-
-
 
 
 Systematics block:

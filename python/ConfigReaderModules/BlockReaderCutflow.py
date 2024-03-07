@@ -9,6 +9,7 @@ from ConfigReaderCpp import CutflowWrapper
 from BlockReaderSample import BlockReaderSample
 from BlockOptionsGetter import BlockOptionsGetter
 from python_wrapper.python.logger import Logger
+from CommandLineOptions import CommandLineOptions
 
 
 class BlockReaderCutflow:
@@ -32,6 +33,7 @@ class BlockReaderCutflow:
             exit(1)
 
         self._sample_names = self._options_getter.get("samples", None, [list], [str])
+        CommandLineOptions().keep_only_selected_samples(self._sample_names)
 
         unused_options = self._options_getter.get_unused_options()
         if len(unused_options) > 0:
