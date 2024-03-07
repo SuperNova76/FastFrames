@@ -147,7 +147,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | weight_suffix_down| string            | Similar to ```weight_suffix_up``` |
 
 
-## `numbering_sequence` block inside of `systematics`, `Variable` or `histograms_2d``` blocks
+## `numbering_sequence` block inside of `systematics`, `Variable` or `histograms_2d` blocks
 
 In order to automatically add multiple variables, systematic uncertainties or 2D histograms, one can use ```numbering_sequence``` block.
 It contains list of dictionaries, each of them having the values defined in the table before. If you want to add for example pT of first 4 jets in an event, you can use just one block and put ```numbering_sequence``` inside it to achieve it. You can also use it when producing migration matrices or 2D histograms. If you define multiple dictionaries inside the ```numbering_sequence``` block, it will create a nested loop over all combinations.
