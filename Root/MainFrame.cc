@@ -1135,7 +1135,7 @@ ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
                                                    const Variable& variable1,
                                                    const Variable& variable2,
                                                    const std::shared_ptr<Systematic>& systematic) const {
-
+    #ifndef NOT_JIT_2D_HISTOGRAMS
     const auto type1 = variable1.type();
     const auto type2 = variable2.type();
 
@@ -1154,7 +1154,9 @@ ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
     ADD_HISTO_2D_SUPPORT_VECTOR(FLOAT,float)
     ADD_HISTO_2D_SUPPORT_VECTOR(DOUBLE,double)
     ADD_HISTO_2D_PAIR_NO_VECTOR(BOOL,bool,BOOL,bool) // Special case: std::vector<bool> is not supported
+    #endif
 
+    // Rely on the JIT compiler to do 2D histograms.                                               
     return node.Histo2D(Utils::histoModel2D(variable1, variable2),
                         this->systematicVariable(variable1, systematic),
                         this->systematicVariable(variable2, systematic),

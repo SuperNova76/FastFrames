@@ -50,6 +50,7 @@ regions:
       - name: "jet_pt"
         #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_GeV_NOSYS"
+        type: RVec<double>
         is_nominal_only: True
         binning:
           min: 0
