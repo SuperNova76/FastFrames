@@ -8,13 +8,15 @@ Usage:
 from ROOT import TFile, TTree, TH1D, TH2D, TDirectory
 import sys
 
-def floats_are_equal(val1 : float, val2 : float, tolerance : float = 1e-4) -> bool:
+def floats_are_equal(val1 : float, val2 : float, tolerance : float = 1e-5) -> bool:
     """
     Compare two floats and return True if they are equal within the given tolerance
     """
     if val1 != val1 and val2 != val2:
         return True
-    return abs(val1 - val2) < tolerance
+    if abs(val1) < 1e-9 and abs(val2) < 1e-9:
+        return True
+    return abs((val1 - val2)/val1) < tolerance
 
 def test_compare_trees(tree_1 : TTree, tree_2 : TTree) -> str:
     # Get the list of branch names for each tree

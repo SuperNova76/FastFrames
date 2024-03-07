@@ -444,6 +444,8 @@ ROOT::RDF::RNode MainFrame::addWeightColumns(ROOT::RDF::RNode node,
                                              const std::shared_ptr<Sample>& sample,
                                              const UniqueSampleID& id) {
 
+    node = this->prepareWeightMetadata(node, sample, id);
+
     for (const auto& isyst : sample->systematics()) {
         node = this->addSingleWeightColumn(node, sample, isyst, id);
     }
@@ -457,15 +459,13 @@ ROOT::RDF::RNode MainFrame::addSingleWeightColumn(ROOT::RDF::RNode mainNode,
                                                   const UniqueSampleID& id) {
 
     const std::string& nominalWeight = sample->weight();
-    const float normalisation = m_metadataManager.normalisation(id, systematic);
-
-    // to not cut very small numbers to zero
-    std::ostringstream ss;
-    ss << normalisation;
 
     const std::string systName = "weight_total_" + systematic->name();
-    const std::string nominalTotalWeight = "(" + nominalWeight + ")*(" + ss.str() +")";
-    std::string formula = m_systReplacer.replaceString("("+nominalWeight, systematic) + ")*(" + ss.str() + ")";
+    const std::string nominalNorm = "lumi*xSection/NOSYS";
+    const std::string nominalTotalWeight = "(" + nominalWeight + ")*("+nominalNorm+")";
+    const std::string sumWeightsSyst = systematic->sumWeights();
+    const std::string normalisation = sample->isData() ? "1." : "lumi*xSection/" + sumWeightsSyst;
+    std::string formula = m_systReplacer.replaceString("("+nominalWeight, systematic) + ")*("+normalisation+")";
     if (!systematic->weightSuffix().empty()) {
         formula = "(" + formula + ")*(" + systematic->weightSuffix() + ")";
     }
@@ -905,10 +905,9 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
         rdfNodes.insert(std::make_pair(iTree, ROOT::RDataFrame(iTree, filePaths)));
     }
 
-    for (const auto& itruth : sample->truths()) {
-        // add MC weight
-        const float normalisation = m_metadataManager.normalisation(id, sample->nominalSystematic());
+    std::vector<std::string> accessedNodes;
 
+    for (const auto& itruth : sample->truths()) {
         auto itr = rdfNodes.find(itruth->truthTreeName());
         if (itr == rdfNodes.end()) {
             LOG(ERROR) << "Cannot find truth tree name: " << itruth->truthTreeName() << "in the map!\n";
@@ -919,22 +918,26 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
         #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
         ROOT::RDF::Experimental::AddProgressBar(mainNode);
         #endif
-        mainNode = this->minMaxRange(mainNode);
+        if (std::find(accessedNodes.begin(), accessedNodes.end(), itruth->truthTreeName()) == accessedNodes.end()) {
+            mainNode = this->minMaxRange(mainNode);
 
-        // to not cut very small numbers to zero
-        std::ostringstream ss;
-        ss << normalisation;
-        const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + ss.str() +")";
-        LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
-        mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
+            mainNode = this->prepareWeightMetadata(mainNode, sample, id);
 
-        mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+            const std::string normalisation = "lumi*xSection/NOSYS";
+            const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + normalisation +")";
+            LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
+            mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
 
-        auto customNode = this->defineVariablesTruth(mainNode, itruth, id);
+            mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+
+            mainNode = this->defineVariablesTruth(mainNode, itruth, id);
+        } else {
+            accessedNodes.emplace_back(itruth->truthTreeName());
+        }
 
         // apply truth filter
         if (!itruth->selection().empty()) {
-            customNode = customNode.Filter(itruth->selection());
+            mainNode = mainNode.Filter(itruth->selection());
         }
 
         // add histograms
@@ -942,7 +945,7 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
             // get histograms (will NOT trigger event loop)
             const std::string name = itruth->name() + "_" + ivariable.name();
             VariableHisto hist(name);
-            auto rdfHist = this->book1DhistoTruth(customNode, ivariable);
+            auto rdfHist = this->book1DhistoTruth(mainNode, ivariable);
 
             hist.setHisto(rdfHist);
 
@@ -1188,4 +1191,32 @@ std::vector<CutflowContainer> MainFrame::bookCutflows(ROOT::RDF::RNode node,
     }
 
     return result;
+}
+
+ROOT::RDF::RNode MainFrame::prepareWeightMetadata(ROOT::RDF::RNode node,
+                                                  const std::shared_ptr<Sample>& sample,
+                                                  const UniqueSampleID& id) const {
+
+    if (sample->isData()) return node;
+
+    // add lumi
+    node = node.Define("lumi", [this, &id](){return this->m_metadataManager.luminosity(id.campaign());}, {});
+
+    // add cross-section
+    node = node.Define("xSection", [this, &id](){return this->m_metadataManager.crossSection(id);}, {});
+
+    std::vector<std::string> uniqueSumWeights;
+    for (const auto& isyst : sample->systematics()) {
+        const std::string sumWeightName = isyst->sumWeights();
+        if (std::find(uniqueSumWeights.begin(), uniqueSumWeights.end(), sumWeightName) != uniqueSumWeights.end()) continue;
+
+        // is unique sumweights
+        const double sumW = m_metadataManager.sumWeights(id, isyst);
+
+        node = node.Define(sumWeightName, [sumW](){return sumW;}, {});
+
+        uniqueSumWeights.emplace_back(sumWeightName);
+    }
+
+    return node;
 }

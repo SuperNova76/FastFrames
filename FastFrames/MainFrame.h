@@ -524,6 +524,18 @@ private:
   std::vector<CutflowContainer> bookCutflows(ROOT::RDF::RNode node,
                                              const std::shared_ptr<Sample>& sample) const;
 
+  /**
+   * @brief Prepare varaibles needed for the MC weight definitions (lumi, xsec, sumweights)
+   *
+   * @param node
+   * @param sample
+   * @param id
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode prepareWeightMetadata(ROOT::RDF::RNode node,
+                                         const std::shared_ptr<Sample>& sample,
+                                         const UniqueSampleID& id) const;
+
 protected:
 
   /**
