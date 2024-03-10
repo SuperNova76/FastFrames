@@ -9,9 +9,6 @@ default:
     - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh --quiet
     - asetup StatAnalysis,0.3,latest
 
-variables:
-  GIT_SUBMODULE_STRATEGY: normal
-
 stages:
   - build
   - check
@@ -231,6 +228,8 @@ config_reader_comparison_nested_anchors:
 
 doxygen_webpage:
   stage: webpage
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "app" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   needs:
     - make_doxygen
   before_script:
@@ -249,11 +248,11 @@ doxygen_webpage:
     - ls doc_build/docs
     - ls doc_build/docs/html
     - tar cvzf - -C doc_build/docs/html/ . | ssh ${EOS_ACCOUNT_USERNAME}@lxplus.cern.ch tar xzf - -C /eos/user/t/topreco/www/fastframesdoxygen
-  only:
-    - main@atlas-amglab/fastframes
 
 documentation_webpage:
   stage: webpage
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "atlas-amglab" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   needs:
     - build_webpage
   before_script:
@@ -270,5 +269,3 @@ documentation_webpage:
   script:
     - ls www/
     - tar cvzf - -C www/ . | ssh ${EOS_ACCOUNT_USERNAME}@lxplus.cern.ch tar xzf - -C /eos/user/t/topreco/www/fastframesdocumentation
-  only:
-    - main@atlas-amglab/fastframes
