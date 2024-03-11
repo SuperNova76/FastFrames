@@ -44,9 +44,6 @@ class BlockReaderSampleTruth:
         self._match_variables = self._options_getter.get("match_variables", [], [list], [dict])
 
         self._pair_reco_and_truth_trees = self._options_getter.get("pair_reco_and_truth_trees", bool(self._match_variables), [bool])
-        if self._pair_reco_and_truth_trees == False and len(self._match_variables) > 0:
-            Logger.log_message("WARNING", "pair_reco_and_truth_trees is set to False, but match_variables are specified for truth block {}, setting pair_reco_and_truth_trees to True".format(self._name))
-            self._pair_reco_and_truth_trees = True
 
 
         self._variables = self._options_getter.get("variables", [], [list], [dict])
