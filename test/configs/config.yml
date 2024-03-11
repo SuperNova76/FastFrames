@@ -81,6 +81,7 @@ regions:
       - name: "jet_pt"
         #title : "histo title;X axis title;Y axis title"
         definition: "jet_pt_NOSYS"
+        type: RVec<float>
         binning:
           min: 0
           max: 300000

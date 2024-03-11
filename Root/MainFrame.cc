@@ -68,6 +68,10 @@ void MainFrame::executeHistograms() {
         LOG(INFO) << "\n";
         LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
 
+        // this is not fully supported from ROOT side
+        // there is no support for matching reco and truth trees yet
+        //auto spec = m_metadataManager.dataSpec(isample, m_config);
+
         std::vector<SystematicHisto> finalSystHistos;
         std::vector<VariableHisto> finalTruthHistos;
         std::vector<CutflowContainer> finalCutflowContainers;
@@ -1037,7 +1041,7 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
         LOG(ERROR) << "The variable: " << name << ", does not contain \"NOSYS\"\n";
         throw std::invalid_argument("");
     }
-    
+
     // add nominal
     mainNode = mainNode.Define(name, formula);
 
@@ -1259,7 +1263,7 @@ ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
     ADD_HISTO_2D_PAIR_NO_VECTOR(BOOL,bool,BOOL,bool) // Special case: std::vector<bool> is not supported
     #endif
 
-    // Rely on the JIT compiler to do 2D histograms.                                               
+    // Rely on the JIT compiler to do 2D histograms.
     return node.Histo2D(Utils::histoModel2D(variable1, variable2),
                         this->systematicVariable(variable1, systematic),
                         this->systematicVariable(variable2, systematic),
