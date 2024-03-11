@@ -6,9 +6,12 @@
 
 #pragma once
 
-#include "FastFrames/UniqueSampleID.h"
+#include "FastFrames/ConfigSetting.h"
 #include "FastFrames/Metadata.h"
 #include "FastFrames/Sample.h"
+#include "FastFrames/UniqueSampleID.h"
+
+#include "ROOT/RDFHelpers.hxx"
 
 #include <map>
 #include <memory>
@@ -126,6 +129,18 @@ public:
    */
   bool checkSamplesMetadata(const std::vector<std::shared_ptr<Sample> >& samples) const;
 
+  /**
+   * @brief Get DataSpec class that contains all information about metadata
+   * for a given sample (including all unique samples) that can be used to construct
+   * the main RDF node for processing
+   *
+   * @param sample
+   * @param config
+   * @return ROOT::RDF::Experimental::RDatasetSpec
+   */
+  ROOT::RDF::Experimental::RDatasetSpec dataSpec(const std::shared_ptr<Sample>& sample,
+                                                 const std::shared_ptr<ConfigSetting>& config) const;
+
 private:
 
   /**
@@ -136,6 +151,28 @@ private:
    * @return false
    */
   bool checkUniqueSampleIDMetadata(const UniqueSampleID& id) const;
+
+  /**
+   * @brief Get per-uniqueSampleID information
+   *
+   * @param sample
+   * @param id
+   * @param config
+   * @return ROOT::RDF::Experimental::RSample
+   */
+  ROOT::RDF::Experimental::RSample singleSampleInfo(const std::shared_ptr<Sample>& sample,
+                                                    const UniqueSampleID& id,
+                                                    const std::shared_ptr<ConfigSetting>& config) const;
+
+  /**
+   * @brief set sample metadata
+   *
+   * @param sample
+   * @param id
+   * @return ROOT::RDF::Experimental::RMetaData
+   */
+  ROOT::RDF::Experimental::RMetaData sampleMetadata(const std::shared_ptr<Sample>& sample,
+                                                    const UniqueSampleID& id) const;
 
   std::map<UniqueSampleID, Metadata> m_metadata;
   std::map<std::string, double> m_luminosity;

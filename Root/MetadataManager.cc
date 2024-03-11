@@ -9,6 +9,7 @@
 #include "FastFrames/Logger.h"
 #include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
+#include "FastFrames/Utils.h"
 #include "FastFrames/XSectionManager.h"
 
 #include <fstream>
@@ -190,9 +191,9 @@ bool MetadataManager::checkSamplesMetadata(const std::vector<std::shared_ptr<Sam
 }
 
 bool MetadataManager::checkUniqueSampleIDMetadata(const UniqueSampleID& id) const {
-    
+
     if (id.isData()) return true;
-    
+
     auto itrXsec = m_metadata.find(id);
     if (itrXsec == m_metadata.end()) {
         LOG(ERROR) << "Cannot find metadata for unique sample : " << id << "!\n";
@@ -210,4 +211,66 @@ bool MetadataManager::checkUniqueSampleIDMetadata(const UniqueSampleID& id) cons
     }
 
     return true;
+}
+
+ROOT::RDF::Experimental::RDatasetSpec MetadataManager::dataSpec(const std::shared_ptr<Sample>& sample,
+                                                                const std::shared_ptr<ConfigSetting>& config) const {
+
+    ROOT::RDF::Experimental::RDatasetSpec spec;
+    for (const auto& id : sample->uniqueSampleIDs()) {
+        spec.AddSample(this->singleSampleInfo(sample, id, config));
+    }
+
+    return spec;
+}
+
+ROOT::RDF::Experimental::RSample MetadataManager::singleSampleInfo(const std::shared_ptr<Sample>& sample,
+                                                                   const UniqueSampleID& id,
+                                                                   const std::shared_ptr<ConfigSetting>& config) const {
+
+
+    std::vector<std::string> paths = this->filePaths(id);
+    if (config->totalJobSplits() > 0) {
+        paths = Utils::selectedFileList(paths, config->totalJobSplits(), config->currentJobIndex());
+    }
+    if (paths.empty()) {
+        LOG(WARNING) << "UniqueSample: " << id << " has no files, will not produce output ntuple\n";
+    }
+
+    ROOT::RDF::Experimental::RMetaData meta = this->sampleMetadata(sample, id);
+
+    ROOT::RDF::Experimental::RSample result(sample->name(), sample->recoTreeName(), this->filePaths(id), meta);
+
+    return result;
+}
+
+ROOT::RDF::Experimental::RMetaData MetadataManager::sampleMetadata(const std::shared_ptr<Sample>& sample,
+                                                                   const UniqueSampleID& id) const {
+    ROOT::RDF::Experimental::RMetaData meta;
+
+    if (sample->isData()) return meta;
+
+    meta.Add("luminosity", this->luminosity(id.campaign()));
+    meta.Add("xSection", this->crossSection(id));
+
+    bool addedNominal(false);
+
+    for (const auto& isyst : sample->systematics()) {
+        const std::string systName = isyst->name();
+        const std::string weightName = "sumWeights_" + isyst->sumWeights();
+        if (systName == "NOSYS") {
+            // add only once
+            if (addedNominal) continue;
+
+            // has not beed added yet
+            addedNominal = true;
+        }
+
+        // only add non-nominal sumWeights
+        if (systName != "NOSYS" && isyst->sumWeights() == "NOSYS") continue;
+
+        meta.Add(weightName, this->sumWeights(id, isyst));
+    }
+
+    return meta;
 }
