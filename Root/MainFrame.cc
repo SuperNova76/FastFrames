@@ -1037,7 +1037,7 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
         LOG(ERROR) << "The variable: " << name << ", does not contain \"NOSYS\"\n";
         throw std::invalid_argument("");
     }
-
+    
     // add nominal
     mainNode = mainNode.Define(name, formula);
 
@@ -1057,6 +1057,109 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
 
     }
     m_systReplacer.addVariableAndEffectiveSystematics(name, systematicList);
+
+    return mainNode;
+}
+
+template<typename F>
+ROOT::RDF::RNode MainFrame::systematicRedefine(ROOT::RDF::RNode node,
+                                    const std::string& variable,
+                                    F defineFunction,
+                                    const std::vector<std::string>& branches) {
+
+    if (variable.find("NOSYS") == std::string::npos) {
+        LOG(ERROR) << "The new variable name does not contain \"NOSYS\"\n";
+        throw std::invalid_argument("");
+    }
+
+    // The usage of Define() vs. Redefine() just depends on whether or not the
+    // variable has already been defined in the RDF. The result for
+    // m_systReplacer is the same either way: it just keeps track of the nominal
+    // and syst columns. So we dont do m_systReplacer.branchExists() here,
+    // instead we look at mainNode.GetColumnNames() to tell us if the column
+    // needs to be defined or redefined.
+    auto columnNames = node.GetColumnNames();
+    if (std::find(columnNames.begin(), columnNames.end(), variable) == columnNames.end()) {
+        LOG(VERBOSE) << "No variable " << variable << " exists to redefine, making new variable instead\n";
+        return systematicDefine(node, variable, defineFunction, branches);
+    }
+
+    // first add the nominal define
+    node = node.Redefine(variable, defineFunction, branches);
+
+    // add systematics
+    // get list of all systematics affecting the inputs
+    std::vector<std::string> effectiveSystematics = m_systReplacer.getListOfEffectiveSystematics(branches);
+
+    for (const auto& isystematic : effectiveSystematics) {
+        if (isystematic == "NOSYS") continue;
+        const std::string systName = StringOperations::replaceString(variable, "NOSYS", isystematic);
+        const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
+
+        // it is possible that redefining the variable changes systematics, so
+        // we have to check if we need Define() or Redefine() here too
+        if (std::find(columnNames.begin(), columnNames.end(), systName) == columnNames.end()) {
+            node = node.Define(systName, defineFunction, systBranches);
+        } else {
+            node = node.Redefine(systName, defineFunction, systBranches);
+        }
+    }
+
+    // tell the replacer about the new columns
+    m_systReplacer.updateVariableAndEffectiveSystematics(variable, effectiveSystematics);
+
+    return node;
+}
+
+ROOT::RDF::RNode MainFrame::systematicStringRedefine(ROOT::RDF::RNode mainNode,
+                                                   const std::string& name,
+                                                   const std::string& formula) {
+
+    if (name.find("NOSYS") == std::string::npos) {
+        LOG(ERROR) << "The variable: " << name << ", does not contain \"NOSYS\"\n";
+        throw std::invalid_argument("");
+    }
+
+    // The usage of Define() vs. Redefine() just depends on whether or not the
+    // variable has already been defined in the RDF. The result for
+    // m_systReplacer is the same either way: it just keeps track of the nominal
+    // and syst columns. So we dont do m_systReplacer.branchExists() here,
+    // instead we look at mainNode.GetColumnNames() to tell us if the column
+    // needs to be defined or redefined.
+    auto columnNames = mainNode.GetColumnNames();
+    if (std::find(columnNames.begin(), columnNames.end(), name) == columnNames.end()) {
+        // we can assume that if the _NOSYS column doesn't exist,
+        // then none of the systematic ones do either
+        LOG(VERBOSE) << "No variable " << name << " exists to redefine, making new variable instead\n";
+        return systematicStringDefine(mainNode, name, formula);
+    }
+
+    // redefine nominal
+    mainNode = mainNode.Redefine(name, formula);
+
+    // find systematics that could affect the result of this formula
+    const std::vector<std::string> affectedVariables = m_systReplacer.listOfVariablesAffected(formula);
+    const std::vector<std::string> systematicList = m_systReplacer.getListOfEffectiveSystematics(affectedVariables);
+
+    // redefine each systematic
+    for (const auto& isyst : systematicList) {
+        if (isyst == "NOSYS") continue; // we already added nominal
+
+        const std::string systName = StringOperations::replaceString(name, "NOSYS", isyst);
+        const std::string systFormula = m_systReplacer.replaceString(formula, isyst);
+        LOG(VERBOSE) << "Adding custom variable from config: " << systName << ", formula: " << systFormula << "\n";
+
+        // it is possible that redefining the variable changes systematics, so
+        // we have to check if we need Define() or Redefine() here too
+        if (std::find(columnNames.begin(), columnNames.end(), systName) == columnNames.end()) {
+            mainNode = mainNode.Define(systName, systFormula);
+        } else {
+            mainNode = mainNode.Redefine(systName, systFormula);
+        }
+    }
+
+    // need to update the variable's affecting systematics in m_systReplacer
+    m_systReplacer.updateVariableAndEffectiveSystematics(name, systematicList);
 
     return mainNode;
 }

@@ -111,7 +111,7 @@ public:
                                                 const UniqueSampleID& /*sampleID*/) {return node;}
   /**
    * @brief A helper method that make systematic copies of a provided nominal column
-   * Name of the new varaible has to contain _NOSYS
+   * Name of the new variable has to contain _NOSYS
    *
    * @tparam F
    * @param node Input node
@@ -200,6 +200,41 @@ public:
    * @return ROOT::RDF::RNode modified node
    */
   ROOT::RDF::RNode systematicStringDefine(ROOT::RDF::RNode mainNode,
+                                          const std::string& newName,
+                                          const std::string& formula);
+
+  /**
+   * @brief Define an existing variable (column) and systematic copies.
+   * NOTE: Name of the new variable has to contain _NOSYS.
+   * NOTE: If you try to redefine a variable which does not exist in the input, it will create 
+   * a new variable using systematicDefine.
+   *
+   * @tparam F
+   * @param node Input node
+   * @param variable Name of the variable
+   * @param defineFunction Actual function to be used for the variable definition
+   * @param branches List of branch names that the function processes
+   * @return ROOT::RDF::RNode Output node with the new columns
+   */
+  template<typename F>
+  ROOT::RDF::RNode systematicRedefine(ROOT::RDF::RNode node,
+                                    const std::string& variable,
+                                    F defineFunction,
+                                    const std::vector<std::string>& branches);
+
+  /**
+   * @brief Redefine an existing variable (column) using a string. The code will create a replica
+   * for every systematic variation that affects the formula
+   * NOTE: Name of the new variable has to contain _NOSYS.
+   * NOTE: If you try to redefine a variable which does not exist in the input, it will create 
+   * a new variable using systematicStringDefine
+   *
+   * @param mainNode The input RDF node
+   * @param newName Name of the column, has to contain "NOSYS"
+   * @param formula The formula (using nominal branches)
+   * @return ROOT::RDF::RNode modified node
+   */
+  ROOT::RDF::RNode systematicStringRedefine(ROOT::RDF::RNode mainNode,
                                           const std::string& newName,
                                           const std::string& formula);
 

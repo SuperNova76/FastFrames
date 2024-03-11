@@ -132,6 +132,16 @@ public:
   void addVariableAndEffectiveSystematics(const std::string& variable, const std::vector<std::string>& systematics);
 
   /**
+   * @brief Update the systematics that affect a variable
+   * NOTE: adds the variable to the map if it does not already exist
+   *
+   * @param variable
+   * @param systematics
+   */
+  void updateVariableAndEffectiveSystematics(const std::string& variable, const std::vector<std::string>& systematics);
+
+
+  /**
    * @brief Print the contents of the maps for systematic matching
    *
    */
