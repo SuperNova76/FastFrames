@@ -181,6 +181,38 @@ void SystematicReplacer::addVariableAndEffectiveSystematics(const std::string& v
     }
 }
 
+void SystematicReplacer::updateVariableAndEffectiveSystematics(const std::string& variable, const std::vector<std::string>& systematics) {
+    if (!this->branchExists(variable)) {
+        LOG(DEBUG) << "Variable " << variable << " does not exist, adding it\n";
+        this->addVariableAndEffectiveSystematics(variable, systematics);
+        return;
+    }
+
+    if (variable.find("NOSYS") == std::string::npos) {
+        LOG(ERROR) << "Variable " << variable << " does not contain \"NOSYS\"\n";
+        throw std::invalid_argument("");
+    }
+
+    // remove variable from any systematics that no longer affect it
+    for (const auto& isyst : m_branchesAffectedBySyst[variable]) {
+        if (std::find(systematics.begin(), systematics.end(), isyst) == systematics.end()) {
+            LOG(DEBUG) << "Systematic " << isyst << " no longer affects variable " << variable << "\n";
+            m_systImpactsBranches[isyst].erase(std::remove(m_systImpactsBranches[isyst].begin(), m_systImpactsBranches[isyst].end(), variable), m_systImpactsBranches[isyst].end());
+        }
+    }
+
+    // add variable to any systematics that now affect it
+    for (const auto& isyst : systematics) {
+        if (std::find(m_branchesAffectedBySyst[variable].begin(), m_branchesAffectedBySyst[variable].end(), isyst) == m_branchesAffectedBySyst[variable].end()) {
+            LOG(DEBUG) << "Systematic " << isyst << " now affects variable " << variable << "\n";
+            m_systImpactsBranches[isyst].emplace_back(variable);
+        }
+    }
+
+    // overwrite old systematics list with new one
+    m_branchesAffectedBySyst[variable] = systematics;
+}
+
 void SystematicReplacer::printMaps() const {
 
     LOG(VERBOSE) << "List of branches and systematics that affect them\n";
