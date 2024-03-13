@@ -181,6 +181,20 @@ public:
   const std::vector<std::string>& tLorentzVectors() const {return m_tLorentzVectors;};
 
   /**
+   * @brief Whether to use ROOT::VecOps::RVec instead of std::vectors for all FastFrames define calls
+   *
+   * @return bool
+   */
+  bool useRVec() const {return m_useRVec;};
+
+  /**
+   * @brief Set the type for vector columns. If true, ROOT::VecOps::RVec is used, otherwise std::vector is used
+   *
+   * @param useRVec
+   */
+  void setUseRVec(bool useRVec) { m_useRVec = useRVec; };
+
+  /**
    * @brief Add one Region
    *
    * @param region
@@ -340,25 +354,25 @@ public:
   CustomOptions& customOptions() {return m_customOptions;}
 
   /**
-   * @brief Returns true if at least one of the samples uses automatic systematic  
-   * 
-   * @return true 
-   * @return false 
+   * @brief Returns true if at least one of the samples uses automatic systematic
+   *
+   * @return true
+   * @return false
    */
   bool hasAutomaticSystematics() const;
 
   /**
    * @brief Set the configDefineAfterCustomClass flag
-   * 
-   * @param flag 
+   *
+   * @param flag
    */
   inline void setConfigDefineAfterCustomClass(const bool flag) {m_configDefineAfterCustomClass = flag;}
 
   /**
    * @brief configDefineAfterCustomClass flag
-   * 
-   * @return true 
-   * @return false 
+   *
+   * @return true
+   * @return false
    */
   inline bool configDefineAfterCustomClass() const {return m_configDefineAfterCustomClass;}
 
@@ -376,6 +390,7 @@ private:
   std::map<std::string, float> m_luminosity_map;
   std::vector<std::string>     m_xSectionFiles ;
   std::vector<std::string>     m_tLorentzVectors;
+  bool m_useRVec = false;
 
   std::vector<std::shared_ptr<Region> > m_regions;
   std::vector<std::shared_ptr<Sample> > m_samples;

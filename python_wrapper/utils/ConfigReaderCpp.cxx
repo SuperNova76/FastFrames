@@ -135,6 +135,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // TLorentzVectors
         .def("addTLorentzVector",           &ConfigSettingWrapper::addTLorentzVector)
         .def("tLorentzVectors",             &ConfigSettingWrapper::tLorentzVectors)
+        .def("setUseRVec",                  &ConfigSettingWrapper::setUseRVec)
+        .def("useRVec",                     &ConfigSettingWrapper::useRVec)
 
         // addRegion
         .def("addRegion",           &ConfigSettingWrapper::addRegion)

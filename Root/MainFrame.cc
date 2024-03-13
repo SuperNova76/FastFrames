@@ -23,6 +23,8 @@
 #include <exception>
 #include <regex>
 
+using ROOT::VecOps::RVec;
+
 void MainFrame::init() {
     if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0) {
         ROOT::DisableImplicitMT();
@@ -505,11 +507,24 @@ ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
 
     static const std::vector<std::string> kinematics = {"_pt_NOSYS", "_eta", "_phi", "_e_NOSYS"};
 
+    auto createTLV_RVec = [](const RVec<float>& pt,
+                             const RVec<float>& eta,
+                             const RVec<float>& phi,
+                             const RVec<float>& e) {
+
+        RVec<ROOT::Math::PtEtaPhiEVector> result;
+        for (std::size_t i = 0; i < pt.size(); ++i) {
+            ROOT::Math::PtEtaPhiEVector vector(pt.at(i), eta.at(i), phi.at(i), e.at(i));
+            result.emplace_back(vector);
+        }
+
+        return result;
+    };
+
     auto createTLV = [](const std::vector<float>& pt,
                         const std::vector<float>& eta,
                         const std::vector<float>& phi,
                         const std::vector<float>& e) {
-
 
         std::vector<ROOT::Math::PtEtaPhiEVector> result;
         for (std::size_t i = 0; i < pt.size(); ++i) {
@@ -531,7 +546,10 @@ ROOT::RDF::RNode MainFrame::addSingleTLorentzVector(ROOT::RDF::RNode mainNode,
         LOG(DEBUG) << "Branch: " << vectorName << " already exists, not adding it (nor its uncertainty variations)\n";
         return mainNode;
     }
-    mainNode = this->systematicDefine(mainNode, vectorName, createTLV, objectColumns);
+    if (m_config->useRVec())
+        mainNode = this->systematicDefine(mainNode, vectorName, createTLV_RVec, objectColumns);
+    else
+        mainNode = this->systematicDefine(mainNode, vectorName, createTLV, objectColumns);
 
     return mainNode;
 }
