@@ -17,6 +17,7 @@ General block:
 	luminosity, mc20d:  44630.6015625
 	create_tlorentz_vectors_for:
 		 jet
+	use_rvec False
 custom_options:
 	 btagging_WP :  85
 	 btagging_algorithm :  DL1

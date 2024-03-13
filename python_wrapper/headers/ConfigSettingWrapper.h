@@ -220,6 +220,14 @@ class ConfigSettingWrapper {
             return m_configSetting->tLorentzVectors();
         }
 
+        bool useRVec() const {
+            return m_configSetting->useRVec();
+        }
+
+        void setUseRVec(bool useRVec) {
+            m_configSetting->setUseRVec(useRVec);
+        }
+
         /**
          * @brief Add region to the config setting
          *

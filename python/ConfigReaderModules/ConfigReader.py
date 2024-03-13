@@ -136,6 +136,8 @@ if __name__ == "__main__":
     for tlorentz_vector in tlorentz_vectors:
         print("\t\t", tlorentz_vector)
 
+    print("\tuse_rvec", block_general.cpp_class.useRVec())
+
     print("custom_options:")
     custom_option_keys = block_general.get_list_of_custom_keys()
     for custom_option_key in custom_option_keys:

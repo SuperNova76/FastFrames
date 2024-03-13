@@ -37,6 +37,7 @@ class BlockReaderGeneral:
         self._output_path_ntuples    = self._options_getter.get("output_path_ntuples", "", [str])
         self._custom_frame_name = self._options_getter.get("custom_frame_name", "", [str])
         self._create_tlorentz_vectors_for = self._options_getter.get("create_tlorentz_vectors_for", [], [list], [str])
+        self._use_rvec = self._options_getter.get("use_rvec", False, [bool])
         self._number_of_cpus = self._options_getter.get("number_of_cpus", 1, [int])
         self._xsection_files = self._options_getter.get("xsection_files", ["data/XSection-MC16-13TeV.data"], [list], [str])
         self._luminosity_map = {}
@@ -124,6 +125,8 @@ class BlockReaderGeneral:
 
         for tlorentz_vector in self._create_tlorentz_vectors_for:
             self.cpp_class.addTLorentzVector(tlorentz_vector)
+
+        self.cpp_class.setUseRVec(self._use_rvec)
 
         # min_event
         cli_min_event = CommandLineOptions().get_min_event()

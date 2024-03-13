@@ -16,6 +16,7 @@ General block:
 	luminosity, mc20a:  36646.73828125
 	luminosity, mc20d:  44630.6015625
 	create_tlorentz_vectors_for:
+	use_rvec False
 custom_options:
 
 Ntuple block:
