@@ -677,9 +677,6 @@ There will be some overhead in the processing due to the complex (many ORs) sele
 After the processing is done, you should find a new file called `ttbar_FS_601229_mc23a_fullsim.root` in the `../output` folder.
 Note that the code will generate one output root file for each DSID, campaign and the simulation type.
 
-!!! alert "100 GB per tree limitation"
-    Currently, the self-similarity for the output files will be broken if the processed tree is larger than 100 GBs as that is an internal limitation for a TTree in ROOT.
-
 ## Producing cutflows
 FastFrames allow to produce cutflow histograms in a convenient way.
 To tell the code to produce the cutflow, you need to add a new block to the setting.
