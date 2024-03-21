@@ -254,10 +254,17 @@ std::tuple<std::vector<SystematicHisto>,
 
     // we also need to add truth variables if provided
     for (const auto& itruth : sample->truths()) {
-        mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+        if (!itruth->matchRecoTruth()) continue;
+
+        if (!m_config->configDefineAfterCustomClass()) {
+            mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+        }
         LOG(DEBUG) << "Adding custom truth variables from the code for truth: " << itruth->name() << "\n";
         mainNode = this->defineVariablesTruth(mainNode, itruth, uniqueSampleID);
         LOG(DEBUG) << "Finished adding custom truth variables\n";
+        if (m_config->configDefineAfterCustomClass()) {
+            mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+        }
     }
 
     // this is the method users will be able to override
@@ -950,9 +957,13 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
             LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
             mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
 
-            mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
-
+            if (!m_config->configDefineAfterCustomClass()) {
+                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+            }
             mainNode = this->defineVariablesTruth(mainNode, itruth, id);
+            if (m_config->configDefineAfterCustomClass()) {
+                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+            }
         } else {
             accessedNodes.emplace_back(itruth->truthTreeName());
         }
