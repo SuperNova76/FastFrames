@@ -26,7 +26,8 @@ class ConfigReader:
     """
     def __init__(self, config_file_path : str):
         with open(config_file_path, "r") as f:
-            data = yaml.load(f, Loader=yaml.FullLoader)
+            data_full = yaml.load(f, Loader=yaml.FullLoader)
+            data = dict([(x, y) for x, y in data_full.items() if not x.startswith('.')])
             self.block_getter = BlockOptionsGetter(data)
 
             self.block_general = BlockReaderGeneral(self.block_getter.get("general"))
