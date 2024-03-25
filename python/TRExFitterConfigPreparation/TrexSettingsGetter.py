@@ -432,20 +432,34 @@ class TrexSettingsGetter:
                 continue
             syst_name = histo_name
             if histo_name.endswith("__1up"):
-                syst_name = histo_name[:-5]
-                if syst_name in result:
-                    result[syst_name]["HistoFolderNameUp"] = histo_name
+                if histo_name.endswith("_PseudoData__1up"):
+                    syst_name = histo_name[:-16]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderSubtractNameUp"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderSubtractNameUp": histo_name, "Samples": automatic_systematics[histo_name]}                    
                 else:
-                    result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
+                    syst_name = histo_name[:-5]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderNameUp"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
             elif histo_name.endswith("__1down"):
-                syst_name = histo_name[:-7]
-                if syst_name in result:
-                    result[syst_name]["HistoFolderNameDown"] = histo_name
+                if histo_name.endswith("_PseudoData__1down"):
+                    syst_name = histo_name[:-18]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderSubtractNameDown"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderSubtractNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
                 else:
-                    result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
+                    syst_name = histo_name[:-7]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderNameDown"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
             else:
                 result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
-
+        
         if contains_generator_syst:
             Logger.log_message("WARNING", "The ROOT files contain generator systematics. These cannot be added automaticaly. Please take a look at it.")
 
