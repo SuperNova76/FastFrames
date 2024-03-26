@@ -102,6 +102,35 @@ public:
     return *this;
   }
 
+  /**
+   * @brief << Operator that allows to use the class an standard streams
+   *
+   * @tparam T
+   * @param l Logger
+   * @param message Message to be printed
+   * @return Logger&
+   */
+  template<typename T>
+  Logger& operator <<(const T& message) {
+    if (this->currentLevel() <= this->logLevel()) {
+      std::cout << message;
+      return *this;
+    } else {
+      return *this;
+    }
+  }
+   /**
+   * @brief This overload allows std::endl use.
+   *
+   * @tparam os : Function pointer to the std::endl function.
+   * @param 
+   */
+  Logger& operator<< (std::ostream& (*const os)(std::ostream&))
+  {
+    std::cout << os;
+    return *this;
+  }
+
 private:
 
   /**
@@ -170,20 +199,3 @@ private:
 
 };
 
-/**
- * @brief << Operator that allows to use the class an standard streams
- *
- * @tparam T
- * @param l Logger
- * @param message Message to be printed
- * @return Logger&
- */
-template<typename T>
-Logger& operator <<(Logger& l, const T& message) {
-  if (l.currentLevel() <= l.logLevel()) {
-    std::cout << message;
-    return l;
-  } else {
-    return l;
-  }
-}
