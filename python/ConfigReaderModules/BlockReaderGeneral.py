@@ -25,7 +25,7 @@ class BlockReaderGeneral:
     """!Python equivalent of C++ ConfigSetting class
     """
 
-    def __init__(self, input_dict : dict, input_path: Optional[str] = None):
+    def __init__(self, input_dict : dict):
         """!Constructor of the BlockReaderGeneral class. It reads all the options from the general block, sets the properties of the C++ ConfigSetting class and check for user's errors
         @param input_dict: dictionary with options from the config file
         """
@@ -35,11 +35,6 @@ class BlockReaderGeneral:
 
         self._input_filelist_path = self._options_getter.get("input_filelist_path", None, [str])
         self._input_sumweights_path = self._options_getter.get("input_sumweights_path", None, [str])
-        if (input_path is not None):
-            Logger.log_message("DEBUG", f"Input path is given as {input_path}. Overwriting the config file input paths")
-            self._input_filelist_path = input_path + "/filelist.txt"
-            self._input_sumweights_path = input_path + "/sum_of_weights.txt"
-
         self._output_path_histograms = self._options_getter.get("output_path_histograms", "", [str])
         self._output_path_ntuples    = self._options_getter.get("output_path_ntuples", "", [str])
         self._custom_frame_name = self._options_getter.get("custom_frame_name", "", [str])
@@ -115,10 +110,8 @@ class BlockReaderGeneral:
         """
         Set all the properties of the C++ ConfigSetting class
         """
-        self.cpp_class.setInputSumWeightsPath(self._input_sumweights_path)
         self.cpp_class.setOutputPathHistograms(self._output_path_histograms)
         self.cpp_class.setOutputPathNtuples(self._output_path_ntuples)
-        self.cpp_class.setInputFilelistPath(self._input_filelist_path)
         self.cpp_class.setNumCPU(self._number_of_cpus)
         self.cpp_class.setCustomFrameName(self._custom_frame_name)
         self.cpp_class.setCapAcceptanceSelection(self._cap_acceptance_selection)
@@ -148,6 +141,15 @@ class BlockReaderGeneral:
             self.cpp_class.setMaxEvent(cli_max_event)
         elif self._max_event:
             self.cpp_class.setMaxEvent(self._max_event)
+
+        # metadata path
+        input_path = CommandLineOptions().get_input_path()
+        if (input_path is not None):
+            Logger.log_message("DEBUG", f"Input path is given as {input_path}. Overwriting the config file input paths")
+            self._input_filelist_path = input_path + "/filelist.txt"
+            self._input_sumweights_path = input_path + "/sum_of_weights.txt"
+        self.cpp_class.setInputSumWeightsPath(self._input_sumweights_path)
+        self.cpp_class.setInputFilelistPath(self._input_filelist_path)
 
     def add_region(self, region : RegionWrapper) -> None:
         """!Add region to the C++ ConfigSetting class
