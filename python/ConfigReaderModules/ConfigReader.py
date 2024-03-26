@@ -30,7 +30,8 @@ class ConfigReader:
             data = dict([(x, y) for x, y in data_full.items() if not x.startswith('.')])
             self.block_getter = BlockOptionsGetter(data)
 
-            self.block_general = BlockReaderGeneral(self.block_getter.get("general"))
+            input_path = CommandLineOptions().get_input_path()
+            self.block_general = BlockReaderGeneral(self.block_getter.get("general"), input_path)
 
             self.regions = {}
             for region_dict in self.block_getter.get("regions"):
