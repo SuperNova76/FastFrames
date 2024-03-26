@@ -127,9 +127,7 @@ std::vector<std::string> SystematicReplacer::getListOfEffectiveSystematics(const
     std::vector<std::string> result;
 
     for (const auto& icolumn : columns) {
-        if (icolumn.find("NOSYS") == std::string::npos) {
-            return result;
-        }
+        if (icolumn.find("NOSYS") == std::string::npos) continue;
 
         // get the variables from the map and then take the unique ones
         auto itr = m_branchesAffectedBySyst.find(icolumn);
