@@ -313,37 +313,41 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
 
+    const bool hasZeroEvents = chain->GetEntries() == 0;
+
     ROOT::RDataFrame df(*chain.release());
 
     ROOT::RDF::RNode mainNode = df;
     #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
     ROOT::RDF::Experimental::AddProgressBar(mainNode);
     #endif
-    mainNode = this->minMaxRange(mainNode);
+    if (!hasZeroEvents) {
+        mainNode = this->minMaxRange(mainNode);
 
-    mainNode = this->addWeightColumns(mainNode, sample, id);
+        mainNode = this->addWeightColumns(mainNode, sample, id);
 
-    // add TLorentzVectors for objects
-    mainNode = this->addTLorentzVectors(mainNode);
+        // add TLorentzVectors for objects
+        mainNode = this->addTLorentzVectors(mainNode);
 
-    if (!m_config->configDefineAfterCustomClass()) {
-        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
-    }
+        if (!m_config->configDefineAfterCustomClass()) {
+            mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+        }
 
-    // this is the method users will be able to override
-    LOG(DEBUG) << "Adding custom reco variables from the code\n";
-    mainNode = this->defineVariablesNtuple(mainNode, id);
-    LOG(DEBUG) << "Finished adding custom reco variables\n";
+        // this is the method users will be able to override
+        LOG(DEBUG) << "Adding custom reco variables from the code\n";
+        mainNode = this->defineVariablesNtuple(mainNode, id);
+        LOG(DEBUG) << "Finished adding custom reco variables\n";
 
-    if (m_config->configDefineAfterCustomClass()) {
-        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
-    }
+        if (m_config->configDefineAfterCustomClass()) {
+            mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+        }
 
-    m_systReplacer.printMaps();
+        m_systReplacer.printMaps();
 
-    // apply filter
-    if (!m_config->ntuple()->selection().empty()) {
-        mainNode = mainNode.Filter(this->systematicOrFilter(sample));
+        // apply filter
+        if (!m_config->ntuple()->selection().empty()) {
+            mainNode = mainNode.Filter(this->systematicOrFilter(sample));
+        }
     }
 
     //store the file
