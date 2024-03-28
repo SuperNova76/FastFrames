@@ -36,6 +36,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
         self._split_n_jobs = None
         self._job_index = None
         self._regions = None
+        self._input_path = None
         self._set_options()
 
     def _set_options(self) -> None:
@@ -52,6 +53,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("-o", "--output", help="Output config file for TRExFitter", default = "trex_config.config")
         parser.add_argument("-u", "--unfolding", help="Unfolding configuration: 'sample:truth_block_name:truth_variable_name'", default = "")
         parser.add_argument("--regions", help="Comma separated list of regions include to TRExFitter config. Regular expressions are allowed. Default: .*", default=".*")
+        parser.add_argument("-i", "--input_path", help="Path to the directory containing filelist.txt and sum_of_weights.txt. If not supplied, defaults to value in config file", default="")
 
 
         args = parser.parse_args()
@@ -83,6 +85,9 @@ class CommandLineOptions(metaclass=SingletonMeta):
                 Logger.log_message("ERROR", "unfolding argument must have format 'sample:truth_block_name:truth_variable_name:reco_variable_name'")
                 exit(1)
             self._unfolding_settings = tuple(args.unfolding.split(":"))
+
+        if args.input_path:
+            self._input_path = args.input_path
 
         self._read_splits(args)
         self._read_regions(args)
@@ -217,3 +222,9 @@ class CommandLineOptions(metaclass=SingletonMeta):
             else:
                 return samples
         Logger.log_message("ERROR", "Unknown type of samples: {}".format(type(samples)))
+
+    def get_input_path(self) -> str:
+        """
+        Get path to the directory containing filelist.txt and sum_of_weights.txt.
+        """
+        return self._input_path

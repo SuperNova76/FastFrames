@@ -45,7 +45,17 @@ class ConfigReader:
             self.samples = {}
             CommandLineOptions().check_samples_existence(self.block_getter.get("samples"))
             CommandLineOptions().keep_only_selected_samples(self.block_getter.get("samples"))
-            for sample_dict in self.block_getter.get("samples"):
+            sample_blocks = self.block_getter.get("samples")
+            sample_blocks = AutomaticRangeGenerator.unroll_sequence(sample_blocks, [
+                ["name"],
+                ["weight_suffix"],
+                ["event_weights"],
+                ["selection_suffix"],
+                ["reco_tree_name"],
+                ["variables", "name"],
+                ["variables", "definition"],
+            ])
+            for sample_dict in sample_blocks:
                 sample = BlockReaderSample(sample_dict, self.block_general)
                 sample.adjust_regions(self.regions)
                 sample_name = sample.cpp_class.name()

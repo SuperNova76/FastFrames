@@ -26,7 +26,7 @@
 using ROOT::VecOps::RVec;
 
 void MainFrame::init() {
-    if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0) {
+    if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0 || m_config->numCPU()==1) {
         ROOT::DisableImplicitMT();
         LOG(WARNING) << "Disabling implicit MT as it is not allowed for Range() call\n";
     } else {
@@ -313,37 +313,42 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
 
+    const bool hasZeroEvents = chain->GetEntries() == 0;
+    if (hasZeroEvents) LOG(WARNING) << "UniqueSampleID: " << id << ", has no events, skipping it\n";
+
     ROOT::RDataFrame df(*chain.release());
 
     ROOT::RDF::RNode mainNode = df;
     #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
     ROOT::RDF::Experimental::AddProgressBar(mainNode);
     #endif
-    mainNode = this->minMaxRange(mainNode);
+    if (!hasZeroEvents) {
+        mainNode = this->minMaxRange(mainNode);
 
-    mainNode = this->addWeightColumns(mainNode, sample, id);
+        mainNode = this->addWeightColumns(mainNode, sample, id);
 
-    // add TLorentzVectors for objects
-    mainNode = this->addTLorentzVectors(mainNode);
+        // add TLorentzVectors for objects
+        mainNode = this->addTLorentzVectors(mainNode);
 
-    if (!m_config->configDefineAfterCustomClass()) {
-        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
-    }
+        if (!m_config->configDefineAfterCustomClass()) {
+            mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+        }
 
-    // this is the method users will be able to override
-    LOG(DEBUG) << "Adding custom reco variables from the code\n";
-    mainNode = this->defineVariablesNtuple(mainNode, id);
-    LOG(DEBUG) << "Finished adding custom reco variables\n";
+        // this is the method users will be able to override
+        LOG(DEBUG) << "Adding custom reco variables from the code\n";
+        mainNode = this->defineVariablesNtuple(mainNode, id);
+        LOG(DEBUG) << "Finished adding custom reco variables\n";
 
-    if (m_config->configDefineAfterCustomClass()) {
-        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
-    }
+        if (m_config->configDefineAfterCustomClass()) {
+            mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+        }
 
-    m_systReplacer.printMaps();
+        m_systReplacer.printMaps();
 
-    // apply filter
-    if (!m_config->ntuple()->selection().empty()) {
-        mainNode = mainNode.Filter(this->systematicOrFilter(sample));
+        // apply filter
+        if (!m_config->ntuple()->selection().empty()) {
+            mainNode = mainNode.Filter(this->systematicOrFilter(sample));
+        }
     }
 
     //store the file
@@ -362,6 +367,22 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     LOG(INFO) << "Triggering event loop for the reco tree!\n";
     mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
     LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
+
+    auto nEntriesAfterCuts = mainNode.Count().GetValue();
+    if (nEntriesAfterCuts==0) {
+        LOG(WARNING) << "UniqueSampleID: " << id << ", has no events after cuts, generating an empty reco TTree\n";
+    }
+    // IF run in multi-threaded mode, we need to manually add an empty tree:
+    // See ROOT::DataFrame::Snapshot for more details
+    if (m_config->numCPU()!=1 && nEntriesAfterCuts==0){
+        const char* emptyTreeName = sample->recoTreeName().c_str();
+        TTree emptyTree(emptyTreeName, emptyTreeName);
+        // Write to the file.
+        TFile file(fileName.c_str(), "UPDATE");
+        emptyTree.Write();
+        file.Close();
+    }
+
 
     ObjectCopier copier(selectedFilePaths);
     copier.readObjectInfo();

@@ -53,20 +53,19 @@ The instructions are the same as in the Local build, but you can setup ROOT and 
 
 When using Alma Linux 9 (lxplus default)
 
-```
+```bash
 setupATLAS
 asetup StatAnalysis,0.3.0
 ```
 
 When using CentOS 7 (lxplus7)
 
-```
+```bash
 setupATLAS
 asetup StatAnalysis,0.2.5
 ```
 
 This will setup an appropriate version of ROOT (you can check the ROOT version with `root --version`)
-
 
 ## How to run the code:
 
@@ -77,7 +76,7 @@ The other file contains sum of weights for each sample and each systematic varia
 
 In order to produce the metadata files:
 
-```
+```bash
 python3 python/produce_metadata_files.py --root_files_folder <path_to_root_files_folder> --output_path <path_to_output_folder>
 ```
 
@@ -89,7 +88,7 @@ By default they will be in the same folder as input ROOT files. In the config fi
 To produce the histograms from your ROOT files, one has to set up a config. You can find example configs in ```test/configs/``` and you can find all available options also in the documentation webpage.
 To run the histogramming part:
 
-```
+```bash
 python3 python/FastFrames.py --config <path to your config> --step h
 ```
 
@@ -97,7 +96,7 @@ One can also use ```c``` instead of ```config```
 
 If you do not want to run over all samples from your config, but just over a part of them, you can specify the list of these samples using optional argument ```samples```:
 
-```
+```bash
 python3 FastFrames.py --config <path to your config> --step h --samples sample1,sample2,sample3
 ```
 
@@ -107,20 +106,27 @@ You can also specify ```max_event``` or ```min_event``` options from general par
 
 Running ntuple part is similar to running histogramming part, you just need to specify ```n``` step in terminal:
 
-```
+```bash
 python3 FastFrames.py --config <path to your config> --step n
 ```
+
 #### Other command line options:
 
 In order to split the sample into multiple jobs, you can use the following command line option:
 
-```
+```bash
 --split_n_jobs <N jobs total> --job_index <current job index>
+```
+
+In order to specify a different metadata file directory (containing `filelist.txt` and `sum_of_weights.txt`), you can use the following option (or `-i` instead of `--input_path`):
+
+```bash
+--input_path <path to directory>
 ```
 
 In order to merge the output ROOT files from all jobs into one file, one can use the following command:
 
-```
+```bash
 python3 python/merge_jobs.py --c <config address>
 ```
 

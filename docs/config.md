@@ -8,8 +8,8 @@ The options are case sensitive. Example config files can be found in ```test/con
 | **Option** | **Value type**   |  **Function** |
 | ---------- | ------------     | ------------- |
 | debug_level                   | string | Supported values: ERROR, WARNING, DEBUG, INFO and VERBOSE. Default value is ```WARNING``` |
-| input_filelist_path           | string | Path to the filelist text file produced by ```produce_metadata_files.py``` script |
-| input_sumweights_path         | string | Path to the sum_of_weights text file produced by ```produce_metadata_files.py``` script   |
+| input_filelist_path           | string | Path to the filelist text file produced by ```produce_metadata_files.py``` script. Can be overwritten with the command-line option `--input_path DIRECTORY` |
+| input_sumweights_path         | string | Path to the sum_of_weights text file produced by ```produce_metadata_files.py``` script. Can be overwritten with the command-line option `--input_path DIRECTORY`  |
 | output_path_histograms        | string | Path to the output histograms. Default value is empty string, i.e. current directory will be used. |
 | output_path_ntuples           | string | Path to the output ntuples. Default value is empty string, i.e. current directory will be used.  |
 | default_sumweights            | string | Default sum of weights to be used (can be overridden from Sample block). Default value is ```NOSYS```.        |
@@ -108,6 +108,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | exclude_systematics  | list of strings | Overrides default from General block for the given sample |
 | automatic_systematics         | bool | Overrides value for this option from general block.  |
 | nominal_only                  | bool | Overrides value for this option from general block.  |
+| numbering_sequence| list of dicts     | It can be used to automatically add more samples in one block, if they differ by selection, weights etc. More information can be found bellow in ```numbering_sequence``` block description.
 
 #### `truth` block inside of the `sample` block
 
