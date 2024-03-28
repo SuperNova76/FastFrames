@@ -339,6 +339,90 @@ Samples block:
 		 GEN_*.
 
 
+	name:  sample_squence_0p5
+	regions:  ['Electron']
+	weight:  weight_mc_0p5
+	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
+	selection_suffix: "n_bjets_truth > 0"
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  False
+	hasCutflows:  False
+	variables:
+		 jet_pt
+		 met_met
+		 met_phi
+	Unique samples:
+		 (364105,mc20e,fullsim)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+	Excluded systematics:
+		 GEN_*.
+
+
+	name:  sample_squence_0p8
+	regions:  ['Electron']
+	weight:  weight_mc_0p8
+	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
+	selection_suffix: "n_bjets_truth > 0"
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  False
+	hasCutflows:  False
+	variables:
+		 jet_pt
+		 met_met
+		 met_phi
+	Unique samples:
+		 (364105,mc20e,fullsim)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+	Excluded systematics:
+		 GEN_*.
+
+
+	name:  sample_squence_1p8
+	regions:  ['Electron']
+	weight:  weight_mc_1p8
+	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
+	selection_suffix: "n_bjets_truth > 0"
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  False
+	hasCutflows:  False
+	variables:
+		 jet_pt
+		 met_met
+		 met_phi
+	Unique samples:
+		 (364105,mc20e,fullsim)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+	Excluded systematics:
+		 GEN_*.
+
+
+	name:  sample_squence_2p0
+	regions:  ['Electron']
+	weight:  weight_mc_2p0
+	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
+	selection_suffix: "n_bjets_truth > 0"
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  False
+	hasCutflows:  False
+	variables:
+		 jet_pt
+		 met_met
+		 met_phi
+	Unique samples:
+		 (364105,mc20e,fullsim)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+	Excluded systematics:
+		 GEN_*.
+
+
 	name:  Wjets_FS
 	regions:  ['Electron']
 	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
