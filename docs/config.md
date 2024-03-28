@@ -108,6 +108,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | exclude_systematics  | list of strings | Overrides default from General block for the given sample |
 | automatic_systematics         | bool | Overrides value for this option from general block.  |
 | nominal_only                  | bool | Overrides value for this option from general block.  |
+| numbering_sequence| list of dicts     | It can be used to automatically add more samples in one block, if they differ by selection, weights etc. More information can be found bellow in ```numbering_sequence``` block description.
 
 #### `truth` block inside of the `sample` block
 
