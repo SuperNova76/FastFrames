@@ -1,18 +1,18 @@
 # TRExFitter config creation
 
 The ```FastFrames``` package contains a python script which allows for automatic creation of config files for [TRExFitter](https://trexfitter-docs.web.cern.ch/).
-Even thought most of the things are done automatically based on the FastFrames config file, there are parts of the config which cannot be
+Even though most of the things are done automatically based on the FastFrames config file, there are parts of the config which cannot be
 derived from FastFrames config and thus the user is advised to check the created config before using it.
 
 ## Creating config file for inclusive fit:
 
 ```python3 python/produce_trexfitter_config.py --c test/configs/config.yml --o config_trex.config --trex_settings test/configs/trex_settings.yml```
 
-where ```--c``` denotes the config file for FastFrames, ```--o``` is the address of the output TRExFitter config and the last argument, ```--trex_settings``` is optional. It contains additional settings, which will be used in TRExFitter config and cannot be automatically obtained from FastFrames config, such as colors for individual samples, LaTeX names of regions, normalization factors, additional systematic uncertainties etc.
+where ```--c``` denotes the config file for FastFrames, ```--o``` is the address of the output TRExFitter config and the last argument, ```--trex_settings``` is optional. It contains additional settings, which will be used in the TRExFitter config and cannot be automatically obtained from the FastFrames config, such as colors for individual samples, LaTeX names of regions, normalization factors, additional systematic uncertainties etc.
 
 ## Creating config file for unfolding:
 
-Creating config file for unfolding is similar to the inclusive fit, however, one has to specify which variable is going to be unfolded at reco and truth level, what truth level is going to be used and which sample is the main signal sample. An example command:
+Creating the config file for unfolding is similar to the inclusive fit, however, one has to specify which variable is going to be unfolded at reco and truth level, what truth level is going to be used and which sample is the main signal sample. An example command:
 
 ```python3 python/produce_trexfitter_config.py --c test/configs/config.yml --o config_trex.config --u ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt```
 
@@ -28,7 +28,7 @@ where the last argument denoted by ```--u``` is combination of 4 strings separat
 
 ## yaml file with additional TRExFitter settings
 
-This is an optional yaml file, which provides additional settings for ```TRExFitter``` config, which cannot be automatically deduced from fastframes config, such as colors and titles used for individual samples, normalization uncertainties, norm. factors, type of the fit, used regions etc. The example of this file can be found in ```test/configs/trex_settings.yml```.
+This is an optional yaml file, which provides additional settings for the ```TRExFitter``` config, which cannot be automatically deduced from the fastframes config, such as colors and titles used for individual samples, normalization uncertainties, norm. factors, type of the fit, used regions etc. The example of this file can be found in ```test/configs/trex_settings.yml```.
 
 The overview of the supported blocks and options inside these blocks:
 
@@ -43,9 +43,28 @@ python3 python/produce_trexfitter_config.py --config test/configs/config_testing
 python3 python/produce_trexfitter_config.py --config test/configs/config_testing.yml --regions Electron_jet_pt,Muon_met_met
 ```
 
+#### Job block:
+
+All set options in the yaml config are included in the TRExFitter config, but the following options have default values set:
+
+```Name```
+```HistoPath```
+```Lumi```
+```ImageFormat```
+```ReadFrom```
+```HistoChecks```
+
+If unfolding is run, default values for the following options are set:
+
+```AcceptancePath``` ```MigrationPath``` ```SelectionEffPath```
+
+If no unfolding is run, a default value for the following option is set:
+
+```POI```
+
 #### Fit block:
 
-The following options are allowed, there override the default values. The meaning of these options (as well for all the other TRExFitter options), ca be found in the [TRExFitter config documentation](https://trexfitter-docs.web.cern.ch/trexfitter-docs/settings/).
+The following options are allowed, there override the default values. The meaning of these options (as well for all the other TRExFitter options), can be found in the [TRExFitter config documentation](https://trexfitter-docs.web.cern.ch/trexfitter-docs/settings/).
 
   ```FitType:```
 
@@ -53,7 +72,9 @@ The following options are allowed, there override the default values. The meanin
 
   ```POIAsimov:```
 
-  ```FitBlind:```
+  ```FitBlind:``` 
+
+  ```UseMinos:```
 
 ### Unfolding block:
 
@@ -71,7 +92,7 @@ The following options are supported, they override options in ```Unfolding``` bl
 
 #### samples block:
 
-This allows a user to override some of the options for a given sample from config (it does not add a new sample).
+This allows a user to override some of the options for a given sample from config (it does not add a new sample). Samples can be excluded via the `General` block.
 
 ```name:``` this specifies the name of the sample - for which the block will be applied. It must match the name from the ```fastframes``` config.
 
@@ -82,6 +103,10 @@ Options to override:
 ```Title:```
 
 ```Type:```
+
+If provided by the user, the following option will be added to the sample definition in the TRExFitter config: 
+
+```Template:```
 
 #### Systematics block:
 
@@ -121,4 +146,26 @@ NormFactors:
       Min: -100
       Max: 100
       Samples: "ttbar_FS"
+```
+
+#### Morphing block:
+
+Defining a yaml `Morphing` block, will add `Morphing` settings to the TRExFitter config. All the passed options will be copied to the TRExFitter config. 
+
+An example of such a block:
+
+```
+Morphing:
+  FitFunction: QUADRATIC
+```
+
+#### General block:
+
+Through the `General` yaml block, in the `exclude_samples` option, a list with strings of samples to exclude from the TRExFitter config can be passed.
+
+An example of such a block: 
+
+```
+General:
+  exclude_samples: ["ttbar_dilep_Gt2p0_top_FS","bb4l_FS"]
 ```

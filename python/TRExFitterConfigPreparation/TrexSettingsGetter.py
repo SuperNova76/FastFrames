@@ -225,6 +225,11 @@ class TrexSettingsGetter:
 
     def _get_samples_blocks(self) -> list[tuple[str,str,dict]]:
         all_samples = self.config_reader.block_general.get_samples_objects()
+        if self.trex_settings_dict:
+            general_dict = self.trex_settings_dict.get("General", {})
+            if "exclude_samples" in general_dict:
+                for excluded_sample in general_dict["exclude_samples"]:
+                    all_samples = [sample for sample in all_samples if sample.name() != excluded_sample ]
         result = []
         self._inclusive_MC_samples_names = []
         for sample in all_samples:
@@ -247,6 +252,8 @@ class TrexSettingsGetter:
         sample_color = sample_setting_dict.get("Color", self.get_sample_color())
         dictionary["FillColor"] = sample_setting_dict.get("FillColor", sample_color) # TODO: FillColor
         dictionary["LineColor"] = sample_setting_dict.get("LineColor", sample_color)  # TODO: LineColor
+        if "Template" in sample_setting_dict:
+            dictionary["Template"] = sample_setting_dict["Template"]
 
         region_names = vector_to_list(sample.regionsNames())
         selected_regions = []
@@ -432,20 +439,34 @@ class TrexSettingsGetter:
                 continue
             syst_name = histo_name
             if histo_name.endswith("__1up"):
-                syst_name = histo_name[:-5]
-                if syst_name in result:
-                    result[syst_name]["HistoFolderNameUp"] = histo_name
+                if histo_name.endswith("_PseudoData__1up"):
+                    syst_name = histo_name[:-16]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderSubtractNameUp"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderSubtractNameUp": histo_name, "Samples": automatic_systematics[histo_name]}                    
                 else:
-                    result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
+                    syst_name = histo_name[:-5]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderNameUp"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
             elif histo_name.endswith("__1down"):
-                syst_name = histo_name[:-7]
-                if syst_name in result:
-                    result[syst_name]["HistoFolderNameDown"] = histo_name
+                if histo_name.endswith("_PseudoData__1down"):
+                    syst_name = histo_name[:-18]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderSubtractNameDown"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderSubtractNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
                 else:
-                    result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
+                    syst_name = histo_name[:-7]
+                    if syst_name in result:
+                        result[syst_name]["HistoFolderNameDown"] = histo_name
+                    else:
+                        result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
             else:
                 result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
-
+        
         if contains_generator_syst:
             Logger.log_message("WARNING", "The ROOT files contain generator systematics. These cannot be added automaticaly. Please take a look at it.")
 
@@ -527,22 +548,40 @@ class TrexSettingsGetter:
             result["POIAsimov"] = fit_dict_settings.get("POIAsimov",1)
         result["FitRegion"] = fit_dict_settings.get("FitRegion","CRSR")
         result["FitBlind"]  = fit_dict_settings.get("FitBlind", "True")
+        if "UseMinos" in fit_dict_settings:
+            result["UseMinos"] = fit_dict_settings["UseMinos"]
         return "Fit", "fit", result
+
+    def get_morphing_block(self) -> tuple[str,str,dict]:
+        morphing_dict_settings = {}
+        if self.trex_settings_dict:
+            morphing_dict_settings = self.trex_settings_dict.get("Morphing", {})
+        if morphing_dict_settings:
+            return "Morphing","morphing",morphing_dict_settings
+        else:
+            return {}    
 
     def get_job_dictionary(self) -> tuple[str,str,dict]:
         dictionary = {}
-        dictionary["HistoPath"] = self._files_path
+        job_dict_settings = {}
+        if self.trex_settings_dict:
+            job_dict_settings = self.trex_settings_dict.get("Job", {})
+        job_name = job_dict_settings.get("Name","my_fit")
+        dictionary["HistoPath"] = job_dict_settings.get("HistoPath",self._files_path)
         if self.run_unfolding:
             dictionary["AcceptancePath"] = self._files_path
             dictionary["MigrationPath"] = self._files_path
             dictionary["SelectionEffPath"] = self._files_path
-        dictionary["Lumi"] = 1
-        dictionary["ImageFormat"] = "pdf"
-        dictionary["ReadFrom"] = "HIST"
+        dictionary["Lumi"] = job_dict_settings.get("Lumi",1)
+        dictionary["ImageFormat"] = job_dict_settings.get("ImageFormat","pdf")
+        dictionary["ReadFrom"] = job_dict_settings.get("ReadFrom","HIST")
         if not self.run_unfolding:
-            dictionary["POI"] = "mu_signal"
-        dictionary["HistoChecks"] = "NOCRASH"
-        return "Job","my_fit",dictionary
+            dictionary["POI"] = job_dict_settings.get("POI","mu_signal")
+        dictionary["HistoChecks"] = job_dict_settings.get("HistoChecks","NOCRASH")
+        for key in job_dict_settings:
+            if key not in dictionary and key != "Name":
+                dictionary[key]=job_dict_settings[key]
+        return "Job",job_name,dictionary
 
     def get_unfolding_block(self) -> tuple[str,str,dict]:
         if not self.run_unfolding:

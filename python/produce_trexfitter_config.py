@@ -66,6 +66,11 @@ if __name__ == "__main__":
             unfolding_block = trex_settings_getter.get_unfolding_block()
             dump_dictionary_to_file(*unfolding_block, file)
 
+        morphing_block = trex_settings_getter.get_morphing_block()
+        if morphing_block:
+            add_block_comment("MORPHING",file)
+            dump_dictionary_to_file(*morphing_block,file)
+
         add_block_comment("REGIONS", file)
         regions_blocks = trex_settings_getter.get_region_blocks()
         for region_block in regions_blocks:
