@@ -554,8 +554,9 @@ class TrexSettingsGetter:
         return "Fit", "fit", result
 
     def get_morphing_block(self) -> tuple[str,str,dict]:
-        result = {}
-        morphing_dict_settings = self.trex_settings_dict.get("Morphing", {})
+        morphing_dict_settings = {}
+        if self.trex_settings_dict:
+            morphing_dict_settings = self.trex_settings_dict.get("Morphing", {})
         if morphing_dict_settings:
             return "Morphing","morphing",morphing_dict_settings
         else:
@@ -563,7 +564,9 @@ class TrexSettingsGetter:
 
     def get_job_dictionary(self) -> tuple[str,str,dict]:
         dictionary = {}
-        job_dict_settings = self.trex_settings_dict.get("Job", {})
+        job_dict_settings = {}
+        if self.trex_settings_dict:
+            job_dict_settings = self.trex_settings_dict.get("Job", {})
         job_name = job_dict_settings.get("Name","my_fit")
         dictionary["HistoPath"] = job_dict_settings.get("HistoPath",self._files_path)
         if self.run_unfolding:
