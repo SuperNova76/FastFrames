@@ -226,11 +226,10 @@ class TrexSettingsGetter:
     def _get_samples_blocks(self) -> list[tuple[str,str,dict]]:
         all_samples = self.config_reader.block_general.get_samples_objects()
         if self.trex_settings_dict:
-            general_dict = self.trex_settings_dict.get("General", [])
-            if general_dict:
-                if "exclude_samples" in general_dict:
-                    for excluded_sample in general_dict["exclude_samples"]:
-                        all_samples = [sample for sample in all_samples if sample.name() != excluded_sample ]
+            general_dict = self.trex_settings_dict.get("General", {})
+            if "exclude_samples" in general_dict:
+                for excluded_sample in general_dict["exclude_samples"]:
+                    all_samples = [sample for sample in all_samples if sample.name() != excluded_sample ]
         result = []
         self._inclusive_MC_samples_names = []
         for sample in all_samples:
