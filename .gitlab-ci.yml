@@ -29,7 +29,7 @@ cmake:
 make_doxygen:
   stage: build
   script:
-     - yum -y install doxygen
+     - yum -y install doxygen graphviz
      - mkdir -p doc_build && cd doc_build
      - cmake -DBUILD_DOC=ON .. | tee cmake.log
      - make doc_doxygen
