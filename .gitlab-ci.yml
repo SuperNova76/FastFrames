@@ -229,7 +229,7 @@ config_reader_comparison_nested_anchors:
 doxygen_webpage:
   stage: webpage
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "app" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PROJECT_NAMESPACE == "atlas-amglab" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   needs:
     - make_doxygen
   before_script:
