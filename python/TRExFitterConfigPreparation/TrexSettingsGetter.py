@@ -18,6 +18,8 @@ from BlockReaderSample import BlockReaderSample
 from BlockReaderGeneral import vector_to_list
 from ConfigReaderCpp import VariableWrapper
 from ConfigReader import ConfigReader
+from AutomaticRangeGenerator import AutomaticRangeGenerator
+
 
 
 import yaml
@@ -370,6 +372,12 @@ class TrexSettingsGetter:
             return []
         result = []
         systematics_dict = self.trex_settings_dict.get("Systematics", [])
+        systematics_dict = AutomaticRangeGenerator.unroll_sequence(systematics_dict, [
+                ["name"],
+                ["Title"],
+                ["HistoFolderNameUp"],
+                ["HistoFolderNameDown"],
+        ])
         for syst_dict in systematics_dict:
             syst_name = syst_dict.get("name", None)
             if not syst_name:

@@ -131,6 +131,7 @@ Systematics:
       Samples: "Wjets"
       Category: "Theoretical"
 ```
+The `numbering_sequence` is supported for the fields `name`, `Title`,`HistoFolderNameUp` and `HistoFolderNameDown`. 
 
 #### NormFactors block:
 
