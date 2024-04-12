@@ -137,6 +137,9 @@ class TrexSettingsGetter:
         region_name = region.name() + "_" + variable_name
         dictionary["Type"] = "SIGNAL"
         for region_dict in region_dict_settings:
+            if not ("name" in region_dict):
+                Logger.log_message("ERROR", "There is a region in the config without specified 'name'. Please fix it.")
+                exit(1)
             if re.match(region_dict["name"],region_name):
                 dictionary["Type"] = region_dict.get("Type","SIGNAL")
         dictionary["VariableTitle"] = variable_name # TODO: proper title
