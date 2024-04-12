@@ -372,12 +372,7 @@ class TrexSettingsGetter:
             return []
         result = []
         systematics_dict = self.trex_settings_dict.get("Systematics", [])
-        systematics_dict = AutomaticRangeGenerator.unroll_sequence(systematics_dict, [
-                ["name"],
-                ["Title"],
-                ["HistoFolderNameUp"],
-                ["HistoFolderNameDown"],
-        ])
+        systematics_dict = AutomaticRangeGenerator.unroll_sequence(systematics_dict)
         for syst_dict in systematics_dict:
             syst_name = syst_dict.get("name", None)
             if not syst_name:
@@ -461,7 +456,7 @@ class TrexSettingsGetter:
                     if syst_name in result:
                         result[syst_name]["HistoFolderSubtractNameUp"] = histo_name
                     else:
-                        result[syst_name] = {"HistoFolderSubtractNameUp": histo_name, "Samples": automatic_systematics[histo_name]}                    
+                        result[syst_name] = {"HistoFolderSubtractNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
                 else:
                     syst_name = histo_name[:-5]
                     if syst_name in result:
@@ -483,7 +478,7 @@ class TrexSettingsGetter:
                         result[syst_name] = {"HistoFolderNameDown": histo_name, "Samples": automatic_systematics[histo_name]}
             else:
                 result[syst_name] = {"HistoFolderNameUp": histo_name, "Samples": automatic_systematics[histo_name]}
-        
+
         if contains_generator_syst:
             Logger.log_message("WARNING", "The ROOT files contain generator systematics. These cannot be added automaticaly. Please take a look at it.")
 
@@ -576,7 +571,7 @@ class TrexSettingsGetter:
         if morphing_dict_settings:
             return "Morphing","morphing",morphing_dict_settings
         else:
-            return {}    
+            return {}
 
     def get_job_dictionary(self) -> tuple[str,str,dict]:
         dictionary = {}
