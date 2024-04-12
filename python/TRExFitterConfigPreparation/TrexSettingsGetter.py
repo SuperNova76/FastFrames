@@ -234,8 +234,6 @@ class TrexSettingsGetter:
         if self.trex_settings_dict:
             general_dict = self.trex_settings_dict.get("General", {})
             if "exclude_samples" in general_dict:
-                # for excluded_sample in general_dict["exclude_samples"]:
-                #     all_samples = [sample for sample in all_samples if sample.name() != excluded_sample ]
                 for regex in general_dict["exclude_samples"]:
                     all_samples = [sample for sample in all_samples if not re.match(regex,sample.name())]
         result = []
