@@ -130,9 +130,18 @@ class TrexSettingsGetter:
 
     def _get_region_tuple(self, region, variable) -> tuple[str,str,dict]:
         dictionary = {}
+        region_dict_settings = {}
+        if self.trex_settings_dict:
+            region_dict_settings = self.trex_settings_dict.get("Regions", {})
         variable_name = variable.name().replace("_NOSYS","")
         region_name = region.name() + "_" + variable_name
         dictionary["Type"] = "SIGNAL"
+        for region_dict in region_dict_settings:
+            if not ("name" in region_dict):
+                Logger.log_message("ERROR", "There is a region in the config without specified 'name'. Please fix it.")
+                exit(1)
+            if re.match(region_dict["name"],region_name):
+                dictionary["Type"] = region_dict.get("Type","SIGNAL")
         dictionary["VariableTitle"] = variable_name # TODO: proper title
         dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
         dictionary["Label"] = region_name       # TODO: proper label
@@ -228,8 +237,8 @@ class TrexSettingsGetter:
         if self.trex_settings_dict:
             general_dict = self.trex_settings_dict.get("General", {})
             if "exclude_samples" in general_dict:
-                for excluded_sample in general_dict["exclude_samples"]:
-                    all_samples = [sample for sample in all_samples if sample.name() != excluded_sample ]
+                for regex in general_dict["exclude_samples"]:
+                    all_samples = [sample for sample in all_samples if not re.match(regex,sample.name())]
         result = []
         self._inclusive_MC_samples_names = []
         for sample in all_samples:

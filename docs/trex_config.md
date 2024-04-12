@@ -161,11 +161,25 @@ Morphing:
 
 #### General block:
 
-Through the `General` yaml block, in the `exclude_samples` option, a list with strings of samples to exclude from the TRExFitter config can be passed.
+Through the `General` yaml block, in the `exclude_samples` option, a list with strings of samples to exclude from the TRExFitter config can be passed (regex is supported).
 
 An example of such a block: 
 
 ```
 General:
   exclude_samples: ["ttbar_dilep_Gt2p0_top_FS","bb4l_FS"]
+```
+
+#### Region block:
+
+Through the `Region` yaml block, the `Type` of the region can be specified. The region block needs a `name` field, which corresponds to automatically generated name for the region ```region_name + "_" variable_name``` (regex is supported).
+
+An example of such a block: 
+
+```
+Regions:
+  - name: "Signal_emu_jet_pt_sum"
+    Type: "VALIDATION"
+  - name: "Signal_emu_jet1.*"
+    Type: "VALIDATION"
 ```
