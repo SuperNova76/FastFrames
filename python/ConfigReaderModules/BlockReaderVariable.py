@@ -94,4 +94,4 @@ class BlockReaderVariable:
         @param variables_dicts: list[dict]
         @return list[dict]
         """
-        return AutomaticRangeGenerator.unroll_sequence(variables_dicts, ["name", "title", "definition"])
+        return AutomaticRangeGenerator.unroll_sequence(variables_dicts)

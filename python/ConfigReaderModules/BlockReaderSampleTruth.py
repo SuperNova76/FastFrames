@@ -95,7 +95,7 @@ class BlockReaderSampleTruth:
             self.cpp_class.addVariable(variable.cpp_class.getPtr())
 
     def _read_match_variables(self) -> None:
-        self._match_variables = AutomaticRangeGenerator.unroll_sequence(self._match_variables, ["reco", "truth"])
+        self._match_variables = AutomaticRangeGenerator.unroll_sequence(self._match_variables)
         for match_variable_dict in self._match_variables:
             options_getter = BlockOptionsGetter(match_variable_dict)
             reco = options_getter.get("reco", None, [str])
