@@ -230,6 +230,7 @@ root_files_comparison_histograms:
   stage: compare_results
   needs:
     - compile
+    - run_filelist
   script:
      - python3 python/FastFrames.py --c test/reference_files/configs_root_files_comparison/config.yml --step h
      - python3 test/python/compare_two_root_files.py Data.root test/reference_files/configs_root_files_comparison/output_histograms/Data.root
