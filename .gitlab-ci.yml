@@ -245,9 +245,8 @@ root_files_comparison_ntuples:
     - run_filelist
   script:
      - python3 python/FastFrames.py --c test/configs/config.yml --step n --samples Data,Wjets
-     - python3 test/python/compare_two_root_files.py Data.root test/reference_files/configs_root_files_comparison/output_histograms/Data.root
-     - python3 test/python/compare_two_root_files.py Wjets.root test/reference_files/configs_root_files_comparison/output_histograms/Wjets.root
-     - python3 test/python/compare_two_root_files.py ttbar_FS.root test/reference_files/configs_root_files_comparison/output_histograms/ttbar_FS.root
+     - python3 test/python/compare_two_root_files.py output_ntuples/Data_0_2017_data.root test/reference_files/configs_root_files_comparison/output_ntuples/Data_0_2017_data.root
+     - python3 test/python/compare_two_root_files.py output_ntuples/Wjets_700341_mc20a_fullsim.root test/reference_files/configs_root_files_comparison/output_ntuples/Wjets_700341_mc20a_fullsim.root
   allow_failure: true
 
 doxygen_webpage:
