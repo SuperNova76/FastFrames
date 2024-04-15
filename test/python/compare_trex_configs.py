@@ -13,6 +13,7 @@ if __name__ == "__main__":
     commands = [
         "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_testing.yml --u ttbar_FS:particle:truth_jet_pt:jet_pt --output config_testing_unfolding.config",
         "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_testing.yml --output config_testing_inclusive.config",
+        "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_TRExFitter_test.yml --output config_TRExFitter_test_inclusive_with_settings_file.config --trex_settings test/reference_files/trex_configs/trex_settings.yml",
         "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_TRExFitter_test.yml --output config_TRExFitter_test_inclusive.config",
         "python3 python/produce_trexfitter_config.py --c test/reference_files/config_reading/config_TRExFitter_test.yml --u ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt --output config_TRExFitter_test_unfolding.config",
     ]
@@ -25,7 +26,7 @@ if __name__ == "__main__":
 
     print("\n\n")
 
-    files_to_compare = ["config_testing_inclusive.config", "config_testing_unfolding.config", "config_TRExFitter_test_inclusive.config", "config_TRExFitter_test_unfolding.config"]
+    files_to_compare = ["config_testing_inclusive.config", "config_testing_unfolding.config", "config_TRExFitter_test_inclusive.config", "config_TRExFitter_test_unfolding.config", "config_TRExFitter_test_inclusive_with_settings_file.config"]
 
     different_files = []
     for file_to_compare in files_to_compare:

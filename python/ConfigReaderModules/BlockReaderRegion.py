@@ -72,7 +72,7 @@ class BlockReaderRegion:
             self._variables.append(variable)
 
         self._histograms_2d = self._options_getter.get("histograms_2d", [], [list], [dict])
-        self._histograms_2d = AutomaticRangeGenerator.unroll_sequence(self._histograms_2d, ["x", "y"])
+        self._histograms_2d = AutomaticRangeGenerator.unroll_sequence(self._histograms_2d)
 
         ## Instance of the RegionWrapper C++ class -> wrapper around C++ Region class
         self.cpp_class = RegionWrapper(self._name)

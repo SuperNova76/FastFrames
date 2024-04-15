@@ -46,15 +46,7 @@ class ConfigReader:
             CommandLineOptions().check_samples_existence(self.block_getter.get("samples"))
             CommandLineOptions().keep_only_selected_samples(self.block_getter.get("samples"))
             sample_blocks = self.block_getter.get("samples")
-            sample_blocks = AutomaticRangeGenerator.unroll_sequence(sample_blocks, [
-                ["name"],
-                ["weight_suffix"],
-                ["event_weights"],
-                ["selection_suffix"],
-                ["reco_tree_name"],
-                ["variables", "name"],
-                ["variables", "definition"],
-            ])
+            sample_blocks = AutomaticRangeGenerator.unroll_sequence(sample_blocks)
             for sample_dict in sample_blocks:
                 sample = BlockReaderSample(sample_dict, self.block_general)
                 sample.adjust_regions(self.regions)
@@ -81,10 +73,7 @@ class ConfigReader:
 
             self.systematics_dicts = [] # for creation of TRExFitter config
             systematic_blocks_from_config = self.block_getter.get("systematics", [])
-            systematic_blocks_from_config = AutomaticRangeGenerator.unroll_sequence(systematic_blocks_from_config,
-                                                [["variation", "up"], ["variation", "sum_weights_up"],
-                                                ["variation", "down"], ["variation", "sum_weights_down"]]
-                                            )
+            systematic_blocks_from_config = AutomaticRangeGenerator.unroll_sequence(systematic_blocks_from_config)
             for systematic_dict in systematic_blocks_from_config:
                 systematic_list = read_systematics_variations(systematic_dict, self.block_general, self.systematics_dicts)
                 for systematic in systematic_list:
