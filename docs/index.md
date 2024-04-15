@@ -4,7 +4,7 @@ FastFrames is an histograming and ntuple reprocessing framework. The core code i
 
 ## How to checkout and compile the code
 
-#### Locally (assuming you have ROOT and Boost libraries installed)
+#### Linux local (assuming you have ROOT and Boost libraries installed)
 
 To run the code, you firstly need to check out the repository and compile the C++ part of the package. In order to do so:
 
@@ -47,6 +47,46 @@ git lfs pull
 ```
 
 This should download the ROOT files that are used for the CI tests, but can also be used to run the code as an example
+
+#### MacOS local
+
+First, install ROOT, CMake and the BOOST libraries, you can use the package manager of your preference, in this tutorial we will use [homebrew](https://brew.sh)
+
+```
+brew install root
+brew install cmake
+brew install boost-python3
+```
+Now, create a folder to store the project files:
+```
+mkdir FF && cd FF # Pick your favourite name if you do not like FF :)
+```
+After this step, we clone the FastFrames repository:
+
+```
+git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git
+```
+
+We can now configure the build, compile and install:
+```
+cmake -S fastframes -B build -DCMAKE_INSTALL_PREFIX=install 
+# -S should point to the folder that contains the FastFrames source code and -B to the build directory.
+
+cmake --build build -jN --target install
+# N is the number of cores you want to use for the compilation.
+```
+
+Finally, you will need to set the `LD_LIBRARY_PATH` to the installation path using the produced setup.sh script
+
+```
+source build/setup.sh
+```
+
+To download the ROOT files that are used for the CI tests, and can also be used to run the code as an example do:
+
+```
+git lfs pull
+```
 
 #### Using lxplus(-like) machine
 The instructions are the same as in the Local build, but you can setup ROOT and Boost using StatAnalysis:
