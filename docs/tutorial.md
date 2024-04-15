@@ -173,7 +173,7 @@ There are two general ways in RDataFrame how to add variables via Define(). The 
 
 The following conceptual steps are needed to add a leading jet pT variable:
 
-1. Take the vector of jet pT (`jet_pt_<SYSTNAME>`) and a vector of jet selections (`jet_select_or_<SYSTNAME>`) and take only the jets that pass the selection
+1. Take the vector of jet pT (`jet_pt_<SYSTNAME>`) and a vector of jet selections (`jet_select_baselineJVT_<SYSTNAME>`) and take only the jets that pass the selection and overlap removal
 2. Sort the vector based on jet pT - the vectors are never sorted - they cannot be as systematic variations could change the order
 3. Take the first element and store this as a new variable
 
@@ -197,7 +197,7 @@ For this, FastFrames has a method that does this for you! You only need to defin
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "sorted_jet_TLV_NOSYS",
                                          SortedTLVs,
-                                         {"jet_TLV_NOSYS", "jet_select_or_NOSYS"});
+                                         {"jet_TLV_NOSYS", "jet_select_baselineJVT_NOSYS"});
 
   // add leading jet TLV
   mainNode = MainFrame::systematicDefine(mainNode,
@@ -242,10 +242,10 @@ The above code takes a lorentz vector and then returns the pT component divided 
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "sorted_jet_TLV_NOSYS",
                                          SortedTLVs,
-                                         {"jet_TLV_NOSYS", "jet_select_or_NOSYS"});
+                                         {"jet_TLV_NOSYS", "jet_select_baselineJVT_NOSYS"});
 ```
-The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTLVs` lambda (function) and it relies on the two columns(variables): `jet_TLV_NOSYS` and `jet_select_or_NOSYS`, where the first variable is provided by FastFrames (configurable) for convenience.
-Note here that we only require that the jets passed the selection and overlap-removal for a given systematic variation, but there might be other selections needed, e.g. JVT selection.
+The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTLVs` lambda (function) and it relies on the two columns(variables): `jet_TLV_NOSYS` and `jet_select_baselineJVT_NOSYS`, where the first variable is provided by FastFrames (configurable) for convenience.
+Note here that we only require that the jets passed the kinematic selection (pT and |eta|), overlap-removal and JVT selection for a given systematic variation.
 However, this is something which is still actively being developed in TopCPToolkit/CP algorithms.
 
 ```c++
