@@ -16,7 +16,7 @@ After logging to the machine do
 ```
 setupATLAS
 lsetup git # to setup newer version of git
-asetup StatAnalysis,0.3.0
+asetup StatAnalysis,0.3.2
 ```
 
 To check the version of ROOT setup, use:
