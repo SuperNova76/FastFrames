@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-"""!Script for mering files from GRID with empty reco tree - this is needed
+"""!Script for mering files from GRID with empty reco tree - this is needed to avoid the problem with empty reco trees in the GRID files - RDF cannot properly handle them
 """
 
 from ROOT import TFile
@@ -70,30 +70,14 @@ if __name__ == "__main__":
 
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--delete_empty_files", help="Should empty files be deleted after merging", default=None)
     parser.add_argument("--root_files_folder",  help="Path to folder containing root files", default=None)
     args = parser.parse_args()
     root_files_folder   = args.root_files_folder
-    delete_empty_files  = args.delete_empty_files
 
     # check if the input is correct
     if root_files_folder is None:
         Logger.log_message("ERROR", "root_files_folder option not specified")
 
-    if delete_empty_files is not None:
-        if type(delete_empty_files) != str:
-            Logger.log_message("ERROR", "delete_empty_files must be string ('true' or 'false')")
-        if delete_empty_files.lower() == "true":
-            delete_empty_files = True
-        elif delete_empty_files.lower() == "false":
-            delete_empty_files = False
-        else:
-            Logger.log_message("ERROR", "delete_empty_files option not specified. Please specify True or False")
-
-
-    if delete_empty_files is None:
-        Logger.log_message("ERROR", "delete_empty_files option not specified. Please specify True or False")
-
     file_dictionary = get_file_dictionary(root_files_folder)
     for metadata_tuple, files_from_unique_sample in file_dictionary.items():
-        merge_files(files_from_unique_sample, delete_empty_files)
+        merge_files(files_from_unique_sample, True)

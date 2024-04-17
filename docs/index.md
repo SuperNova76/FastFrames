@@ -69,7 +69,7 @@ git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git
 
 We can now configure the build, compile and install:
 ```
-cmake -S fastframes -B build -DCMAKE_INSTALL_PREFIX=install 
+cmake -S fastframes -B build -DCMAKE_INSTALL_PREFIX=install
 # -S should point to the folder that contains the FastFrames source code and -B to the build directory.
 
 cmake --build build -jN --target install
@@ -108,6 +108,20 @@ asetup StatAnalysis,0.2.5
 This will setup an appropriate version of ROOT (you can check the ROOT version with `root --version`)
 
 ## How to run the code:
+
+
+#### Merging empty files and removing them
+
+The RDataFrame cannot handle well files with empty trees, but one can obtain such files from GRID production.
+In order to solve this problem, one can merge the empty files from grid with one non-empty file and then remove the original files which have been merged (to avoid double counting). There is a script to do this in the ```FastFrames``` repository:
+
+You can run the script using the following command:
+
+```
+python3 python/merge_empty_grid_files.py --root_files_folder <path to the folder with ROOT files>
+```
+
+it will go recursivelly over all subfolders, merge all empty files belonging to the same DSID, campaign and type (AFII/FS/data) with one non-empty file. After that, it will remove the original files in order to avoid double counting in the later steps. If all all files from the same DSID+campaign+type are empty, it will merge all of them together (FastFrames can handle this case).
 
 #### Obtaining metadata files:
 
