@@ -58,7 +58,7 @@ void MainFrame::executeHistograms() {
 
     // run the check for metadata
     if (!m_metadataManager.checkSamplesMetadata(m_config->samples())) {
-        LOG(ERROR) << "Metadata information missing, please fix\n";
+        LOG(ERROR) << "Metadata information missing or requested samples are not provided, please fix\n";
         throw std::invalid_argument("");
     }
 

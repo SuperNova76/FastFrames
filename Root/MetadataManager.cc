@@ -192,20 +192,20 @@ bool MetadataManager::checkSamplesMetadata(const std::vector<std::shared_ptr<Sam
 
 bool MetadataManager::checkUniqueSampleIDMetadata(const UniqueSampleID& id) const {
 
-    if (id.isData()) return true;
-
-    auto itrXsec = m_metadata.find(id);
-    if (itrXsec == m_metadata.end()) {
+    auto itrMeta = m_metadata.find(id);
+    if (itrMeta == m_metadata.end()) {
         LOG(ERROR) << "Cannot find metadata for unique sample : " << id << "!\n";
         return false;
     }
 
-    if (itrXsec->second.sumWeightsIsEmpty()) {
+    if (id.isData()) return true;
+
+    if (itrMeta->second.sumWeightsIsEmpty()) {
         LOG(ERROR) << "Sum weights for unique sample: " << id << " are empty\n";
         return false;
     }
 
-    if (!itrXsec->second.crossSectionSet()) {
+    if (!itrMeta->second.crossSectionSet()) {
         LOG(ERROR) << "Cross-section for unique sample: " << id << " is not set\n";
         return false;
     }
