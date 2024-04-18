@@ -85,7 +85,7 @@ def merge_files(input_files : list[str], output_file : str, truth_blocks : dict[
     file = TFile.Open(output_file, "UPDATE")
     directories = [key.GetName() for key in file.GetListOfKeys() if key.GetClassName() == "TDirectoryFile"]
     for directory in directories:
-        histograms_names = [key.GetName() for key in file.Get(directory).GetListOfKeys() if key.GetClassName() == "TH1D" or key.GetClassName() == "TH2D"]
+        histograms_names = [key.GetName() for key in file.Get(directory).GetListOfKeys() if key.GetClassName() == "TH1D" or key.GetClassName() == "TH2D" or key.GetClassName() == "TH3D"]
         for region in regions:
             for truth_block_name in truth_blocks:
                 for reco_truth_tuple in truth_blocks[truth_block_name]:

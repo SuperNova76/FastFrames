@@ -68,6 +68,7 @@ This block is optional.
 | selection     | string            | Selection     |
 | variables     | list of dicts     | List of variables defined for the region  |
 | histograms_2d     | list of dicts     | List of 2D histograms between 2 reco-level variables to produce. The dict must have 2 keys: ```x``` and ```y``` for variables on x and y axes. ```numbering_sequence``` block is supported (see details bellow). |
+| histograms_3d     | list of dicts     | List of 3D histograms between 3 reco-level variables to produce. The dict must have 3 keys: ```x```, ```Y``` and ```z``` for variables on x, y and z axes. |
 
 ####   `variable` block inside of the `region` block
 | **Option**    | **Value type**    | **Function** |

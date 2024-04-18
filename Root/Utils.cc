@@ -24,6 +24,23 @@ std::unique_ptr<TChain> Utils::chainFromFiles(const std::string& treeName,
     return chain;
 }
 
+std::vector<double> fromRegularToEdges(const Variable& v){
+    // We create a TH1D just as a proxy to get the bin edges
+    TH1D histo("", "", v.axisNbins(), v.axisMin(), v.axisMax());
+    std::vector<double> binEdges{};
+    
+
+    // Add each bin edge one by one
+    std::size_t nBins = static_cast<std::size_t>(histo.GetNbinsX());
+    for(std::size_t i = 1; i <= nBins; ++i) {
+        binEdges.push_back(histo.GetXaxis()->GetBinLowEdge(i));
+    }
+    // Add the last bin edge
+    binEdges.push_back(histo.GetXaxis()->GetBinUpEdge(nBins));
+
+    return binEdges;
+}
+
 ROOT::RDF::TH2DModel Utils::histoModel2D(const Variable& v1, const Variable& v2) {
     if (v1.hasRegularBinning() && v2.hasRegularBinning()) {
         return ROOT::RDF::TH2DModel("", "", v1.axisNbins(), v1.axisMin(), v1.axisMax(), v2.axisNbins(), v2.axisMin(), v2.axisMax());
@@ -39,6 +56,13 @@ ROOT::RDF::TH2DModel Utils::histoModel2D(const Variable& v1, const Variable& v2)
     const std::vector<double>& binEdges1 = v1.binEdges();
     const std::vector<double>& binEdges2 = v2.binEdges();
     return ROOT::RDF::TH2DModel("", "", binEdges1.size() -1, binEdges1.data(), binEdges2.size() - 1, binEdges2.data());
+}
+
+ROOT::RDF::TH3DModel Utils::histoModel3D(const Variable& v1, const Variable& v2, const Variable& v3) {
+    const std::vector<double> binEdges1 = v1.hasRegularBinning() ? fromRegularToEdges(v1) : v1.binEdges();
+    const std::vector<double> binEdges2 = v2.hasRegularBinning() ? fromRegularToEdges(v2) : v2.binEdges();
+    const std::vector<double> binEdges3 = v3.hasRegularBinning() ? fromRegularToEdges(v3) : v3.binEdges();
+    return ROOT::RDF::TH3DModel("", "", binEdges1.size() -1, binEdges1.data(), binEdges2.size() - 1, binEdges2.data(), binEdges3.size() - 1, binEdges3.data());
 }
 
 std::unique_ptr<TH1D> Utils::copyHistoFromVariableHistos(const std::vector<VariableHisto>& histos,

@@ -8,6 +8,7 @@
 
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TH3D.h"
 
 #include "ROOT/RResultPtr.hxx"
 
@@ -220,6 +221,107 @@ private:
 };
 
 /**
+ * @brief Class that stores 2D histograms for each Variable
+ *
+ */
+class VariableHisto3D {
+public:
+
+  /**
+   * @brief Construct a new Variable Histo 2D object
+   *
+   * @param name Name of the combination
+   */
+  explicit VariableHisto3D(const std::string& name) :
+    m_name(name) {}
+
+  /**
+   * @brief Destroy the Variable Histo 2D object
+   *
+   */
+  ~VariableHisto3D() = default;
+
+  /**
+   * @brief Deleted copy constructor
+   *
+   * @param other
+   */
+  VariableHisto3D(const VariableHisto3D& other) = delete;
+
+  /**
+   * @brief Move constructor
+   *
+   * @param other
+   */
+  VariableHisto3D(VariableHisto3D&& other) = default;
+
+  /**
+   * @brief Deleted assignment operator
+   *
+   * @param other
+   * @return VariableHisto&
+   */
+  VariableHisto3D& operator =(const VariableHisto3D& other) = delete;
+
+  /**
+   * @brief Default forwarding operator
+   *
+   * @param other
+   * @return VariableHisto&
+   */
+  VariableHisto3D& operator =(VariableHisto3D&& other) = default;
+
+  /**
+   * @brief Get name of the Variable
+   *
+   * @return const std::string&
+   */
+  inline const std::string& name() const {return m_name;}
+
+  /**
+   * @brief Set the histogram from the RDataFrame results object
+   * This triggers the event loop!
+   * Need to make a copy as RDF owns the pointer
+   *
+   * @param h
+   */
+  void setHisto(ROOT::RDF::RResultPtr<TH3D>& h) {m_histo = std::move(h);}
+
+  /**
+   * @brief Get the histogram
+   *
+   * @return ROOT::RDF::RResultPtr<TH1D>
+   */
+  inline ROOT::RDF::RResultPtr<TH3D> histo() const {return m_histo;}
+
+  /**
+   * @brief Get the unique ptr histogram
+   * 
+   * @return const std::unique_ptr<TH2D>& 
+   */
+  inline const std::unique_ptr<TH3D>& histoUniquePtr() const {return m_histoUniquePtr;}
+
+  /**
+   * @brief Merge histograms (add them)
+   *
+   * @param h Other histogram
+   */
+  void mergeHisto(ROOT::RDF::RResultPtr<TH3D> h);
+
+  /**
+   * @brief Copy the RResultsPtr to the unique ptr 
+   * 
+   * @param h 
+   */
+  void copyHisto(ROOT::RDF::RResultPtr<TH3D> h);
+
+private:
+  std::string m_name;
+  ROOT::RDF::RResultPtr<TH3D> m_histo;
+  std::unique_ptr<TH3D> m_histoUniquePtr;
+};
+
+/**
  * @brief Class that stores the VariableHistos for a Region
  *
  */
@@ -288,6 +390,13 @@ public:
   inline void addVariableHisto2D(VariableHisto2D&& vh) {m_variables2D.emplace_back(std::move(vh));}
 
   /**
+   * @brief Add VariableHisto3D for this region
+   *
+   * @param vh
+   */
+  inline void addVariableHisto3D(VariableHisto3D&& vh) {m_variables3D.emplace_back(std::move(vh));}
+
+  /**
    * @brief Get all variableHisto (const)
    *
    * @return const std::vector<VariableHisto>&
@@ -315,10 +424,25 @@ public:
    */
   inline std::vector<VariableHisto2D>& variableHistos2D() {return m_variables2D;}
 
+  /**
+   * @brief Get all variableHisto3D (const)
+   *
+   * @return const std::vector<VariableHisto3D>&
+   */
+  inline const std::vector<VariableHisto3D>& variableHistos3D() const {return m_variables3D;}
+
+  /**
+   * @brief Get all variableHisto3D
+   *
+   * @return std::vector<VariableHisto3D>&
+   */
+  inline std::vector<VariableHisto3D>& variableHistos3D() {return m_variables3D;}
+
 private:
   std::string m_name;
   std::vector<VariableHisto> m_variables;
   std::vector<VariableHisto2D> m_variables2D;
+  std::vector<VariableHisto3D> m_variables3D;
 
 };
 

@@ -74,6 +74,10 @@ regions:
           min: -3.2
           max: 3.2
           number_of_bins: 16
+    histograms_3d:
+      - x: "met_met"
+        y: "met_phi"
+        z: "jet_pt"
 
   - name: "Muon"
     selection: "mu_pt_NOSYS[0] > 30000"

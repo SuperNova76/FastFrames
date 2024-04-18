@@ -212,6 +212,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // addVariableCombination
         .def("addVariableCombination",   &RegionWrapper::addVariableCombination)
         .def("variableCombinations",    &RegionWrapper::variableCombinations)
+
+        // addVariableCombination3D
+        .def("addVariableCombination3D",   &RegionWrapper::addVariableCombination3D)
+        .def("variableCombinations3D",    &RegionWrapper::variableCombinations3D)
     ;
 
     /**
