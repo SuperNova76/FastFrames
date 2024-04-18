@@ -5,7 +5,7 @@ Two identical files will return a zero exit code and print out success message.
 Usage:
     python3 compare_two_root_files.py <file1> <file2>
 """
-from ROOT import TFile, TTree, TH1D, TH2D, TDirectory
+from ROOT import TFile, TTree, TH1D, TH2D, TH3D, TDirectory
 import sys
 
 def floats_are_equal(val1 : float, val2 : float, tolerance : float = 1e-5) -> bool:
@@ -81,6 +81,23 @@ def compare_2d_histograms(hist1 : TH2D, hist2 : TH2D) -> str:
                 return f"Histograms have different bin content at bin ({i}, {j}): {hist1.GetBinContent(i, j)} != {hist2.GetBinContent(i, j)}"
     return None
 
+def compare_3d_histograms(hist1 : TH3D, hist2 : TH3D) -> str:
+    """
+    Compare two TH3D histograms. If they are different, return a string explaining the first difference found. If identical, return None
+    """
+    if hist1.GetNbinsX() != hist2.GetNbinsX():
+        return "Histograms have different number of bins in x"
+    if hist1.GetNbinsY() != hist2.GetNbinsY():
+        return "Histograms have different number of bins in y"
+    if hist1.GetNbinsZ() != hist2.GetNbinsZ():
+        return "Histograms have different number of bins in z"
+    for i in range(hist1.GetNbinsX()+2):
+        for j in range(hist1.GetNbinsY()+2):
+            for k in range(hist1.GetNbinsZ()+2):
+                if not floats_are_equal(hist1.GetBinContent(i, j, k), hist2.GetBinContent(i, j, k)):
+                    return f"Histograms have different bin content at bin ({i}, {j}, {k}): {hist1.GetBinContent(i, j, k)} != {hist2.GetBinContent(i, j, k)}"
+    return None
+
 def get_list_of_folders(file : TFile) -> list[str]:
     """
     Get the list TDirectories names in a TFile
@@ -121,6 +138,8 @@ def compare_histograms_in_folder(tfile1 : TFile, tfile2 : TFile, folder : str, h
         compare_function = compare_1d_histograms
     elif histo_type == "TH2D":
         compare_function = compare_2d_histograms
+    elif histo_type == "TH3D":
+        compare_function = compare_3d_histograms
     else:
         raise ValueError(f"Unknown histogram type {histo_type}")
 
@@ -159,9 +178,13 @@ def compare_all_histograms_in_files(file1 : TFile, file2 : TFile, folders_to_ign
         comparison_1D = compare_histograms_in_folder(file1, file2, folder, "TH1D")
         if comparison_1D:
             return comparison_1D
-        comparison_2D = compare_histograms_in_folder(file1, file2, folder, "TH1D")
+        comparison_2D = compare_histograms_in_folder(file1, file2, folder, "TH2D")
         if comparison_2D:
             return comparison_2D
+        comparison_3D = compare_histograms_in_folder(file1, file2, folder, "TH3D")
+        if comparison_3D:
+            return comparison_3D
+        
 
     return None
 

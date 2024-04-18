@@ -190,6 +190,13 @@ if __name__ == "__main__":
                 print("\t\t", variable_combination)
             print("\n")
 
+        variable_combinations_3d = BlockReaderRegion.get_3d_combinations(region.variableCombinations3D())
+        if len(variable_combinations_3d) > 0:
+            print("\t3d combinations:")
+            for variable_combination in variable_combinations_3d:
+                print("\t\t", variable_combination)
+            print("\n")
+
     print("\n\nSamples block:\n")
     samples = config_reader.block_general.get_samples_objects()
     for sample in samples:

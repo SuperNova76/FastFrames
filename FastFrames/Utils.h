@@ -14,6 +14,7 @@
 #include "TChain.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TH3D.h"
 
 #include <memory>
 #include <string>
@@ -45,6 +46,16 @@ namespace Utils {
    * @return ROOT::RDF::TH2DModel
    */
   ROOT::RDF::TH2DModel histoModel2D(const Variable& v1, const Variable& v2);
+
+  /**
+   * @brief Get 3D histo model (TH3D) from variables
+   *
+   * @param v1
+   * @param v2
+   * @param v3
+   * @return ROOT::RDF::TH3DModel
+   */
+  ROOT::RDF::TH3DModel histoModel3D(const Variable& v1, const Variable& v2, const Variable& v3);
 
   /**
    * @brief Copy a histogram from VariableHistos based on a name of the histogram

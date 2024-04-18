@@ -59,6 +59,10 @@ Regions block:
 		binning:  16 ,  -3.2 ,  3.2
 
 
+	3d combinations:
+		 met_met, met_phi, jet_pt
+
+
 	name:  Muon
 	selection:  mu_pt_NOSYS[0] > 30000
 	variables:

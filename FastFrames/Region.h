@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 
 /**
  * @brief Class containing information for a given region
@@ -81,11 +82,28 @@ public:
   void addVariableCombination(const std::string& v1, const std::string& v2) {m_variableCombinations.emplace_back(std::make_pair(v1, v2));}
 
   /**
+   * @brief Add variable combination for 3D histograms
+   *
+   * @param v1
+   * @param v2
+   * @param v3
+   */
+  void addVariableCombination3D(const std::string& v1, const std::string& v2, const std::string& v3) {m_variableCombinations3D.emplace_back(std::tuple<std::string, std::string, std::string>(v1, v2, v3));}
+
+  /**
    * @brief Get variable combinations
    *
    * @return const std::vector<std::pair<std::string, std::string> >&
    */
   inline const std::vector<std::pair<std::string, std::string> >& variableCombinations() const {return m_variableCombinations;}
+
+  /**
+   * @brief Get variable combinations for 3D histograms
+   *
+   * @return const std::vector<std::tuple<std::string, std::string, std::string>>&
+   */
+  inline const std::vector<std::tuple<std::string, std::string, std::string>>& variableCombinations3D() const {return m_variableCombinations3D;}
+
 
   /**
    * @brief Retrieve variable by its name
@@ -101,4 +119,5 @@ private:
   std::string m_selection;
   std::vector<Variable> m_variables;
   std::vector<std::pair<std::string, std::string> > m_variableCombinations;
+  std::vector<std::tuple<std::string, std::string, std::string>> m_variableCombinations3D;
 };

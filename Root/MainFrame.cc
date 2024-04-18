@@ -608,6 +608,8 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 
             this->processTruthHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
+            this->processHistograms3D(&regionHisto, node, sample, ireg, isyst);
+
             systematicHisto.addRegionHisto(std::move(regionHisto));
             ++regIndex;
         }
@@ -668,6 +670,13 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
                 const std::string histo2DName = StringOperations::replaceString(ivariableHist2D.name(), "_NOSYS", "") + "_" + iregionHist.name();
                 out->cd(isystHist.name().c_str());
                 ivariableHist2D.histoUniquePtr()->Write(histo2DName.c_str());
+            }
+
+            // 3D histograms
+            for (const auto& ivariableHist3D : iregionHist.variableHistos3D()) {
+                const std::string histo3DName = StringOperations::replaceString(ivariableHist3D.name(), "_NOSYS", "") + "_" + iregionHist.name();
+                out->cd(isystHist.name().c_str());
+                ivariableHist3D.histoUniquePtr()->Write(histo3DName.c_str());
             }
         }
     }
@@ -894,6 +903,44 @@ void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
 
             regionHisto->addVariableHisto2D(std::move(variableHistoPassed));
         }
+    }
+}
+
+void MainFrame::processHistograms3D(RegionHisto* regionHisto,
+                                    const ROOT::RDF::RNode& node,
+                                    const std::shared_ptr<Sample>& sample,
+                                    const std::shared_ptr<Region>& region,
+                                    const std::shared_ptr<Systematic>& systematic) const {
+
+    for (const auto& combinations : region->variableCombinations3D()) {
+        const Variable& v1 = region->variableByName(std::get<0>(combinations));
+        const Variable& v2 = region->variableByName(std::get<1>(combinations));
+        const Variable& v3 = region->variableByName(std::get<2>(combinations)); 
+        const std::string name = v1.name() + "_vs_" + v2.name() + "_vs_" + v3.name();
+        if ((v1.isNominalOnly() || v2.isNominalOnly() || v3.isNominalOnly()) && systematic->name() != "NOSYS") continue;
+
+        const std::vector<std::string>& variables = sample->variables();
+        auto itrVar1 = std::find(variables.begin(), variables.end(), v1.name());
+        auto itrVar2 = std::find(variables.begin(), variables.end(), v2.name());
+        auto itrVar3 = std::find(variables.begin(), variables.end(), v3.name());
+        if (itrVar1 == variables.end() || itrVar2 == variables.end() || itrVar3 == variables.end()) {
+            LOG(VERBOSE) << "Skipping variable (3D): " << name << " for sample: " << sample->name() << ", systematic" << systematic->name() << "\n";
+            continue;
+        }
+
+        VariableHisto3D variableHisto3D(name);
+        ROOT::RDF::RResultPtr<TH3D> histogram3D = this->book3Dhisto(node, v1, v2, v3, systematic);
+
+        if (!histogram3D) {
+            LOG(ERROR) << "Histogram for sample: " << sample->name() << ", systematic: "
+                       << systematic->name() << ", region: " << region->name() << " and variable combination: " << v1.name() << " & " << v2.name() << " & " << v3.name() << " is empty!\n";
+            throw std::runtime_error("");
+
+        }
+
+        variableHisto3D.setHisto(histogram3D);
+
+        regionHisto->addVariableHisto3D(std::move(variableHisto3D));
     }
 }
 
@@ -1317,6 +1364,19 @@ ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
     return node.Histo2D(Utils::histoModel2D(variable1, variable2),
                         this->systematicVariable(variable1, systematic),
                         this->systematicVariable(variable2, systematic),
+                        this->systematicWeight(systematic));
+}
+
+ROOT::RDF::RResultPtr<TH3D> MainFrame::book3Dhisto(ROOT::RDF::RNode node,
+                                                   const Variable& variable1,
+                                                   const Variable& variable2,
+                                                   const Variable& variable3,
+                                                   const std::shared_ptr<Systematic>& systematic) const {
+    // Rely on the JIT compiler to do 3D histograms.
+    return node.Histo3D(Utils::histoModel3D(variable1, variable2, variable3),
+                        this->systematicVariable(variable1, systematic),
+                        this->systematicVariable(variable2, systematic),
+                        this->systematicVariable(variable3, systematic),
                         this->systematicWeight(systematic));
 }
 

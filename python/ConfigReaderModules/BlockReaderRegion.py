@@ -71,8 +71,12 @@ class BlockReaderRegion:
             variable = BlockReaderVariable(variable_dict)
             self._variables.append(variable)
 
+        # 2D nad 3D histograms
         self._histograms_2d = self._options_getter.get("histograms_2d", [], [list], [dict])
         self._histograms_2d = AutomaticRangeGenerator.unroll_sequence(self._histograms_2d)
+
+        self._histograms_3d = self._options_getter.get("histograms_3d", [], [list], [dict])
+        self._histograms_3d = AutomaticRangeGenerator.unroll_sequence(self._histograms_3d)
 
         ## Instance of the RegionWrapper C++ class -> wrapper around C++ Region class
         self.cpp_class = RegionWrapper(self._name)
@@ -100,6 +104,30 @@ class BlockReaderRegion:
                 Logger.log_message("ERROR", "histograms_2d in region {} has y variable {} which is not defined".format(self._name, y))
                 exit(1)
             self.cpp_class.addVariableCombination(x, y)
+
+        for histogram_3d in self._histograms_3d:
+            options_getter = BlockOptionsGetter(histogram_3d)
+            x = options_getter.get("x", None, [str])
+            y = options_getter.get("y", None, [str])
+            z = options_getter.get("z", None, [str])
+            unused = options_getter.get_unused_options()
+            if x is None or y is None or z is None:
+                Logger.log_message("ERROR", "histograms_3d in region {} does not have x or y or z specified".format(self._name))
+                exit(1)
+            if x not in variables_names:
+                Logger.log_message("ERROR", "histograms_3d in region {} has x variable {} which is not defined".format(self._name, x))
+                exit(1)
+            if y not in variables_names:
+                Logger.log_message("ERROR", "histograms_3d in region {} has y variable {} which is not defined".format(self._name, y))
+                exit(1)
+            if z not in variables_names:
+                Logger.log_message("ERROR", "histograms_3d in region {} has z variable {} which is not defined".format(self._name, z))
+                exit(1)
+            if len(unused) > 0:
+                Logger.log_message("ERROR", "Key {} used in 'histograms_3d' block is not supported!".format(unused))
+                exit(1)
+
+            self.cpp_class.addVariableCombination3D(x, y, z)
 
     def __merge_settings(self, block_reader_general) -> list:
         if block_reader_general is None:
@@ -130,5 +158,14 @@ class BlockReaderRegion:
         """
         result = []
         for combination in vector_combinations:
+            result.append(combination)
+        return result
+    
+    def get_3d_combinations(vector_combinations_3d) -> list:
+        """!Get list of 3D variable combinations defined in the region
+        @param: vector of variable combinations
+        """
+        result = []
+        for combination in vector_combinations_3d:
             result.append(combination)
         return result

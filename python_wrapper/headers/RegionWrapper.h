@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 #include <memory>
 
 /**
@@ -138,6 +139,31 @@ class RegionWrapper {
             std::vector<std::string> combinations_python;
             for (const auto &combination : combinations) {
                 combinations_python.push_back(combination.first + ", "+ combination.second);
+            }
+            return combinations_python;
+        };
+
+        /**
+         * @brief Add combination of 3 variables for 3D histograms
+         *
+         * @param v1 variable #1 name
+         * @param v2 variable #2 name
+         * @param v3 variable #3 name
+         */
+        void addVariableCombination3D(const std::string& v1, const std::string& v2, const std::string& v3) {
+            m_region->addVariableCombination3D(v1, v2, v3);
+        };
+
+        /**
+         * @brief Get vector of comma separated pairs of variable names for 3D histograms
+         *
+         * @return std::vector<std::string>
+         */
+        std::vector<std::string> variableCombinations3D() const {
+            const std::vector<std::tuple<std::string,std::string,std::string>> &combinations = m_region->variableCombinations3D();
+            std::vector<std::string> combinations_python;
+            for (const auto &combination : combinations) {
+                combinations_python.push_back(std::get<0>(combination) + ", " + std::get<1>(combination) + ", " + std::get<2>(combination));
             }
             return combinations_python;
         };

@@ -420,6 +420,21 @@ private:
                                 const std::shared_ptr<Systematic>& systematic);
 
   /**
+   * @brief Define 3D histograms with variables and systematics
+   *
+   * @param regionHisto RegionHisto to be filled
+   * @param node Filtered node
+   * @param sample Sample
+   * @param region Region
+   * @param systematic Systematic
+   */
+  void processHistograms3D(RegionHisto* regionHisto,
+                           const ROOT::RDF::RNode& node,
+                           const std::shared_ptr<Sample>& sample,
+                           const std::shared_ptr<Region>& region,
+                           const std::shared_ptr<Systematic>& systematic) const;
+
+  /**
    * @brief Write histogram container to a ROOT file
    *
    * @param histos histogram container
@@ -536,7 +551,7 @@ private:
                                                const Variable& variable) const;
 
   /**
-   * @brief Book 2D histograms with proper templates
+   * @brief Book 2D histograms using the JIT compiler
    *
    * @param node
    * @param variable1
@@ -547,6 +562,22 @@ private:
   ROOT::RDF::RResultPtr<TH2D> book2Dhisto(ROOT::RDF::RNode node,
                                           const Variable& variable1,
                                           const Variable& variable2,
+                                          const std::shared_ptr<Systematic>& systematic) const;
+
+  /**
+   * @brief Book 3D histograms using the JIT compiler
+   *
+   * @param node
+   * @param variable1
+   * @param variable2
+   * @param variable3
+   * @param systematic
+   * @return ROOT::RDF::RResultPtr<TH3D>
+   */
+  ROOT::RDF::RResultPtr<TH3D> book3Dhisto(ROOT::RDF::RNode node,
+                                          const Variable& variable1,
+                                          const Variable& variable2,
+                                          const Variable& variable3,
                                           const std::shared_ptr<Systematic>& systematic) const;
 
   /**
