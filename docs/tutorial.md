@@ -39,6 +39,11 @@ Now, clone the [repository](https://gitlab.cern.ch/atlas-amglab/fastframes) usin
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git FastFrames
 ```
 
+And switch to release v1.0.0 using:
+```
+git checkout v1.0.0
+```
+
 You can also use other communication protocol like html or kerberos.
 
 And create the input, build and install folders
