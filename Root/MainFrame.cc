@@ -46,6 +46,7 @@ void MainFrame::init() {
     if (m_config->hasAutomaticSystematics()) {
         m_config->clearSystematics();
     }
+    TH1::AddDirectory(kFALSE);
 }
 
 void MainFrame::executeHistograms() {
