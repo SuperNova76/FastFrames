@@ -41,7 +41,9 @@ git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git FastFrames
 
 And switch to release v1.0.0 using:
 ```
+cd FastFrames
 git checkout v1.0.0
+cd ../
 ```
 
 You can also use other communication protocol like html or kerberos.
@@ -83,7 +85,7 @@ source setup.sh
 ```
 
 ## Generating file metadata
-First we need to generate the metedata needed for further processing.
+First we need to generate the metadata needed for further processing.
 A set of python scripts is provided that will search a given folder and all of it subfolders for ROOT files, inspect them and then create two text files.
 The first file contains the list of all the ROOT files, the paths to the individual files, the DSID (6 digit unique identifier for each MC sample) and the simulation type (full simulation or fast simulation).
 The second file contains the total sumweights for each weight for a given DSID, campaign and the simulation type.
@@ -104,10 +106,10 @@ The `sum_of_weights.txt` file contains a lot of lines, one line per MC weight va
 The beginning of the file looks like this:
 ```
 601229  mc23a   fullsim GEN_AUX_bare_not_for_analyses -1.0
-601229  mc23a   fullsim GEN_MUR05_MUF05_PDF260000 9131887.0
-601229  mc23a   fullsim GEN_MUR05_MUF1_PDF260000 8988519.0
-601229  mc23a   fullsim GEN_MUR05_MUF2_PDF260000 8904727.0
-601229  mc23a   fullsim GEN_MUR1_MUF05_PDF260000 8302779.0
+601229  mc23a   fullsim GEN_MUR05_MUF05_PDF260000 18378766.0
+601229  mc23a   fullsim GEN_MUR05_MUF1_PDF260000 18059854.0
+601229  mc23a   fullsim GEN_MUR05_MUF2_PDF260000 17862044.0
+601229  mc23a   fullsim GEN_MUR1_MUF05_PDF260000 16642543.0
 ```
 
 Where the first columns represent: DSID, campaign, simulation type, name of the variation and the corresponding sum weights.
@@ -117,7 +119,7 @@ As the format of the ROOT file makes direct histogramming difficult, it is very 
 FastFrames allows seamless extension of the code code by providing a short custom class that allows users to add new columns in a convenient way.
 
 ### Skeleton setup
-Change directory to the folder where `build`, `install` etc folders are:
+Change directory to the folder where `build`and `install` folders are:
 ```
 cd ../
 ```
@@ -178,7 +180,7 @@ There are two general ways in RDataFrame how to add variables via Define(). The 
 
 The following conceptual steps are needed to add a leading jet pT variable:
 
-1. Take the vector of jet pT (`jet_pt_<SYSTNAME>`) and a vector of jet selections (`jet_select_baselineJVT_<SYSTNAME>`) and take only the jets that pass the selection and overlap removal
+1. Take the vector of jet pT (`jet_pt_<SYSTNAME>`) and a vector of jet selections (`jet_select_baselineJvt_<SYSTNAME>`) and take only the jets that pass the selection and overlap removal
 2. Sort the vector based on jet pT - the vectors are never sorted - they cannot be as systematic variations could change the order
 3. Take the first element and store this as a new variable
 
@@ -202,7 +204,7 @@ For this, FastFrames has a method that does this for you! You only need to defin
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "sorted_jet_TLV_NOSYS",
                                          SortedTLVs,
-                                         {"jet_TLV_NOSYS", "jet_select_baselineJVT_NOSYS"});
+                                         {"jet_TLV_NOSYS", "jet_select_baselineJvt_NOSYS"});
 
   // add leading jet TLV
   mainNode = MainFrame::systematicDefine(mainNode,
@@ -247,9 +249,9 @@ The above code takes a lorentz vector and then returns the pT component divided 
   mainNode = MainFrame::systematicDefine(mainNode,
                                          "sorted_jet_TLV_NOSYS",
                                          SortedTLVs,
-                                         {"jet_TLV_NOSYS", "jet_select_baselineJVT_NOSYS"});
+                                         {"jet_TLV_NOSYS", "jet_select_baselineJvt_NOSYS"});
 ```
-The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTLVs` lambda (function) and it relies on the two columns(variables): `jet_TLV_NOSYS` and `jet_select_baselineJVT_NOSYS`, where the first variable is provided by FastFrames (configurable) for convenience.
+The above code adds a new variable `sorted_jet_TLV_NOSYS` based on the `SortedTLVs` lambda (function) and it relies on the two columns(variables): `jet_TLV_NOSYS` and `jet_select_baselineJvt_NOSYS`, where the first variable is provided by FastFrames (configurable) for convenience.
 Note here that we only require that the jets passed the kinematic selection (pT and |eta|), overlap-removal and JVT selection for a given systematic variation.
 However, this is something which is still actively being developed in TopCPToolkit/CP algorithms.
 
@@ -407,7 +409,9 @@ These are just copied from TopDataPreparation, feel free to update them locally!
   # name of the custom class
   custom_frame_name: "TutorialClass"
 ```
-The above block tells the code what is the name of the custom class. This is needed to find the correct libraries!
+The above block tells the code what is the name of the custom class.
+The name needs to match the name of the class you chose during the re-naming step.
+This is needed to find the correct libraries during runtime!
 
 ```yaml
   # automatic systematics?
@@ -570,8 +574,8 @@ And inspect it with `.ls` or `TBrowser`.
 You will see that there is one folder for each systematic variation (the nominal variation is called `NOSYS`).
 Inside each folder, there is a set of histograms with names of a form of `<VariableName>_<RegionName>`.
 
-!!! tip "2D histograms"
-    FastFrames allow to also produce 2D histograms. Have a look at the `histograms_2d` option in the `regions` block. This is also demonstrated in the config file for CI tests [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/test/configs/config.yml?ref_type=heads#L30).
+!!! tip "2D and 3D histograms"
+    FastFrames allow to also produce 2D and 3D histograms. Have a look at the `histograms_2d` and `histograms_3d` option in the `regions` block. This is also demonstrated in the config file for CI tests [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/blob/main/test/configs/config.yml?ref_type=heads#L30). Note that for 3D histograms you need to use at least version v1.1.0.
 
 ### Histogram processing (unfolding-like)
 In many analyses, inputs for unfolding need to be generated.
