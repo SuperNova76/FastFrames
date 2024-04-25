@@ -152,6 +152,22 @@ class SampleWrapper {
             return syst_names;
         };
 
+
+        /**
+         * @brief Get vector of raw pointer to shared pointers to systematic objects
+         *
+         * @return std::vector<unsigned long long int>
+         */
+        std::vector<unsigned long long int> getSystematicsSharedPtr() const {
+            const std::vector<std::shared_ptr<Systematic>> &systematics = m_sample->systematics();
+            std::vector<unsigned long long int> systematics_ptr(systematics.size());
+            for (unsigned int i = 0; i < systematics.size(); ++i) {
+                systematics_ptr.at(i) = reinterpret_cast<unsigned long long int>(&systematics.at(i));
+            }
+            return systematics_ptr;
+        };
+
+
         /**
          * @brief is the systematics defined for this sample?
         */
@@ -399,6 +415,25 @@ class SampleWrapper {
          * @return false
          */
         inline bool hasCutflows() const {return m_sample->hasCutflows();};
+
+        /**
+         * @brief Set the nominal sum weights
+         *
+         * @param sumw
+         */
+        inline void setNominalSumWeights(const std::string& sumw)   {
+            m_sample->setNominalSumWeights(sumw);
+        };
+
+
+        /**
+         * @brief Get nominal sum weights
+         *
+         * @return std::string
+         */
+        inline std::string nominalSumWeights() const {
+            return m_sample->nominalSumWeights();
+        };
 
 
     private:

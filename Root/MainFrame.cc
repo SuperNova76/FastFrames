@@ -719,7 +719,7 @@ void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const 
 
         // add nominal "systematic"
         auto nominal = std::make_shared<Systematic>("NOSYS");
-        nominal->setSumWeights("NOSYS");
+        nominal->setSumWeights(sample->nominalSumWeights());
         for (const auto& ireg : m_config->regions()) {
             nominal->addRegion(ireg);
         }
@@ -756,7 +756,7 @@ void MainFrame::readAutomaticSystematics(std::shared_ptr<Sample>& sample, const 
             if (m_metadataManager.sumWeightsExist(iuniqueSample, syst)) {
                 syst->setSumWeights(isyst);
             } else {
-                syst->setSumWeights("NOSYS");
+                syst->setSumWeights(sample->nominalSumWeights());
             }
             for (const auto& ireg : m_config->regions()) {
                 syst->addRegion(ireg);
@@ -916,7 +916,7 @@ void MainFrame::processHistograms3D(RegionHisto* regionHisto,
     for (const auto& combinations : region->variableCombinations3D()) {
         const Variable& v1 = region->variableByName(std::get<0>(combinations));
         const Variable& v2 = region->variableByName(std::get<1>(combinations));
-        const Variable& v3 = region->variableByName(std::get<2>(combinations)); 
+        const Variable& v3 = region->variableByName(std::get<2>(combinations));
         const std::string name = v1.name() + "_vs_" + v2.name() + "_vs_" + v3.name();
         if ((v1.isNominalOnly() || v2.isNominalOnly() || v3.isNominalOnly()) && systematic->name() != "NOSYS") continue;
 

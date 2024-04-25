@@ -17,7 +17,8 @@
 Sample::Sample(const std::string& name) noexcept :
   m_name(name),
   m_recoTreeName("reco"),
-  m_reco_to_truth_pairing_indices({"eventNumber"})
+  m_reco_to_truth_pairing_indices({"eventNumber"}),
+  m_nominalSumWeights("NOSYS")
 {
 }
 
@@ -54,13 +55,13 @@ const std::shared_ptr<Systematic>& Sample::nominalSystematic() const {
 
   return *itr;
 }
-  
+
 bool Sample::hasSystematic(const std::string& systematicName) const {
   auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [&systematicName](const auto& element){return element->name() == systematicName;});
 
   return itr != m_systematics.end();
 }
-  
+
 bool Sample::skipExcludedSystematic(const std::string& systematicName) const {
     bool skip(false);
     for (const auto& iexclude : this->m_excludeAutomaticSystematics) {
@@ -73,7 +74,7 @@ bool Sample::skipExcludedSystematic(const std::string& systematicName) const {
 
     return skip;
 }
-  
+
 bool Sample::matchTruthTree(const std::string& treeName) const {
     for (const auto& itruth : m_truths) {
         if (itruth->truthTreeName() != treeName) continue;

@@ -35,6 +35,14 @@ class SystematicWrapper {
          */
         unsigned long long int getPtr() const   {return reinterpret_cast<unsigned long long int>(&m_systematic);};
 
+
+        /**
+         * @brief Get raw pointer to the Systematic object
+         *
+         * @return unsigned long long int
+         */
+        unsigned long long int getRawPtr() const   {return reinterpret_cast<unsigned long long int>(m_systematic.get());};
+
         /**
          * @brief Construct SystematicWrapper object from shared_ptr
          *
