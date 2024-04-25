@@ -39,10 +39,10 @@ Now, clone the [repository](https://gitlab.cern.ch/atlas-amglab/fastframes) usin
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git FastFrames
 ```
 
-And switch to release v1.0.0 using:
+And switch to release v1.1.0 using:
 ```
 cd FastFrames
-git checkout v1.0.0
+git checkout v1.1.0
 cd ../
 ```
 
@@ -290,7 +290,7 @@ cd ..
 ```
 
 !!! tip "UniqueSampleID"
-    The `customDefine` method of the class also provides `UniqueSampleID` parameter (`id`). This is a very simple class that allows to do per-sample specific operations. It has methods such as `id.dsid()`, `id.isData()`, `id.campaign()` that you can use to provide special defines based on these properties. See the class documentation [here](https://atlas-project-topreconstruction.web.cern.ch/fastframesdoxygen/classUniqueSampleID.html).
+    The `systematicDefine` method of the class also provides `UniqueSampleID` parameter (`id`). This is a very simple class that allows to do per-sample specific operations. It has methods such as `id.dsid()`, `id.isData()`, `id.campaign()` that you can use to provide special defines based on these properties. See the class documentation [here](https://atlas-project-topreconstruction.web.cern.ch/fastframesdoxygen/classUniqueSampleID.html).
 
 !!! tip "On variable validity"
     The new variables/columns are added to the main node, i.e. before any selection. Make sure that the variables you define are always valid. For example if you access zeroth element of a vector, make sure it is not empty. For the undefined cases, you can put some dummy values.
@@ -451,7 +451,7 @@ The selection can be a formula but only simple formulae are encouraged (e.g. sim
 Then, each region has a list of variables for which histograms will be created.
 The variables have a name (to be used in the output), title (the format is `title; x axis title; y axis title`), definition which is a name of the column (i.e. it cannot be a formula) and binning.
 The `type` of the variable tells the c++ code which c++ template type to pass.
-This allows to reduce the need for JITing, thus reducing memory and the time before the event loop os being executed.
+This allows to reduce the need for JITing, thus reducing memory and the time before the event loop is being executed.
 Only some types are supported: "int", "long long int", "unsigned long", "unsigned long long int", "float" and "double".
 For other types, or if you do not care about this performance part, you can leave this empty and the code will JIT the correct type.
 
@@ -504,7 +504,7 @@ Region3:
 ```
 We can write
 ```yaml
-Region1: 
+Region1:
   Variables: &alias1 # Use this anchor to refer to var1 and var2
     - var1
     - var2
@@ -517,7 +517,7 @@ Region2:
 Region3:
   Variables:
     - *alias2 # Resolves to var1, var2 and var3
-    - var4 
+    - var4
 ```
 
 
@@ -644,7 +644,7 @@ You can control if the reco to truth matching between the input trees should be 
 This option is set to `False` by default and is automatically turned on when `match_variables` are provided.
 
 Similarly to the reco level, you can use the custom class to add new variables/columns to the truth level.
-The relevant method of the custom class is `WmassJESFrame::defineVariablesTruth`.
+The relevant method of the custom class is [WmassJESFrame::defineVariablesTruth](https://gitlab.cern.ch/tdado/wmassjescustomclass/-/blob/1085a47d141b4ab5d26629f880aa6a40adbbc535/Root/WmassJESFrame.cc#L629).
 
 !!! tip "Truth selection"
     You can apply selection on the truth level as well by setting the `selection` option in the given `truth` block.
@@ -674,7 +674,7 @@ You can also control which variables to be included in the output ntuple via `br
 Alternatively, you can also use `exclude_branches` options to select the branches to store.
 
 Similarly to the histogramming part, you can define custom variables in your custom class for the ntupling step.
-The relevant method in the custom class is `WmassJESFrame::defineVariablesNtuple`.
+The relevant method in the custom class is [WmassJESFrame::defineVariablesNtuple](https://gitlab.cern.ch/tdado/wmassjescustomclass/-/blob/1085a47d141b4ab5d26629f880aa6a40adbbc535/Root/WmassJESFrame.cc#L623).
 
 To run the ntupling step, do:
 ```
@@ -685,6 +685,7 @@ Where the `--step n` argument tells the code to run the ntupling part instead of
 There will be some overhead in the processing due to the complex (many ORs) selections.
 After the processing is done, you should find a new file called `ttbar_FS_601229_mc23a_fullsim.root` in the `../output` folder.
 Note that the code will generate one output root file for each DSID, campaign and the simulation type.
+This step takes significantly more time compared to histogramming option - it can take up to 10 minutes with the tutorial ROOT file (of course depending on the CPU of the machine that you are using).
 
 ## Producing cutflows
 FastFrames allow to produce cutflow histograms in a convenient way.
@@ -707,7 +708,7 @@ cutflows:
 When running the standard histogram processing step an additional cutflow histogram will be created showing the weighted (with the nominal weight) events passing all specified selections.
 The cutflow selection will follow the order of the selections in the config file.
 You can provide multiple cutflows in the config file.
-Note that you need to create at least one "stamndard" histogram if you want to run the cutflows.
+Note that you need to create at least one "standard" histogram if you want to run the cutflows.
 
 ## Distributed computing
 RDataFrame supports multi-threading when processing the input files (both when the output is an ntuple or a set of histograms).
