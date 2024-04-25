@@ -4,6 +4,7 @@
 import yaml
 from sys import argv
 import argparse
+from copy import deepcopy
 
 from BlockReaderGeneral import BlockReaderGeneral, vector_to_list
 from BlockReaderRegion import BlockReaderRegion
@@ -64,34 +65,46 @@ class ConfigReader:
                 self.cutflows.append(cutflow)
 
 
-            self.systematics = {}
-            # nominal
-            nominal_dict = {"variation": {"up": "NOSYS"}}
-            nominal = BlockReaderSystematic(nominal_dict, "up", self.block_general)
-            nominal.adjust_regions(self.regions)
-            self.systematics[nominal.cpp_class.name()] = nominal
-
-            self.systematics_dicts = [] # for creation of TRExFitter config
             systematic_blocks_from_config = self.block_getter.get("systematics", [])
             systematic_blocks_from_config = AutomaticRangeGenerator.unroll_sequence(systematic_blocks_from_config)
-            for systematic_dict in systematic_blocks_from_config:
-                systematic_list = read_systematics_variations(systematic_dict, self.block_general, self.systematics_dicts)
-                for systematic in systematic_list:
-                    systematic.adjust_regions(self.regions)
-                    systematic_name = systematic.cpp_class.name()
-                    if systematic_name in self.systematics:
-                        Logger.log_message("ERROR", "Duplicate systematic name: {}".format(systematic_name))
-                        exit(1)
-                    self.systematics[systematic_name] = systematic
-
-            for systematic_name,systematic in self.systematics.items():
-                systematic.check_samples_existence(self.samples)
-                systematic.check_regions_existence(self.regions)
-                self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
-
             for sample_name,sample in self.samples.items():
+                systematics = {}
+                # nominal
+                sum_weights = sample.cpp_class.nominalSumWeights()
+                nominal_dict = {"variation": {"up": "NOSYS", "sum_weights_up" : sum_weights}, "samples": [sample_name]}
+                nominal = BlockReaderSystematic(nominal_dict, "up", self.block_general)
+                nominal.adjust_regions(self.regions)
+                systematics[nominal.cpp_class.name()] = nominal
+
+                self.systematics_dicts = [] # for creation of TRExFitter config
+                for systematic_dict in systematic_blocks_from_config:
+                    systematics_dict_modified = deepcopy(systematic_dict) # we have to adjust default sum of weights
+
+                    def modify_sum_weights_for_variation(syst_dict : dict, variation_name : str, default_sum_weights : str) -> None:
+                        if not variation_name in syst_dict["variation"]:
+                            return
+                        if "sum_weights_" + variation_name in syst_dict["variation"]:
+                            return
+                        syst_dict["variation"]["sum_weights_" + variation_name] = default_sum_weights
+                    modify_sum_weights_for_variation(systematics_dict_modified, "up", sum_weights)
+                    modify_sum_weights_for_variation(systematics_dict_modified, "down", sum_weights)
+
+                    systematic_list = read_systematics_variations(systematics_dict_modified, self.block_general, self.systematics_dicts)
+                    for systematic in systematic_list:
+                        systematic.adjust_regions(self.regions)
+                        systematic_name = systematic.cpp_class.name()
+                        if systematic_name in systematics:
+                            Logger.log_message("ERROR", "Duplicate systematic name: {}".format(systematic_name))
+                            exit(1)
+                        systematics[systematic_name] = systematic
+
+                for systematic_name,systematic in systematics.items():
+                    systematic.check_samples_existence(self.samples)
+                    systematic.check_regions_existence(self.regions)
+                    self.block_general.cpp_class.addSystematic(systematic.cpp_class.getPtr())
+
                 Logger.log_message("INFO", "Sample {} has {} regions".format(sample_name, len(sample.cpp_class.regionsNames())))
-                sample.adjust_systematics(self.systematics)
+                sample.adjust_systematics(systematics)
                 sample.resolve_variables()
                 self.block_general.cpp_class.addSample(sample.cpp_class.getPtr())
 
@@ -270,14 +283,14 @@ if __name__ == "__main__":
             for excluded_systematic in excluded_systematics:
                 print("\t\t", excluded_systematic)
 
-        print("\n")
+        systematics = BlockReaderSample.get_systematics_objects(sample)
+        print("\tSystematic uncertainties defined for this sample:\n")
+        for systematic in systematics:
+            print("\t\tname: ", systematic.name())
+            print("\t\tregions: ", vector_to_list(systematic.regionsNames()))
+            print("\t\tweight_suffix: ", systematic.weightSuffix())
+            print("\t\tsum_weights: ", systematic.sumWeights())
+            print("\n")
 
-    systematics = config_reader.block_general.get_systematics_objects()
-    print("\n\nSystematics block:\n")
-    for systematic in systematics:
-        print("\tname: ", systematic.name())
-        print("\tregions: ", vector_to_list(systematic.regionsNames()))
-        print("\tweight_suffix: ", systematic.weightSuffix())
-        print("\tsum_weights: ", systematic.sumWeights())
-        print("\n")
+        print("\n\n\n")
 

@@ -6,7 +6,7 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
-from ConfigReaderCpp    import SampleWrapper, TruthWrapper, StringVector, RegionWrapper
+from ConfigReaderCpp    import SampleWrapper, TruthWrapper, StringVector, RegionWrapper, SystematicWrapper
 from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
@@ -82,6 +82,8 @@ class BlockReaderSample:
         if self._automatic_systematics and self._nominal_only:
             Logger.log_message("ERROR", "Both automatic_systematics and nominal_only specified for sample {}. Only one of these options can be True".format(self._name))
             exit(1)
+
+        self._sum_weights = self._options_getter.get("sum_weights", block_reader_general.default_sumweights, [str])
 
         ## Instance of the SampleWrapper C++ class -> wrapper around C++ Sample class
         self.cpp_class = SampleWrapper(self._name)
@@ -243,6 +245,8 @@ class BlockReaderSample:
         self.cpp_class.setAutomaticSystematics(self._automatic_systematics)
         self.cpp_class.setNominalOnly(self._nominal_only)
 
+        self.cpp_class.setNominalSumWeights(self._sum_weights)
+
     def _check_unused_options(self):
         unused = self._options_getter.get_unused_options()
         if len(unused) > 0:
@@ -285,4 +289,16 @@ class BlockReaderSample:
                 if campaign not in campaigns:
                     campaigns.append(campaign)
                     result += general_block_cpp_object.getLuminosity(campaign)
+        return result
+
+    def get_systematics_objects(cpp_class) -> list:
+        """!Get list of systematics cpp objects
+        @return list of systematics
+        """
+        result = []
+        vector_systematics = cpp_class.getSystematicsSharedPtr()
+        for systematic_ptr in vector_systematics:
+            systematic_cpp_object = SystematicWrapper("")
+            systematic_cpp_object.constructFromSharedPtr(systematic_ptr)
+            result.append(systematic_cpp_object)
         return result

@@ -149,15 +149,15 @@ Samples block:
 		 variable4
 	Unique samples:
 		 (601229,mc23a,fullsim)
+	Systematic uncertainties defined for this sample:
+
+		name:  NOSYS
+		regions:  ['Region1', 'Region2', 'Region3', 'Region4']
+		weight_suffix:  
+		sum_weights:  NOSYS
 
 
 
 
-Systematics block:
-
-	name:  NOSYS
-	regions:  ['Region1', 'Region2', 'Region3', 'Region4']
-	weight_suffix:  
-	sum_weights:  NOSYS
 
 

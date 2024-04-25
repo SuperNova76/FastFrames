@@ -334,6 +334,20 @@ public:
    */
   inline bool hasCutflows() const {return !m_cutflows.empty();}
 
+  /**
+   * @brief Set the nominal sum weights
+   *
+   * @param sumw
+   */
+  inline void setNominalSumWeights(const std::string& sumw) {m_nominalSumWeights = sumw;}
+
+  /**
+   * @brief Get nominal sum weights
+   *
+   * @return const std::string&
+   */
+  inline const std::string& nominalSumWeights() const {return m_nominalSumWeights;}
+
 private:
   std::string m_name;
 
@@ -364,4 +378,6 @@ private:
   bool m_automaticSystematics = false;
 
   std::vector<std::shared_ptr<Cutflow> > m_cutflows;
+
+  std::string m_nominalSumWeights;
 };

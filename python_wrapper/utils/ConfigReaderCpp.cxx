@@ -290,11 +290,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("uniqueSampleIDstring",&SampleWrapper::uniqueSampleIDstring)
 
         // systematic
-        .def("addSystematic",       &SampleWrapper::addSystematic)
-        .def("nSystematics",        &SampleWrapper::nSystematics)
-        .def("getSystematicPtr",    &SampleWrapper::getSystematicPtr)
-        .def("systematicsNames",    &SampleWrapper::systematicsNames)
-        .def("hasSystematics",      &SampleWrapper::hasSystematics)
+        .def("addSystematic",           &SampleWrapper::addSystematic)
+        .def("nSystematics",            &SampleWrapper::nSystematics)
+        .def("getSystematicPtr",        &SampleWrapper::getSystematicPtr)
+        .def("systematicsNames",        &SampleWrapper::systematicsNames)
+        .def("hasSystematics",          &SampleWrapper::hasSystematics)
+        .def("getSystematicsSharedPtr", &SampleWrapper::getSystematicsSharedPtr)
 
         // addRegion
         .def("addRegion",           &SampleWrapper::addRegion)
@@ -334,6 +335,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addCutflow",          &SampleWrapper::addCutflow)
         .def("getCutflowSharedPtrs",&SampleWrapper::getCutflowSharedPtrs)
         .def("hasCutflows",         &SampleWrapper::hasCutflows)
+
+        .def("setNominalSumWeights", &SampleWrapper::setNominalSumWeights)
+        .def("nominalSumWeights",    &SampleWrapper::nominalSumWeights)
     ;
 
     /**
@@ -345,6 +349,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         // getPtr
         .def("getPtr",          &SystematicWrapper::getPtr)
+        .def("getRawPtr",       &SystematicWrapper::getRawPtr)
 
         // constructFromSharedPtr
         .def("constructFromSharedPtr",  &SystematicWrapper::constructFromSharedPtr)

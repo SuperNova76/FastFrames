@@ -241,6 +241,7 @@ samples:
     dsids: [364100,364101]
     campaigns: ["mc20e"]
     event_weights: "weight_mc_NOSYS"
+    sum_weights: "alternative_sum_weights"
     selection_suffix: "n_bjets_truth > 0"
     simulation_type: "fullsim"
     exclude_regions: ["Muon"]

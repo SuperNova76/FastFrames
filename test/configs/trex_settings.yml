@@ -1,3 +1,8 @@
+Job:
+  Label: ttZ
+  CMELabel: 13.6
+  LumiLabel: 35.7
+
 Fit:
   FitType: "SPLUSB"
   FitRegion: "CRSR"
