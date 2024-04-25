@@ -220,7 +220,7 @@ And providing the new class in the new folder, e.g. you can copy the contents fo
 ```
 cp -r * /your/path/MyCustomFrame/
 ```
-or you can use the template for this [here](https://gitlab.cern.ch/atlas-amglab/fastframes/-/tree/NominalOnlyVariable?ref_type=heads)
+or you can use the template for this [here](https://gitlab.cern.ch/atlas-amglab/FastFramesCustomClassTemplate)
 
 If you want to use a different name than CustomFrame for the code, you need to change the CMakeLists.txt content appropriately (just renaming) and also the corresponding files and folder. Do not forget about Root/LinkDef.h!
 
