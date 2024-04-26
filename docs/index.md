@@ -184,6 +184,105 @@ In order to merge the output ROOT files from all jobs into one file, one can use
 python3 python/merge_jobs.py --c <config address>
 ```
 
+#### Submitting jobs to the HTCondor batch service
+
+FastFrames provides a useful script to submit jobs to the [CERN HTCondor batch service](https://batchdocs.web.cern.ch/concepts/index.html). After loging into an Lxplus node go the directory you have FastFrames under:
+
+```
+cd <your_fastframes_path>
+```
+the relevant script, `condor_submit.py`, is under the `fastframes/python/` directory:
+```
+cd fastframes/python
+```
+
+To submit jobs run the script with the options that best adapt to your current workflow. If you do
+```
+python3 condor_submit.py --help
+```
+the following description will appear:
+```
+python3 condor_submit.py --help
+usage: condor_submit.py [-h] [-c CONFIG] [--samples SAMPLES] [--step {h,n}] [--custom-class-path CUSTOM_CLASS_PATH] [--max-time MAX_TIME] [--dry-run {True,False}]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Path to the yml config file.
+  --samples SAMPLES     A comma separated list of samples to run. One job is created per listed sample. Default: all samples listed in the yml config.
+  --step {h,n}          Step to run: 'n' (ntuples) or 'h' (histograms). Default: 'h'
+  --custom-class-path CUSTOM_CLASS_PATH
+                        Path to the custom class used in the config file (if used). Default: None
+  --max-time MAX_TIME   Maximum time for the job to run. Default: 1h
+  --dry-run {True,False}
+                        Creates the execution and submission environment without sending the jobs to HTCondor. Useful for debugging.
+```
+
+Let's run an example containing a custom fastframes class - more details about the custom class in the next section. Here the custom class is located two levels up from the submission directory, i.e., at the same level than the fastframes source code.
+```
+python3 condor_submit.py -c ../../MyAnalysis/ConfigYML/sim_calib_config.yml --step h --custom-class-path ../../MyAnalysis
+```
+
+Now the scripts asks to confirm whether the following assumptions are true:
+```
+This script submits jobs to the HTCondor batch system...
+Please read the following carefully... you are about to potentially submit a large number of jobs to the HTCondor batch system.
+For a correct execution. This script assumes the following:
+1.  The script is run from the fastframes/python directory
+2.  The build and install directories of FastFrames are two levels up from the current directory, i.e, at the same level than the FastFrames source code.
+3.  The metadata files are stored in a folder called metadata at the same level than the FastFrames source code.
+4.  The path to the output files is an absolute path in EOS or AFS.
+Are these assumptions correct? [y/n]
+```
+
+Essentially, the submission script expects the following directory hierarchy:
+```
+build (dir)
+install (dir)
+metadata (dir)
+fastframes (dir)
+    python (dir)
+        condor_submit.py # You must be here when executing the script.
+```
+and your paths to the FastFrames outputs should be absolute paths in AFS or EOS. Therefore, in your general block your should have a config like:
+```
+general:
+  input_filelist_path: "../../metadata/filelist.txt" # Notice how the metadata is stored two levels up from here inside the metadata directory.
+  input_sumweights_path: "../../metadata/sum_of_weights.txt"
+  output_path_histograms: "/afs/cern.ch/user/E/ExampleUser/public/results/" # Absolute path in AFS
+  output_path_ntuples: "/eos/user/E/ExampleUser/results/" # Or, absolute path in EOS
+```
+
+After you acknowledge that the previous assumptions are true you will see the following message:
+```
+Submitting job(s)..
+X job(s) submitted to cluster 12776566.
+```
+where X is the number of jobs submitted. This number is dependent on the arguments you provided when executing `condor_submit.py`. If you did not provide a comma separated list of samples the script will submit one job for each sample listed in your yml config.
+
+To monitor the status of your jobs you can do `condor_q`. You will see a similar output to:
+```
+condor_q
+
+
+-- Schedd: bigbird14.cern.ch : <137.138.44.75:9618?... @ 04/26/24 10:08:55
+OWNER    BATCH_NAME      SUBMITTED   DONE   RUN    IDLE  TOTAL JOB_IDS
+dbaronmo ID: 12776566   4/26 10:05      _      _      2      2 12776566.0-1
+
+Total for query: 8 jobs; 0 completed, 0 removed, 8 idle, 0 running, 0 held, 0 suspended
+Total for dbaronmo: 8 jobs; 0 completed, 0 removed, 8 idle, 0 running, 0 held, 0 suspended
+Total for all users: 22412 jobs; 2240 completed, 15 removed, 15542 idle, 4540 running, 75 held, 0 suspended
+```
+
+---
+**NOTE**
+
+* You can kill jobs if necessary by doing `condor_rm JOB_ID`. 
+* Be careful with how CPU cores you request per job. The more resources you request, the later your jobs will start executing. 
+* Make sure you compile the code to include new changes before submiting the jobs.
+
+---
+
 ## Adding custom class for custom Define() call
 
 When using RDataFrame, all variables ("columns" in RDataFrame language) used in the selection (Filter in RDataFrame language), variable definition or weights need to be defined.
