@@ -8,3 +8,8 @@ sum_of_weights.txt
 ***/__pycache__/
 www/
 .cache
+# Ignore condor submission scripts
+python/HTCondorConfig.yml
+python/condor_submit.sub
+python/inputSamples.txt
+python/runFF.sh
