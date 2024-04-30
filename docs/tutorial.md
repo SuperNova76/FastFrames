@@ -56,7 +56,7 @@ mkdir build install input
 Now, download the ROOT file produced by TopCPToolkit:
 ```
 cd input
-cp /eos/user/r/ravinab/TopCPToolkit/example_files/tutorial_file.root .
+cp /afs/cern.ch/work/r/ravinab/public/FastFrames/tutorial_file.root .
 cd ../
 ```
 
