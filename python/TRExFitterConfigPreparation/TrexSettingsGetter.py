@@ -144,6 +144,12 @@ class TrexSettingsGetter:
                 exit(1)
             if re.match(region_dict["name"],region_name):
                 dictionary["Type"] = region_dict.get("Type","SIGNAL")
+                if "LogScale" in region_dict:
+                    dictionary["LogScale"] = region_dict["LogScale"]
+                if "RatioYmax" in region_dict:
+                    dictionary["RatioYmax"] = region_dict["RatioYmax"]
+                if "RatioYmin" in region_dict:
+                    dictionary["RatioYmin"] = region_dict["RatioYmin"]
         dictionary["VariableTitle"] = variable_name # TODO: proper title
         dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
         dictionary["Label"] = region_name       # TODO: proper label
@@ -265,6 +271,8 @@ class TrexSettingsGetter:
         dictionary["LineColor"] = sample_setting_dict.get("LineColor", sample_color)  # TODO: LineColor
         if "Template" in sample_setting_dict:
             dictionary["Template"] = sample_setting_dict["Template"]
+        if "NormToSample" in sample_setting_dict:
+            dictionary["NormToSample"] = sample_setting_dict["NormToSample"]
 
         region_names = vector_to_list(sample.regionsNames())
         selected_regions = []
