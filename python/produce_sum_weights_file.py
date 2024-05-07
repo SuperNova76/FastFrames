@@ -40,8 +40,10 @@ def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
     """
     sample_map = {}
     filelist = read_filelist(filelist_path)
+    counter = 1 # To keep track of the progress
     with open(output_path, "w") as sum_of_weights_file:
         for sample, root_files in filelist.items():
+            Logger.log_message("INFO", "Creating sum of weights for DSID = "+sample[0]+"... "+str(counter)+"/"+str(len(filelist)))
             MAX_METADATA_ITEM_LENGTHS = [8 for i in range(len(sample))]
             root_files_vector = StringVector()
             for root_file in root_files:
@@ -64,6 +66,8 @@ def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
                     n_spaces = MAX_METADATA_ITEM_LENGTHS[sample.index(metadata_element)] - len(str(metadata_element))
                     sum_of_weights_file.write(str(metadata_element) + n_spaces*" ")
                 sum_of_weights_file.write("{} {}\n".format(variation_name, sum_of_weights))
+
+            counter += 1
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

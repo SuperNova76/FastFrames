@@ -113,6 +113,37 @@ def produce_filelist(root_files_folder : str, filelist_address : str) -> None:
                     filelist.write(str(metadata_element) + n_spaces*" ")
                 filelist.write("{}\n".format(root_file))
 
+def produce_filelist_grid(grid_paths_dict : dict, filelist_address : str) -> None:
+    """!Produce filelist from all the root files in the input root_files_folder. The filelist will be saved to filelist_address
+    @param root_files_folder: path to the folder containing root files
+    @param filelist_address: path to the output filelist
+    """
+    # First clean the file if it already exists
+    with open(filelist_address, "w") as filelist:
+        filelist.write("")
+    counter = 1 # To keep track of the progress
+    for grid_sample, grid_paths in grid_paths_dict.items():
+        Logger.log_message("INFO", "Creating file list for sample"+grid_sample+"... "+str(counter)+"/"+str(len(grid_paths_dict)))
+
+        sample_map = {}
+
+        root_files = grid_paths
+        for root_file in root_files:
+            metadata = get_file_metadata(root_file)
+            metadata_tuple = metadata.get_metadata_tuple()
+            if metadata_tuple not in sample_map:
+                sample_map[metadata_tuple] = []
+            sample_map[metadata_tuple].append(root_file)
+
+        MAX_METADATA_ITEM_LENGTHS = [8 for i in range(len(metadata_tuple))]
+        with open(filelist_address, "a+") as filelist:
+            for metadata_tuple, root_files in sample_map.items():
+                for root_file in root_files:
+                    for metadata_element in metadata_tuple:
+                        n_spaces = MAX_METADATA_ITEM_LENGTHS[metadata_tuple.index(metadata_element)] - len(str(metadata_element))
+                        filelist.write(str(metadata_element) + n_spaces*" ")
+                    filelist.write("{}\n".format(root_file))
+        counter += 1
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

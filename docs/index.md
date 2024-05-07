@@ -137,6 +137,46 @@ python3 python/produce_metadata_files.py --root_files_folder <path_to_root_files
 where you have to specify the path to the folder with the ROOT files that you are going to reprocess. The second argument is optional, it is the path to the folder where metadata files will be stored.
 By default they will be in the same folder as input ROOT files. In the config file used in the next steps, you will have to specify the addresses of these metadata files.
 
+##### Building the metadata from files stored in the GRID:
+
+---
+**NOTE**
+
+Using FastFrames in this way should be restricted to cases where the RSEs and the processing machines are at the same location. Otherwise, data reads will go through the internet and this will take a lot of bandwith and will make the processing very slow.
+
+---
+
+If the input files are stored in the GRID, in a particular Rucio Storage Element (RSE), FastFrames is also capable of building the metadata. Just use the same script from above but pass a different argument:
+
+```bash
+python3 produce_metadata_files.py --grid_datasets <path_to_text_files_with_grid_datasets> --output_path <path_to_output_folder>
+```
+
+The second argument is the path to a text file containing all the relevant GRID containers, one example is:
+
+```
+user.dbaronmo:user.dbaronmo.601229.PhPy8EG.DAOD_PHYS.e8514_s4162_r14622_p5980.Common-FTAG-NTuples-v0.3.0_output
+user.dbaronmo:user.dbaronmo.601230.PhPy8EG.DAOD_PHYS.e8514_s4162_r14622_p5980.Common-FTAG-NTuples-v0.3.0_output
+user.dbaronmo:user.dbaronmo.601348.PhPy8EG.DAOD_PHYS.e8514_s4162_r14622_p5980.Common-FTAG-NTuples-v0.3.0_output
+```
+
+The script will ask for the RSE where the files are stored. For the example containers you should provide:
+
+```
+UKI-NORTHGRID-MAN-HEP_LOCALGROUPDISK
+```
+
+---
+**NOTE**
+
+To get the list of all the GRID RSEs you can do:
+
+```
+rucio list-rses
+```
+
+---
+
 #### Running histograming part:
 
 To produce the histograms from your ROOT files, one has to set up a config. You can find example configs in ```test/configs/``` and you can find all available options also in the documentation webpage.
