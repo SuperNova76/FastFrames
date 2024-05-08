@@ -1391,6 +1391,10 @@ std::vector<CutflowContainer> MainFrame::bookCutflows(ROOT::RDF::RNode node,
     // add weight squared for stat uncertainty
     node = node.Define("weight_total_squared_NOSYS", [](const double weight){return weight*weight;}, {"weight_total_NOSYS"});
 
+    if (!sample->selectionSuffix().empty()) {
+        node = node.Filter(sample->selectionSuffix());
+    }
+
     for (const auto& cutflow : sample->cutflows()) {
         CutflowContainer container(cutflow->name());
 
@@ -1401,7 +1405,9 @@ std::vector<CutflowContainer> MainFrame::bookCutflows(ROOT::RDF::RNode node,
 
         auto filteredNode = node;
         for (const auto& iselection : cutflow->selections()) {
-            filteredNode       = filteredNode.Filter(iselection.first);
+
+            const std::string& finalSelection = iselection.first;
+            filteredNode       = filteredNode.Filter(finalSelection);
             auto weight        = filteredNode.Sum("weight_total_NOSYS");
             auto weightSquared = filteredNode.Sum("weight_total_squared_NOSYS");
             container.addBookedYields(weight, weightSquared, iselection.second);
