@@ -58,7 +58,7 @@ This block is optional.
 ####   `selections` block inside of the `cutflow` block
 | **Option**    | **Value type**    | **Function** |
 | ------------- | ----------------- | ------------ |
-| selection     | string            | Selection to be applied for the cutflow. The order of the selection will follow the order in the config file. |
+| selection     | string            | Selection to be applied for the cutflow. The order of the selection will follow the order in the config file. If a given sample uses `selection_suffix`, it will be added to the selection string |
 | title         | string            | Title for the selection. Will be used as the bin name in the cutflow histogram. |
 
 ## `regions` block settings
