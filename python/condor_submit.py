@@ -19,6 +19,8 @@ def TITLE(text):
     return bcolors.OKBLUE+bcolors.BOLD+text+bcolors.ENDC
 def HEADER(text):
     return bcolors.HEADER+bcolors.BOLD+bcolors.OKBLUE+bcolors.UNDERLINE+text+bcolors.ENDC
+def WARNING(text):
+    return bcolors.WARNING+text+bcolors.ENDC
 def ERROR(text):
     return bcolors.FAIL+text+bcolors.ENDC
 
@@ -133,9 +135,8 @@ def createInputSamplesFile(listOfSamplesFromInput,samplesBlock):
 
 def checkIsAFSorEOSPath(path):
     if not path.startswith("/eos/") and not path.startswith("/afs/"):
-        print(ERROR("The path to the output files must be an absolute path in EOS or AFS."))
+        print(WARNING("The path to the output files is recommended to be an absolute path in EOS or AFS."))
         print(path," is neither an AFS or EOS path.")
-        exit()
 
 def checkAssumptions(geeneralBlock):
     # 1. The script is run from the fastframes/python directory
@@ -164,13 +165,13 @@ def checkAssumptions(geeneralBlock):
     checkIsAFSorEOSPath(pathToOutputNtuples)
 
 def askUserForConfirmation():
-    print(TITLE("This script submits jobs to the HTCondor batch system..."))
+    print(TITLE("This script submits jobs to the HTCondor batch system from an lxplus-like machine..."))
     print(DEBUG("Please read the following carefully... you are about to potentially submit a large number of jobs to the HTCondor batch system."))
     print("For a correct execution. This script assumes the following:")
     print(TITLE("1. "), "The script is run from the fastframes/python directory")
     print(TITLE("2. "), "The build and install directories of FastFrames are two levels up from the current directory, i.e, at the same level than the FastFrames source code.")
     print(TITLE("3. "), "The metadata files are stored in a folder called metadata at the same level than the FastFrames source code.")
-    print(TITLE("4. "), "The path to the output files is an absolute path in EOS or AFS.")
+    print(TITLE("4. (OPTIONAL)"), "The path to the output files is an absolute path in EOS or AFS preferentially.")
     print("Are these assumptions correct? [y/n]")
     userConfirmation = input()
     if userConfirmation != "y":
