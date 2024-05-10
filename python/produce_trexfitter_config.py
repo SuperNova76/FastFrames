@@ -92,6 +92,11 @@ if __name__ == "__main__":
         for sample in sample_blocks:
             dump_dictionary_to_file(*sample, file)
 
+        custom_samples = trex_settings_getter.get_custom_blocks("Samples")
+        if custom_samples:
+            add_block_comment("CUSTOM SAMPLES", file)
+            for custom_sample in custom_samples:
+                dump_dictionary_to_file(*custom_sample, file)
 
         add_block_comment("NORM. FACTORS", file)
         norm_factor_blocks = trex_settings_getter.get_normfactor_dicts()
