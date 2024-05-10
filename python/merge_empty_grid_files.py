@@ -19,6 +19,16 @@ set_paths()
 
 from python_wrapper.python.logger import Logger
 
+def has_at_least_one_tree(file_address : str, tree_names : list[str]) -> bool:
+    """
+    Check if the file contains at least one of the trees from the list - to catch upstream bugs
+    """
+    file = TFile(file_address,"READ")
+    for tree_name in tree_names:
+        tree = file.Get(tree_name)
+        if tree != None:
+            return True
+    return False
 
 def has_empty_trees(file_address : str, tree_names : list[str]) -> bool:
     file = TFile(file_address,"READ")
@@ -43,32 +53,46 @@ def get_file_dictionary(folder_address : str) -> dict[Metadata, list[str]]:
         result[metadata_tuple].append(file)
     return result
 
-def merge_files(files_from_unique_sample : list[str], remove_original_files : bool):
+def merge_files(files_from_unique_sample : list[str], remove_original_files : bool) -> bool:
+    """
+    Merge empty files from the same sample
+    @param files_from_unique_sample: list of files from the same sample
+    @param remove_original_files: if True, the original files will be removed, unless one file is buggy
+
+    @return: bool - True if everything went fine, False if at least one file was buggy
+    """
     if len(files_from_unique_sample) <= 1: # nothing to merge
         return
 
-    empty_files = [file for file in files_from_unique_sample if has_empty_trees(file, ["reco", "truth", "particleLevel"])]
+    trees_to_check = ["reco", "truth", "particleLevel"]
+    empty_files = [file for file in files_from_unique_sample if has_empty_trees(file, trees_to_check)]
     first_non_empty_file = None
+    at_least_one_buggy_file = False
     for file in files_from_unique_sample:
-        if file not in empty_files:
+        if not has_at_least_one_tree(file, trees_to_check):
+            Logger.log_message("ERROR", "File {} does not contain any of the trees: {}. This seems like a bug upstream, please check it carefully!".format(file, trees_to_check))
+            at_least_one_buggy_file = True
+
+        if file not in empty_files and first_non_empty_file == None:
             first_non_empty_file = file
-            break
+
 
     if first_non_empty_file == None:
         raise Exception("All files are empty in the sample")
 
-    merged_file_name = first_non_empty_file[:-5] + "_merged.root"
-    command = "hadd " + " " + merged_file_name + " " + first_non_empty_file + " " + " ".join(empty_files)
-    os.system(command)
+    if len(empty_files) != 0:
+        merged_file_name = first_non_empty_file[:-5] + "_merged.root"
+        command = "hadd " + " " + merged_file_name + " " + first_non_empty_file + " " + " ".join(empty_files)
+        os.system(command)
 
-    if remove_original_files:
-        for file in empty_files:
-            os.system("rm {}".format(file))
-        os.system("rm {}".format(first_non_empty_file))
+        if remove_original_files and not at_least_one_buggy_file:
+            for file in empty_files:
+                os.system("rm {}".format(file))
+            os.system("rm {}".format(first_non_empty_file))
+
+    return not at_least_one_buggy_file
 
 if __name__ == "__main__":
-
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--root_files_folder",  help="Path to folder containing root files", default=None)
     args = parser.parse_args()
@@ -79,5 +103,14 @@ if __name__ == "__main__":
         Logger.log_message("ERROR", "root_files_folder option not specified")
 
     file_dictionary = get_file_dictionary(root_files_folder)
+    buggy_samples = []
     for metadata_tuple, files_from_unique_sample in file_dictionary.items():
-        merge_files(files_from_unique_sample, True)
+        print("Processing sample: ", metadata_tuple)
+        print("Files: ", files_from_unique_sample)
+        sample_contains_buggy_files = not merge_files(files_from_unique_sample, True)
+        if sample_contains_buggy_files:
+            buggy_samples.append(metadata_tuple)
+
+    if len(buggy_samples) > 0:
+        Logger.log_message("ERROR", "This is the list of samples with at least one file without any of reco,truth and particleLevel trees. The original files for them have not been removed. You should check the inputs for samples:\n {}".format(buggy_samples))
+        exit(1)
