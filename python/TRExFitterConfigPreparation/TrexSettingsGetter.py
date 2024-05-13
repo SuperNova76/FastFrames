@@ -51,7 +51,9 @@ def remove_items(dict_to_use : dict, key : str, items_to_remove : list[str]) -> 
 
 def custom_sort_ghost(item):
     _ , _ , dictionary = item
-    return 0 if dictionary["Type"] == "GHOST" else 1
+    if "Type" not in dictionary:
+        return 1
+    return 0 if dictionary["Type"].upper() == "GHOST" else 1
 
 class TrexSettingsGetter:
     def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
@@ -179,7 +181,8 @@ class TrexSettingsGetter:
 
     def get_samples_blocks(self) -> list[tuple[str,str,dict]]:
         # re-order list such that GHOST samples are written out first
-        ordered_samples = sorted(self._inclusive_samples_blocks,key=custom_sort_ghost)
+        all_samples = self._inclusive_samples_blocks + self.get_custom_blocks("Samples")
+        ordered_samples = sorted(all_samples, key=custom_sort_ghost)
         return ordered_samples
 
     def get_custom_blocks(self, block_type : str) -> list[tuple[str,str,dict]]:

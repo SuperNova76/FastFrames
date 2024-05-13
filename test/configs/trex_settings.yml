@@ -50,5 +50,5 @@ NormFactors:
 CustomBlocks:
   Samples:
   - name: "wzjets"
-    title: "WZ+jets"
-    type: "Background"
+    Title: "WZ+jets"
+    Type: "Background"
