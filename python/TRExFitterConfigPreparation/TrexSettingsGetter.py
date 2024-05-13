@@ -105,7 +105,9 @@ class TrexSettingsGetter:
 
         self._total_lumi = BlockReaderSample.get_total_luminosity(config_reader.block_general.cpp_class, config_reader.block_general.get_samples_objects())
 
-        self._custom_blocks = self.trex_settings_dict.get("CustomBlocks", {})
+        self._custom_blocks = {}
+        if self.trex_settings_dict:
+            self._custom_blocks = self.trex_settings_dict.get("CustomBlocks", {})
 
 
     def get_region_blocks(self) -> list[tuple[str,str,dict]]:
