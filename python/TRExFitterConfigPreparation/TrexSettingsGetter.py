@@ -49,6 +49,10 @@ def remove_items(dict_to_use : dict, key : str, items_to_remove : list[str]) -> 
         else:
             del dict_to_use[key]
 
+def custom_sort_ghost(item):
+    _ , _ , dictionary = item
+    return 0 if dictionary["Type"] == "GHOST" else 1
+
 class TrexSettingsGetter:
     def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
         self.trex_settings_dict = None
@@ -169,7 +173,9 @@ class TrexSettingsGetter:
         return self._truth_samples_blocks
 
     def get_samples_blocks(self) -> list[tuple[str,str,dict]]:
-        return self._inclusive_samples_blocks
+        # re-order list such that GHOST samples are written out first
+        ordered_samples = sorted(self._inclusive_samples_blocks,key=custom_sort_ghost)
+        return ordered_samples
 
     def _initialize_sample_variables(self) -> None:
         self._unfolding_MC_samples_names = []
@@ -273,6 +279,10 @@ class TrexSettingsGetter:
             dictionary["Template"] = sample_setting_dict["Template"]
         if "NormToSample" in sample_setting_dict:
             dictionary["NormToSample"] = sample_setting_dict["NormToSample"]
+        if "AddSample" in sample_setting_dict:
+            dictionary["AddSample"] = sample_setting_dict["AddSample"]
+        if "SubtractSample" in sample_setting_dict:
+            dictionary["SubtractSample"] = sample_setting_dict["SubtractSample"]
 
         region_names = vector_to_list(sample.regionsNames())
         selected_regions = []
@@ -425,7 +435,15 @@ class TrexSettingsGetter:
                 systematic_name = key.GetName()
                 if systematic_name in ["NOSYS", "truth", "particleLevel"]:
                     continue
-
+                if self.trex_settings_dict:
+                    general_dict = self.trex_settings_dict.get("General", {})
+                    skip_syst = False
+                    if "exclude_syst" in general_dict:
+                        for regex in general_dict["exclude_syst"]:
+                            if re.match(regex,systematic_name):
+                                skip_syst = True
+                    if skip_syst:
+                        continue
                 # get list of all histograms in folder:
                 directory = root_file.Get(systematic_name)
                 histogram_found = False
