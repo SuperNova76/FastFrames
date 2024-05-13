@@ -76,9 +76,10 @@ def merge_files(files_from_unique_sample : list[str], remove_original_files : bo
         if file not in empty_files and first_non_empty_file == None:
             first_non_empty_file = file
 
-
+    # if all files are empty, we still need to merge them
     if first_non_empty_file == None:
-        raise Exception("All files are empty in the sample")
+        first_non_empty_file = empty_files[0]
+        empty_files = empty_files[1:]
 
     if len(empty_files) != 0:
         merged_file_name = first_non_empty_file[:-5] + "_merged.root"
