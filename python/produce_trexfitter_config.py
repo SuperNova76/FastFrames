@@ -92,7 +92,6 @@ if __name__ == "__main__":
         for sample in sample_blocks:
             dump_dictionary_to_file(*sample, file)
 
-
         add_block_comment("NORM. FACTORS", file)
         norm_factor_blocks = trex_settings_getter.get_normfactor_dicts()
         if norm_factor_blocks:

@@ -72,7 +72,7 @@ The following options are allowed, there override the default values. The meanin
 
   ```POIAsimov:```
 
-  ```FitBlind:``` 
+  ```FitBlind:```
 
   ```UseMinos:```
 
@@ -104,7 +104,7 @@ Options to override:
 
 ```Type:```
 
-If provided by the user, the following option will be added to the sample definition in the TRExFitter config: 
+If provided by the user, the following option will be added to the sample definition in the TRExFitter config:
 
 ```Template:```
 
@@ -131,7 +131,7 @@ Systematics:
       Samples: "Wjets"
       Category: "Theoretical"
 ```
-The `numbering_sequence` is supported for the fields `name`, `Title`,`HistoFolderNameUp` and `HistoFolderNameDown`. 
+The `numbering_sequence` is supported for the fields `name`, `Title`,`HistoFolderNameUp` and `HistoFolderNameDown`.
 
 #### NormFactors block:
 
@@ -149,9 +149,15 @@ NormFactors:
       Samples: "ttbar_FS"
 ```
 
+#### CustomBlocks block:
+
+In some cases it might be usefull to define some additional blocks in TRExFitter config, for example ghost samples. One can use ```CustomBlocks``` block to achieve this.
+In order to add custom samples, just add ```Samples:``` under ```CustomBlocks``` in the trex-fitter settings file and then define list of custom samples there. Each sample must have ```name``` which will be
+used in TRExFitter config. The other options will just be copied to TRExFitter config, without checking if that option is implemented. It is up to the user to provide reasonable keys and values.
+
 #### Morphing block:
 
-Defining a yaml `Morphing` block, will add `Morphing` settings to the TRExFitter config. All the passed options will be copied to the TRExFitter config. 
+Defining a yaml `Morphing` block, will add `Morphing` settings to the TRExFitter config. All the passed options will be copied to the TRExFitter config.
 
 An example of such a block:
 
@@ -164,7 +170,7 @@ Morphing:
 
 Through the `General` yaml block, in the `exclude_samples` option, a list with strings of samples to exclude from the TRExFitter config can be passed (regex is supported).
 
-An example of such a block: 
+An example of such a block:
 
 ```
 General:
@@ -175,7 +181,7 @@ General:
 
 Through the `Region` yaml block, the `Type` of the region can be specified. The region block needs a `name` field, which corresponds to automatically generated name for the region ```region_name + "_" variable_name``` (regex is supported).
 
-An example of such a block: 
+An example of such a block:
 
 ```
 Regions:

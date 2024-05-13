@@ -51,7 +51,9 @@ def remove_items(dict_to_use : dict, key : str, items_to_remove : list[str]) -> 
 
 def custom_sort_ghost(item):
     _ , _ , dictionary = item
-    return 0 if dictionary["Type"] == "GHOST" else 1
+    if "Type" not in dictionary:
+        return 1
+    return 0 if dictionary["Type"].upper() == "GHOST" else 1
 
 class TrexSettingsGetter:
     def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
@@ -104,6 +106,11 @@ class TrexSettingsGetter:
         self._initialize_systematics_variables()
 
         self._total_lumi = BlockReaderSample.get_total_luminosity(config_reader.block_general.cpp_class, config_reader.block_general.get_samples_objects())
+
+        self._custom_blocks = {}
+        if self.trex_settings_dict:
+            self._custom_blocks = self.trex_settings_dict.get("CustomBlocks", {})
+
 
     def get_region_blocks(self) -> list[tuple[str,str,dict]]:
         return self._region_blocks
@@ -174,8 +181,25 @@ class TrexSettingsGetter:
 
     def get_samples_blocks(self) -> list[tuple[str,str,dict]]:
         # re-order list such that GHOST samples are written out first
-        ordered_samples = sorted(self._inclusive_samples_blocks,key=custom_sort_ghost)
+        all_samples = self._inclusive_samples_blocks + self.get_custom_blocks("Samples")
+        ordered_samples = sorted(all_samples, key=custom_sort_ghost)
         return ordered_samples
+
+    def get_custom_blocks(self, block_type : str) -> list[tuple[str,str,dict]]:
+        """
+        @return list of custom blocks of given type, sample is defined by tuple ("Sample",<sample_name>,<dictionary>)
+        """
+        result = []
+        custom_samples = self._custom_blocks.get(block_type, [])
+        for custom_sample_dict in custom_samples:
+            result_dict = deepcopy(custom_sample_dict)
+            sample_name = result_dict.get("name", None)
+            if not sample_name:
+                Logger.log_message("ERROR", "Custom block without name found in the yaml file")
+                exit(1)
+            del result_dict["name"]
+            result.append((block_type, sample_name, result_dict))
+        return result
 
     def _initialize_sample_variables(self) -> None:
         self._unfolding_MC_samples_names = []
