@@ -110,9 +110,9 @@ If provided by the user, the following option will be added to the sample defini
 
 #### Systematics block:
 
-This adds new systematic uncertainty to the TRExFitter config file
+This adds new systematic uncertainty to the TRExFitter config file or modifies an existing, automatic systematic.
 
-```name:``` specifies the name of the systematic uncertainty. All other options will be copied to the TRExFitter config. An example of Systematics block with luminosity and x-section uncertainty:
+```name:``` specifies the name of the systematic uncertainty. All other options will be copied to the TRExFitter config. An example of adding a new Systematics block with luminosity and x-section uncertainty:
 
 ```
 Systematics:
@@ -132,6 +132,27 @@ Systematics:
       Category: "Theoretical"
 ```
 The `numbering_sequence` is supported for the fields `name`, `Title`,`HistoFolderNameUp` and `HistoFolderNameDown`.
+
+To modify an existing `Systematics` block, you need to use exactly the same name of the automatic systematic, e.g.
+
+```
+  - name: "EG_SCALE_AF2"
+    SmoothingOption: "MAXVARIATION"
+````
+will add the field `SmoothingOption: MAXVARIATION` to the automatically determined uncertainty `EG_SCALE_AF2`. If the same fields are set both in the automatically determined systematic and in the systematic in the trexfitter-config yaml, the field from the trexfitter-config yaml will be used. 
+If you want to instead keep two different systematics, but with the same name, you can use the option
+```
+  - name: "EG_SCALE_AF2"
+    SmoothingOption: "MAXVARIATION"
+    MergeWithAutomaticSyst: False
+````
+Additionally to the automatically determined systematic, a new field will be written out only containing the specified fields in the trexfitter-config yaml, here e.g.
+
+````
+Systematic: "EG_SCALE_AF2"
+	SmoothingOption: MAXVARIATION
+````
+
 
 #### NormFactors block:
 
