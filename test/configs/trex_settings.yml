@@ -45,3 +45,10 @@ NormFactors:
       Min: -100
       Max: 100
       Samples: "Wjets"
+
+
+CustomBlocks:
+  Samples:
+  - name: "wzjets"
+    Title: "WZ+jets"
+    Type: "Background"

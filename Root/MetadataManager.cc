@@ -172,7 +172,7 @@ double MetadataManager::normalisation(const UniqueSampleID& id, const std::share
 const std::vector<std::string>& MetadataManager::filePaths(const UniqueSampleID& id) const {
     auto itr = m_metadata.find(id);
     if (itr == m_metadata.end()) {
-        LOG(ERROR) << "Cannot find ID " << id << " in the map! Please, fix\n";
+        LOG(ERROR) << "Cannot find ID " << id << " in the filelist and metadata text file! Please, fix\n";
         throw std::invalid_argument("");
     }
 
