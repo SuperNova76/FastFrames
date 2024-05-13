@@ -574,8 +574,13 @@ class TrexSettingsGetter:
                 all_systematics.append(("Systematic",ff_syst[1],ff_syst[2]))
             else:
                 corresponding_ts = next(ts for ts in trex_only_systematics if ts[1] == ff_syst[1])
-                merged_syst = {**ff_syst[2], **corresponding_ts[2]}
-                all_systematics.append(("Systematic",ff_syst[1],merged_syst))
+                merge_syst = corresponding_ts[2].get("MergeWithAutomaticSyst",True)
+                if merge_syst:
+                    merged_syst = {**ff_syst[2], **corresponding_ts[2]}
+                    all_systematics.append(("Systematic",ff_syst[1],merged_syst))
+                else:
+                    all_systematics.append(("Systematic",ff_syst[1],ff_syst[2]))
+                    all_systematics.append(("Systematic",corresponding_ts[1],corresponding_ts[2]))
 
         for ts in trex_only_systematics:
             if all(ts[1] != ff_syst[1] for ff_syst in ff_systematics):
