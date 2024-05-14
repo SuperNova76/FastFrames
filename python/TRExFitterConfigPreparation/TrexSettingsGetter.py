@@ -352,7 +352,7 @@ class TrexSettingsGetter:
         config_based_syst_dict = self._get_systematics_blocks_from_config_wo_samples_resolving() #list[tuple[str,str,dict]]
         all_systematics = self._merge_automatic_and_config_based_systematics_and_resolve_samples_list_and_excludes(automatic_syst_dict, config_based_syst_dict)
 
-        all_systematics = all_systematics + trex_only_systemaics
+        all_systematics = self._merge_ff_and_trex_only_systematics(trex_only_systemaics,all_systematics)
         for syst_tuple in all_systematics:
             syst_inclusive, syst_unfolding = self.split_systematics_into_inclusive_and_unfolding(syst_tuple)
             if syst_inclusive:
@@ -565,6 +565,33 @@ class TrexSettingsGetter:
             result.append(("Systematic", syst_name, syst_dict))
 
         return result
+
+    def _merge_ff_and_trex_only_systematics(self, trex_only_systematics : list[tuple[str,str,dict]], ff_systematics : list[tuple[str,str,dict]]) -> list[tuple[str,str,dict]]:
+        all_systematics = []
+
+        for ff_syst in ff_systematics:
+            if all(ff_syst[1] != ts[1] for ts in trex_only_systematics):
+                all_systematics.append(("Systematic",ff_syst[1],ff_syst[2]))
+            else:
+                for corresponding_ts in trex_only_systematics:
+                    if corresponding_ts[1] != ff_syst[1]:
+                        continue
+                    merge_syst = True
+                    if "MergeWithAutomaticSyst" in corresponding_ts[2]:
+                        merge_syst = corresponding_ts[2].get("MergeWithAutomaticSyst",True)
+                        del corresponding_ts[2]["MergeWithAutomaticSyst"]
+                    if merge_syst:
+                        merged_syst = {**ff_syst[2], **corresponding_ts[2]}
+                        all_systematics.append(("Systematic",ff_syst[1],merged_syst))
+                    else:
+                        all_systematics.append(("Systematic",ff_syst[1],ff_syst[2]))
+                        all_systematics.append(("Systematic",corresponding_ts[1],corresponding_ts[2]))
+
+        for ts in trex_only_systematics:
+            if all(ts[1] != ff_syst[1] for ff_syst in ff_systematics):
+                all_systematics.append(("Systematic",ts[1],ts[2]))
+
+        return all_systematics
 
     def get_automatic_systematics_blocks(self, output_root_files_folder : str) -> dict[str,dict]:
         sample_names = [sample.name() for sample in self._all_MC_samples if sample.automaticSystematics()]
