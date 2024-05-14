@@ -62,7 +62,7 @@ def merge_files(files_from_unique_sample : list[str], remove_original_files : bo
     @return: bool - True if everything went fine, False if at least one file was buggy
     """
     if len(files_from_unique_sample) <= 1: # nothing to merge
-        return
+        return True
 
     trees_to_check = ["reco", "truth", "particleLevel"]
     empty_files = [file for file in files_from_unique_sample if has_empty_trees(file, trees_to_check)]
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     file_dictionary = get_file_dictionary(root_files_folder)
     buggy_samples = []
     for metadata_tuple, files_from_unique_sample in file_dictionary.items():
-        print("Processing sample: ", metadata_tuple)
-        print("Files: ", files_from_unique_sample)
-        sample_contains_buggy_files = not merge_files(files_from_unique_sample, True)
+        Logger.log_message("INFO", "Processing sample: {}".format(metadata_tuple))
+        Logger.log_message("INFO", "Files: {}".format(files_from_unique_sample))
+        sample_contains_buggy_files = (not merge_files(files_from_unique_sample, True))
         if sample_contains_buggy_files:
             buggy_samples.append(metadata_tuple)
 
