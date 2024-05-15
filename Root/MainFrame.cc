@@ -244,14 +244,23 @@ std::tuple<std::vector<SystematicHisto>,
 
     mainNode = this->minMaxRange(mainNode);
 
-    mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
+    if (!m_config->configDefineAfterCustomClass()) {
+        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
+    }
 
     // add TLorentzVectors for objects
     mainNode = this->addTLorentzVectors(mainNode);
 
-    if (!m_config->configDefineAfterCustomClass()) {
+    // this is the method users will be able to override
+    LOG(DEBUG) << "Adding custom reco variables from the code\n";
+    mainNode = this->defineVariables(mainNode, uniqueSampleID);
+    LOG(DEBUG) << "Finished adding custom reco variables\n";
+
+    if (m_config->configDefineAfterCustomClass()) {
         mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
     }
+
+    mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
 
     // we also need to add truth variables if provided
     for (const auto& itruth : sample->truths()) {
@@ -266,15 +275,6 @@ std::tuple<std::vector<SystematicHisto>,
         if (m_config->configDefineAfterCustomClass()) {
             mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
         }
-    }
-
-    // this is the method users will be able to override
-    LOG(DEBUG) << "Adding custom reco variables from the code\n";
-    mainNode = this->defineVariables(mainNode, uniqueSampleID);
-    LOG(DEBUG) << "Finished adding custom reco variables\n";
-
-    if (m_config->configDefineAfterCustomClass()) {
-        mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
     }
 
     m_systReplacer.printMaps();
