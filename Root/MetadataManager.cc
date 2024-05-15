@@ -86,6 +86,7 @@ void MetadataManager::readXSectionFiles(const std::vector<std::string>& xSection
         if (uniqueSampleId.isData()) continue;
         Metadata &metadata = m_mapPair.second;
         const double xSec = xSectionManger.xSection(uniqueSampleId.dsid());
+        LOG(INFO) << "Cross-section for UniqueSample: " << uniqueSampleId << " is: " << xSec << "\n";
         if (xSec <= 0) {
             LOG(WARNING) << "Cross-section for UniqueSample: " << uniqueSampleId << " is <= 0. Please check!";
         }

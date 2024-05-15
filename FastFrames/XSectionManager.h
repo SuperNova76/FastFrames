@@ -10,6 +10,18 @@
 #include <string>
 #include <map>
 
+
+enum class XSectionFileType {
+    TopDataPreparation,
+    PMG,
+    Unknown
+};
+
+struct XSectionData {
+    double xSection;
+    int eTag;
+};
+
 /**
  * @brief Class responsible for handling cross sections of the samples
  *
@@ -44,11 +56,19 @@ class XSectionManager {
         double xSection(const int sampleDSID) const;
 
     private:
-        void readXSectionFile(const std::string &xSectionFile);
-
-        void processLine(const std::string &line);
+        XSectionFileType getFileType(const std::string &xSectionFile) const;
 
         bool validLine(const std::string &line) const;
 
-        std::map<int, double> m_xSectionMap;
+        void readXSectionFile(const std::string &xSectionFile);
+
+        void processTopDataPreparationLine(const std::string &line);
+
+        void processPMGLine(const std::string &line);
+
+        std::map<int, XSectionData> m_xSectionMap; // DSID -> (x-section, e-tag)
+
+        static bool validTopDataPreparationFileColumns(const std::vector<std::string> &columns);
+
+        static bool validPMGFileColumns(const std::vector<std::string> &columns);
 };

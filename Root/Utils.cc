@@ -28,7 +28,7 @@ std::vector<double> fromRegularToEdges(const Variable& v){
     // We create a TH1D just as a proxy to get the bin edges
     TH1D histo("", "", v.axisNbins(), v.axisMin(), v.axisMax());
     std::vector<double> binEdges{};
-    
+
 
     // Add each bin edge one by one
     std::size_t nBins = static_cast<std::size_t>(histo.GetNbinsX());
@@ -130,7 +130,7 @@ void Utils::capHisto0And1(TH1D* h, const std::string& name) {
         }
     }
 }
-  
+
 const Variable& Utils::getVariableByName(const std::vector<std::shared_ptr<Region> >& regions,
                                          const std::string& regionName,
                                          const std::string& variableName) {
@@ -152,3 +152,7 @@ const Variable& Utils::getVariableByName(const std::vector<std::shared_ptr<Regio
 
     return *itrVar;
 }
+
+bool Utils::compareDoubles(const double a, const double b, const double relative_precision) {
+    return std::abs(a - b) < relative_precision * std::max(std::abs(a), std::abs(b));
+};
