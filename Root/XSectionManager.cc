@@ -26,7 +26,7 @@ double XSectionManager::xSection(const int sampleDSID) const    {
         LOG(ERROR) << "Cannot find cross section for DSID: " << sampleDSID << ", please update your x-section file\n";
         throw std::runtime_error("");
     }
-    return std::get<0>(m_xSectionMap.at(sampleDSID));
+    return m_xSectionMap.at(sampleDSID).xSection;
 };
 
 void XSectionManager::readXSectionFile(const std::string &xSectionFile) {
@@ -81,7 +81,11 @@ void XSectionManager::processTopDataPreparationLine(const std::string &line)  {
         LOG(ERROR) << ("The following dsid was found multiple times in the x-section text files: \"" + elements.at(0) + "\"\n");
         throw std::runtime_error("");
     }
-    m_xSectionMap[dsid] = std::tuple<double,int>(xsec * kfac,0);
+
+    XSectionData xsection_data;
+    xsection_data.xSection = xsec * kfac;
+    xsection_data.eTag = 0;
+    m_xSectionMap[dsid] = xsection_data;
 };
 
 XSectionFileType XSectionManager::getFileType(const std::string &xSectionFile) const {
@@ -156,10 +160,10 @@ void XSectionManager::processPMGLine(const std::string &line)    {
 
     // Check if the sample is not defined multiple times in the x-section text file
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {
-        const int old_etag = std::get<1>(m_xSectionMap.at(dsid));
+        const int old_etag = m_xSectionMap.at(dsid).eTag;
         // already defined in TopDataPreparation file or with the same e-tag in PMG file
         if (old_etag <= 0 || old_etag == etag) {
-            const double old_xsec = std::get<0>(m_xSectionMap.at(dsid));
+            const double old_xsec = m_xSectionMap.at(dsid).xSection;
 
             if (!Utils::compareDoubles(old_xsec, total_xsec, 1e-6))   {
                 LOG(ERROR) << ("The cross section for this DSID is defined multiple times with the same etag, or in both PMG and TopDataPreparation files. DSID: \"" + elements.at(0) + "\". Please fix it.\n");
@@ -167,11 +171,17 @@ void XSectionManager::processPMGLine(const std::string &line)    {
             }
         }
         else if (old_etag < etag) {
-            m_xSectionMap[dsid] = std::tuple<double,int>(total_xsec, etag);
+            XSectionData data;
+            data.xSection = total_xsec;
+            data.eTag = etag;
+            m_xSectionMap[dsid] = data;
         }
     }
     else {
-        m_xSectionMap[dsid] = std::tuple<double,int>(total_xsec, etag);
+        XSectionData data;
+        data.xSection = total_xsec;
+        data.eTag = etag;
+        m_xSectionMap[dsid] = data;
     }
 };
 

@@ -9,13 +9,17 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <tuple>
 
 
 enum class XSectionFileType {
     TopDataPreparation,
     PMG,
     Unknown
+};
+
+struct XSectionData {
+    double xSection;
+    int eTag;
 };
 
 /**
@@ -62,7 +66,7 @@ class XSectionManager {
 
         void processPMGLine(const std::string &line);
 
-        std::map<int, std::tuple<double,int>> m_xSectionMap; // DSID -> (x-section, e-tag)
+        std::map<int, XSectionData> m_xSectionMap; // DSID -> (x-section, e-tag)
 
         static bool validTopDataPreparationFileColumns(const std::vector<std::string> &columns);
 
