@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <tuple>
 
 /**
  * @brief Class responsible for handling cross sections of the samples
@@ -44,11 +45,11 @@ class XSectionManager {
         double xSection(const int sampleDSID) const;
 
     private:
-        void readXSectionFile(const std::string &xSectionFile);
+        void readTopDataPreparationXSectionFile(const std::string &xSectionFile);
 
-        void processLine(const std::string &line);
+        void processTopDataPreparationLine(const std::string &line);
 
-        bool validLine(const std::string &line) const;
+        bool validTopDataPreparationLine(const std::string &line) const;
 
-        std::map<int, double> m_xSectionMap;
+        std::map<int, std::tuple<double,int>> m_xSectionMap; // DSID -> (x-section, e-tag)
 };

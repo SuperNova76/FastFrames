@@ -16,7 +16,7 @@ using std::string, std::map, std::vector, std::ifstream;
 
 XSectionManager::XSectionManager(const std::vector<std::string> &xSectionFiles)  {
     for (const string &xSectionFile : xSectionFiles) {
-        readXSectionFile(xSectionFile);
+        readTopDataPreparationXSectionFile(xSectionFile);
     }
 };
 
@@ -25,15 +25,15 @@ double XSectionManager::xSection(const int sampleDSID) const    {
         LOG(ERROR) << "Cannot find cross section for DSID: " << sampleDSID << ", please update your x-section file\n";
         throw std::runtime_error("");
     }
-    return m_xSectionMap.at(sampleDSID);
+    return std::get<0>(m_xSectionMap.at(sampleDSID));
 };
 
-void XSectionManager::readXSectionFile(const std::string &xSectionFile) {
+void XSectionManager::readTopDataPreparationXSectionFile(const std::string &xSectionFile) {
     string line;
     ifstream input_file (xSectionFile);
     if (input_file.is_open())    {
         while ( getline (input_file,line) )        {
-            processLine(line);
+            processTopDataPreparationLine(line);
         }
         input_file.close();
     }
@@ -43,9 +43,9 @@ void XSectionManager::readXSectionFile(const std::string &xSectionFile) {
     }
 };
 
-void XSectionManager::processLine(const std::string &line)  {
+void XSectionManager::processTopDataPreparationLine(const std::string &line)  {
     // For now just Top Data Preparation style x-section file is supported
-    if (!validLine(line))   {
+    if (!validTopDataPreparationLine(line))   {
         return;
     }
 
@@ -76,10 +76,10 @@ void XSectionManager::processLine(const std::string &line)  {
         LOG(ERROR) << ("The following dsid was found multiple times in the x-section text files: \"" + elements.at(0) + "\"\n");
         throw std::runtime_error("");
     }
-    m_xSectionMap[dsid] = xsec * kfac;
+    m_xSectionMap[dsid] = std::make_tuple<double,int>(xsec * kfac,0);
 };
 
-bool XSectionManager::validLine(const std::string &line) const  {
+bool XSectionManager::validTopDataPreparationLine(const std::string &line) const  {
     string strippedString = line;
     StringOperations::stripString(&strippedString);
 
