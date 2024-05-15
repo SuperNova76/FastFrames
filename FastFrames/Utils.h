@@ -101,8 +101,8 @@ namespace Utils {
 
   /**
    * @brief Get variable using region and variable name
-   * 
-   * @param regions list of regions 
+   *
+   * @param regions list of regions
    * @param regionName region name for the variable
    * @param variableName variable name
    * @return const Variable&
@@ -110,4 +110,15 @@ namespace Utils {
   const Variable& getVariableByName(const std::vector<std::shared_ptr<Region> >& regions,
                                     const std::string& regionName,
                                     const std::string& variableName);
+
+
+  /**
+   * @brief Compare 2 doubles with a given relative precision
+   *
+   * @param a
+   * @param b
+   * @param relative_precision
+   * @return bool - are the doubles equal?
+   */
+  bool compareDoubles(const double a, const double b, const double relative_precision = 1e-6);
 }
