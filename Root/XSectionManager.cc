@@ -158,10 +158,10 @@ void XSectionManager::processPMGLine(const std::string &line)    {
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {
         const int old_etag = std::get<1>(m_xSectionMap.at(dsid));
         // already defined in TopDataPreparation file or with the same e-tag in PMG file
-        if (old_etag <= 0 && old_etag == etag) {
+        if (old_etag <= 0 || old_etag == etag) {
             const double old_xsec = std::get<0>(m_xSectionMap.at(dsid));
 
-            if (Utils::compareDoubles(old_xsec, total_xsec, 1e-6))   {
+            if (!Utils::compareDoubles(old_xsec, total_xsec, 1e-6))   {
                 LOG(ERROR) << ("The cross section for this DSID is defined multiple times with the same etag, or in both PMG and TopDataPreparation files. DSID: \"" + elements.at(0) + "\". Please fix it.\n");
                 throw std::runtime_error("");
             }
@@ -169,9 +169,6 @@ void XSectionManager::processPMGLine(const std::string &line)    {
         else if (old_etag < etag) {
             m_xSectionMap[dsid] = std::tuple<double,int>(total_xsec, etag);
         }
-
-        LOG(ERROR) << ("The following dsid was found multiple times in the x-section text files: \"" + elements.at(0) + "\"\n");
-        throw std::runtime_error("");
     }
     else {
         m_xSectionMap[dsid] = std::tuple<double,int>(total_xsec, etag);
