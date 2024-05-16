@@ -27,6 +27,7 @@
 using ROOT::VecOps::RVec;
 
 void MainFrame::init() {
+    TH1::AddDirectory(kFALSE);
     if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0 || m_config->numCPU()==1) {
         ROOT::DisableImplicitMT();
         LOG(WARNING) << "Disabling implicit MT as it is not allowed for Range() call\n";
@@ -56,16 +57,15 @@ void MainFrame::init() {
     if (m_config->hasAutomaticSystematics()) {
         m_config->clearSystematics();
     }
-    TH1::AddDirectory(kFALSE);
-}
-
-void MainFrame::executeHistograms() {
 
     for (auto& isample : m_config->samples()) {
         if (isample->automaticSystematics() || isample->nominalOnly()) {
             this->readAutomaticSystematics(isample, isample->nominalOnly());
         }
     }
+}
+
+void MainFrame::executeHistograms() {
 
     // run the check for metadata
     if (!m_metadataManager.checkSamplesMetadata(m_config->samples())) {
@@ -169,11 +169,6 @@ void MainFrame::executeHistograms() {
 }
 
 void MainFrame::executeNtuples() {
-    for (auto& isample : m_config->ntuple()->samples()) {
-        if (isample->automaticSystematics() || isample->nominalOnly()) {
-            this->readAutomaticSystematics(isample, isample->nominalOnly());
-        }
-    }
 
     // run the check for metadata
     if (!m_metadataManager.checkSamplesMetadata(m_config->samples())) {
