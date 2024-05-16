@@ -78,8 +78,8 @@ void MetadataManager::readSumWeights(const std::string& path) {
 
 }
 
-void MetadataManager::readXSectionFiles(const std::vector<std::string>& xSectionFiles)  {
-    XSectionManager xSectionManger(xSectionFiles);
+void MetadataManager::readXSectionFiles(const std::vector<std::string>& xSectionFiles, const std::vector<int>& usedDSIDs)  {
+    XSectionManager xSectionManger(xSectionFiles, usedDSIDs);
 
     for (auto &m_mapPair : m_metadata)    {
         const UniqueSampleID &uniqueSampleId = m_mapPair.first;

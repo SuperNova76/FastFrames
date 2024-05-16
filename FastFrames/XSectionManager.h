@@ -38,8 +38,9 @@ class XSectionManager {
          * @brief Construct a new XSectionManager object
          *
          * @param xSectionFiles
+         * @param usedDSIDs
          */
-        explicit XSectionManager(const std::vector<std::string> &xSectionFiles, const std::vector<int> &used_dsids = {});
+        explicit XSectionManager(const std::vector<std::string> &xSectionFiles, const std::vector<int> &usedDSIDs);
 
         /**
          * @brief Destroy the XSectionManager object
@@ -59,7 +60,7 @@ class XSectionManager {
 
         std::map<int, XSectionData> m_xSectionMap; // DSID -> (x-section, e-tag)
 
-        std::vector<int> m_used_dsids;
+        std::vector<int> m_usedDSIDs;
 
         XSectionFileType getFileType(const std::string &xSectionFile) const;
 

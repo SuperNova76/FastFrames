@@ -376,6 +376,13 @@ public:
    */
   inline bool configDefineAfterCustomClass() const {return m_configDefineAfterCustomClass;}
 
+  /**
+   * @brief Get the list of the unique DSIDs defined by the user
+   *
+   * @return std::vector<int>
+   */
+  std::vector<int> uniqueDSIDs() const;
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;

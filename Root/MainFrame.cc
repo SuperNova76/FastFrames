@@ -33,9 +33,9 @@ void MainFrame::init() {
         ROOT::EnableImplicitMT(m_config->numCPU());
         LOG(INFO) << "Enabling implicit MT with " << m_config->numCPU() << " threads\n";
     }
-    m_metadataManager.readFileList( m_config->inputFilelistPath() );
-    m_metadataManager.readSumWeights( m_config->inputSumWeightsPath() );
-    m_metadataManager.readXSectionFiles( m_config->xSectionFiles() );
+    m_metadataManager.readFileList(m_config->inputFilelistPath());
+    m_metadataManager.readSumWeights(m_config->inputSumWeightsPath());
+    m_metadataManager.readXSectionFiles(m_config->xSectionFiles(), m_config->uniqueDSIDs());
 
     // propagate luminosity information from config
     for (const auto& ilumi : m_config->luminosityMap()) {
