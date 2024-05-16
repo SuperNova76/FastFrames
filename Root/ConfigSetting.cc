@@ -99,3 +99,18 @@ bool ConfigSetting::hasAutomaticSystematics() const {
 
     return false;
 }
+
+std::vector<int> ConfigSetting::uniqueDSIDs() const {
+    std::vector<int> result;
+
+    for (const auto& isample : m_samples) {
+        for (const auto& iid : isample->uniqueSampleIDs()) {
+            const int dsid = iid.dsid();
+            if (std::find(result.begin(), result.end(), dsid) == result.end()) {
+                result.emplace_back(dsid);
+            }
+        }
+    }
+
+    return result;
+}

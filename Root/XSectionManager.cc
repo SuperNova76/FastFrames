@@ -15,7 +15,9 @@
 using std::string, std::map, std::vector, std::ifstream;
 
 
-XSectionManager::XSectionManager(const std::vector<std::string> &xSectionFiles)  {
+XSectionManager::XSectionManager(const std::vector<std::string> &xSectionFiles, const std::vector<int> &usedDSIDs) :
+    m_usedDSIDs(usedDSIDs) {
+
     for (const string &xSectionFile : xSectionFiles) {
         readXSectionFile(xSectionFile);
     }
@@ -76,6 +78,10 @@ void XSectionManager::processTopDataPreparationLine(const std::string &line)  {
     const double    xsec = std::stod(elements.at(1));
     const double    kfac = std::stod(elements.at(2));
 
+    if (!m_usedDSIDs.empty() && std::find(m_usedDSIDs.begin(), m_usedDSIDs.end(), dsid) == m_usedDSIDs.end()) {
+        return;
+    }
+
     // Check if the sample is not defined multiple times in the x-section text file
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {
         LOG(ERROR) << ("The following dsid was found multiple times in the x-section text files: \"" + elements.at(0) + "\"\n");
@@ -85,7 +91,7 @@ void XSectionManager::processTopDataPreparationLine(const std::string &line)  {
     XSectionData xsection_data;
     xsection_data.xSection = xsec * kfac;
     xsection_data.eTag = 0;
-    m_xSectionMap[dsid] = xsection_data;
+    m_xSectionMap.insert({dsid, xsection_data});
 };
 
 XSectionFileType XSectionManager::getFileType(const std::string &xSectionFile) const {
@@ -158,6 +164,10 @@ void XSectionManager::processPMGLine(const std::string &line)    {
 
     const double total_xsec = xsec * kfac * filt;
 
+    if (!m_usedDSIDs.empty() && std::find(m_usedDSIDs.begin(), m_usedDSIDs.end(), dsid) == m_usedDSIDs.end()) {
+        return;
+    }
+
     // Check if the sample is not defined multiple times in the x-section text file
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {
         const int old_etag = m_xSectionMap.at(dsid).eTag;
@@ -165,8 +175,8 @@ void XSectionManager::processPMGLine(const std::string &line)    {
         if (old_etag <= 0 || old_etag == etag) {
             const double old_xsec = m_xSectionMap.at(dsid).xSection;
 
-            if (!Utils::compareDoubles(old_xsec, total_xsec, 1e-6))   {
-                LOG(ERROR) << ("The cross section for this DSID is defined multiple times with the same etag, or in both PMG and TopDataPreparation files. DSID: \"" + elements.at(0) + "\". Please fix it.\n");
+            if (!Utils::compareDoubles(old_xsec, total_xsec, 1e-3))   {
+                LOG(ERROR) << ("The cross section for this DSID is defined multiple times with incompatible cross-sections with the same etag, or in both PMG and TopDataPreparation files. DSID: \"" + elements.at(0) + "\". Please fix it.\n");
                 throw std::runtime_error("");
             }
         }
@@ -174,14 +184,14 @@ void XSectionManager::processPMGLine(const std::string &line)    {
             XSectionData data;
             data.xSection = total_xsec;
             data.eTag = etag;
-            m_xSectionMap[dsid] = data;
+            m_xSectionMap.at(dsid) = data;
         }
     }
     else {
         XSectionData data;
         data.xSection = total_xsec;
         data.eTag = etag;
-        m_xSectionMap[dsid] = data;
+        m_xSectionMap.insert({dsid,data});
     }
 };
 

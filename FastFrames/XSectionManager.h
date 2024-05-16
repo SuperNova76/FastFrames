@@ -38,8 +38,9 @@ class XSectionManager {
          * @brief Construct a new XSectionManager object
          *
          * @param xSectionFiles
+         * @param usedDSIDs
          */
-        explicit XSectionManager(const std::vector<std::string> &xSectionFiles);
+        explicit XSectionManager(const std::vector<std::string> &xSectionFiles, const std::vector<int> &usedDSIDs);
 
         /**
          * @brief Destroy the XSectionManager object
@@ -56,6 +57,11 @@ class XSectionManager {
         double xSection(const int sampleDSID) const;
 
     private:
+
+        std::map<int, XSectionData> m_xSectionMap; // DSID -> (x-section, e-tag)
+
+        std::vector<int> m_usedDSIDs;
+
         XSectionFileType getFileType(const std::string &xSectionFile) const;
 
         bool validLine(const std::string &line) const;
@@ -66,9 +72,8 @@ class XSectionManager {
 
         void processPMGLine(const std::string &line);
 
-        std::map<int, XSectionData> m_xSectionMap; // DSID -> (x-section, e-tag)
-
         static bool validTopDataPreparationFileColumns(const std::vector<std::string> &columns);
 
         static bool validPMGFileColumns(const std::vector<std::string> &columns);
+
 };

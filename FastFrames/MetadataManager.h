@@ -43,8 +43,10 @@ public:
    * @brief Reads file lists txt file
    *
    * @param path Path to the txt file
+   *
+   * @return std::vector<int> list of unique dsids
    */
-  void readFileList(const std::string& path);
+  std::vector<int> readFileList(const std::string& path);
 
   /**
    * @brief Reads file with the sumweight information
@@ -56,9 +58,10 @@ public:
   /**
    * @brief Reads x-section files
    *
-   * @param xSectionFiles
+   * @param xSectionFiles list of the paths to the cross-section files
+   * @param usedDSIDs list of the DSIDs defined in the config
    */
-  void readXSectionFiles(const std::vector<std::string>& xSectionFiles);
+  void readXSectionFiles(const std::vector<std::string>& xSectionFiles, const std::vector<int>& usedDSIDs);
 
   /**
    * @brief Adds luminosity value for a given campaign
