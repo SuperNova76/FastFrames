@@ -78,9 +78,11 @@ void XSectionManager::processTopDataPreparationLine(const std::string &line)  {
     const double    xsec = std::stod(elements.at(1));
     const double    kfac = std::stod(elements.at(2));
 
+    std::cout << "dsid: " << dsid << "\n";
     if (!m_usedDSIDs.empty() && std::find(m_usedDSIDs.begin(), m_usedDSIDs.end(), dsid) == m_usedDSIDs.end()) {
         return;
     }
+    std::cout << "passed\n";
 
     // Check if the sample is not defined multiple times in the x-section text file
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {
