@@ -27,6 +27,8 @@ nav:
 
     - Tutorial: tutorial.md
 
+    - Changelog: changelog/index.md
+
 
 markdown_extensions:
     - admonition
