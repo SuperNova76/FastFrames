@@ -11,6 +11,7 @@ default:
 
 stages:
   - build
+  - build_custom_class
   - check
   - run
   - compare_results
@@ -64,6 +65,37 @@ compile:
      paths:
       - build
      expire_in: 1d
+
+cmake_custom_class:
+  stage: build_custom_class
+  needs:
+    - compile
+    - install
+  script:
+    - mkdir -p CustomClass
+    - cp -r examples/CustomVariables/* CustomClass/
+    - cd CustomClass
+    - cmake -S . -B build -DCMAKE_PREFIX_PATH=../install -DCMAKE_INSTALL_PREFIX=install
+  artifacts:
+    paths:
+      - build 
+      - install
+      - CustomClass
+    expire_in: 1d
+
+compile_custom_class:
+  stage: build_custom_class
+  needs:
+    - cmake_custom_class
+  script:
+    - cd CustomClass
+    - cmake --build build -j4 --target install
+  artifacts:
+    paths:
+      - CustomClass
+      - build
+      - install
+    expire_in: 1d
 
 compile_latest:
   stage: build
@@ -168,6 +200,21 @@ run_python_histograms:
     - run_filelist
   script:
      - python3 python/FastFrames.py --config test/configs/config.yml --step h
+  artifacts:
+     paths:
+      - ttbar_FS.root
+      - Wjets.root
+      - Data.root
+     expire_in: 1d
+
+run_python_histograms_custom_class:
+  stage: run
+  needs:
+    - compile_custom_class
+    - run_filelist
+  script:
+     - source CustomClass/build/setup.sh
+     - python3 python/FastFrames.py --config test/configs/config_custom_class.yml --step h
   artifacts:
      paths:
       - ttbar_FS.root
