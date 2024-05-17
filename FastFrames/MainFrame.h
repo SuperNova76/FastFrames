@@ -124,41 +124,7 @@ public:
   ROOT::RDF::RNode systematicDefine(ROOT::RDF::RNode node,
                                     const std::string& newVariable,
                                     F defineFunction,
-                                    const std::vector<std::string>& branches) {
-
-    if (newVariable.find("NOSYS") == std::string::npos) {
-      LOG(ERROR) << "The new variable name does not contain \"NOSYS\"\n";
-      throw std::invalid_argument("");
-    }
-
-    bool variableExists(false);
-    if (m_systReplacer.branchExists(newVariable)) {
-      LOG(VERBOSE) << "Variable: " << newVariable << " is already in the input, will not add it to the map (but adding it to the node)\n";
-      variableExists = true;
-    }
-
-    // first add the nominal define
-    node = node.Define(newVariable, defineFunction, branches);
-
-    // add systematics
-    // get list of all systeamtics affecting the inputs
-    std::vector<std::string> effectiveSystematics = m_systReplacer.getListOfEffectiveSystematics(branches);
-
-    for (const auto& isystematic : effectiveSystematics) {
-      if (isystematic == "NOSYS") continue;
-      const std::string systName = StringOperations::replaceString(newVariable, "NOSYS", isystematic);
-      const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
-      node = node.Define(systName, defineFunction, systBranches);
-    }
-
-    // tell the replacer about the new columns
-    if (!variableExists) {
-      m_systReplacer.addVariableAndEffectiveSystematics(newVariable, effectiveSystematics);
-    }
-
-    return node;
-  }
-
+                                    const std::vector<std::string>& branches);
   /**
    * @brief Helper function for systematic define that only adds columns if the input columns exist
    *
@@ -173,22 +139,7 @@ public:
   ROOT::RDF::RNode systematicDefineNoCheck(ROOT::RDF::RNode node,
                                            const std::string& newVariable,
                                            F defineFunction,
-                                           const std::vector<std::string>& branches) {
-
-    // check of the branches exist, if not then do not do anything
-    bool missing(false);
-    for (const auto& ibranch : branches) {
-      if (!m_systReplacer.branchExists(ibranch)) {
-        LOG(WARNING) << "Branch: " << ibranch << " used in the custom Define() does not exist for this sample, will not add the new column: " << newVariable << "!\n";
-        missing = true;
-        break;
-      }
-    }
-
-    if (missing) return node;
-
-    return this->systematicDefine(node, newVariable, defineFunction, branches);
-  }
+                                           const std::vector<std::string>& branches);
 
   /**
    * @brief Define new variable (column) using a string. The code will create a replica
@@ -206,7 +157,7 @@ public:
   /**
    * @brief Define an existing variable (column) and systematic copies.
    * NOTE: Name of the new variable has to contain _NOSYS.
-   * NOTE: If you try to redefine a variable which does not exist in the input, it will create 
+   * NOTE: If you try to redefine a variable which does not exist in the input, it will create
    * a new variable using systematicDefine.
    *
    * @tparam F
@@ -226,7 +177,7 @@ public:
    * @brief Redefine an existing variable (column) using a string. The code will create a replica
    * for every systematic variation that affects the formula
    * NOTE: Name of the new variable has to contain _NOSYS.
-   * NOTE: If you try to redefine a variable which does not exist in the input, it will create 
+   * NOTE: If you try to redefine a variable which does not exist in the input, it will create
    * a new variable using systematicStringDefine
    *
    * @param mainNode The input RDF node
@@ -518,7 +469,7 @@ private:
    * @return ROOT::RDF::RNode
    */
   ROOT::RDF::RNode addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
-                                                   const std::shared_ptr<Truth>& truth);
+                                                   const std::shared_ptr<Truth>& truth) const;
 
   /**
    * @brief Take a node and apply Range criteria if applicable
@@ -601,6 +552,31 @@ private:
   ROOT::RDF::RNode prepareWeightMetadata(ROOT::RDF::RNode node,
                                          const std::shared_ptr<Sample>& sample,
                                          const UniqueSampleID& id) const;
+
+  /**
+   * @brief Add truth variables to reco tree if needed (when matching reco and truth)
+   *
+   * @param node Input node
+   * @param sample Sample
+   * @param id UniqueSampleID
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode addTruthVariables(ROOT::RDF::RNode node,
+                                     const std::shared_ptr<Sample>& sample,
+                                     const UniqueSampleID& id);
+
+
+  /**
+   * @brief Add weights and custom columns to the truth nodes
+   *
+   * @param filePaths
+   * @param sample
+   * @param id
+   * @return std::map<std::string, ROOT::RDF::RNode>
+   */
+  std::map<std::string, ROOT::RDF::RNode> prepareTruthNodes(const std::vector<std::string>& filePaths,
+                                                            const std::shared_ptr<Sample>& sample,
+                                                            const UniqueSampleID& id);
 
 protected:
 
