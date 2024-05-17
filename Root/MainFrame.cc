@@ -267,20 +267,8 @@ std::tuple<std::vector<SystematicHisto>,
 
     mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
 
-    // we also need to add truth variables if provided
-    for (const auto& itruth : sample->truths()) {
-        if (!itruth->matchRecoTruth()) continue;
-
-        if (!m_config->configDefineAfterCustomClass()) {
-            mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
-        }
-        LOG(DEBUG) << "Adding custom truth variables from the code for truth: " << itruth->name() << "\n";
-        mainNode = this->defineVariablesTruth(mainNode, itruth, uniqueSampleID);
-        LOG(DEBUG) << "Finished adding custom truth variables\n";
-        if (m_config->configDefineAfterCustomClass()) {
-            mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
-        }
-    }
+    // add truth variables if matching reco and truth
+    mainNode = this->addTruthVariables(mainNode, sample, uniqueSampleID);
 
     m_systReplacer.printMaps();
 
@@ -1002,14 +990,10 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
 
     std::vector<VariableHisto> result;
 
-    const std::vector<std::string>& uniqueTreeNames = sample->uniqueTruthTreeNames();
-    std::map<std::string, ROOT::RDF::RNode> rdfNodes;
-    for (const auto& iTree : uniqueTreeNames) {
-        rdfNodes.insert(std::make_pair(iTree, ROOT::RDataFrame(iTree, filePaths)));
-    }
+    // prepare truth nodes with weights and custom definitions
+    std::map<std::string, ROOT::RDF::RNode> rdfNodes = this->prepareTruthNodes(filePaths, sample, id);
 
-    std::vector<std::string> accessedNodes;
-
+    // apply filters and book histograms
     for (const auto& itruth : sample->truths()) {
         auto itr = rdfNodes.find(itruth->truthTreeName());
         if (itr == rdfNodes.end()) {
@@ -1018,29 +1002,6 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
         }
 
         ROOT::RDF::RNode mainNode = itr->second;
-        #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
-        ROOT::RDF::Experimental::AddProgressBar(mainNode);
-        #endif
-        if (std::find(accessedNodes.begin(), accessedNodes.end(), itruth->truthTreeName()) == accessedNodes.end()) {
-            mainNode = this->minMaxRange(mainNode);
-
-            mainNode = this->prepareWeightMetadata(mainNode, sample, id);
-
-            const std::string normalisation = "lumi*xSection/NOSYS";
-            const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + normalisation +")";
-            LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
-            mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
-
-            if (!m_config->configDefineAfterCustomClass()) {
-                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
-            }
-            mainNode = this->defineVariablesTruth(mainNode, itruth, id);
-            if (m_config->configDefineAfterCustomClass()) {
-                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
-            }
-        } else {
-            accessedNodes.emplace_back(itruth->truthTreeName());
-        }
 
         // apply truth filter
         if (!itruth->selection().empty()) {
@@ -1169,6 +1130,66 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
 }
 
 template<typename F>
+ROOT::RDF::RNode MainFrame::systematicDefine(ROOT::RDF::RNode node,
+                                             const std::string& newVariable,
+                                             F defineFunction,
+                                             const std::vector<std::string>& branches) {
+
+  if (newVariable.find("NOSYS") == std::string::npos) {
+    LOG(ERROR) << "The new variable name does not contain \"NOSYS\"\n";
+    throw std::invalid_argument("");
+  }
+
+  bool variableExists(false);
+  if (m_systReplacer.branchExists(newVariable)) {
+    LOG(VERBOSE) << "Variable: " << newVariable << " is already in the input, will not add it to the map (but adding it to the node)\n";
+    variableExists = true;
+  }
+
+  // first add the nominal define
+  node = node.Define(newVariable, defineFunction, branches);
+
+  // add systematics
+  // get list of all systeamtics affecting the inputs
+  std::vector<std::string> effectiveSystematics = m_systReplacer.getListOfEffectiveSystematics(branches);
+
+  for (const auto& isystematic : effectiveSystematics) {
+    if (isystematic == "NOSYS") continue;
+    const std::string systName = StringOperations::replaceString(newVariable, "NOSYS", isystematic);
+    const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
+    node = node.Define(systName, defineFunction, systBranches);
+  }
+
+  // tell the replacer about the new columns
+  if (!variableExists) {
+    m_systReplacer.addVariableAndEffectiveSystematics(newVariable, effectiveSystematics);
+  }
+
+  return node;
+}
+
+template<typename F>
+ROOT::RDF::RNode MainFrame::systematicDefineNoCheck(ROOT::RDF::RNode node,
+                                                    const std::string& newVariable,
+                                                    F defineFunction,
+                                                    const std::vector<std::string>& branches) {
+
+  // check of the branches exist, if not then do not do anything
+  bool missing(false);
+  for (const auto& ibranch : branches) {
+    if (!m_systReplacer.branchExists(ibranch)) {
+      LOG(WARNING) << "Branch: " << ibranch << " used in the custom Define() does not exist for this sample, will not add the new column: " << newVariable << "!\n";
+      missing = true;
+      break;
+    }
+  }
+
+  if (missing) return node;
+
+  return this->systematicDefine(node, newVariable, defineFunction, branches);
+}
+
+template<typename F>
 ROOT::RDF::RNode MainFrame::systematicRedefine(ROOT::RDF::RNode node,
                                     const std::string& variable,
                                     F defineFunction,
@@ -1272,7 +1293,7 @@ ROOT::RDF::RNode MainFrame::systematicStringRedefine(ROOT::RDF::RNode mainNode,
 }
 
 ROOT::RDF::RNode MainFrame::addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
-                                                            const std::shared_ptr<Truth>& truth) {
+                                                            const std::shared_ptr<Truth>& truth) const {
 
     for (const auto& ivariable : truth->customDefines()) {
         mainNode = mainNode.Define(ivariable.first, ivariable.second);
@@ -1454,4 +1475,79 @@ ROOT::RDF::RNode MainFrame::prepareWeightMetadata(ROOT::RDF::RNode node,
     }
 
     return node;
+}
+
+ROOT::RDF::RNode MainFrame::addTruthVariables(ROOT::RDF::RNode node,
+                                              const std::shared_ptr<Sample>& sample,
+                                              const UniqueSampleID& id) {
+
+    std::vector<std::string> uniqueTrees;
+
+    for (const auto& itruth : sample->truths()) {
+        if (!itruth->matchRecoTruth()) continue;
+
+        const std::string& treeName = itruth->truthTreeName();
+        if (std::find(uniqueTrees.begin(), uniqueTrees.end(), treeName) != uniqueTrees.end()) continue;
+
+        if (!m_config->configDefineAfterCustomClass()) {
+            node = this->addCustomTruthDefinesFromConfig(node, itruth);
+        }
+        LOG(DEBUG) << "Adding custom truth variables from the code for truth: " << itruth->name() << "\n";
+        node = this->defineVariablesTruth(node, itruth, id);
+        LOG(DEBUG) << "Finished adding custom truth variables\n";
+        if (m_config->configDefineAfterCustomClass()) {
+            node = this->addCustomTruthDefinesFromConfig(node, itruth);
+        }
+        uniqueTrees.emplace_back(treeName);
+    }
+
+    return node;
+}
+
+std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::vector<std::string>& filePaths,
+                                                                     const std::shared_ptr<Sample>& sample,
+                                                                     const UniqueSampleID& id) {
+
+    std::map<std::string, ROOT::RDF::RNode> result;
+
+    const std::vector<std::string> uniqueTreeNames = sample->uniqueTruthTreeNames();
+    for (const auto& iTree : uniqueTreeNames) {
+        ROOT::RDataFrame rdf(iTree, filePaths);
+
+        ROOT::RDF::RNode mainNode = rdf;
+
+        #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
+        ROOT::RDF::Experimental::AddProgressBar(mainNode);
+        #endif
+
+        mainNode = this->minMaxRange(mainNode);
+
+        mainNode = this->prepareWeightMetadata(mainNode, sample, id);
+
+        std::vector<std::string> uniqueTrees;
+
+        for (const auto& itruth : sample->truths()) {
+
+            const std::string& truthTreeName = itruth->truthTreeName();
+            if (std::find(uniqueTrees.begin(), uniqueTrees.end(), truthTreeName) != uniqueTrees.end()) continue;
+
+            const std::string normalisation = "lumi*xSection/NOSYS";
+            const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + normalisation +")";
+            LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
+            mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
+
+            if (!m_config->configDefineAfterCustomClass()) {
+                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+            }
+            mainNode = this->defineVariablesTruth(mainNode, itruth, id);
+            if (m_config->configDefineAfterCustomClass()) {
+                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+            }
+            uniqueTrees.emplace_back(truthTreeName);
+        }
+
+        result.insert(std::make_pair(iTree, std::move(mainNode)));
+    }
+
+    return result;
 }
