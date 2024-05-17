@@ -1,0 +1,48 @@
+general:
+  debug_level: DEBUG
+  input_filelist_path: "test/input/filelist.txt"
+  input_sumweights_path: "test/input/sum_of_weights.txt"
+  output_path_histograms: ""
+  output_path_ntuples: "output_ntuples"
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
+  default_reco_tree_name: "reco"
+  xsection_files: ["data/XSection-MC16-13TeV.data"]
+  custom_frame_name: CustomFrame
+  automatic_systematics: True
+  nominal_only: False
+  create_tlorentz_vectors_for: ["jet", "el"]
+  number_of_cpus: 4
+  luminosity:
+    mc23c: 1
+
+regions:
+  - name: "Electron"
+    selection: "el_pt_NOSYS[0] > 30000 && passed_4j50GeV_1btag_NOSYS"
+    variables:
+      - name: "leading_jet_pt"
+        title : "histo title;X axis title;Y axis title"
+        definition: "leading_jet_pt_NOSYS"
+        type: "double"
+        binning:
+          min: 0
+          max: 200
+          number_of_bins: 20
+
+samples:
+  - name: "ttbar_FS"
+    dsids: [410470]
+    campaigns: ["mc20e"]
+    simulation_type: "fullsim"
+
+systematics:
+  - campaigns: ["mc20e"]
+    variation:
+      up: "JET_BJES_Response__1up"
+      down: "JET_BJES_Response__1down"
+
+  - samples: ["ttbar_FS"]
+    campaigns: ["mc20e"]
+    variation:
+      up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"
+      sum_weights_up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"
