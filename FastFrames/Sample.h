@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "FastFrames/ConfigDefine.h"
 #include "FastFrames/Cutflow.h"
 #include "FastFrames/Truth.h"
 #include "FastFrames/UniqueSampleID.h"
@@ -202,14 +203,35 @@ public:
    * @param formula the formula for the new column
    */
   inline void addCustomDefine(const std::string& newName,
-                              const std::string& formula) {m_customDefines.emplace_back(std::make_pair(newName, formula));}
+                              const std::string& formula) {
+                                m_customRecoDefines.emplace_back(std::make_shared<ConfigDefine>(newName, formula));
+                              }
 
   /**
-   * @brief Get custom defines
+   * @brief Add custom new column to a truth tree from the config
+   *
+   * @param newName name of the new column
+   * @param formula the formula for the new column
+   * @param treeName the targer tree
+   */
+  inline void addCustomTruthDefine(const std::string& newName,
+                                   const std::string& formula,
+                                   const std::string& treeName) {
+                                    m_customTruthDefines.emplace_back(std::make_shared<ConfigDefine>(newName, formula, treeName));
+                                   }
+  /**
+   * @brief Get custom reco defines
    *
    * @return const std::vector<std::pair<std::string, std::string> >&
    */
-  inline const std::vector<std::pair<std::string, std::string> >& customDefines() const {return m_customDefines;}
+  inline const std::vector<std::shared_ptr<ConfigDefine>>& customRecoDefines() const {return m_customRecoDefines;}
+
+  /**
+   * @brief Get custom truth defines
+   *
+   * @return const std::vector<std::pair<std::string, std::string> >&
+   */
+  inline const std::vector<std::shared_ptr<ConfigDefine>>& customTruthDefines() const {return m_customTruthDefines;}
 
   /**
    * @brief Add variable to the list of variables
@@ -367,7 +389,9 @@ private:
 
   std::string m_eventWeight;
 
-  std::vector<std::pair<std::string, std::string> > m_customDefines;
+  std::vector<std::shared_ptr<ConfigDefine>> m_customRecoDefines;
+
+  std::vector<std::shared_ptr<ConfigDefine>> m_customTruthDefines;
 
   std::vector<std::string> m_variables;
 

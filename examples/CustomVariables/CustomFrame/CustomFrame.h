@@ -3,7 +3,6 @@
 #include "FastFrames/MainFrame.h"
 
 #include "FastFrames/ConfigSetting.h"
-#include "FastFrames/Truth.h"
 #include "FastFrames/UniqueSampleID.h"
 
 #include "Math/Vector4D.h"
@@ -37,7 +36,7 @@ public:
                                                  const UniqueSampleID& id) override final;
 
   virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
-                                                const std::shared_ptr<Truth>& truth,
+                                                const std::string& treeName,
                                                 const UniqueSampleID& sampleID) override final;
 private:
 

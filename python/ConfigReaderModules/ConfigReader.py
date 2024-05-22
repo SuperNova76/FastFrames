@@ -17,7 +17,7 @@ from AutomaticRangeGenerator import AutomaticRangeGenerator
 from BlockReaderCutflow import BlockReaderCutflow
 
 from python_wrapper.python.logger import Logger
-from ConfigReaderCpp import VariableWrapper
+from ConfigReaderCpp import VariableWrapper, ConfigDefineWrapper
 
 class ConfigReader:
     """!Main class for reading the config file and connecting all its blocks.
@@ -266,17 +266,24 @@ if __name__ == "__main__":
                                 variable.axisMax())
                     else:
                         print("\t\t\tbinning: ", variable.binEdgesString())
-                custom_defines = vector_to_list(cpp_truth_object.customDefines())
-                if len(custom_defines) > 0:
-                    print("\t\tCustom defines:")
-                    for custom_define in custom_defines:
-                        print("\t\t\t", custom_define)
-                    print("\n")
-        custom_defines = vector_to_list(sample.customDefines())
-        if len(custom_defines) > 0:
+        custom_defines_reco = vector_to_list(sample.customRecoDefines())
+        if len(custom_defines_reco) > 0:
             print("\tCustom defines:")
-            for custom_define in custom_defines:
-                print("\t\t", custom_define)
+            custom_define_cpp = ConfigDefineWrapper("","","")
+            for custom_define_shared_ptr in custom_defines_reco:
+                custom_define_cpp.constructFromSharedPtr(custom_define_shared_ptr)
+                print("\t\t \"" + custom_define_cpp.columnName() + "\" -> \"" + custom_define_cpp.formula() + "\"")
+
+        custom_defines_truth = vector_to_list(sample.customTruthDefines())
+        if len(custom_defines_truth) > 0:
+            print("\tCustom defines truth:")
+            custom_define_cpp = ConfigDefineWrapper("","","")
+            for custom_define_shared_ptr in custom_defines_truth:
+                custom_define_cpp.constructFromSharedPtr(custom_define_shared_ptr)
+                print("\t\t- name:", custom_define_cpp.columnName())
+                print("\t\t  definition:", custom_define_cpp.formula())
+                print("\t\t  truth_tree:", custom_define_cpp.treeName())
+
         excluded_systematics = vector_to_list(sample.excludeAutomaticSystematics())
         if len(excluded_systematics) > 0:
             print("\tExcluded systematics:")

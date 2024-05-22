@@ -61,6 +61,9 @@ class BlockReaderGeneral:
         ## Default names and definitions of custom columns to define -> can be overriden in sample block
         self.define_custom_columns = self._options_getter.get("define_custom_columns", [], [list], [dict])
 
+        ## Default names and definitions of true-level custom columns to define -> can be overriden in sample block
+        self.define_custom_columns_truth = self._options_getter.get("define_custom_columns_truth", [], [list], [dict])
+
         ## Default indices for pairing truth with reco-level trees, can be overriden in sample block
         self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", ["eventNumber"], [list], [str])
 

@@ -28,6 +28,7 @@ The options are case sensitive. Example config files can be found in ```test/con
 | cap_acceptance_selection      | bool | If set to ```True```, it will keep acceptance and efficiency in interval [0,1]. Default is ```True``` |
 | luminosity                    | dict | Dictionary of luminosity values, where key is MC campaign (for example ```mc20d```) and value is luminosity for that campaign. See example config file. Default values for some MC campaigns are defined already in the code, but they can be overridden from here.  |
 | define_custom_columns         | list of dicts | Default list of custom columns (branches) to create in data-frame (can be overriden in sample block for a given sample). Each custom column has to have 2 options: ```name``` and ```definition```. |
+| define_custom_columns_truth   | list of dicts | Simmilar option to ```define_custom_columns```, but for truth-level trees. Each custom column has to have 3 options: ```name```,  ```definition``` and ```truth_tree``` (this specified for which tree the custom defined should be used). Can be overriden in sample block for a given sample.|
 | exclude_systematics  | list of strings | List of systematic uncertainties to skip when automatic systematic option is selected. It supports regular expressions. It can be overriden for individual samples. |
 | custom_options | dict | Optional block, which can be used to define additional options, which can then be used from the user's defined custom class (CustomFrame). All values in this block must be convertible to string |
 | config_define_after_custom_class | bool | Define custom columns from config after running column definitions from CustomClass. Default is ```False``` |
@@ -111,6 +112,8 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | automatic_systematics         | bool | Overrides value for this option from general block.  |
 | nominal_only                  | bool | Overrides value for this option from general block.  |
 | numbering_sequence| list of dicts     | It can be used to automatically add more samples in one block, if they differ by selection, weights etc. More information can be found bellow in ```numbering_sequence``` block description.
+| define_custom_columns       | list of dicts  | Overrides this option from general block |
+| define_custom_columns_truth | list of dicts  | Overrides this option from general block |
 
 #### `truth` block inside of the `sample` block
 
@@ -123,7 +126,6 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | event_weight      | string            | Event weight to use for the truth level. Terms corresponding to x-section, luminosity and sum of weights will be added automatically |
 | match variables   | list of dicts     | Pair of variables (reco - truth) to be used for the unfolding. The dictionary has to have 2 keys: ```reco``` and ```truth``` for corresponding names of the variables. The truth variable must be defined in this truth block and ```reco``` variable must be defined in at least one region. ```numbering_sequence``` block is supported (see details bellow).  |
 | variables         | list of dicts     | The same as ```variable``` block for region |
-| define_custom_columns | list of dicts | The same as ```define_custom_columns ``` in general block |
 | pair_reco_and_truth_trees | bool      | Should be truth and reco-level trees be paired? This is needed when truth level variables is needed in reco-level tree, for example to prepare migration matrices or apply reweighting in reco tree, based on a parton-level variable. The default value is ```False``` if ```match variables``` block is empty, otherwise it is ```True``` |
 
 ## `systematics` block settings

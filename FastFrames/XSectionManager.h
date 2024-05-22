@@ -76,4 +76,6 @@ class XSectionManager {
 
         static bool validPMGFileColumns(const std::vector<std::string> &columns);
 
+        static constexpr double m_xsection_difference_tolerance = 1e-3;
+
 };

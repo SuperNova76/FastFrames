@@ -18,7 +18,13 @@ using std::string, std::map, std::vector, std::ifstream;
 XSectionManager::XSectionManager(const std::vector<std::string> &xSectionFiles, const std::vector<int> &usedDSIDs) :
     m_usedDSIDs(usedDSIDs) {
 
-    for (const string &xSectionFile : xSectionFiles) {
+    // we need PMG files first, so that we can compare x-section for the latest e-tag with the one from TopDataPreparation
+    vector<string> xSectionFilesSorfted = xSectionFiles;
+    std::sort(xSectionFilesSorfted.begin(), xSectionFilesSorfted.end(), [this](const string &a, const string &b) {
+        return int(getFileType(a) != XSectionFileType::PMG) < int(getFileType(b) != XSectionFileType::PMG);
+    });
+
+    for (const string &xSectionFile : xSectionFilesSorfted) {
         readXSectionFile(xSectionFile);
     }
 };
@@ -84,8 +90,10 @@ void XSectionManager::processTopDataPreparationLine(const std::string &line)  {
 
     // Check if the sample is not defined multiple times in the x-section text file
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {
-        LOG(ERROR) << ("The following dsid was found multiple times in the x-section text files: \"" + elements.at(0) + "\"\n");
-        throw std::runtime_error("");
+        if (!Utils::compareDoubles(m_xSectionMap.at(dsid).xSection, xsec, m_xsection_difference_tolerance))   {
+            LOG(ERROR) << ("The following dsid was found multiple times in the x-section text files: \"" + elements.at(0) + "\"\n");
+            throw std::runtime_error("");
+        }
     }
 
     XSectionData xsection_data;
@@ -175,7 +183,7 @@ void XSectionManager::processPMGLine(const std::string &line)    {
         if (old_etag <= 0 || old_etag == etag) {
             const double old_xsec = m_xSectionMap.at(dsid).xSection;
 
-            if (!Utils::compareDoubles(old_xsec, total_xsec, 1e-3))   {
+            if (!Utils::compareDoubles(old_xsec, total_xsec, m_xsection_difference_tolerance))   {
                 LOG(ERROR) << ("The cross section for this DSID is defined multiple times with incompatible cross-sections with the same etag, or in both PMG and TopDataPreparation files. DSID: \"" + elements.at(0) + "\". Please fix it.\n");
                 throw std::runtime_error("");
             }

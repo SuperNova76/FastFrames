@@ -268,7 +268,7 @@ std::tuple<std::vector<SystematicHisto>,
     mainNode = this->addWeightColumns(mainNode, sample, uniqueSampleID);
 
     // add truth variables if matching reco and truth
-    mainNode = this->addTruthVariables(mainNode, sample, uniqueSampleID);
+    mainNode = this->addTruthVariablesToReco(mainNode, sample, uniqueSampleID);
 
     m_systReplacer.printMaps();
 
@@ -600,7 +600,7 @@ std::vector<SystematicHisto> MainFrame::processHistograms(std::vector<std::vecto
 
             this->processHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
-            this->processTruthHistograms2D(&regionHisto, node, sample, ireg, isyst);
+            this->processRecoVsTruthHistograms2D(&regionHisto, node, sample, ireg, isyst);
 
             this->processHistograms3D(&regionHisto, node, sample, ireg, isyst);
 
@@ -866,11 +866,11 @@ void MainFrame::processHistograms2D(RegionHisto* regionHisto,
     }
 }
 
-void MainFrame::processTruthHistograms2D(RegionHisto* regionHisto,
-                                         ROOT::RDF::RNode& node,
-                                         const std::shared_ptr<Sample>& sample,
-                                         const std::shared_ptr<Region>& region,
-                                         const std::shared_ptr<Systematic>& systematic) {
+void MainFrame::processRecoVsTruthHistograms2D(RegionHisto* regionHisto,
+                                               ROOT::RDF::RNode& node,
+                                               const std::shared_ptr<Sample>& sample,
+                                               const std::shared_ptr<Region>& region,
+                                               const std::shared_ptr<Systematic>& systematic) {
 
     for (const auto& itruth : sample->truths()) {
         ROOT::RDF::RNode passedNode = node;
@@ -1085,11 +1085,11 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
 ROOT::RDF::RNode MainFrame::addCustomDefinesFromConfig(ROOT::RDF::RNode mainNode,
                                                        const std::shared_ptr<Sample>& sample) {
 
-    if (sample->customDefines().empty()) return mainNode;
+    if (sample->customRecoDefines().empty()) return mainNode;
 
-    for (const auto& idefine : sample->customDefines()) {
-        const std::string& name = idefine.first;
-        const std::string& expression = idefine.second;
+    for (const auto& idefine : sample->customRecoDefines()) {
+        const std::string& name = idefine->columnName();
+        const std::string& expression = idefine->formula();
         LOG(DEBUG) << "Adding custom variable from config: " << name << ", formula: " << expression << "\n";
         mainNode = this->systematicStringDefine(mainNode, name, expression);
     }
@@ -1183,10 +1183,12 @@ ROOT::RDF::RNode MainFrame::systematicStringRedefine(ROOT::RDF::RNode mainNode,
 }
 
 ROOT::RDF::RNode MainFrame::addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
-                                                            const std::shared_ptr<Truth>& truth) const {
+                                                            const std::shared_ptr<Sample>& sample,
+                                                            const std::string& treeName) const {
 
-    for (const auto& ivariable : truth->customDefines()) {
-        mainNode = mainNode.Define(ivariable.first, ivariable.second);
+    for (const auto& idefine : sample->customTruthDefines()) {
+        if (treeName != idefine->treeName()) continue;
+        mainNode = mainNode.Define(idefine->columnName(), idefine->formula());
     }
 
     return mainNode;
@@ -1367,9 +1369,9 @@ ROOT::RDF::RNode MainFrame::prepareWeightMetadata(ROOT::RDF::RNode node,
     return node;
 }
 
-ROOT::RDF::RNode MainFrame::addTruthVariables(ROOT::RDF::RNode node,
-                                              const std::shared_ptr<Sample>& sample,
-                                              const UniqueSampleID& id) {
+ROOT::RDF::RNode MainFrame::addTruthVariablesToReco(ROOT::RDF::RNode node,
+                                                    const std::shared_ptr<Sample>& sample,
+                                                    const UniqueSampleID& id) {
 
     std::vector<std::string> uniqueTrees;
 
@@ -1380,13 +1382,13 @@ ROOT::RDF::RNode MainFrame::addTruthVariables(ROOT::RDF::RNode node,
         if (std::find(uniqueTrees.begin(), uniqueTrees.end(), treeName) != uniqueTrees.end()) continue;
 
         if (!m_config->configDefineAfterCustomClass()) {
-            node = this->addCustomTruthDefinesFromConfig(node, itruth);
+            node = this->addCustomTruthDefinesFromConfig(node, sample, treeName);
         }
-        LOG(DEBUG) << "Adding custom truth variables from the code for truth: " << itruth->name() << "\n";
-        node = this->defineVariablesTruth(node, itruth, id);
+        LOG(DEBUG) << "Adding custom truth variables from the code for tree: " << treeName << "\n";
+        node = this->defineVariablesTruth(node, treeName, id);
         LOG(DEBUG) << "Finished adding custom truth variables\n";
         if (m_config->configDefineAfterCustomClass()) {
-            node = this->addCustomTruthDefinesFromConfig(node, itruth);
+            node = this->addCustomTruthDefinesFromConfig(node, sample, treeName);
         }
         uniqueTrees.emplace_back(treeName);
     }
@@ -1427,11 +1429,11 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
             mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
 
             if (!m_config->configDefineAfterCustomClass()) {
-                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, sample, truthTreeName);
             }
-            mainNode = this->defineVariablesTruth(mainNode, itruth, id);
+            mainNode = this->defineVariablesTruth(mainNode, truthTreeName, id);
             if (m_config->configDefineAfterCustomClass()) {
-                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, itruth);
+                mainNode = this->addCustomTruthDefinesFromConfig(mainNode, sample, truthTreeName);
             }
             uniqueTrees.emplace_back(truthTreeName);
         }

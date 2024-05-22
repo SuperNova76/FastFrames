@@ -51,8 +51,6 @@ class BlockReaderSampleTruth:
 
         self._produce_unfolding = self._options_getter.get("produce_unfolding", False, [bool])
 
-        self._define_custom_columns = self._options_getter.get("define_custom_columns", [], [list], [dict])
-
         ## Instance of the TruthWrapper C++ class -> wrapper around C++ Truth class
         self.cpp_class = TruthWrapper(self._name)
 
@@ -77,17 +75,6 @@ class BlockReaderSampleTruth:
         self.cpp_class.setEventWeight(self._event_weight)
         self.cpp_class.setProduceUnfolding(self._produce_unfolding)
         self.cpp_class.setMatchRecoTruth(self._pair_reco_and_truth_trees)
-
-        if self._define_custom_columns:
-            for custom_column_dict in self._define_custom_columns:
-                custom_column_opts = BlockOptionsGetter(custom_column_dict)
-                name        = custom_column_opts.get("name", None, [str])
-                definition  = custom_column_opts.get("definition", None, [str])
-                if name is None or definition is None:
-                    Logger.log_message("ERROR", "Invalid custom column definition for truth block {}".format(self._name))
-                    exit(1)
-                self.cpp_class.addCustomDefine(name, definition)
-
 
     def _read_variables(self) -> None:
         for variable_dict in self._variables:
