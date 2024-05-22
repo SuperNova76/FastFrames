@@ -11,14 +11,14 @@ general:
   custom_frame_name: CustomFrame
   automatic_systematics: True
   nominal_only: False
-  create_tlorentz_vectors_for: ["jet", "el"]
+  create_tlorentz_vectors_for: ["jet"]
   number_of_cpus: 4
   luminosity:
     mc23c: 1
 
 regions:
   - name: "Electron"
-    selection: "el_pt_NOSYS[0] > 30000 && passed_4j50GeV_1btag_NOSYS"
+    selection: "passed_4j50GeV_1btag_NOSYS"
     variables:
       - name: "leading_jet_pt"
         title : "histo title;X axis title;Y axis title"
@@ -34,15 +34,3 @@ samples:
     dsids: [410470]
     campaigns: ["mc20e"]
     simulation_type: "fullsim"
-
-systematics:
-  - campaigns: ["mc20e"]
-    variation:
-      up: "JET_BJES_Response__1up"
-      down: "JET_BJES_Response__1down"
-
-  - samples: ["ttbar_FS"]
-    campaigns: ["mc20e"]
-    variation:
-      up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"
-      sum_weights_up: "GEN_0p5muF_0p5muR_NNPDF31_NLO_0118"

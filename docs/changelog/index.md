@@ -3,8 +3,11 @@
 ## FastFrames releases
 
 ### Upcoming release
-- [issue #10](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/10): only read DSIDs from the PMG/TDP files that are actually needed.
-- [issue #14](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/14): Adding ```define_custom_columns_truth``` option under general block in config and removing ```define_custom_columns_truth``` from truth block. Interface breaking change in ```MainFrame```, methods ```processTruthHistograms2D``` and ```addTruthVariablesToReco```.
+
+### 2.0.0 <small>May 22, 2024</small>
+- [issue #10](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/10): Only read DSIDs from the PMG/TDP files that are actually needed.
+- [issue #12](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/12): Fixing issues with processing multiple truth trees.
+- [issue #14](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/14): Adding ```define_custom_columns_truth``` option under general block in config and removing ```define_custom_columns_truth``` from truth block. Interface breaking change affecting custom classes: method ```defineVariablesTruth``` takes string representing the truth tree as a second argument instead of taking the ```Truth``` object.
 - [issue #15](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/15): Fixing the issue with duplicate x-section info in TDP file
 
 ### 1.2.0 <small>May 15, 2024</small>
