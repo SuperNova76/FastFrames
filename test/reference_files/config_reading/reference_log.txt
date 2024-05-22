@@ -279,12 +279,12 @@ Samples block:
 			type:  float
 			definition:  particle_el_pt
 			binning:  0.000000,2.000000,5.000000,7.000000,8.000000,10.000000,15.000000
-		Custom defines:
-			 "HT_ttbar" -> "truth_top_pt + truth_tbar_pt"
-
-
 	Custom defines:
 		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+	Custom defines truth:
+		- name: HT_ttbar
+		  definition: truth_top_pt + truth_tbar_pt
+		  truth_tree: truth
 	Excluded systematics:
 		 GEN_*.
 	Systematic uncertainties defined for this sample:

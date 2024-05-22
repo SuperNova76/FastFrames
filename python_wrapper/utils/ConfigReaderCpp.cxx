@@ -17,6 +17,7 @@
 #include "python_wrapper/headers/NtupleWrapper.h"
 #include "python_wrapper/headers/TruthWrapper.h"
 #include "python_wrapper/headers/CutflowWrapper.h"
+#include "python_wrapper/headers/ConfigDefineWrapper.h"
 
 #include "python_wrapper/headers/SumWeightsGetter.h"
 
@@ -318,7 +319,10 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getTruthSharedPtrs",  &SampleWrapper::getTruthSharedPtrs)
 
         .def("addCustomDefine",     &SampleWrapper::addCustomDefine)
-        .def("customDefines",       &SampleWrapper::customDefines)
+        .def("customRecoDefines",   &SampleWrapper::customRecoDefines)
+
+        .def("customTruthDefines",  &SampleWrapper::customTruthDefines)
+        .def("addCustomTruthDefine",&SampleWrapper::addCustomTruthDefine)
 
         .def("addVariable",         &SampleWrapper::addVariable)
         .def("variables",           &SampleWrapper::variables)
@@ -449,9 +453,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setProduceUnfolding", &TruthWrapper::setProduceUnfolding)
         .def("produceUnfolding",    &TruthWrapper::produceUnfolding)
 
-        .def("addCustomDefine",     &TruthWrapper::addCustomDefine)
-        .def("customDefines",       &TruthWrapper::customDefines)
-
         .def("setMatchRecoTruth",   &TruthWrapper::setMatchRecoTruth)
         .def("matchRecoTruth",      &TruthWrapper::matchRecoTruth)
     ;
@@ -477,6 +478,29 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         // selections
         .def("selectionsDefinition",      &CutflowWrapper::selectionsDefinition)
         .def("selectionsTitles",          &CutflowWrapper::selectionsTitles)
+    ;
+
+    /**
+     * @brief Python wrapper around ConfigDefine
+     *
+     */
+    class_<ConfigDefineWrapper>("ConfigDefineWrapper",
+        init<std::string, std::string, std::string>())
+
+
+        .def("getPtr",                  &ConfigDefineWrapper::getPtr)
+        .def("constructFromSharedPtr",  &ConfigDefineWrapper::constructFromSharedPtr)
+        .def("constructFromRawPointer", &ConfigDefineWrapper::constructFromRawPointer)
+
+
+        // columnName
+        .def("columnName",      &ConfigDefineWrapper::columnName)
+
+        // formula
+        .def("formula",        &ConfigDefineWrapper::formula)
+
+        // treeName
+        .def("treeName",       &ConfigDefineWrapper::treeName)
     ;
 
 

@@ -31,6 +31,10 @@ general:
   define_custom_columns:
     - name: "HT_2_jets"
       definition: "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+  define_custom_columns_truth:
+    - name: "HT_ttbar"
+      definition: "truth_top_pt + truth_tbar_pt"
+      truth_tree: "truth"
   custom_options: # this block can be used to store settings for a derived class. It will be stored in ConfigSettings
     btagging_WP: 85
     btagging_algorithm: "DL1"
@@ -219,9 +223,6 @@ samples:
             definition:  "particle_el_pt"
             binning:
               bin_edges: [0,2,5,7,8,10,15]
-        define_custom_columns:
-          - name: "HT_ttbar"
-            definition: "truth_top_pt + truth_tbar_pt"
 
   - name: "Zjets_light"
     dsids: [364100,364101]

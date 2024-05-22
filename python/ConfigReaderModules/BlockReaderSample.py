@@ -73,6 +73,8 @@ class BlockReaderSample:
 
         self._define_custom_columns = self._options_getter.get("define_custom_columns", block_reader_general.define_custom_columns, [list], [dict])
 
+        self._define_custom_columns_truth = self._options_getter.get("define_custom_columns_truth", block_reader_general.define_custom_columns_truth, [list], [dict])
+
         self._exclude_systematics = self._options_getter.get("exclude_systematics", block_reader_general.default_exclude_systematics, [list], [str])
 
         self._automatic_systematics = self._options_getter.get("automatic_systematics", block_reader_general.automatic_systematics, [bool])
@@ -237,6 +239,24 @@ class BlockReaderSample:
                     Logger.log_message("ERROR", "Invalid custom column definition for sample {}".format(self._name))
                     exit(1)
                 self.cpp_class.addCustomDefine(name, definition)
+                if custom_column_opts.get_unused_options():
+                    Logger.log_message("ERROR", "Invalid custom column definition for sample {}".format(self._name))
+                    exit(1)
+
+        if self._define_custom_columns_truth and self._truths:
+            for custom_column_dict in self._define_custom_columns_truth:
+                custom_column_opts = BlockOptionsGetter(custom_column_dict)
+                name        = custom_column_opts.get("name", None, [str])
+                definition  = custom_column_opts.get("definition", None, [str])
+                truth_tree  = custom_column_opts.get("truth_tree", None, [str])
+                if name is None or definition is None or truth_tree is None:
+                    Logger.log_message("ERROR", "Invalid custom truth column definition for sample {}".format(self._name))
+                    exit(1)
+                self.cpp_class.addCustomTruthDefine(name, definition, truth_tree)
+
+                if custom_column_opts.get_unused_options():
+                    Logger.log_message("ERROR", "Invalid custom truth column definition for sample {}".format(self._name))
+                    exit(1)
 
         for syst_regex in self._exclude_systematics:
             self.cpp_class.addExcludeAutomaticSystematic(syst_regex)

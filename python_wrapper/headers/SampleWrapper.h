@@ -6,6 +6,7 @@
 #pragma once
 
 #include "FastFrames/Sample.h"
+#include "FastFrames/ConfigDefine.h"
 
 #include <memory>
 #include <string>
@@ -295,16 +296,42 @@ class SampleWrapper {
             m_sample->addCustomDefine(newName, formula);
         };
 
+
         /**
-         * @brief Get std::vector<std::string> of custom column names
+         * @brief Add custom new column to a truth tree from the config
          *
-         * @return std::vector<std::string>
+         * @param newName name of the new column
+         * @param formula the formula for the new column
+         * @param treeName the targer tree
          */
-        std::vector<std::string> customDefines() const {
-            const std::vector<std::pair<std::string, std::string> > &defines = m_sample->customDefines();
-            std::vector<std::string> result(defines.size());
+        inline void addCustomTruthDefine(const std::string& newName, const std::string& formula, const std::string& treeName) {
+            m_sample->addCustomTruthDefine(newName, formula, treeName);
+        };
+
+        /**
+         * @brief Get vector of pointers (as unsigned long long) to the shared_ptr<ConfigDefine> objects
+         *
+         * @return std::vector<unsigned long long>
+         */
+        std::vector<unsigned long long> customRecoDefines() const {
+            const std::vector<std::shared_ptr<ConfigDefine>> &defines = m_sample->customRecoDefines();
+            std::vector<unsigned long long> result(defines.size(),0);
             for (unsigned int i = 0; i < defines.size(); ++i) {
-                result.at(i) = "\"" + defines.at(i).first + "\" -> \"" + defines.at(i).second + "\"" ;
+                result.at(i) = reinterpret_cast<unsigned long long int>(&defines.at(i));
+            }
+            return result;
+        };
+
+        /**
+         * @brief Get vector of pointers (as unsigned long long) to the shared_ptr<ConfigDefine> objects
+         *
+         * @return std::vector<unsigned long long>
+         */
+        std::vector<unsigned long long> customTruthDefines() const {
+            const std::vector<std::shared_ptr<ConfigDefine>> &defines = m_sample->customTruthDefines();
+            std::vector<unsigned long long> result(defines.size(),0);
+            for (unsigned int i = 0; i < defines.size(); ++i) {
+                result.at(i) = reinterpret_cast<unsigned long long int>(&defines.at(i));
             }
             return result;
         };

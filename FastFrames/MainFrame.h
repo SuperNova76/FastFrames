@@ -107,7 +107,7 @@ public:
    * @return ROOT::RDF::RNode the otput node containing the new columns
    */
   virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
-                                                const std::shared_ptr<Truth>& /*truth*/,
+                                                const std::string& /*treeName*/,
                                                 const UniqueSampleID& /*sampleID*/) {return node;}
   /**
    * @brief A helper method that make systematic copies of a provided nominal column
@@ -455,11 +455,11 @@ private:
    * @param region Region
    * @param systematic Systematic
    */
-  void processTruthHistograms2D(RegionHisto* regionHisto,
-                                ROOT::RDF::RNode& node,
-                                const std::shared_ptr<Sample>& sample,
-                                const std::shared_ptr<Region>& region,
-                                const std::shared_ptr<Systematic>& systematic);
+  void processRecoVsTruthHistograms2D(RegionHisto* regionHisto,
+                                      ROOT::RDF::RNode& node,
+                                      const std::shared_ptr<Sample>& sample,
+                                      const std::shared_ptr<Region>& region,
+                                      const std::shared_ptr<Systematic>& systematic);
 
   /**
    * @brief Define 3D histograms with variables and systematics
@@ -556,11 +556,13 @@ private:
    * @brief Add custom variables (columns) to the truth tree from the config via string
    *
    * @param mainNode
-   * @param trut
+   * @param sample
+   * @param treeName
    * @return ROOT::RDF::RNode
    */
   ROOT::RDF::RNode addCustomTruthDefinesFromConfig(ROOT::RDF::RNode mainNode,
-                                                   const std::shared_ptr<Truth>& truth) const;
+                                                   const std::shared_ptr<Sample>& sample,
+                                                   const std::string& treeName) const;
 
   /**
    * @brief Take a node and apply Range criteria if applicable
@@ -652,9 +654,9 @@ private:
    * @param id UniqueSampleID
    * @return ROOT::RDF::RNode
    */
-  ROOT::RDF::RNode addTruthVariables(ROOT::RDF::RNode node,
-                                     const std::shared_ptr<Sample>& sample,
-                                     const UniqueSampleID& id);
+  ROOT::RDF::RNode addTruthVariablesToReco(ROOT::RDF::RNode node,
+                                           const std::shared_ptr<Sample>& sample,
+                                           const UniqueSampleID& id);
 
 
   /**
