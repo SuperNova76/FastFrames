@@ -84,20 +84,22 @@ void XSectionManager::processTopDataPreparationLine(const std::string &line)  {
     const double    xsec = std::stod(elements.at(1));
     const double    kfac = std::stod(elements.at(2));
 
+    const double total_xsec = xsec * kfac;
+
     if (!m_usedDSIDs.empty() && std::find(m_usedDSIDs.begin(), m_usedDSIDs.end(), dsid) == m_usedDSIDs.end()) {
         return;
     }
 
     // Check if the sample is not defined multiple times in the x-section text file
     if (m_xSectionMap.find(dsid) != m_xSectionMap.end())    {
-        if (!Utils::compareDoubles(m_xSectionMap.at(dsid).xSection, xsec, m_xsection_difference_tolerance))   {
+        if (!Utils::compareDoubles(m_xSectionMap.at(dsid).xSection, total_xsec, m_xsection_difference_tolerance))   {
             LOG(ERROR) << ("The following dsid was found multiple times in the x-section text files: \"" + elements.at(0) + "\"\n");
             throw std::runtime_error("");
         }
     }
 
     XSectionData xsection_data;
-    xsection_data.xSection = xsec * kfac;
+    xsection_data.xSection = total_xsec;
     xsection_data.eTag = 0;
     m_xSectionMap.insert({dsid, xsection_data});
 };
