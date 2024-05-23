@@ -310,7 +310,7 @@ class TrexSettingsGetter:
 
         region_names = vector_to_list(sample.regionsNames())
         selected_regions = []
-        all_regions_list = []
+        all_regions_list = [region_tuple[1] for region_tuple in self._region_blocks]
         variable_names_defined_for_sample = vector_to_list(sample.variables())
         for region_name in region_names:
             if not region_name in self._regions_map:
@@ -322,7 +322,6 @@ class TrexSettingsGetter:
                 region_variable = region.name() + "_" + variable_name.replace("_NOSYS","")
                 if not self._match_selected_regions(region_variable):
                     continue
-                all_regions_list.append(region_variable)
                 if not variable_name in variable_names_defined_for_sample:
                     continue
                 selected_regions.append(region_variable)
