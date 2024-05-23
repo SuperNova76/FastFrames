@@ -30,7 +30,9 @@ void MainFrame::init() {
     TH1::AddDirectory(kFALSE);
     if (m_config->minEvent() >= 0 || m_config->maxEvent() >= 0 || m_config->numCPU()==1) {
         ROOT::DisableImplicitMT();
-        LOG(WARNING) << "Disabling implicit MT as it is not allowed for Range() call\n";
+        if (m_config->numCPU() != 1) {
+          LOG(WARNING) << "Disabling implicit MT as it is not allowed for Range() call\n";
+        }
     } else {
         ROOT::EnableImplicitMT(m_config->numCPU());
         LOG(INFO) << "Enabling implicit MT with " << m_config->numCPU() << " threads\n";
