@@ -10,6 +10,11 @@ samples:
       Title: "t#bar{t}"
       Type: "Signal"
 
+variables:
+  - name: "met_met"
+    VariableTitle: "MET [GeV]"
+
+
 Systematics:
     - name: "Luminosity"
       Title: "Luminosity"
@@ -38,6 +43,11 @@ Systematics:
       numbering_sequence:
         - replacement_string: '#N'
           values: ["01","02"]
+
+Regions:
+  - name: "Muon"
+    Label: "#mu+jets"
+    ShortLAbel: "#mu+jets"
 
 NormFactors:
     - name: "mu_signal"
