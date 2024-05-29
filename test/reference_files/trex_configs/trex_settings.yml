@@ -10,6 +10,10 @@ samples:
       Title: "t#bar{t}"
       Type: "Signal"
 
+variables:
+  - name: "truth_el_pt"
+    VariableTitle: "Truth Electron p_{T} [GeV]"
+
 Systematics:
     - name: "Luminosity"
       Title: "Luminosity"

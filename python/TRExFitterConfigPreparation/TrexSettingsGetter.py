@@ -67,6 +67,12 @@ class TrexSettingsGetter:
                     exit(1)
         self._sample_color_counter = 2
 
+        self._custom_blocks = {}
+        self._variables_trex_settings_labels = {}
+        if self.trex_settings_dict:
+            self._custom_blocks = self.trex_settings_dict.get("CustomBlocks", {})
+            self._variables_trex_settings_labels = self._get_variables_trex_settings()
+
         self.unfolding_sample = ""
         self.unfolding_level = ""
         self.unfolding_variable_truth = ""
@@ -107,9 +113,17 @@ class TrexSettingsGetter:
 
         self._total_lumi = BlockReaderSample.get_total_luminosity(config_reader.block_general.cpp_class, config_reader.block_general.get_samples_objects())
 
-        self._custom_blocks = {}
-        if self.trex_settings_dict:
-            self._custom_blocks = self.trex_settings_dict.get("CustomBlocks", {})
+
+    def _get_variables_trex_settings(self) -> dict[str,str]:
+        variables = self.trex_settings_dict.get("variables", [])
+        result = {}
+        for variable_dict in variables:
+            if "name" not in variable_dict:
+                Logger.log_message("ERROR", "Variable without name found in the yaml file")
+                exit(1)
+            if "VariableTitle" in variable_dict:
+                result[variable_dict["name"]] = variable_dict["VariableTitle"]
+        return result
 
 
     def get_region_blocks(self) -> list[tuple[str,str,dict]]:
@@ -170,6 +184,8 @@ class TrexSettingsGetter:
             dictionary["AcceptanceNameSuff"] = "_" + region.name()
             dictionary["SelectionEffNameSuff"] = "_" + region.name()
             dictionary["MigrationNameSuff"] = "_" + region.name()
+        if variable_name in self._variables_trex_settings_labels:
+            dictionary["VariableTitle"] = self._variables_trex_settings_labels[variable_name]
 
         return "Region", region_name, dictionary
 
