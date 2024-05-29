@@ -157,35 +157,39 @@ class TrexSettingsGetter:
 
     def _get_region_tuple(self, region, variable) -> tuple[str,str,dict]:
         dictionary = {}
-        region_dict_settings = {}
+        region_dict_settings = []
         if self.trex_settings_dict:
-            region_dict_settings = self.trex_settings_dict.get("Regions", {})
+            region_dict_settings = self.trex_settings_dict.get("Regions", [])
         variable_name = variable.name().replace("_NOSYS","")
         region_name = region.name() + "_" + variable_name
         dictionary["Type"] = "SIGNAL"
+        this_trex_region_dict = {} # combintion of region and name
+        this_region_dict = {} # just the region
         for region_dict in region_dict_settings:
             if not ("name" in region_dict):
                 Logger.log_message("ERROR", "There is a region in the config without specified 'name'. Please fix it.")
                 exit(1)
             if re.match(region_dict["name"],region_name):
-                dictionary["Type"] = region_dict.get("Type","SIGNAL")
-                if "LogScale" in region_dict:
-                    dictionary["LogScale"] = region_dict["LogScale"]
-                if "RatioYmax" in region_dict:
-                    dictionary["RatioYmax"] = region_dict["RatioYmax"]
-                if "RatioYmin" in region_dict:
-                    dictionary["RatioYmin"] = region_dict["RatioYmin"]
-        dictionary["VariableTitle"] = variable_name # TODO: proper title
+                this_trex_region_dict = deepcopy(region_dict)
+            if re.match(region_dict["name"],region.name()):
+                this_region_dict = deepcopy(region_dict)
+        dictionary["Type"] = this_trex_region_dict.get("Type","SIGNAL")
+        if "LogScale" in this_trex_region_dict:
+            dictionary["LogScale"] = this_trex_region_dict["LogScale"]
+        if "RatioYmax" in this_trex_region_dict:
+            dictionary["RatioYmax"] = this_trex_region_dict["RatioYmax"]
+        if "RatioYmin" in this_trex_region_dict:
+            dictionary["RatioYmin"] = this_trex_region_dict["RatioYmin"]
+
+        dictionary["VariableTitle"] = self._variables_trex_settings_labels.get(variable_name, variable_name)
         dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
-        dictionary["Label"] = region_name       # TODO: proper label
-        dictionary["ShortLabel"] = region_name  # TODO: proper label
+        dictionary["Label"]      = this_region_dict.get("Label", region.name())
+        dictionary["ShortLabel"] = this_region_dict.get("ShortLabel", region.name())
         if self.run_unfolding:
             dictionary["NumberOfRecoBins"] = variable.axisNbins()
             dictionary["AcceptanceNameSuff"] = "_" + region.name()
             dictionary["SelectionEffNameSuff"] = "_" + region.name()
             dictionary["MigrationNameSuff"] = "_" + region.name()
-        if variable_name in self._variables_trex_settings_labels:
-            dictionary["VariableTitle"] = self._variables_trex_settings_labels[variable_name]
 
         return "Region", region_name, dictionary
 

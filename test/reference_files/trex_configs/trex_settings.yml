@@ -11,8 +11,9 @@ samples:
       Type: "Signal"
 
 variables:
-  - name: "truth_el_pt"
-    VariableTitle: "Truth Electron p_{T} [GeV]"
+  - name: "met_met"
+    VariableTitle: "MET [GeV]"
+
 
 Systematics:
     - name: "Luminosity"
@@ -42,6 +43,11 @@ Systematics:
       numbering_sequence:
         - replacement_string: '#N'
           values: ["01","02"]
+
+Regions:
+  - name: "Muon"
+    Label: "#mu+jets"
+    ShortLAbel: "#mu+jets"
 
 NormFactors:
     - name: "mu_signal"
