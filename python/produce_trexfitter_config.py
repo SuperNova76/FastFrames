@@ -27,15 +27,19 @@ def add_block_comment(block_type : str, file) -> None:
     file.write("\n")
 
 def dump_dictionary_to_file(block_type : str, block_name : str, dictionary : dict, file) -> None:
+    def adjust_string(x : str) -> str:
+        if  " " in x or "#" in x:
+            return '"' + x + '"'
+        return x
+
     file.write(block_type + ': "' + block_name + '"\n')
     for key in dictionary:
         value = dictionary[key]
         if type(value) == str:
-            use_quotes = " " in value or "#" in value
-            if use_quotes:
-                file.write("\t" + key + ': "' + value + '"\n')
-            else:
-                file.write("\t" + key + ': ' + value + '\n')
+            file.write("\t" + key + ': ' + adjust_string(value) + '\n')
+        elif type(value) == list:
+            values_as_strings = [adjust_string(str(x)) for x in value]
+            file.write("\t" + key + ': ' + ", ".join(values_as_strings) + "\n")
         else:
             file.write("\t" + key + ': ' + str(value) + '\n')
     file.write("\n")

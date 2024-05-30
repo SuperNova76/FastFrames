@@ -121,8 +121,10 @@ class TrexSettingsGetter:
             if "name" not in variable_dict:
                 Logger.log_message("ERROR", "Variable without name found in the yaml file")
                 exit(1)
-            if "VariableTitle" in variable_dict:
-                result[variable_dict["name"]] = variable_dict["VariableTitle"]
+            updated_dict = deepcopy(variable_dict)
+            del updated_dict["name"]
+
+            result[variable_dict["name"]] = updated_dict
         return result
 
 
@@ -163,6 +165,9 @@ class TrexSettingsGetter:
         variable_name = variable.name().replace("_NOSYS","")
         region_name = region.name() + "_" + variable_name
         dictionary["Type"] = "SIGNAL"
+        if variable.name() in self._variables_trex_settings_labels:
+            for key in self._variables_trex_settings_labels[variable.name()]:
+                dictionary[key] = self._variables_trex_settings_labels[variable.name()][key]
         this_trex_region_dict = {} # combintion of region and name
         this_region_dict = {} # just the region
         for region_dict in region_dict_settings:
@@ -181,7 +186,7 @@ class TrexSettingsGetter:
         if "RatioYmin" in this_trex_region_dict:
             dictionary["RatioYmin"] = this_trex_region_dict["RatioYmin"]
 
-        dictionary["VariableTitle"] = self._variables_trex_settings_labels.get(variable_name, variable_name)
+        dictionary["VariableTitle"] = dictionary.get("VariableTitle", variable_name)
         dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
         dictionary["Label"]      = this_region_dict.get("Label", region.name())
         dictionary["ShortLabel"] = this_region_dict.get("ShortLabel", region.name())
