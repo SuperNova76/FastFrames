@@ -1418,12 +1418,10 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
 
         mainNode = this->prepareWeightMetadata(mainNode, sample, id);
 
-        std::vector<std::string> uniqueTrees;
-
         for (const auto& itruth : sample->truths()) {
 
             const std::string& truthTreeName = itruth->truthTreeName();
-            if (std::find(uniqueTrees.begin(), uniqueTrees.end(), truthTreeName) != uniqueTrees.end()) continue;
+            if (truthTreeName != iTree) continue;
 
             const std::string normalisation = "lumi*xSection/NOSYS";
             const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + normalisation +")";
@@ -1437,7 +1435,7 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
             if (m_config->configDefineAfterCustomClass()) {
                 mainNode = this->addCustomTruthDefinesFromConfig(mainNode, sample, truthTreeName);
             }
-            uniqueTrees.emplace_back(truthTreeName);
+            break;
         }
 
         result.insert(std::make_pair(iTree, std::move(mainNode)));
