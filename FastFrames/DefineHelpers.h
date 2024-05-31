@@ -323,4 +323,131 @@ namespace DefineHelpers {
                                           const ROOT::VecOps::RVec<std::size_t>& indices) {
     return ROOT::VecOps::Take(vector, indices);
   }
+
+  /**
+   * @brief Helper function to take TLorentzVector, select only elements
+   * that fail the selection and sort the resulting vector based on pT
+   *
+   * @param tlv
+   * @param passedSelection the selection that is to be failed
+   * @return std::vector<TLV>
+   */
+  std::vector<TLV> sortedVectorFailSel(const std::vector<TLV>& tlv,
+                                      const std::vector<char>& passedSelection);
+
+
+  /**
+   * @brief Helper function to take TLorentzVector, select only elements
+   * that failed the selection while passing OR and sort the resulting vector based on pT
+   *
+   * @param tlv
+   * @param passedSelection
+   * @param passedOR
+   * @return std::vector<TLV>
+   */
+  std::vector<TLV> sortedVectorPassOneFailOneSel(const std::vector<TLV>& tlv,
+                                      const std::vector<char>& passedSelection,
+                                      const std::vector<char>& passedOR);
+
+
+  /**
+   * @brief Helper function to take TLorentzVector, select only elements
+   * that passed one selection, OR, and failed the other and sort the resulting vector based on pT
+   *
+   * @param tlv
+   * @param passedSelection1
+   * @param passedSelection2
+   * @param passedOR
+   * @return std::vector<TLV>
+   */
+
+  std::vector<TLV> sortedVectorPassTwoFailOneSel(const std::vector<TLV>& tlv,
+                                      const std::vector<char>& passedSelection1,
+                                      const std::vector<char>& passedSelection2,
+                                      const std::vector<char>& passedOR);
+
+  /**
+   * @brief Helper function to take TLorentzVector, select only elements
+   * that failed two selections, but passed OR and sort the resulting vector based on pT
+   *
+   * @param tlv
+   * @param passedSelection1
+   * @param passedSelection2
+   * @param passedOR
+   * @return std::vector<TLV>
+   */
+
+  std::vector<TLV> sortedVectorPassOneFailTwoSel(const std::vector<TLV>& tlv,
+                                      const std::vector<char>& passedSelection1,
+                                      const std::vector<char>& passedSelection2,
+                                      const std::vector<char>& passedOR);
+
+  /**
+   * @brief Return a vector of indices of the elements that failed a selection sorted by pT
+   *
+   * @param tlv TLorentzVector for the object
+   * @param selection Selection vector
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedIndicesFailSel(const std::vector<TLV>& tlv,
+                                               const std::vector<char>& selection);
+
+  /**
+   * @brief Return a vector of indices the elements that failed a selection sorted by pT
+   *
+   * @param pt pt of the object
+   * @param selection Selection vector
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedIndicesFailSel(const std::vector<float>& pt,
+                                               const std::vector<char>& selection);
+
+  /**
+   * @brief Return a vector of indices of the elements that failed selection sorted by pT
+   *
+   * @param tlv TLorentzVector for the object
+   * @param selection Selection1 vector (failed selection)
+   * @param selection Selection2 vector (failed selection)
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedIndicesFailSel(const std::vector<TLV>& tlv,
+                                               const std::vector<char>& selection1,
+                                               const std::vector<char>& selection2);
+
+  /**
+   * @brief Return a vector of indices of the elements that failed a selection and passed the other sorted by pT
+   *
+   * @param tlv TLorentzVector for the object
+   * @param selection Selection1 vector
+   * @param selection Selection2 vector (failed selection)
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedIndicesPassOneFailOneSel(const std::vector<TLV>& tlv,
+                                               const std::vector<char>& selection1,
+                                               const std::vector<char>& selection2);
+
+  /**
+   * @brief Return a vector of indices the the elements that failed a selection sorted by pT
+   *
+   * @param pt pt of the object
+   * @param selection Selection1 vector (failed selection)
+   * @param selection Selection2 vector (failed selection)
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedIndicesFailSel(const std::vector<float>& pt,
+                                               const std::vector<char>& selection1,
+                                               const std::vector<char>& selection2);
+
+  /**
+   * @brief Return a vector of indices the the elements that passed a selection and failed the other sorted by pT
+   *
+   * @param pt pt of the object
+   * @param selection Selection1 vector
+   * @param selection Selection2 vector (failed selection)
+   * @return std::vector<std::size_t>
+   */
+  std::vector<std::size_t> sortedIndicesPassOneFailOneSel(const std::vector<float>& pt,
+                                               const std::vector<char>& selection1,
+                                               const std::vector<char>& selection2);
+
 };
