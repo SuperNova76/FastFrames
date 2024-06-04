@@ -98,6 +98,10 @@ This allows a user to override some of the options for a given sample from confi
 
 ```Color:``` this will override both ```FillColor``` and ```LineColor``` options in TRExFitter config
 
+```FillColorRGB:``` this specifies the histogram fill color in RGB (i.e. `255,0,0` for red) as described in the [TRExfitter docs](https://trexfitter-docs.web.cern.ch/trexfitter-docs/settings/#sample-block-settings). Overrides any `FillColor` or `LineColor` settings.
+
+```LineColorRGB:``` this specifies the histogram line color in RGB. Only valid when ```FillColorRGB:``` is specified. Defaults to ```FillColorRGB:``` if not provided.
+
 Options to override:
 
 ```Title:```
