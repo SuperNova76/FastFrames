@@ -81,13 +81,13 @@ namespace StringOperations  {
     bool stringIsInt(const std::string &input_string);
 
     /**
-     * @brief String is a float
+     * @brief String is a double
      *
      * @param input_string
      * @return true
      * @return false
      */
-    bool stringIsFloat(const std::string &input_string);
+    bool stringIsDouble(const std::string &input_string);
 
     /**
      * @brief Split string into substrings and remove whitespace
