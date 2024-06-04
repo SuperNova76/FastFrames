@@ -57,10 +57,10 @@ bool StringOperations::stringIsInt(const std::string &input_string) {
     return !input_string.empty() && input_string.find_first_not_of("0123456789") == std::string::npos;
 };
 
-bool StringOperations::stringIsFloat(const std::string &input_string)   {
+bool StringOperations::stringIsDouble(const std::string &input_string)   {
     try {
         // cppcheck-suppress unreadVariable
-        [[__maybe_unused__]]float a = std::stof(input_string);
+        [[__maybe_unused__]]double a = std::stod(input_string);
     }
     catch (const std::invalid_argument& ia) {
         return false;

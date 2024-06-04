@@ -208,8 +208,8 @@ void XSectionManager::processPMGLine(const std::string &line)    {
 bool XSectionManager::validTopDataPreparationFileColumns(const std::vector<std::string> &columns)   {
     const bool line_is_valid =  columns.size() < 3 ? false :
                                 StringOperations::stringIsInt(columns.at(0)) &&    // DSID
-                                StringOperations::stringIsFloat(columns.at(1)) &&  // x-section
-                                StringOperations::stringIsFloat(columns.at(2));    // k-factor
+                                StringOperations::stringIsDouble(columns.at(1)) &&  // x-section
+                                StringOperations::stringIsDouble(columns.at(2));    // k-factor
 
     return line_is_valid;
 };
@@ -217,9 +217,9 @@ bool XSectionManager::validTopDataPreparationFileColumns(const std::vector<std::
 bool XSectionManager::validPMGFileColumns(const std::vector<std::string> &columns) {
     const bool line_is_valid =  columns.size() < 9 ? false :
                                 StringOperations::stringIsInt(columns.at(0)) &&            // DSID
-                                StringOperations::stringIsFloat(columns.at(2)) &&          // x-section
-                                StringOperations::stringIsFloat(columns.at(3)) &&          // filter efficiency
-                                StringOperations::stringIsFloat(columns.at(4)) &&          // k-factor
+                                StringOperations::stringIsDouble(columns.at(2)) &&          // x-section
+                                StringOperations::stringIsDouble(columns.at(3)) &&          // filter efficiency
+                                StringOperations::stringIsDouble(columns.at(4)) &&          // k-factor
                                 StringOperations::stringStartsWith(columns.at(8), "e") &&  // e-tag
                                 StringOperations::stringIsInt(columns.at(8).substr(1));    // e-tag
     return line_is_valid;
