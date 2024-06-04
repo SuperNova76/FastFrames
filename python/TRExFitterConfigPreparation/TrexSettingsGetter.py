@@ -259,9 +259,13 @@ class TrexSettingsGetter:
                     if sample_name != self.unfolding_sample:
                         unfolding_sample_dict["Type"] = "GHOST"
 
-                    sample_color = self.get_sample_color()
-                    unfolding_sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
-                    unfolding_sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
+                    if "FillColorRGB" in sample_setting_dict:
+                        unfolding_sample_dict["FillColorRGB"] = sample_setting_dict.get("FillColorRGB")
+                        unfolding_sample_dict["LineColorRGB"] = sample_setting_dict.get("LineColorRGB", sample_setting_dict.get("FillColorRGB"))
+                    else:
+                        sample_color = self.get_sample_color()
+                        unfolding_sample_dict["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
+                        unfolding_sample_dict["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
                     unfolding_sample_dict["Title"] = sample_setting_dict.get("Title", sample.name())
                     if "Type" in sample_setting_dict:
                         unfolding_sample_dict["Type"] = sample_setting_dict["Type"]
@@ -316,9 +320,13 @@ class TrexSettingsGetter:
         dictionary["Type"] =  sample_setting_dict.get("Type", "BACKGROUND" if not is_data else "DATA")
         dictionary["Title"] = sample_setting_dict.get("Title", sample.name())
         dictionary["HistoFile"] = sample.name()
-        sample_color = sample_setting_dict.get("Color", self.get_sample_color())
-        dictionary["FillColor"] = sample_setting_dict.get("FillColor", sample_color) # TODO: FillColor
-        dictionary["LineColor"] = sample_setting_dict.get("LineColor", sample_color)  # TODO: LineColor
+        if "FillColorRGB" in sample_setting_dict:
+            dictionary["FillColorRGB"] = sample_setting_dict.get("FillColorRGB")
+            dictionary["LineColorRGB"] = sample_setting_dict.get("LineColorRGB", sample_setting_dict.get("FillColorRGB"))
+        else:
+            sample_color = sample_setting_dict.get("Color", self.get_sample_color())
+            dictionary["FillColor"] = sample_setting_dict.get("FillColor", sample_color)
+            dictionary["LineColor"] = sample_setting_dict.get("LineColor", sample_color)
         if "Template" in sample_setting_dict:
             dictionary["Template"] = sample_setting_dict["Template"]
         if "NormToSample" in sample_setting_dict:
