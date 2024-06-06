@@ -49,13 +49,11 @@ if __name__ == "__main__":
     cli = CommandLineOptions()
     config_path = cli.get_config_path()
 
-    config_reader = ConfigReader(config_path)
-    block_general = config_reader.block_general
     unfolding_settings_tuple = cli.get_unfolding_settings()
 
 
     with open(cli.get_trex_fitter_output_config(),"w") as file:
-        trex_settings_getter = TrexSettingsGetter(config_reader, cli.get_trex_settings_yaml(), unfolding_settings_tuple, cli.get_regions())
+        trex_settings_getter = TrexSettingsGetter(config_path, cli.get_trex_settings_yaml(), unfolding_settings_tuple, cli.get_regions())
         add_block_comment("JOB", file)
         job_tuple = trex_settings_getter.get_job_dictionary()
         dump_dictionary_to_file(*job_tuple, file)

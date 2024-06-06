@@ -19,7 +19,9 @@ from BlockReaderGeneral import vector_to_list
 from ConfigReaderCpp import VariableWrapper
 from ConfigReader import ConfigReader
 from AutomaticRangeGenerator import AutomaticRangeGenerator
+from CommandLineOptions import CommandLineOptions
 
+from ConfigReader import ConfigReader
 
 
 import yaml
@@ -56,7 +58,7 @@ def custom_sort_ghost(item):
     return 0 if dictionary["Type"].upper() == "GHOST" else 1
 
 class TrexSettingsGetter:
-    def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
+    def __init__(self, fast_frames_config_address : str, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
         self.trex_settings_dict = None
         if trex_settings_yaml:
             with open(trex_settings_yaml, "r") as f:
@@ -78,6 +80,12 @@ class TrexSettingsGetter:
         self.unfolding_variable_truth = ""
         self.unfolding_variable_reco = ""
         self.run_unfolding = False
+
+
+        selected_samples = self.trex_settings_dict.get("selected_samples", None)
+        if selected_samples:
+            CommandLineOptions().set_default_samples(selected_samples)
+        config_reader = ConfigReader(fast_frames_config_address)
 
         # TODO: clean this up
         histo_path = config_reader.block_general.cpp_class.outputPathHistograms()

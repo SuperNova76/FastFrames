@@ -8,6 +8,7 @@ from BlockReaderCommon import set_paths
 set_paths()
 
 from python_wrapper.python.logger import Logger
+from copy import deepcopy
 
 class SingletonMeta(type):
     """!Singleton metaclass.
@@ -194,6 +195,13 @@ class CommandLineOptions(metaclass=SingletonMeta):
         for i in range(len(samples), 0, -1):
             if not keep_sample[i - 1]:
                 del samples[i - 1]
+
+    def set_default_samples(self, samples : list[str]) -> None:
+        """
+        Set default samples if none are specified from command line.
+        """
+        if self._samples_terminal is None:
+            self._samples_terminal = deepcopy(samples)
 
     def get_trex_settings_yaml(self) -> str:
         """
