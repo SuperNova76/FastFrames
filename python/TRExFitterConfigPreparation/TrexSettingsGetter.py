@@ -74,6 +74,9 @@ class TrexSettingsGetter:
         if self.trex_settings_dict:
             self._custom_blocks = self.trex_settings_dict.get("CustomBlocks", {})
             self._variables_trex_settings_labels = self._get_variables_trex_settings()
+            selected_samples = self.trex_settings_dict.get("selected_samples", None)
+            if selected_samples:
+                CommandLineOptions().set_default_samples(selected_samples)
 
         self.unfolding_sample = ""
         self.unfolding_level = ""
@@ -82,9 +85,6 @@ class TrexSettingsGetter:
         self.run_unfolding = False
 
 
-        selected_samples = self.trex_settings_dict.get("selected_samples", None)
-        if selected_samples:
-            CommandLineOptions().set_default_samples(selected_samples)
         config_reader = ConfigReader(fast_frames_config_address)
 
         # TODO: clean this up
