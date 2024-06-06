@@ -1015,7 +1015,7 @@ std::vector<VariableHisto> MainFrame::processTruthHistos(const std::vector<std::
             // get histograms (will NOT trigger event loop)
             const std::string name = itruth->name() + "_" + ivariable.name();
             VariableHisto hist(name);
-            auto rdfHist = this->book1DhistoTruth(mainNode, ivariable);
+            auto rdfHist = this->book1DhistoTruth(mainNode, ivariable, itruth);
 
             hist.setHisto(rdfHist);
 
@@ -1233,13 +1233,16 @@ ROOT::RDF::RResultPtr<TH1D> MainFrame::book1Dhisto(ROOT::RDF::RNode node,
 }
 
 ROOT::RDF::RResultPtr<TH1D> MainFrame::book1DhistoTruth(ROOT::RDF::RNode node,
-                                                        const Variable& variable) const {
+                                                        const Variable& variable,
+                                                        const std::shared_ptr<Truth>& truth) const {
+
+    const std::string weightName = "weight_truth_TOTAL_" + truth->name();
 
     switch (variable.type()) {
         case VariableType::UNDEFINED:
             return node.Histo1D(variable.histoModel1D(),
                                 variable.definition(),
-                                "weight_truth_TOTAL");
+                                weightName);
             break;
         ADD_HISTO_1D_SUPPORT_VECTOR_TRUTH(CHAR,char)
         ADD_HISTO_1D_SUPPORT_SCALAR_TRUTH(BOOL,bool) // Special case: std::vector<bool> is not supported
@@ -1253,7 +1256,7 @@ ROOT::RDF::RResultPtr<TH1D> MainFrame::book1DhistoTruth(ROOT::RDF::RNode node,
     }
     return node.Histo1D(variable.histoModel1D(),
                         variable.definition(),
-                        "weight_truth_TOTAL");
+                        weightName);
 }
 
 ROOT::RDF::RResultPtr<TH2D> MainFrame::book2Dhisto(ROOT::RDF::RNode node,
@@ -1418,6 +1421,7 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
 
         mainNode = this->prepareWeightMetadata(mainNode, sample, id);
 
+        // add weight columns
         for (const auto& itruth : sample->truths()) {
 
             const std::string& truthTreeName = itruth->truthTreeName();
@@ -1425,8 +1429,15 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
 
             const std::string normalisation = "lumi*xSection/NOSYS";
             const std::string totalWeight = "(" + itruth->eventWeight() + ")*(" + normalisation +")";
-            LOG(DEBUG) << "Adding column: weight_truth_TOTAL with formula " << totalWeight << "\n";
-            mainNode = mainNode.Define("weight_truth_TOTAL", totalWeight);
+            const std::string weightName = "weight_truth_TOTAL_" + itruth->name();
+            LOG(DEBUG) << "Adding column: " << weightName << " with formula " << totalWeight << "\n";
+            mainNode = mainNode.Define(weightName, totalWeight);
+        }
+
+        // add custom variables
+        for (const auto& itruth : sample->truths()) {
+            const std::string& truthTreeName = itruth->truthTreeName();
+            if (truthTreeName != iTree) continue;
 
             if (!m_config->configDefineAfterCustomClass()) {
                 mainNode = this->addCustomTruthDefinesFromConfig(mainNode, sample, truthTreeName);

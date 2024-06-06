@@ -589,10 +589,12 @@ private:
    *
    * @param node
    * @param variable
+   * @param truth
    * @return ROOT::RDF::RResultPtr<TH1D>
    */
   ROOT::RDF::RResultPtr<TH1D> book1DhistoTruth(ROOT::RDF::RNode node,
-                                               const Variable& variable) const;
+                                               const Variable& variable,
+                                               const std::shared_ptr<Truth>& truth) const;
 
   /**
    * @brief Book 2D histograms using the JIT compiler
