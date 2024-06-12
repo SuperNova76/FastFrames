@@ -3,11 +3,14 @@
 ## FastFrames releases
 
 ### Upcoming release
+
+### 2.1.0 <small>June 12, 2024</small>
 - [issue #24](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/24): Allowing select samples for TRExFitter using trex-fitter settings file. Allowing to override any variable-related option in TRExFitter config
 - [issue #23](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/23): Allowing a user to use also samples defined by ```numbering_sequence``` via CLI options
 - [issue #18](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/18): Allowing a user to specify more settings for TRExFitter config
 - [issue #17](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/17): Excluded regions were not propagated to the generated TRExFitter configuration file
-- [issue #16](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/16): Fixing problems with combining x-sections from TDP and PMG text files.
+- Several improvemenets for PMG file reading: [issue #15](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/15), [issue #16](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/16), [issue #21](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/21)
+- Several fixes for processing multiple truth selections on the same tree: [issue #20](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/20) [issue #22](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/22)
 
 ### 2.0.0 <small>May 22, 2024</small>
 - [issue #10](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/10): Only read DSIDs from the PMG/TDP files that are actually needed.
