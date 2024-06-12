@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #25](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/25): Adding custom options to TRExFitter region block - all options defiend in region block of ```trex_settings``` text file will be copied to the output ```TRExFitter``` config file.
 
 ### 2.1.0 <small>June 12, 2024</small>
 - [issue #24](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/24): Allowing select samples for TRExFitter using trex-fitter settings file. Allowing to override any variable-related option in TRExFitter config

@@ -219,3 +219,5 @@ Regions:
   - name: "Signal_emu_jet1.*"
     Type: "VALIDATION"
 ```
+
+it is also possible to define another options, which will then be copied to the output ```TRExFitter``` config. It can be either defined for all variables in the same region (so region as defined in ```fastframes```) or for a specific combination of ```region_name + "_" variable_name``` (so ```TRExFitter``` definition of "region"). If the same key is defined in both, the value from more specialized block (so ```region_name + "_" variable_name```) will be used.
