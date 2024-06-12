@@ -19,7 +19,9 @@ from BlockReaderGeneral import vector_to_list
 from ConfigReaderCpp import VariableWrapper
 from ConfigReader import ConfigReader
 from AutomaticRangeGenerator import AutomaticRangeGenerator
+from CommandLineOptions import CommandLineOptions
 
+from ConfigReader import ConfigReader
 
 
 import yaml
@@ -56,7 +58,7 @@ def custom_sort_ghost(item):
     return 0 if dictionary["Type"].upper() == "GHOST" else 1
 
 class TrexSettingsGetter:
-    def __init__(self, config_reader : ConfigReader, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
+    def __init__(self, fast_frames_config_address : str, trex_settings_yaml : str = "", unfolding_tuple : tuple[str,str,str,str] = None, regions : list[str] = [".*"]):
         self.trex_settings_dict = None
         if trex_settings_yaml:
             with open(trex_settings_yaml, "r") as f:
@@ -72,12 +74,18 @@ class TrexSettingsGetter:
         if self.trex_settings_dict:
             self._custom_blocks = self.trex_settings_dict.get("CustomBlocks", {})
             self._variables_trex_settings_labels = self._get_variables_trex_settings()
+            selected_samples = self.trex_settings_dict.get("selected_samples", None)
+            if selected_samples:
+                CommandLineOptions().set_default_samples(selected_samples)
 
         self.unfolding_sample = ""
         self.unfolding_level = ""
         self.unfolding_variable_truth = ""
         self.unfolding_variable_reco = ""
         self.run_unfolding = False
+
+
+        config_reader = ConfigReader(fast_frames_config_address)
 
         # TODO: clean this up
         histo_path = config_reader.block_general.cpp_class.outputPathHistograms()
@@ -121,8 +129,10 @@ class TrexSettingsGetter:
             if "name" not in variable_dict:
                 Logger.log_message("ERROR", "Variable without name found in the yaml file")
                 exit(1)
-            if "VariableTitle" in variable_dict:
-                result[variable_dict["name"]] = variable_dict["VariableTitle"]
+            updated_dict = deepcopy(variable_dict)
+            del updated_dict["name"]
+
+            result[variable_dict["name"]] = updated_dict
         return result
 
 
@@ -163,6 +173,9 @@ class TrexSettingsGetter:
         variable_name = variable.name().replace("_NOSYS","")
         region_name = region.name() + "_" + variable_name
         dictionary["Type"] = "SIGNAL"
+        if variable.name() in self._variables_trex_settings_labels:
+            for key in self._variables_trex_settings_labels[variable.name()]:
+                dictionary[key] = self._variables_trex_settings_labels[variable.name()][key]
         this_trex_region_dict = {} # combintion of region and name
         this_region_dict = {} # just the region
         for region_dict in region_dict_settings:
@@ -181,7 +194,7 @@ class TrexSettingsGetter:
         if "RatioYmin" in this_trex_region_dict:
             dictionary["RatioYmin"] = this_trex_region_dict["RatioYmin"]
 
-        dictionary["VariableTitle"] = self._variables_trex_settings_labels.get(variable_name, variable_name)
+        dictionary["VariableTitle"] = dictionary.get("VariableTitle", variable_name)
         dictionary["HistoName"] = "NOSYS/" + variable_name + "_" + region.name()
         dictionary["Label"]      = this_region_dict.get("Label", region.name())
         dictionary["ShortLabel"] = this_region_dict.get("ShortLabel", region.name())

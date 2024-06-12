@@ -43,6 +43,10 @@ python3 python/produce_trexfitter_config.py --config test/configs/config_testing
 python3 python/produce_trexfitter_config.py --config test/configs/config_testing.yml --regions Electron_jet_pt,Muon_met_met
 ```
 
+# Selecting samples:
+
+In order to select samples used in the config, one can either use ```--samples``` command line option (as for fastframes itself), or ```selected_samples: ["sample1", "sample2"]``` can be added to the ```TRExFitter``` settings file. If both are specified, the CLI option has the priority.
+
 #### Job block:
 
 All set options in the yaml config are included in the TRExFitter config, but the following options have default values set:
@@ -143,7 +147,7 @@ To modify an existing `Systematics` block, you need to use exactly the same name
   - name: "EG_SCALE_AF2"
     SmoothingOption: "MAXVARIATION"
 ````
-will add the field `SmoothingOption: MAXVARIATION` to the automatically determined uncertainty `EG_SCALE_AF2`. If the same fields are set both in the automatically determined systematic and in the systematic in the trexfitter-config yaml, the field from the trexfitter-config yaml will be used. 
+will add the field `SmoothingOption: MAXVARIATION` to the automatically determined uncertainty `EG_SCALE_AF2`. If the same fields are set both in the automatically determined systematic and in the systematic in the trexfitter-config yaml, the field from the trexfitter-config yaml will be used.
 If you want to instead keep two different systematics, but with the same name, you can use the option
 ```
   - name: "EG_SCALE_AF2"
