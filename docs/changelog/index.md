@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #24](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/24): Allowing select samples for TRExFitter using trex-fitter settings file. Allowing to override any variable-related option in TRExFitter config
 - [issue #23](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/23): Allowing a user to use also samples defined by ```numbering_sequence``` via CLI options
 - [issue #18](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/18): Allowing a user to specify more settings for TRExFitter config
 - [issue #17](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/17): Excluded regions were not propagated to the generated TRExFitter configuration file
