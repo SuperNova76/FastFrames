@@ -47,7 +47,7 @@ Systematics:
 Regions:
   - name: "Muon"
     Label: "#mu+jets"
-    ShortLAbel: "#mu+jets"
+    ShortLabel: "#mu+jets"
 
 NormFactors:
     - name: "mu_signal"
