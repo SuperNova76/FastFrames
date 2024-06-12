@@ -182,10 +182,12 @@ class TrexSettingsGetter:
             if not ("name" in region_dict):
                 Logger.log_message("ERROR", "There is a region in the config without specified 'name'. Please fix it.")
                 exit(1)
-            if re.match(region_dict["name"],region_name):
-                this_trex_region_dict = deepcopy(region_dict)
             if re.match(region_dict["name"],region.name()):
                 this_region_dict = deepcopy(region_dict)
+                del this_region_dict["name"]
+            if re.match(region_dict["name"],region_name):
+                this_trex_region_dict = deepcopy(region_dict)
+                del this_trex_region_dict["name"]
         dictionary["Type"] = this_trex_region_dict.get("Type","SIGNAL")
         if "LogScale" in this_trex_region_dict:
             dictionary["LogScale"] = this_trex_region_dict["LogScale"]
@@ -203,6 +205,13 @@ class TrexSettingsGetter:
             dictionary["AcceptanceNameSuff"] = "_" + region.name()
             dictionary["SelectionEffNameSuff"] = "_" + region.name()
             dictionary["MigrationNameSuff"] = "_" + region.name()
+
+        for key in this_region_dict:
+            if key not in dictionary:
+                dictionary[key] = this_region_dict[key]
+
+        for key in this_trex_region_dict:
+            dictionary[key] = this_trex_region_dict[key]
 
         return "Region", region_name, dictionary
 
