@@ -253,7 +253,7 @@ samples:
     event_weights: "weight_mc_#GT"
     selection_suffix: "n_bjets_truth > 0"
     simulation_type: "fullsim"
-    exclude_regions: ["Muon"]
+    exclude_regions: ["Mu*"]
     numbering_sequence:
       - replacement_string: '#GT'
         values: ["0p5","0p8","1p8","2p0"]

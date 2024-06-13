@@ -14,6 +14,12 @@ from BlockReaderSampleTruth import BlockReaderSampleTruth
 
 import re
 
+def string_matches_some_regex(string : list, regex_list : list) -> bool:
+    for regex in regex_list:
+        if re.match(regex, string):
+            return True
+    return False
+
 class BlockReaderSample:
     """!Class for reading sample block of the config, equivalent of C++ class Sample
     """
@@ -133,19 +139,19 @@ class BlockReaderSample:
         """
         if self._exclude_regions is not None:
             for region_name in self._exclude_regions:
-                if not region_name in regions:
+                if not string_matches_some_regex(region_name, regions):
                     Logger.log_message("ERROR", "Region {} specified for sample {} does not exist".format(region_name, self._name))
                     exit(1)
 
         if self._regions is None: # if no regions are specified, take all regions
             self._regions = []
             for region_name in regions:
-                if self._exclude_regions is not None and region_name in self._exclude_regions:
+                if self._exclude_regions is not None and string_matches_some_regex(region_name, self._exclude_regions):
                     continue
                 self._regions.append(region_name)
         else:   # if regions are specified, check if they exist
             for region in self._regions:
-                if region not in regions:
+                if not string_matches_some_regex(region, regions):
                     Logger.log_message("ERROR", "Region {} specified for systematic {} does not exist".format(region, self._name))
                     exit(1)
 
@@ -189,13 +195,6 @@ class BlockReaderSample:
                     variables_defined_for_sample.append(variable)
 
         variables_to_keep = []
-
-        def string_matches_some_regex(string : list, regex_list : list) -> bool:
-            for regex in regex_list:
-                if re.match(regex, string):
-                    return True
-            return False
-
 
         if self.variables is None and self.exclude_variables is None:
             variables_to_keep = variables_defined_for_sample
