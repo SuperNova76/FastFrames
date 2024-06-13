@@ -103,8 +103,8 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | sum_weights       | string            | Nominal sum of weights for this sample - it will also be used for systematic uncertainties that does not define their own some of weights. This option overrides ```default_sumweights``` from general block. |
 | event_weights     | string            | Event weight to use. If defined, it will replace ```default_event_weights``` from general block. Expects double as a type for the weight. For data, this defaults to `1.`.   |
 | selection_suffix  | string            | Additional selection to use for this sample, for example to split based on flavor composition |
-| regions           | list of strings   | List of regions where the sample should be defined. If not specified, use all regions. |
-| exclude_regions   | list of strings   | If specified, all regions except for these will be added for the sample. Cannot be used together with options ```regions```   |
+| regions           | list of strings   | List of regions where the sample should be defined. If not specified, use all regions. Regular expressions are supported. |
+| exclude_regions   | list of strings   | If specified, all regions except for these will be added for the sample. Cannot be used together with options ```regions```. Regular expressions are supported.   |
 | truth             | list of dicts     | List of truth levels which should be used for the given sample    |
 | variables         | list of strings   | If specified, only histograms for these variables will be produced for the sample. Regular expressions are supported. |
 | exclude_variables | list of strings   | If specified, histograms containing these variables will not be produced for the sample. Regular expressions are supported. This option cannot be combined with ```variables``` |
