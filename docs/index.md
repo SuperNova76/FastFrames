@@ -243,9 +243,9 @@ python3 condor_submit.py --help
 the following description will appear:
 ```
 python3 condor_submit.py --help
-usage: condor_submit.py [-h] [-c CONFIG] [--samples SAMPLES] [--step {h,n}] [--custom-class-path CUSTOM_CLASS_PATH] [--max-time MAX_TIME] [--dry-run {True,False}]
+usage: condor_submit.py [-h] [-c CONFIG] [--samples SAMPLES] [--step {h,n}] [--custom-class-path CUSTOM_CLASS_PATH] [--max-time MAX_TIME] [--dry-run] [--chicago]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -c CONFIG, --config CONFIG
                         Path to the yml config file.
@@ -254,8 +254,8 @@ optional arguments:
   --custom-class-path CUSTOM_CLASS_PATH
                         Path to the custom class used in the config file (if used). Default: None
   --max-time MAX_TIME   Maximum time for the job to run. Default: 1h
-  --dry-run {True,False}
-                        Creates the execution and submission environment without sending the jobs to HTCondor. Useful for debugging.
+  --dry-run             Creates the execution and submission environment without sending the jobs to HTCondor. Useful for debugging.
+  --chicago             Use this flag if you are running the jobs in the Chicago Analysis Facility.
 ```
 
 Let's run an example containing a custom fastframes class - more details about the custom class in the next section. Here the custom class is located two levels up from the submission directory, i.e., at the same level than the fastframes source code.
@@ -265,13 +265,13 @@ python3 condor_submit.py -c ../../MyAnalysis/ConfigYML/sim_calib_config.yml --st
 
 Now the scripts asks to confirm whether the following assumptions are true:
 ```
-This script submits jobs to the HTCondor batch system...
+This script submits jobs to the HTCondor batch system from an lxplus-like machine...
 Please read the following carefully... you are about to potentially submit a large number of jobs to the HTCondor batch system.
 For a correct execution. This script assumes the following:
 1.  The script is run from the fastframes/python directory
 2.  The build and install directories of FastFrames are two levels up from the current directory, i.e, at the same level than the FastFrames source code.
 3.  The metadata files are stored in a folder called metadata at the same level than the FastFrames source code.
-4.  The path to the output files is an absolute path in EOS or AFS.
+4. (OPTIONAL) The path to the output files is an absolute path in EOS or AFS preferentially.
 Are these assumptions correct? [y/n]
 ```
 
@@ -320,6 +320,7 @@ Total for all users: 22412 jobs; 2240 completed, 15 removed, 15542 idle, 4540 ru
 * You can kill jobs if necessary by doing `condor_rm JOB_ID`. 
 * Be careful with how CPU cores you request per job. The more resources you request, the later your jobs will start executing. 
 * Make sure you compile the code to include new changes before submiting the jobs.
+* If you are working in the Chicago AF, you need to provide the appropriate `--chicago` flag to produce the correct configuration for this cluster.
 
 ---
 

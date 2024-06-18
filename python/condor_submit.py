@@ -31,7 +31,8 @@ def createParser():
     parser.add_argument("--step",    help="Step to run: 'n' (ntuples) or 'h' (histograms). Default: 'h'", choices=["h","n"],  default="h")
     parser.add_argument("--custom-class-path", help= "Path to the custom class used in the config file (if used). Default: None", default=None)
     parser.add_argument("--max-time", help="Maximum time for the job to run. Default: 1h", default="microcentury")
-    parser.add_argument("--dry-run", help="Creates the execution and submission environment without sending the jobs to HTCondor. Useful for debugging.",default="False", choices=["True","False"])
+    parser.add_argument("--dry-run", help="Creates the execution and submission environment without sending the jobs to HTCondor. Useful for debugging.", action="store_true")
+    parser.add_argument("--chicago", help="Use this flag if you are running the jobs in the Chicago Analysis Facility.", action="store_true")
     return parser
 
 # The params dictionary contains the parameters that are calculated given the user input.
@@ -64,11 +65,8 @@ def createSubmissionFile(paramsDictionary):
         f.write(logCMD)
         f.write(getenvCMD) # Get the environment variables from the submission machine (lxplus)
         f.write(preserveRelativePathsCMD)
-        f.write("initialdir = " + paramsDictionary["initialdir"] + "\n")
-        f.write("transfer_input_files = " + paramsDictionary["transfer_input_files"] + "\n")
-        f.write("RequestCpus = " + str(paramsDictionary["RequestCpus"]) + "\n")
-        f.write("+JobFlavour = " + paramsDictionary["+JobFlavour"] + "\n")
-
+        for key,value in paramsDictionary.items():
+            f.write(key + " = " + str(value) + "\n")
         f.write("\n")
         f.write("queue arguments from inputSamples.txt\n")
 
@@ -120,6 +118,16 @@ def setupJobParamsDict(generalBlock,cmdLineArguments):
     # Add the custom class path to the transfer_input_files
     if cmdLineArguments.custom_class_path is not None:
         jobParamatersDict["transfer_input_files"] += ",CustomClassForCondor/"
+
+    # Configuration change for Chicago Analysis Facility
+    if cmdLineArguments.chicago:
+        # First remove the options not supported in the Chicago Analysis Facility
+        jobParamatersDict.pop("RequestCpus")
+        jobParamatersDict.pop("+JobFlavour")
+        # Add the Chicago specific options
+        jobParamatersDict["request_cpus"] = generalBlock["number_of_cpus"]
+        jobParamatersDict["request_memory"] = " 10GB"
+        jobParamatersDict["+queue"] = '"short"'
 
 
 def createInputSamplesFile(listOfSamplesFromInput,samplesBlock):
@@ -208,7 +216,7 @@ if __name__ == "__main__":
     createInputSamplesFile(commaSeparatedSamples,samplesBlock)
 
     # Submit the jobs
-    if commandLineArguments.dry_run == "False":
+    if not commandLineArguments.dry_run:
         os.system("condor_submit condor_submit.sub")
     else:
         print(DEBUG("Dry run. The submission files have been created in this directory. But the jobs have not been submitted."))
