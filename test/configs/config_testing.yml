@@ -268,7 +268,7 @@ samples:
     exclude_variables: ["jet_pt"]
 
   - name: "fakes"
-    included_samples: ["Wjets_FS", "Zjets_light", "Zjets_b", "ttbar_FS"]
+    included_samples: ["Wjets_FS", "Zjets_light", "ttbar_FS"]
     selection_suffix: "n_fakes > 0"
     nominal_only: True
 
