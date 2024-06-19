@@ -962,7 +962,7 @@ Samples block:
 	name:  Wjets_FS
 	regions:  ['Electron']
 	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
-	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
+	systematic:  ['NOSYS']
 	selection_suffix: ""
 	reco_to_truth_pairing_indices:  ['eventNumber']
 	automaticSystematics:  False
@@ -990,74 +990,52 @@ Samples block:
 		sum_weights:  NOSYS
 
 
-		name:  btag_B_1__up
+
+
+
+
+	name:  fakes
+	regions:  ['Electron', 'Muon']
+	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
+	systematic:  ['NOSYS']
+	selection_suffix: "n_fakes > 0"
+	reco_to_truth_pairing_indices:  ['eventNumber']
+	automaticSystematics:  False
+	nominalOnly:  True
+	hasCutflows:  False
+	variables:
+		 jet_pt
+		 met_met
+		 met_phi
+		 jet1_pt
+		 jet2_pt
+		 jet3_pt
+		 jet4_pt
+		 particle_jet1_pt
+		 particle_jet2_pt
+		 particle_jet3_pt
+		 particle_jet4_pt
+		 top_pt_mass_170
+		 top_pt_mass_172.5
+		 top_pt_mass_175.0
+	Unique samples:
+		 (700341,mc20a,fullsim)
+		 (700342,mc20a,fullsim)
+		 (700344,mc20a,fullsim)
+		 (700341,mc20e,fullsim)
+		 (700342,mc20e,fullsim)
+		 (700344,mc20e,fullsim)
+		 (364100,mc20e,fullsim)
+		 (364101,mc20e,fullsim)
+		 (410470,mc20e,fullsim)
+	Custom defines:
+		 "HT_2_jets" -> "jet_pt_NOSYS[0] + jet_pt_NOSYS[1]"
+	Excluded systematics:
+		 GEN_*.
+	Systematic uncertainties defined for this sample:
+
+		name:  NOSYS
 		regions:  ['Electron', 'Muon']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_B_1__down
-		regions:  ['Electron', 'Muon']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_C_1__up
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_C_1__down
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_1__up
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_1__down
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_2__up
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_2__down
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_3__up
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_3__down
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_4__up
-		regions:  ['Electron']
-		weight_suffix:  
-		sum_weights:  NOSYS
-
-
-		name:  btag_light_4__down
-		regions:  ['Electron']
 		weight_suffix:  
 		sum_weights:  NOSYS
 

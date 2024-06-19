@@ -159,7 +159,7 @@ class BlockReaderSample:
                     continue
 
             # for data samples, we do not want to add systematics by default (other than nominal)
-            if systematic.samples is None and self._is_data and not systematic.cpp_class.isNominal():
+            if systematic.samples is None and (self._is_data or self._nominal_only) and not systematic.cpp_class.isNominal():
                 continue
 
             self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
@@ -364,7 +364,7 @@ class BlockReaderSample:
                     exit(1)
                 included_sample = sample_dict[included_sample_name]
                 unique_samples = included_sample["_internal_unique_samples"]
-                if (sample["_is_data"]):
+                if (included_sample["_is_data"]):
                     n_included_data_samples += 1
                 for unique_sample in unique_samples:
                     if unique_sample in unique_samples_merged:
@@ -374,4 +374,13 @@ class BlockReaderSample:
             if n_included_data_samples != 0 and n_included_data_samples != len(sample["included_samples"]):
                 Logger.log_message("ERROR", "You cannot mix data and MC in one sample. Sample name " + sample["name"])
                 exit(1)
+            sample["_is_data"] = n_included_data_samples != 0
             sample["_internal_unique_samples"] = unique_samples_merged
+
+            # check for duplicate unique samples
+            unique_samples_set = set()
+            for unique_sample in unique_samples_merged:
+                if unique_sample in unique_samples_set:
+                    Logger.log_message("ERROR", "Duplicate unique sample {} in sample {}".format(unique_sample, sample["name"]))
+                    exit(1)
+                unique_samples_set.add(unique_sample)
