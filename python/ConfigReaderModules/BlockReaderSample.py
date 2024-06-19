@@ -367,8 +367,6 @@ class BlockReaderSample:
                 if (included_sample["_is_data"]):
                     n_included_data_samples += 1
                 for unique_sample in unique_samples:
-                    if unique_sample in unique_samples_merged:
-                        Logger.log_message("WARNING", "Uniqnue sample {} is included multiple times in {}".format(included_sample_name, sample["name"]))
                     unique_samples_merged.append(unique_sample)
             del sample["included_samples"]
             if n_included_data_samples != 0 and n_included_data_samples != len(sample["included_samples"]):
