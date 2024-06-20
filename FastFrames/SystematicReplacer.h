@@ -106,6 +106,13 @@ public:
   inline const std::vector<std::string>& allBranches() const {return m_allBranches;}
 
   /**
+   * @brief Get lit of all branches that do not have systematic variations
+   *
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> nominalBranches() const;
+
+  /**
    * @brief Check if a branch exists
    *
    * @param branch
@@ -155,6 +162,31 @@ public:
    */
   std::vector<std::string> listOfVariablesAffected(const std::string& input) const;
 
+  /**
+   * @brief is the given branch a systematic or affected by systematics?
+   *
+   * @param branch
+   * @return true
+   * @return false
+   */
+  bool isNominalBranch(const std::string& branch) const;
+
+  /**
+   * @brief Check if a given branch is directly a systematic variation
+   *
+   * @param branch
+   * @return true
+   * @return false
+   */
+  bool isSystematicVariation(const std::string& branch) const;
+
+  /**
+   * @brief Set the Systematic Names object
+   *
+   * @param systematics
+   */
+  void setSystematicNames(const std::vector<std::string>& systematics) {m_systematics = systematics;}
+
 private:
   /**
    * @brief map where the key is the name of the systematic
@@ -175,4 +207,10 @@ private:
    *
    */
   std::vector<std::string> m_allBranches;
+
+  /**
+   * @brief names of all systematics
+   *
+   */
+  std::vector<std::string> m_systematics;
 };
