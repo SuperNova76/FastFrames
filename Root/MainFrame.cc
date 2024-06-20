@@ -300,6 +300,12 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
         return;
     }
 
+    // we still need to get the list of all systematics to be able to identify the nominal branches
+    if (sample->nominalOnly()) {
+        const auto systematics = this->automaticSystematicNames(selectedFilePaths);
+        m_systReplacer.setSystematicNames(systematics);
+    }
+
     auto chain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
 
     std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
@@ -354,7 +360,8 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
         suffix = "_Njobs_" + std::to_string(m_config->totalJobSplits()) + "_jobIndex_" + std::to_string(m_config->currentJobIndex());
     }
     const std::string fileName = folder + sample->name() + "_" + std::to_string(id.dsid())+"_" + id.campaign() + "_"+id.simulation() + suffix + ".root";
-    const std::vector<std::string> selectedBranches = m_config->ntuple()->listOfSelectedBranches(m_systReplacer.allBranches());
+    const bool nominalOnly = sample->nominalOnly();
+    const std::vector<std::string> selectedBranches = m_config->ntuple()->listOfSelectedBranches(nominalOnly ? m_systReplacer.nominalBranches() : m_systReplacer.allBranches());
     LOG(VERBOSE) << "List of selected branches:\n";
     for (const auto& iselected : selectedBranches) {
         LOG(VERBOSE) << "\t" << iselected << "\n";
@@ -413,11 +420,13 @@ std::string MainFrame::systematicOrFilter(const std::shared_ptr<Sample>& sample)
     const std::string& nominalSelection = m_config->ntuple()->selection();
 
     std::string result = "(" + nominalSelection + ")";
-    for (const auto& isyst : sample->systematics()) {
-        const std::string systSelection = m_systReplacer.replaceString(nominalSelection, isyst);
-        if (systSelection == nominalSelection) continue;
+    if (!sample->nominalOnly()) {
+        for (const auto& isyst : sample->systematics()) {
+            const std::string systSelection = m_systReplacer.replaceString(nominalSelection, isyst);
+            if (systSelection == nominalSelection) continue;
 
-        result += "||(" + systSelection + ")";
+            result += "||(" + systSelection + ")";
+        }
     }
 
     LOG(DEBUG) << "Final selection used for filtering ntuples: " << result << "\n";

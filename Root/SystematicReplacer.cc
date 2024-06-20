@@ -243,3 +243,30 @@ std::vector<std::string> SystematicReplacer::listOfVariablesAffected(const std::
 
     return result;
 }
+
+std::vector<std::string> SystematicReplacer::nominalBranches() const {
+    std::vector<std::string> result;
+
+    for (const auto& ibranch : m_allBranches) {
+        if (!this->isNominalBranch(ibranch)) continue;
+
+        result.emplace_back(ibranch);
+    }
+
+    return result;
+}
+
+bool SystematicReplacer::isNominalBranch(const std::string& branch) const {
+    if (branch.find("NOSYS") != std::string::npos) return true;
+
+    // if it does not contain NOSYS, it might either be directly a systematic or something which is not affected by systematics
+    if (this->isSystematicVariation(branch)) return false;
+
+    return true;
+}
+
+bool SystematicReplacer::isSystematicVariation(const std::string& branch) const {
+    // check all systematics and see if the branch contains the substring
+    auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [&branch](const auto& element){return branch.find(element) != std::string::npos;});
+    return itr != m_systematics.end();
+}
