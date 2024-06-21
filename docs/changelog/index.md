@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #29](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/29): Adding support for merging DSIDs from multiple samples into one sample (useful for fake lepton contribution).
 - [issue #28](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/28): Adding support for job submission in the Chicago Analysis Facility.
 - [issue #26](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/26): Adding support for regular expressions when using the '''exclude_regions''' and '''regions''' options in the samples block.
 - [issue #25](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/25): Adding custom options to TRExFitter region block - all options defiend in region block of ```trex_settings``` text file will be copied to the output ```TRExFitter``` config file.

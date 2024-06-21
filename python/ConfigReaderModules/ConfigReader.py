@@ -48,6 +48,7 @@ class ConfigReader:
             sample_blocks = AutomaticRangeGenerator.unroll_sequence(sample_blocks)
             CommandLineOptions().check_samples_existence(sample_blocks)
             CommandLineOptions().keep_only_selected_samples(sample_blocks)
+            BlockReaderSample.resolve_unique_samples(sample_blocks)
             for sample_dict in sample_blocks:
                 sample = BlockReaderSample(sample_dict, self.block_general)
                 sample.adjust_regions(self.regions)

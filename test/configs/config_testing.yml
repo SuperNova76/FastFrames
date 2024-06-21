@@ -253,7 +253,7 @@ samples:
     event_weights: "weight_mc_#GT"
     selection_suffix: "n_bjets_truth > 0"
     simulation_type: "fullsim"
-    exclude_regions: ["Mu*"]
+    exclude_regions: ["Muon"]
     numbering_sequence:
       - replacement_string: '#GT'
         values: ["0p5","0p8","1p8","2p0"]
@@ -266,6 +266,11 @@ samples:
     simulation_type: "fullsim"
     regions: ["Electron"]
     exclude_variables: ["jet_pt"]
+
+  - name: "fakes"
+    included_samples: ["Wjets_FS", "Zjets_light", "ttbar_FS"]
+    selection_suffix: "n_fakes > 0"
+    nominal_only: True
 
   - name: "Data"
     simulation_type: "data"

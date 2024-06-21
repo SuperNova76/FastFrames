@@ -114,6 +114,7 @@ User has 2 options how to define the binning. Either specify bin edges for irreg
 | numbering_sequence| list of dicts     | It can be used to automatically add more samples in one block, if they differ by selection, weights etc. More information can be found bellow in ```numbering_sequence``` block description.
 | define_custom_columns       | list of dicts  | Overrides this option from general block |
 | define_custom_columns_truth | list of dicts  | Overrides this option from general block |
+| included_samples | list of strings | This option can be used to merge DSIDs, campaigns and simulation types from other samples into one sample. It can be usuful for example to get one root file for fake lepton contribution, which is originating from multiple nominal samples. This option cannot be used together with ```dsids```, ```campaigns``` and ```simulation_type```. This option will automatically add all unique samples from "included samples" to this sample. |
 
 #### `truth` block inside of the `sample` block
 

@@ -35,25 +35,13 @@ class BlockReaderSample:
             Logger.log_message("ERROR", "No name specified for sample: " + str(self._options_getter))
             exit(1)
 
-        self._simulation_type = self._options_getter.get("simulation_type",None, [str])
-        if self._simulation_type is None:
-            Logger.log_message("ERROR", "No simulation_type specified for sample {}".format(self._name))
-            exit(1)
-        self._is_data = (self._simulation_type.upper() == "DATA")
-
-        self._dsids = self._options_getter.get("dsids",None, [list], [int])
-        if self._dsids is None and not self._is_data:
-            Logger.log_message("ERROR", "No dsids specified for sample {}".format(self._name))
-            exit(1)
-
-        self._campaigns = self._options_getter.get("campaigns",None, [list], [str])
-        if self._campaigns is None:
-            Logger.log_message("ERROR", "No campaigns specified for sample {}".format(self._name))
-            exit(1)
+        self._is_data = self._options_getter.get("_is_data", False, [bool])
+        self._unique_samples = self._options_getter.get("_internal_unique_samples", None, [list], [tuple])
 
         # check if all campaigns are defined in general block
-        if not self._is_data and self._campaigns != None and block_reader_general != None:
-            for campaign in self._campaigns:
+        if not self._is_data and block_reader_general != None:
+            for unique_sample in self._options_getter["_internal_unique_samples"]:
+                campaign = unique_sample[1]
                 if not block_reader_general.cpp_class.campaignIsDefined(campaign):
                     Logger.log_message("ERROR", "Unknown campaign {} specified for sample {}".format(campaign, self._name))
                     exit(1)
@@ -124,14 +112,8 @@ class BlockReaderSample:
     def _set_unique_samples_IDs(self):
         """!Set unique sample IDs for the sample. If no dsids are specified, take all dsids.
         """
-        if self._is_data:
-            for campaign in self._campaigns:
-                self.cpp_class.addUniqueSampleID(0, campaign, "data")
-        else:
-            for campaign in self._campaigns:
-                for dsid in self._dsids:
-                    self.cpp_class.addUniqueSampleID(dsid, campaign, self._simulation_type)
-
+        for unique_sample in self._unique_samples:
+            self.cpp_class.addUniqueSampleID(*unique_sample)
 
     def adjust_regions(self, regions : dict) -> None:
         """!Set regions for the sample. If no regions are specified, take all regions, if exclude_regions are specified, remove them from the list of regions.
@@ -177,7 +159,7 @@ class BlockReaderSample:
                     continue
 
             # for data samples, we do not want to add systematics by default (other than nominal)
-            if systematic.samples is None and self._is_data and not systematic.cpp_class.isNominal():
+            if systematic.samples is None and (self._is_data or self._nominal_only) and not systematic.cpp_class.isNominal():
                 continue
 
             self.cpp_class.addSystematic(systematic.cpp_class.getPtr())
@@ -321,3 +303,82 @@ class BlockReaderSample:
             systematic_cpp_object.constructFromSharedPtr(systematic_ptr)
             result.append(systematic_cpp_object)
         return result
+
+    def resolve_unique_samples(samples : list[dict]) -> None:
+        """!Add _internal_unique_samples to each sample. This is a list of tuples (dsid, campaign, simulation_type) that uniquely identifies the unique sample. It also resolves included_samples.
+        @param samples: list of samples
+        """
+        sample_dict = {}
+        for sample in samples:
+            if "name" not in sample:
+                Logger.log_message("ERROR", "No name specified for sample: " + str(sample))
+                exit(1)
+            sample_dict[sample["name"]] = sample
+
+            def check_duplicate_option(option : str, sample : dict) -> None:
+                if option in sample:
+                    Logger.log_message("ERROR", "Both included_samples and {} specified for sample {}".format(option, sample["name"]))
+                    exit(1)
+
+            # check if included_samples is not used with other options
+            if "included_samples" in sample:
+                check_duplicate_option("simulation_type", sample)
+                check_duplicate_option("campaigns", sample)
+                check_duplicate_option("dsids", sample)
+
+        def check_if_option_is_defined(option : str, sample : dict) -> None:
+            if option not in sample:
+                Logger.log_message("ERROR", "No {} specified for sample {}".format(option, sample["name"]))
+                exit(1)
+
+        for sample in samples:
+            if "included_samples" in sample:
+                continue
+            check_if_option_is_defined("simulation_type", sample)
+            check_if_option_is_defined("campaigns", sample)
+            if sample["simulation_type"].upper() != "DATA":
+                check_if_option_is_defined("dsids", sample)
+                dsids = sample["dsids"]
+                sample["_is_data"] = False
+            else:
+                dsids = [0]
+                sample["_is_data"] = True
+            unique_samples = []
+            for campaign in sample["campaigns"]:
+                for dsid in dsids:
+                    unique_samples.append((dsid, campaign, sample["simulation_type"]))
+            sample["_internal_unique_samples"] = unique_samples
+            del sample["simulation_type"]
+            del sample["campaigns"]
+            if "dsids" in sample:
+                del sample["dsids"]
+
+        for sample in samples:
+            if not "included_samples" in sample:
+                continue
+            unique_samples_merged = []
+            n_included_data_samples = 0
+            for included_sample_name in sample["included_samples"]:
+                if included_sample_name not in sample_dict:
+                    Logger.log_message("ERROR", "Included sample {} does not exist".format(included_sample_name))
+                    exit(1)
+                included_sample = sample_dict[included_sample_name]
+                unique_samples = included_sample["_internal_unique_samples"]
+                if (included_sample["_is_data"]):
+                    n_included_data_samples += 1
+                for unique_sample in unique_samples:
+                    unique_samples_merged.append(unique_sample)
+            del sample["included_samples"]
+            if n_included_data_samples != 0 and n_included_data_samples != len(sample["included_samples"]):
+                Logger.log_message("ERROR", "You cannot mix data and MC in one sample. Sample name " + sample["name"])
+                exit(1)
+            sample["_is_data"] = n_included_data_samples != 0
+            sample["_internal_unique_samples"] = unique_samples_merged
+
+            # check for duplicate unique samples
+            unique_samples_set = set()
+            for unique_sample in unique_samples_merged:
+                if unique_sample in unique_samples_set:
+                    Logger.log_message("ERROR", "Duplicate unique sample {} in sample {}".format(unique_sample, sample["name"]))
+                    exit(1)
+                unique_samples_set.add(unique_sample)
