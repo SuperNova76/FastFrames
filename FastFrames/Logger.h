@@ -127,8 +127,12 @@ public:
    */
   Logger& operator<< (std::ostream& (*const os)(std::ostream&))
   {
-    std::cout << os;
-    return *this;
+    if (this->currentLevel() <= this->logLevel()) {
+      std::cout << os;
+      return *this;
+    } else {
+      return *this;
+    }
   }
 
 private:
