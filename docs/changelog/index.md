@@ -3,6 +3,8 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #31](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/31): Checking for duplicate DSIDs in sample block, making x-section manager less verbose, removing ```mc23c``` default lumi equal to 1.0 and fixing interface breaking change in StringOperations.
+- [issue #30](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/30): Making x-section manager less verbose.
 - [issue #29](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/29): Adding support for merging DSIDs from multiple samples into one sample (useful for fake lepton contribution).
 - [issue #28](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/28): Adding support for job submission in the Chicago Analysis Facility.
 - [issue #26](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/26): Adding support for regular expressions when using the '''exclude_regions''' and '''regions''' options in the samples block.

@@ -90,6 +90,15 @@ namespace StringOperations  {
     bool stringIsDouble(const std::string &input_string);
 
     /**
+     * @brief String is a float
+     *
+     * @param input_string
+     * @return true
+     * @return false
+     */
+    bool stringIsFloat(const std::string &input_string);
+
+    /**
      * @brief Split string into substrings and remove whitespace
      *
      * @param input_string
