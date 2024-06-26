@@ -68,6 +68,17 @@ bool StringOperations::stringIsDouble(const std::string &input_string)   {
     return true;
 };
 
+bool StringOperations::stringIsFloat(const std::string &input_string)   {
+    try {
+        // cppcheck-suppress unreadVariable
+        [[__maybe_unused__]]double a = std::stof(input_string);
+    }
+    catch (const std::invalid_argument& ia) {
+        return false;
+    }
+    return true;
+};
+
 vector<string> StringOperations::splitAndStripString(const string &input_string, const string &separator) {
     vector<string> result = splitString(input_string, separator);
     for (string &x : result)    {
