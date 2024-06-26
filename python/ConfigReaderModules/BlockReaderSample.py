@@ -339,6 +339,10 @@ class BlockReaderSample:
             if sample["simulation_type"].upper() != "DATA":
                 check_if_option_is_defined("dsids", sample)
                 dsids = sample["dsids"]
+                duplicates = set([x for x in dsids if dsids.count(x) > 1])
+                if len(duplicates) > 0:
+                    Logger.log_message("ERROR", "Duplicate dsids {} specified for sample {}".format(duplicates, sample["name"]))
+                    exit(1)
                 sample["_is_data"] = False
             else:
                 dsids = [0]
