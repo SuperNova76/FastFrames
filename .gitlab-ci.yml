@@ -114,11 +114,11 @@ compile_latest:
      expire_in: 1d
   allow_failure: true
 
-install:
+
 install:
   stage: build
   needs:
-    - compile
+    - cmake
   script:
      - mkdir -p install
      - cd build
