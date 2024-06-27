@@ -127,7 +127,7 @@ public:
                                     const std::vector<std::string>& branches) {
 
     if (newVariable.find("NOSYS") == std::string::npos) {
-      LOG(ERROR) << "The new variable name does not contain \"NOSYS\"\n";
+      LOG(ERROR) << "The new variable name: \"" << newVariable << "\" does not contain \"NOSYS\"\n";
       throw std::invalid_argument("");
     }
 
@@ -217,13 +217,13 @@ public:
    */
   template<typename F>
   ROOT::RDF::RNode systematicRedefine(ROOT::RDF::RNode node,
-                                    const std::string& variable,
-                                    F defineFunction,
-                                    const std::vector<std::string>& branches) {
+                                      const std::string& variable,
+                                      F defineFunction,
+                                      const std::vector<std::string>& branches) {
 
     if (variable.find("NOSYS") == std::string::npos) {
-        LOG(ERROR) << "The new variable name does not contain \"NOSYS\"\n";
-        throw std::invalid_argument("");
+      LOG(ERROR) << "The new variable name: \"" << variable << "\" does not contain \"NOSYS\"\n";
+      throw std::invalid_argument("");
     }
 
     // The usage of Define() vs. Redefine() just depends on whether or not the
@@ -234,8 +234,8 @@ public:
     // needs to be defined or redefined.
     auto columnNames = node.GetColumnNames();
     if (std::find(columnNames.begin(), columnNames.end(), variable) == columnNames.end()) {
-        LOG(VERBOSE) << "No variable " << variable << " exists to redefine, making new variable instead\n";
-        return systematicDefine(node, variable, defineFunction, branches);
+      LOG(VERBOSE) << "No variable " << variable << " exists to redefine, making new variable instead\n";
+      return systematicDefine(node, variable, defineFunction, branches);
     }
 
     // first add the nominal define
@@ -246,17 +246,17 @@ public:
     std::vector<std::string> effectiveSystematics = m_systReplacer.getListOfEffectiveSystematics(branches);
 
     for (const auto& isystematic : effectiveSystematics) {
-        if (isystematic == "NOSYS") continue;
-        const std::string systName = StringOperations::replaceString(variable, "NOSYS", isystematic);
-        const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
+      if (isystematic == "NOSYS") continue;
+      const std::string systName = StringOperations::replaceString(variable, "NOSYS", isystematic);
+      const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
 
-        // it is possible that redefining the variable changes systematics, so
-        // we have to check if we need Define() or Redefine() here too
-        if (std::find(columnNames.begin(), columnNames.end(), systName) == columnNames.end()) {
-            node = node.Define(systName, defineFunction, systBranches);
-        } else {
-            node = node.Redefine(systName, defineFunction, systBranches);
-        }
+      // it is possible that redefining the variable changes systematics, so
+      // we have to check if we need Define() or Redefine() here too
+      if (std::find(columnNames.begin(), columnNames.end(), systName) == columnNames.end()) {
+        node = node.Define(systName, defineFunction, systBranches);
+      } else {
+        node = node.Redefine(systName, defineFunction, systBranches);
+      }
     }
 
     // tell the replacer about the new columns
@@ -264,6 +264,7 @@ public:
 
     return node;
   }
+
   /**
    * @brief Redefine an existing variable (column) using a string. The code will create a replica
    * for every systematic variation that affects the formula
@@ -277,8 +278,8 @@ public:
    * @return ROOT::RDF::RNode modified node
    */
   ROOT::RDF::RNode systematicStringRedefine(ROOT::RDF::RNode mainNode,
-                                          const std::string& newName,
-                                          const std::string& formula);
+                                            const std::string& newName,
+                                            const std::string& formula);
 
 private:
 
