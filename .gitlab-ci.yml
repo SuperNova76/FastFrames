@@ -1,3 +1,8 @@
+workflow: # Run the complete pipeline when pushing or when a merge request is created
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "push"
+
 default:
   image: gitlab-registry.cern.ch/atlas-sit/docker/alma9-atlasos:latest
   tags:
@@ -65,6 +70,28 @@ compile:
      paths:
       - build
      expire_in: 1d
+
+check_changelog: # 
+  stage: build
+  script:
+     - echo "Executing diff in the changelog"
+     - git fetch
+     - git diff origin/$CI_DEFAULT_BRANCH HEAD -- docs/changelog/index.md > changelog_diff.txt # Compare the changelog with main
+     - if [ $(wc -l < changelog_diff.txt) -eq 0 ]; then exit 1; fi # Fail if no differences are found
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # Only run this job for merge requests
+      changes: # when the code files have changed
+        - data/*
+        - python/*
+        - python/*
+        - python_wrapper/*
+        - Root/*
+        - test/*
+        - util/*
+        - FastFrames/*
+        - examples/*
+        - CMakeLists.txt
+      allow_failure: true # Just alert the user that the changelog was not updated
 
 cmake_custom_class:
   stage: build_custom_class
