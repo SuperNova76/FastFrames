@@ -184,6 +184,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("setConfigDefineAfterCustomClass",   &ConfigSettingWrapper::setConfigDefineAfterCustomClass)
         .def("configDefineAfterCustomClass",      &ConfigSettingWrapper::configDefineAfterCustomClass)
+
+        .def("setUseRegionSubfolders",          &ConfigSettingWrapper::setUseRegionSubfolders)
+        .def("useRegionSubfolders",             &ConfigSettingWrapper::useRegionSubfolders)
     ;
 
     /**

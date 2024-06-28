@@ -663,24 +663,43 @@ void MainFrame::writeHistosToFile(const std::vector<SystematicHisto>& histos,
         }
         for (const auto& iregionHist : isystHist.regionHistos()) {
 
+            const std::string subRegionName = isystHist.name() + "/" + iregionHist.name();
+
+            if (m_config->useRegionSubfolders()) {
+                out->cd();
+                out->mkdir(subRegionName.c_str());
+            }
+
             // 1D histograms
             for (const auto& ivariableHist : iregionHist.variableHistos()) {
                 const std::string histoName = StringOperations::replaceString(ivariableHist.name(), "_NOSYS", "") + "_" + iregionHist.name();
-                out->cd(isystHist.name().c_str());
+                if (m_config->useRegionSubfolders()) {
+                    out->cd(subRegionName.c_str());
+                } else {
+                    out->cd(isystHist.name().c_str());
+                }
                 ivariableHist.histoUniquePtr()->Write(histoName.c_str());
             }
 
             // 2D histograms
             for (const auto& ivariableHist2D : iregionHist.variableHistos2D()) {
                 const std::string histo2DName = StringOperations::replaceString(ivariableHist2D.name(), "_NOSYS", "") + "_" + iregionHist.name();
-                out->cd(isystHist.name().c_str());
+                if (m_config->useRegionSubfolders()) {
+                    out->cd(subRegionName.c_str());
+                } else {
+                    out->cd(isystHist.name().c_str());
+                }
                 ivariableHist2D.histoUniquePtr()->Write(histo2DName.c_str());
             }
 
             // 3D histograms
             for (const auto& ivariableHist3D : iregionHist.variableHistos3D()) {
                 const std::string histo3DName = StringOperations::replaceString(ivariableHist3D.name(), "_NOSYS", "") + "_" + iregionHist.name();
-                out->cd(isystHist.name().c_str());
+                if (m_config->useRegionSubfolders()) {
+                    out->cd(subRegionName.c_str());
+                } else {
+                    out->cd(isystHist.name().c_str());
+                }
                 ivariableHist3D.histoUniquePtr()->Write(histo3DName.c_str());
             }
         }
@@ -1058,6 +1077,14 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                     outputFile->mkdir(isystHist.name().c_str());
                 }
                 for (const auto& iregionHist : isystHist.regionHistos()) {
+                    const std::string regionSubfolder = isystHist.name() + "/" + iregionHist.name();
+
+                    if (m_config->useRegionSubfolders()) {
+                        outputFile->cd();
+                        if (!outputFile->GetDirectory(regionSubfolder.c_str())) {
+                            outputFile->mkdir(regionSubfolder.c_str());
+                        }
+                    }
 
                     // skip nominal only variables for systematics
                     const Variable& recoVar = Utils::getVariableByName(sample->regions(), iregionHist.name(), recoName);
@@ -1084,7 +1111,11 @@ void MainFrame::writeUnfoldingHistos(TFile* outputFile,
                         Utils::capHisto0And1(acceptance.get(), systematics_name + "/" + acceptanceName);
                     }
 
-                    outputFile->cd(isystHist.name().c_str());
+                    if (m_config->useRegionSubfolders()) {
+                        outputFile->cd(regionSubfolder.c_str());
+                    } else {
+                        outputFile->cd(isystHist.name().c_str());
+                    }
                     selectionEff->Write(selectionEffName.c_str());
                     acceptance->Write(acceptanceName.c_str());
                 }

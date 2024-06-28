@@ -480,6 +480,20 @@ class ConfigSettingWrapper {
          */
         bool configDefineAfterCustomClass() const {return m_configSetting->configDefineAfterCustomClass();}
 
+        /**
+         * @brief Set the Use Region Subfolders object
+         *
+         * @param flag
+         */
+        inline void setUseRegionSubfolders(const bool flag) {m_configSetting->setUseRegionSubfolders(flag);}
+
+        /**
+         * @brief Use region subfolders?
+         *
+         * @return true
+         * @return false
+         */
+        inline bool useRegionSubfolders() const {return m_configSetting->useRegionSubfolders();}
 
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;

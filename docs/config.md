@@ -32,6 +32,7 @@ The options are case sensitive. Example config files can be found in ```test/con
 | exclude_systematics  | list of strings | List of systematic uncertainties to skip when automatic systematic option is selected. It supports regular expressions. It can be overriden for individual samples. |
 | custom_options | dict | Optional block, which can be used to define additional options, which can then be used from the user's defined custom class (CustomFrame). All values in this block must be convertible to string |
 | config_define_after_custom_class | bool | Define custom columns from config after running column definitions from CustomClass. Default is ```False``` |
+| use_region_subfolders | bool | The default option is ```False```. If set to ```True```, the histograms for individual regions will be in separate sufolders. Please note, that this settings is not supported by ```TRExFitter``` |
 
 ## `ntuples` block settings
 
