@@ -159,6 +159,56 @@ public:
     return node;
   }
   /**
+   * @brief A helper method that make systematic copies of a provided nominal column
+   * Name of the new variable has to contain _NOSYS
+   * This method uses `DefineSlot` instead of `Define` for implementing thread-safe operations.
+   *
+   * @tparam F
+   * @param node Input node
+   * @param newVariable Name of the new variable
+   * @param defineFunction Actual function to be used for the variable definition (the first argument has to be `unsigned int` slot)
+   * @param branches List of branch names that the function processes
+   * @return ROOT::RDF::RNode Output node with the new columns
+   */
+  template<typename F>
+  ROOT::RDF::RNode systematicDefineSlot(ROOT::RDF::RNode node,
+                                    const std::string& newVariable,
+                                    F defineFunction,
+                                    const std::vector<std::string>& branches) {
+
+    if (newVariable.find("NOSYS") == std::string::npos) {
+      LOG(ERROR) << "The new variable name: \"" << newVariable << "\" does not contain \"NOSYS\"\n";
+      throw std::invalid_argument("");
+    }
+
+    bool variableExists(false);
+    if (m_systReplacer.branchExists(newVariable)) {
+      LOG(VERBOSE) << "Variable: " << newVariable << " is already in the input, will not add it to the map (but adding it to the node)\n";
+      variableExists = true;
+    }
+
+    // first add the nominal define
+    node = node.DefineSlot(newVariable, defineFunction, branches);
+
+    // add systematics
+    // get list of all systeamtics affecting the inputs
+    std::vector<std::string> effectiveSystematics = m_systReplacer.getListOfEffectiveSystematics(branches);
+
+    for (const auto& isystematic : effectiveSystematics) {
+      if (isystematic == "NOSYS") continue;
+      const std::string systName = StringOperations::replaceString(newVariable, "NOSYS", isystematic);
+      const std::vector<std::string> systBranches = m_systReplacer.replaceVector(branches, isystematic);
+      node = node.DefineSlot(systName, defineFunction, systBranches);
+    }
+
+    // tell the replacer about the new columns
+    if (!variableExists) {
+      m_systReplacer.addVariableAndEffectiveSystematics(newVariable, effectiveSystematics);
+    }
+
+    return node;
+  }
+  /**
    * @brief Helper function for systematic define that only adds columns if the input columns exist
    *
    * @tparam F
