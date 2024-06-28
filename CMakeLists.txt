@@ -80,6 +80,7 @@ endif()
 find_package( ROOT 6.28.00 REQUIRED COMPONENTS Core Hist RIO Tree ROOTDataFrame ROOTVecOps)
 find_package( Python3 COMPONENTS Development REQUIRED )
 find_package( LCG QUIET )
+find_package( onnxruntime QUIET )
 
 include_directories(${CMAKE_SOURCE_DIR})
 # ------------------------------------------------
@@ -89,11 +90,34 @@ include_directories(${CMAKE_SOURCE_DIR})
 file(GLOB SOURCES "Root/*.cc" )
 file(GLOB LIB_HEADERS "FastFrames/*.h" )
 
+# ------------------------------------------------
+# ONNXWrapper conditional compilation
+# ------------------------------------------------
+
+# Define a variable for the ONNX module path. Allow it to be set from the command line.
+set(ONNXRUNTIME_ROOTDIR "" CACHE PATH "Path to the ONNX Runtime installation directory")
+message(STATUS "ONNXRUNTIME_ROOTDIR: ${ONNXRUNTIME_ROOTDIR}")
+
+# Check if onnxruntime was found
+if(onnxruntime_FOUND OR NOT ONNXRUNTIME_ROOTDIR STREQUAL "")
+   message(STATUS "ONNX Runtime found - Enabling ONNXWrapper")
+   if (NOT ${onnxruntime_FOUND})
+      set(ONNXRUNTIME_INCLUDE_DIRS ${ONNXRUNTIME_ROOTDIR}/include)
+      set(ONNXRUNTIME_LIBRARIES ${ONNXRUNTIME_ROOTDIR}/lib/libonnxruntime.so)
+   endif()
+else()
+   message(STATUS "ONNX Runtime not found - Disabling ONNXWrapper")
+
+   # Remove ONNXWrapper source files from the lists
+   list(REMOVE_ITEM LIB_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/FastFrames/ONNXWrapper.h )
+   list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Root/ONNXWrapper.cc )
+endif()
+
 # Build the shared library.
 add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
 set_target_properties(FastFrames PROPERTIES SUFFIX ".so")
-target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> )
-target_link_libraries( FastFrames PUBLIC ROOT::Core ROOT::Hist ROOT::RIO ROOT::Tree ROOT::ROOTDataFrame ROOT::ROOTVecOps )
+target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> ${ONNXRUNTIME_INCLUDE_DIRS} )
+target_link_libraries( FastFrames PUBLIC ROOT::Core ROOT::Hist ROOT::RIO ROOT::Tree ROOT::ROOTDataFrame ROOT::ROOTVecOps ${ONNXRUNTIME_LIBRARIES} )
 set_property( TARGET FastFrames
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
 

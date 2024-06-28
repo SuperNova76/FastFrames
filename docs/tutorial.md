@@ -16,7 +16,7 @@ After logging to the machine do
 ```
 setupATLAS
 lsetup git # to setup newer version of git
-asetup StatAnalysis,0.3.2
+asetup StatAnalysis,0.4.0
 ```
 
 To check the version of ROOT setup, use:
@@ -300,6 +300,56 @@ cd ..
 
 !!! tip "Debugging"
     Debugging in these custom functions can be tricky. Standard printout methods work, but due to multithreading, the outputs might be shuffled. It is recommended to switch to just one thread when debugging.
+
+## Performing ML inference using ONNX runtime
+
+The ONNX runtime library offers a framework-agnostic way to run inference on a large variety of machine learning (ML) models. It allows us to train and optimize our models using mainstream python based frameworks like `scikit-learn`, `XGBoost`, `PyTorch` and `TensorFlow/Keras`, and then evaluate those models from the `c++` code used to define a custom variable in `FastFrames`.
+
+To spare the analyst from learning the nitty-gritty details of the ONNX runtime library, `FastFrames` provides a convenient wrapper that accepts the inputs to the ML model and returns the outputs as standard `c++` data types. This `ONNXWrapper` class also provides support for k-fold validation, which is a standard technique in HEP. The simplest form of this is the 2-fold validation, where a ML model is trained using a subset of MC events (e.g. the events with even `eventNumber`), and then used to evaluate the complementary subset of events (e.g. the events with odd `eventNumber`). Similarly, another model with identical architecture is trained using the events with odd `eventNumber`, and then used to evaluate the events with even `eventNumber`.
+
+First, we need to include the header file for the `ONNXWrapper`, and define a pointer to the `ONNXWrapper` as a private member of our `CustomFrame` class in its header file:
+```
+#include "FastFrames/ONNXWrapper.h"
+...
+class CustomFrame : public MainFrame {
+  ...
+  private:
+
+    ClassDefOverride(CustomFrame, 1);
+
+    ONNXWrapper *m_onnx; // newly added line
+    ...
+}
+```
+
+Then we need to modify the `CustomFrame::init()` method to create the `ONNXWrapper` object:
+```
+void CustomFrame::init() {
+  MainFrame::init();
+
+  // Create ONNXWrapper
+  m_onnx = new ONNXWrapper("My ML model", {
+    "/path/to/the/model/My_model_fold_0.onnx", 
+    "/path/to/the/model/My_model_fold_1.onnx"
+  });
+}
+```
+Here the `My_model_fold_0.onnx` model is supposed to be used to evaluate the events with even `eventNumber`, and the `My_model_fold_1.onnx` model is supposed to be used to evaluate the events with odd `eventNumber`.
+In this simple example, we demonstrate a 2-fold cross-validation. However, cross-valiadtion with any number of folds is supported.
+
+Finally, we need to define a new custom variable using `systematicDefine()` to store the model output, and in the function that actually calculates this variable, we can run inference using the following code:
+```
+ONNXWrapper::Inference infer = m_onnx->createInferenceInstance();
+std::vector<float> X = {<input variables separated by commas>};
+std::vector<int64_t> shape = {1, static_cast<int64_t>(X.size())};
+infer.addInputs(X, shape);
+unsigned int fold = m_onnx->getSessionIndex(eventNumber);
+m_onnx->evaluate(infer, fold);
+const size_t nClasses = <number of classes in the classification model>;
+std::array<float, nClasses> *y = infer.getOutputs<std::array<float, nClasses>>(0);
+```
+
+Note that, for a binary classifier, generally class `0` corresponds to the background, and class `1` corresponds to signal. So, `y->at(1)` should be returned as the `signal_score` in that case.
 
 ## Preparing the config file and running
 
