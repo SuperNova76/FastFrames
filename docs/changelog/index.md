@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [MR !313](https://gitlab.cern.ch/atlas-amglab/fastframes/-/merge_requests/313): Added wrapper for ONNX + updated tutorial
 - [issue #33](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/33): Separate subfolders can be used to individual regions. Please note that this is not supported by TRExFitter.
 - [issue #30](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/30): Making x-section manager less verbose.
 - [issue #29](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/29): Adding support for merging DSIDs from multiple samples into one sample (useful for fake lepton contribution).
