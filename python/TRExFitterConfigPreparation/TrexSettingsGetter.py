@@ -86,6 +86,9 @@ class TrexSettingsGetter:
 
 
         config_reader = ConfigReader(fast_frames_config_address)
+        if config_reader.block_general.cpp_class.useRegionSubfolders():
+            Logger.log_message("ERROR", "You have set up 'use_region_subfolders: True' in your config, this is not supported by trex-fitter")
+            exit(1)
 
         # TODO: clean this up
         histo_path = config_reader.block_general.cpp_class.outputPathHistograms()

@@ -142,6 +142,7 @@ if __name__ == "__main__":
     print("\txSectionFiles: ",  block_general.get_xsection_files())
     print("\tcap_acceptance_selection:", block_general.cpp_class.capAcceptanceSelection())
     print("\tconfig_define_after_custom_class:", block_general.cpp_class.configDefineAfterCustomClass())
+    print("\tuse_region_subfolders:", block_general.cpp_class.useRegionSubfolders())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 

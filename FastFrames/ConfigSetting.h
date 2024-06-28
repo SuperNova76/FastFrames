@@ -383,6 +383,21 @@ public:
    */
   std::vector<int> uniqueDSIDs() const;
 
+  /**
+   * @brief Set the Use Region Subfolders object
+   *
+   * @param flag
+   */
+  inline void setUseRegionSubfolders(const bool flag) {m_useRegionSubfolders = flag;}
+
+  /**
+   * @brief Use region subfolders?
+   *
+   * @return true
+   * @return false
+   */
+  inline bool useRegionSubfolders() const {return m_useRegionSubfolders;}
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -408,4 +423,5 @@ private:
   bool m_capAcceptanceSelection = false;
   CustomOptions m_customOptions;
   bool m_configDefineAfterCustomClass = false;
+  bool m_useRegionSubfolders = false;
 };

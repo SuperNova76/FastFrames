@@ -10,6 +10,7 @@ general:
   default_reco_tree_name: "reco"
   xsection_files: ["../data/XSection-MC21-13p6TeV.data","../data/XSection-MC16-13TeV.data"]
   automatic_systematics: False
+  use_region_subfolders: True
   nominal_only: True
   number_of_cpus: 10
 

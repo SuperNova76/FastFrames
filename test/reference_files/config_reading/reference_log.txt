@@ -13,6 +13,7 @@ General block:
 	xSectionFiles:  ['data/XSection-MC16-13TeV.data']
 	cap_acceptance_selection: False
 	config_define_after_custom_class: False
+	use_region_subfolders: False
 	luminosity, mc20a:  123456.0
 	luminosity, mc20d:  44630.6015625
 	create_tlorentz_vectors_for:
