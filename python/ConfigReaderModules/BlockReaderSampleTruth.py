@@ -49,6 +49,9 @@ class BlockReaderSampleTruth:
         self._variables = self._options_getter.get("variables", [], [list], [dict])
         self._variables = BlockReaderVariable.unroll_variable_sequences(self._variables)
 
+        self._branches = self._options_getter.get("branches", [".*"], [list], [str])
+        self._excluded_branches = self._options_getter.get("excluded_branches", [], [list], [str])
+
         self._produce_unfolding = self._options_getter.get("produce_unfolding", False, [bool])
 
         ## Instance of the TruthWrapper C++ class -> wrapper around C++ Truth class
@@ -75,6 +78,12 @@ class BlockReaderSampleTruth:
         self.cpp_class.setEventWeight(self._event_weight)
         self.cpp_class.setProduceUnfolding(self._produce_unfolding)
         self.cpp_class.setMatchRecoTruth(self._pair_reco_and_truth_trees)
+
+        for branch in self._branches:
+            self.cpp_class.addBranch(branch)
+
+        for branch in self._excluded_branches:
+            self.cpp_class.addExcludedBranch(branch)
 
     def _read_variables(self) -> None:
         for variable_dict in self._variables:

@@ -154,6 +154,34 @@ public:
    */
   inline bool matchRecoTruth() const {return m_matchRecoTruth;}
 
+  /**
+   * @brief Add a branch for ntupling
+   *
+   * @param branch
+   */
+  inline void addBranch(const std::string& branch) {m_branches.emplace_back(branch);}
+
+  /**
+   * @brief Get the list of branches
+   *
+   * @return const std::vector<std::string>&
+   */
+  inline const std::vector<std::string>& branches() const {return m_branches;}
+
+  /**
+   * @brief Add a branch for exclusion
+   *
+   * @param branch
+   */
+  inline void addExcludedBranch(const std::string& branch) {m_excludedBranches.emplace_back(branch);}
+
+  /**
+   * @brief Get excluded branches
+   *
+   * @return const std::vector<std::string>&
+   */
+  inline const std::vector<std::string>& excludedBranches() const {return m_excludedBranches;}
+
 private:
 
   std::string m_name;
@@ -164,4 +192,6 @@ private:
   std::vector<Variable> m_variables;
   bool m_produceUnfolding;
   bool m_matchRecoTruth;
+  std::vector<std::string> m_branches;
+  std::vector<std::string> m_excludedBranches;
 };

@@ -79,6 +79,12 @@ ROOT::RDF::RNode CustomFrame::defineVariablesTruth(ROOT::RDF::RNode node,
   return node;
 }
   
+ROOT::RDF::RNode CustomFrame::defineVariablesNtupleTruth(ROOT::RDF::RNode node,
+                                                         const std::string& /*treeName*/,
+                                                         const UniqueSampleID& /*sampleID*/) const {
+  return node;
+}
+  
 ROOT::RDF::RNode CustomFrame::defineVariablesRegion(ROOT::RDF::RNode mainNode,
                                                     const UniqueSampleID& /*id*/,
                                                     const std::string& /*regionName*/) {

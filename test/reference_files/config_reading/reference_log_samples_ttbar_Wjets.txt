@@ -243,6 +243,8 @@ Samples block:
 		selection:  particle_jet_pt[0] > 10000
 		event_weight:  mc_gen
 		pair_reco_and_truth_trees:  True
+		branches:  ['particle_jet_pt', 'particle_jet_eta']
+		excluded_branches:  ['particle_jet_phi']
 		match_variables:
 			 ('jet1_pt', 'truth_jet1_pt')
 			 ('jet2_pt', 'truth_jet1_pt')

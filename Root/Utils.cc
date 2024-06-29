@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <regex>
 
 std::unique_ptr<TChain> Utils::chainFromFiles(const std::string& treeName,
                                               const std::vector<std::string>& files) {
@@ -156,3 +157,43 @@ const Variable& Utils::getVariableByName(const std::vector<std::shared_ptr<Regio
 bool Utils::compareDoubles(const double a, const double b, const double relative_precision) {
     return std::abs(a - b) < relative_precision * std::max(std::abs(a), std::abs(b));
 };
+
+std::vector<std::string> Utils::selectedNotExcludedElements(const std::vector<std::string>& all,
+                                                            const std::vector<std::string>& selected,
+                                                            const std::vector<std::string>& excluded) {
+
+    std::vector<std::string> result;
+
+    if (selected.empty() && excluded.empty()) {
+        return all;
+    }
+
+    for (const auto& ibranch : all) {
+        bool isSelected(false);
+        for (const auto& imatch : selected) {
+            std::regex match(imatch);
+            if (std::regex_match(ibranch, match)) {
+                isSelected = true;
+                break;
+            }
+        }
+
+        // if not selected, skip
+        if (!isSelected) continue;
+
+        // if selected check if it is not excluded
+        for (const auto& imatch : excluded) {
+            std::regex match(imatch);
+            if (std::regex_match(ibranch, match)) {
+                isSelected = false;
+                break;
+            }
+        }
+
+        if (isSelected) {
+            result.emplace_back(ibranch);
+        }
+    }
+
+    return result;
+}

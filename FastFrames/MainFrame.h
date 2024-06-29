@@ -104,11 +104,24 @@ public:
    *
    * @param node The input RDF node
    *
-   * @return ROOT::RDF::RNode the otput node containing the new columns
+   * @return ROOT::RDF::RNode the output node containing the new columns
    */
   virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
                                                 const std::string& /*treeName*/,
                                                 const UniqueSampleID& /*sampleID*/) {return node;}
+
+
+  /**
+   * @brief Allows to define a custom variable used for ntupling for truth trees
+   *
+   * @param node The input RDF node
+   *
+   * @return ROOT::RDF::RNode the output node containing the new columns
+   */
+  virtual ROOT::RDF::RNode defineVariablesNtupleTruth(ROOT::RDF::RNode node,
+                                                      const std::string& /*treeName*/,
+                                                      const UniqueSampleID& /*sampleID*/) const {return node;}
+
   /**
    * @brief A helper method that make systematic copies of a provided nominal column
    * Name of the new variable has to contain _NOSYS
@@ -723,6 +736,20 @@ private:
   std::map<std::string, ROOT::RDF::RNode> prepareTruthNodes(const std::vector<std::string>& filePaths,
                                                             const std::shared_ptr<Sample>& sample,
                                                             const UniqueSampleID& id);
+
+
+  /**
+   * @brief Process single truth tree when running the ntupling step
+   *
+   * @param truth
+   * @param filePaths
+   * @param outputPath
+   * @param id
+   */
+  void processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth,
+                                    const std::vector<std::string>& filePaths,
+                                    const std::string& outputPath,
+                                    const UniqueSampleID& id) const;
 
 protected:
 
