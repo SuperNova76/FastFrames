@@ -248,6 +248,8 @@ if __name__ == "__main__":
                 print("\t\tselection: ", cpp_truth_object.selection())
                 print("\t\tevent_weight: ", cpp_truth_object.eventWeight())
                 print("\t\tpair_reco_and_truth_trees: ", cpp_truth_object.matchRecoTruth())
+                print("\t\tbranches: ", vector_to_list(cpp_truth_object.branches()))
+                print("\t\texcluded_branches: ", vector_to_list(cpp_truth_object.excludedBranches()))
                 print("\t\tmatch_variables:")
                 n_matched_variables = cpp_truth_object.nMatchedVariables()
                 for i_match_variable in range(n_matched_variables):

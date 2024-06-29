@@ -386,6 +386,9 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
         file.Close();
     }
 
+    for (const auto& itruth : sample->truths()) {
+        this->processSingleTruthTreeNtuple(itruth, selectedFilePaths, fileName, id);
+    }
 
     ObjectCopier copier(selectedFilePaths);
     copier.readObjectInfo();
@@ -1493,4 +1496,42 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
     }
 
     return result;
+}
+
+void MainFrame::processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth,
+                                             const std::vector<std::string>& filePaths,
+                                             const std::string& outputFilePath,
+                                             const UniqueSampleID& id) const {
+
+    LOG(INFO) << "Processing truth ntuple: " << truth->name() << ", from TTree: " << truth->truthTreeName() << "\n";
+
+    auto chain = Utils::chainFromFiles(truth->truthTreeName(), filePaths);
+
+    ROOT::RDataFrame df(*chain.release());
+
+    ROOT::RDF::RNode mainNode = df;
+    #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
+    ROOT::RDF::Experimental::AddProgressBar(mainNode);
+    #endif
+
+    if (!truth->selection().empty()) {
+        mainNode = mainNode.Filter(truth->selection());
+    }
+
+    LOG(DEBUG) << "Adding variables from the custom class\n";
+    mainNode = this->defineVariablesNtupleTruth(mainNode, truth->truthTreeName(), id);
+    LOG(DEBUG) << "Finsihed adding variables from the custom class\n";
+
+    const std::vector<std::string> branches = Utils::selectedNotExcludedElements(mainNode.GetColumnNames(),
+                                                                                 truth->branches(),
+                                                                                 truth->excludedBranches());
+
+    LOG(VERBOSE) << "Selected branches: \n";
+    for (const auto& ibranch : branches) {
+        LOG(VERBOSE) << "branch: " << ibranch << "\n";
+    }
+
+    ROOT::RDF::RSnapshotOptions opts;
+    opts.fMode = "UPDATE";
+    mainNode.Snapshot(truth->name(), outputFilePath, branches, opts);
 }

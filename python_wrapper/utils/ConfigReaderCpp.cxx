@@ -458,6 +458,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("setMatchRecoTruth",   &TruthWrapper::setMatchRecoTruth)
         .def("matchRecoTruth",      &TruthWrapper::matchRecoTruth)
+
+        .def("addBranch",           &TruthWrapper::addBranch)
+        .def("branches",            &TruthWrapper::branches)
+
+        .def("addExcludedBranch",   &TruthWrapper::addExcludedBranch)
+        .def("excludedBranches",    &TruthWrapper::excludedBranches)
     ;
 
 

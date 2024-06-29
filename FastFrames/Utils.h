@@ -121,4 +121,16 @@ namespace Utils {
    * @return bool - are the doubles equal?
    */
   bool compareDoubles(const double a, const double b, const double relative_precision = 1e-6);
+
+  /**
+   * @brief Select elements that match selected RE and do not match ecludede RE
+   *
+   * @param all
+   * @param selected
+   * @param excluded
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> selectedNotExcludedElements(const std::vector<std::string>& all,
+                                                       const std::vector<std::string>& selected,
+                                                       const std::vector<std::string>& excluded);
 }

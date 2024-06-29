@@ -181,6 +181,34 @@ class TruthWrapper  {
          */
         bool matchRecoTruth() const {return m_truth->matchRecoTruth();}
 
+        /**
+         * @brief Add a branch for ntupling
+         *
+         * @param branch
+         */
+        void addBranch(const std::string& branch) {m_truth->addBranch(branch);}
+
+        /**
+         * @brief Get the list of branches
+         *
+         * @return const std::vector<std::string>&
+         */
+        std::vector<std::string> branches() const {return m_truth->branches();}
+
+        /**
+         * @brief Add a branch for exclusion
+         *
+         * @param branch
+         */
+        void addExcludedBranch(const std::string& branch) {m_truth->addExcludedBranch(branch);}
+
+        /**
+         * @brief Get excluded branches
+         *
+         * @return const std::vector<std::string>&
+         */
+        std::vector<std::string> excludedBranches() const {return m_truth->excludedBranches();}
+
     private:
         std::shared_ptr<Truth> m_truth;
 

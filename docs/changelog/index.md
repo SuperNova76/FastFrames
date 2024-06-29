@@ -3,8 +3,10 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #34](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/34): Adding support for truth-level ntuples: selection, branch filtering and custom variables.
 - [MR !313](https://gitlab.cern.ch/atlas-amglab/fastframes/-/merge_requests/313): Added wrapper for ONNX + updated tutorial
 - [issue #33](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/33): Separate subfolders can be used to individual regions. Please note that this is not supported by TRExFitter.
+- [issue #31](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/31): Checking for duplicate DSIDs in sample block, making x-section manager less verbose, removing ```mc23c``` default lumi equal to 1.0 and fixing interface breaking change in StringOperations.
 - [issue #30](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/30): Making x-section manager less verbose.
 - [issue #29](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/29): Adding support for merging DSIDs from multiple samples into one sample (useful for fake lepton contribution).
 - [issue #28](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/28): Adding support for job submission in the Chicago Analysis Facility.
