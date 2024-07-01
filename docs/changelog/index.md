@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [MR !330](https://gitlab.cern.ch/atlas-amglab/fastframes/-/merge_requests/330): Fixing compiler warning originating from onnxruntime library.
 - [issue #36](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/36): Adding command line options for specifying path to the output ntuples/histograms.
 - [issue #35](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/35): Fixed a problem with `merge_empty_grid_files.py` script which sometimes will generate empty trees with entries.
 - [issue #34](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/34): Adding support for truth-level ntuples: selection, branch filtering and custom variables.
