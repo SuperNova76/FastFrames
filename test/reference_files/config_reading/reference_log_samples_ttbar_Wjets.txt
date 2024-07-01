@@ -1,8 +1,8 @@
 
 General block:
 	inputSumWeightsPath:  test/input/sum_of_weights.txt
-	outputPathHistograms:  
-	outputPathNtuples:  
+	outputPathHistograms:  output/histograms/
+	outputPathNtuples:  output/ntuples
 	inputFilelistPath:  test/input/filelist.txt
 	numCPU:  4
 	customFrameName:  
