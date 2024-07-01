@@ -81,7 +81,7 @@ void MainFrame::executeHistograms() {
     std::size_t sampleN(1);
     for (const auto& isample : m_config->samples()) {
         LOG(INFO) << "\n";
-        LOG(INFO) << "Processing sample: " << sampleN << " out of " << m_config->samples().size() << " samples\n";
+        LOG(INFO) << "Processing sample: " << isample->name() << ", sample " << sampleN << " out of " << m_config->samples().size() << " samples\n";
 
         // this is not fully supported from ROOT side
         // there is no support for matching reco and truth trees yet
