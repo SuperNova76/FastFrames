@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-"""!Script for mering files from GRID with empty reco tree - this is needed to avoid the problem with empty reco trees in the GRID files - RDF cannot properly handle them
+"""!Script for merging files from GRID with empty trees - this is needed to avoid the problem with empty trees in the GRID files - RDF cannot properly handle them
 """
 
 from ROOT import TFile
@@ -18,6 +18,36 @@ from ConfigReaderModules.BlockReaderCommon import set_paths
 set_paths()
 
 from python_wrapper.python.logger import Logger
+
+def build_model_file_from_empty_files(empty_files : list, trees_to_check : list[str]):
+    """
+    Build a file with the correct tree structure from the empty files. 
+    This file will be used as the model when calling hadd.
+    This function goes tree by tree:
+    If none of the files contains the tree, skip the tree.
+    If none of the files have a tree with structure, write an empty tree.
+    """
+    model_file_name = "model_file.root"
+    model_file = TFile.Open(model_file_name, "RECREATE")
+    for tree_name in trees_to_check:
+        model_tree = None
+        for ifileName in empty_files:
+            ifile = TFile.Open(ifileName, "READ")
+            tree = ifile.Get(tree_name)
+            if tree == None: # Skip the file if it does not contain the tree
+                continue
+            if tree.GetEntries() != 0: # Copy the tree structure if it has entries
+                model_tree = tree.CloneTree(0) 
+                break # We found the tree with entries - no need to check the rest of the files
+            if tree.GetEntries() == 0: # If the tree has no entries, copy the structure and keep looking the other files.
+                model_tree = tree.CloneTree(0) 
+
+        if model_tree != None: # Copy the tree to the model file if the tree is found in one of the files
+            model_file.cd()
+            model_tree.Write()
+
+    model_file.Close()
+    model_file.Save()
 
 def has_at_least_one_tree(file_address : str, tree_names : list[str]) -> bool:
     """
@@ -82,11 +112,13 @@ def merge_files(files_from_unique_sample : list[str], remove_original_files : bo
         empty_files = empty_files[1:]
 
     if len(empty_files) != 0:
-        merged_file_name = first_non_empty_file[:-5] + "_merged.root"
-        command = "hadd " + " " + merged_file_name + " " + first_non_empty_file + " " + " ".join(empty_files)
+        build_model_file_from_empty_files(empty_files, trees_to_check)
+        merged_file_name = first_non_empty_file[:-5] + "_merged.root" # Put the model file first such that hadd takes the structure from it
+        command = "hadd " + " " + merged_file_name + " " + "model_file.root" + " " + first_non_empty_file + " " + " ".join(empty_files)
         os.system(command)
 
         if remove_original_files and not at_least_one_buggy_file:
+            os.system("rm model_file.root")
             for file in empty_files:
                 os.system("rm {}".format(file))
             os.system("rm {}".format(first_non_empty_file))
