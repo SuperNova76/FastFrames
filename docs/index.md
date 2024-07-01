@@ -224,6 +224,12 @@ In order to merge the output ROOT files from all jobs into one file, one can use
 python3 python/merge_jobs.py --c <config address>
 ```
 
+One can use the following options to override paths to the output ntuples/histograms from the config file:
+
+```--output_path_histograms <path>```
+
+```--output_path_ntuples <path>```
+
 #### Submitting jobs to the HTCondor batch service
 
 FastFrames provides a useful script to submit jobs to the [CERN HTCondor batch service](https://batchdocs.web.cern.ch/concepts/index.html). After loging into an Lxplus node go the directory you have FastFrames under:
@@ -317,8 +323,8 @@ Total for all users: 22412 jobs; 2240 completed, 15 removed, 15542 idle, 4540 ru
 ---
 **NOTE**
 
-* You can kill jobs if necessary by doing `condor_rm JOB_ID`. 
-* Be careful with how CPU cores you request per job. The more resources you request, the later your jobs will start executing. 
+* You can kill jobs if necessary by doing `condor_rm JOB_ID`.
+* Be careful with how CPU cores you request per job. The more resources you request, the later your jobs will start executing.
 * Make sure you compile the code to include new changes before submiting the jobs.
 * If you are working in the Chicago AF, you need to provide the appropriate `--chicago` flag to produce the correct configuration for this cluster.
 

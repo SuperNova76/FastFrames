@@ -33,10 +33,17 @@ class BlockReaderGeneral:
         self._debug_level = self._options_getter.get("debug_level", "WARNING")
         Logger.set_log_level(self._debug_level)
 
+
+        self._output_path_histograms = self._options_getter.get("output_path_histograms", "", [str])
+        if CommandLineOptions().get_output_path_histograms() != None:
+            self._output_path_histograms = CommandLineOptions().get_output_path_histograms()
+
+        self._output_path_ntuples    = self._options_getter.get("output_path_ntuples", "", [str])
+        if CommandLineOptions().get_output_path_ntuples() != None:
+            self._output_path_ntuples = CommandLineOptions().get_output_path_ntuples()
+
         self._input_filelist_path = self._options_getter.get("input_filelist_path", None, [str])
         self._input_sumweights_path = self._options_getter.get("input_sumweights_path", None, [str])
-        self._output_path_histograms = self._options_getter.get("output_path_histograms", "", [str])
-        self._output_path_ntuples    = self._options_getter.get("output_path_ntuples", "", [str])
         self._custom_frame_name = self._options_getter.get("custom_frame_name", "", [str])
         self._create_tlorentz_vectors_for = self._options_getter.get("create_tlorentz_vectors_for", [], [list], [str])
         self._use_rvec = self._options_getter.get("use_rvec", False, [bool])

@@ -38,6 +38,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
         self._job_index = None
         self._regions = None
         self._input_path = None
+        self._output_path_ntuples = None
+        self._output_path_histograms = None
         self._set_options()
 
     def _set_options(self) -> None:
@@ -55,7 +57,8 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("-u", "--unfolding", help="Unfolding configuration: 'sample:truth_block_name:truth_variable_name'", default = "")
         parser.add_argument("--regions", help="Comma separated list of regions include to TRExFitter config. Regular expressions are allowed. Default: .*", default=".*")
         parser.add_argument("-i", "--input_path", help="Path to the directory containing filelist.txt and sum_of_weights.txt. If not supplied, defaults to value in config file", default="")
-
+        parser.add_argument("--output_path_ntuples", help="Path to the directory where ntuples are stored. If not supplied, defaults to value in config file", default="")
+        parser.add_argument("--output_path_histograms", help="Path to the directory where histograms are stored. If not supplied, defaults to value in config file", default="")
 
         args = parser.parse_args()
 
@@ -92,6 +95,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
 
         self._read_splits(args)
         self._read_regions(args)
+        self._read_output_paths(args)
 
     def _read_splits(self, args) -> None:
         if (args.split_n_jobs):
@@ -118,6 +122,24 @@ class CommandLineOptions(metaclass=SingletonMeta):
 
     def _read_regions(self, args) -> None:
         self._regions = [reg.strip() for reg in args.regions.split(",")]
+
+    def _read_output_paths(self, args) -> None:
+        if args.output_path_ntuples:
+            self._output_path_ntuples = args.output_path_ntuples
+        if args.output_path_histograms:
+            self._output_path_histograms = args.output_path_histograms
+
+    def get_output_path_ntuples(self) -> str:
+        """
+        Get path to the directory where ntuples are stored.
+        """
+        return self._output_path_ntuples
+
+    def get_output_path_histograms(self) -> str:
+        """
+        Get path to the directory where histograms are stored.
+        """
+        return self._output_path_histograms
 
     def get_regions(self) -> list:
         """
