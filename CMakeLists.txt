@@ -117,6 +117,7 @@ endif()
 add_library( FastFrames SHARED ${LIB_HEADERS} ${SOURCES} )
 set_target_properties(FastFrames PROPERTIES SUFFIX ".so")
 target_include_directories( FastFrames PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}> ${ONNXRUNTIME_INCLUDE_DIRS} )
+target_include_directories(FastFrames SYSTEM PUBLIC ${ONNXRUNTIME_INCLUDE_DIRS} )
 target_link_libraries( FastFrames PUBLIC ROOT::Core ROOT::Hist ROOT::RIO ROOT::Tree ROOT::ROOTDataFrame ROOT::ROOTVecOps ${ONNXRUNTIME_LIBRARIES} )
 set_property( TARGET FastFrames
    PROPERTY PUBLIC_HEADER ${LIB_HEADERS} )
