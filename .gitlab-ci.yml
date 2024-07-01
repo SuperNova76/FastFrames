@@ -76,7 +76,9 @@ check_changelog: #
   script:
      - echo "Executing diff in the changelog"
      - git fetch
-     - git diff origin/$CI_DEFAULT_BRANCH HEAD -- docs/changelog/index.md > changelog_diff.txt # Compare the changelog with main
+     - git diff HEAD^ -- docs/changelog/index.md > changelog_diff.txt # Compare the changelog with previous commit
+     - echo "Changelog differences:"
+     - cat changelog_diff.txt
      - if [ $(wc -l < changelog_diff.txt) -eq 0 ]; then exit 1; fi # Fail if no differences are found
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # Only run this job for merge requests
