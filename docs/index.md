@@ -95,7 +95,7 @@ When using Alma Linux 9 (lxplus default)
 
 ```bash
 setupATLAS
-asetup StatAnalysis,0.3.0
+asetup StatAnalysis,0.4.0
 ```
 
 When using CentOS 7 (lxplus7)
