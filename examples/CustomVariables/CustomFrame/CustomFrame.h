@@ -27,21 +27,21 @@ public:
 
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode mainNode,
                                            const UniqueSampleID& id) override final;
-  
+
   virtual ROOT::RDF::RNode defineVariablesRegion(ROOT::RDF::RNode mainNode,
                                                  const UniqueSampleID& id,
                                                  const std::string& regionName) override final;
-  
+
   virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode mainNode,
                                                  const UniqueSampleID& id) override final;
 
   virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
                                                 const std::string& treeName,
                                                 const UniqueSampleID& sampleID) override final;
-  
+
   virtual ROOT::RDF::RNode defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                       const std::string& treeName,
-                                                      const UniqueSampleID& sampleID) const override final;
+                                                      const UniqueSampleID& sampleID) override final;
 private:
 
   bool passes4Jets50GeV1Btag(const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec,

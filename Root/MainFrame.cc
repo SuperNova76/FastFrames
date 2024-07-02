@@ -1501,7 +1501,7 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
 void MainFrame::processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth,
                                              const std::vector<std::string>& filePaths,
                                              const std::string& outputFilePath,
-                                             const UniqueSampleID& id) const {
+                                             const UniqueSampleID& id) {
 
     LOG(INFO) << "Processing truth ntuple: " << truth->name() << ", from TTree: " << truth->truthTreeName() << "\n";
 

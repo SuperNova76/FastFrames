@@ -17,7 +17,7 @@ ROOT::RDF::RNode CustomFrame::defineVariables(ROOT::RDF::RNode mainNode,
                          const std::vector<char>& passed) {
     auto sortedJets = DefineHelpers::sortedPassedVector(jets, passed);
     if (sortedJets.empty()) return -1.;
-    return sortedJets.at(0).pt();    
+    return sortedJets.at(0).pt();
   };
 
   // we just wrap around the function into a lambda
@@ -27,7 +27,7 @@ ROOT::RDF::RNode CustomFrame::defineVariables(ROOT::RDF::RNode mainNode,
 
     return this->passes4Jets50GeV1Btag(fourVec, selected, btagged);
 
-  }; 
+  };
 
   LOG(INFO) << "Adding variable: leading_jet_pt_NOSYS\n";
   // add leading jet pT
@@ -51,10 +51,10 @@ ROOT::RDF::RNode CustomFrame::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
   auto LeadingElectronPtTight = [](const std::vector<ROOT::Math::PtEtaPhiEVector>& electrons,
                                    const std::vector<char>& passed,
                                    const std::vector<char>& passedTight) {
-    
+
     auto sortedElectrons = DefineHelpers::sortedPassedVector(electrons, passed, passedTight);
     if (sortedElectrons.empty()) return -1.;
-    return sortedElectrons.at(0).pt();    
+    return sortedElectrons.at(0).pt();
   };
 
   LOG(INFO) << "Adding variable: leading_tight_electron_pt_NOSYS\n";
@@ -73,18 +73,18 @@ ROOT::RDF::RNode CustomFrame::defineVariablesTruth(ROOT::RDF::RNode node,
   if (treeName != "parton") return node; // do not do anything for other trees ("truth" = parton truth)
   // no systematics for truth
   // as i nany Define, we can pass as a simple string that will be Just-In-Time compiled
-  LOG(INFO) << "Adding truth variable: Ttbar_MC_ttbar_beforeFSR_pt_GeV\n"; 
+  LOG(INFO) << "Adding truth variable: Ttbar_MC_ttbar_beforeFSR_pt_GeV\n";
   node = node.Define("Ttbar_MC_ttbar_beforeFSR_pt_GeV", "Ttbar_MC_ttbar_beforeFSR_pt/1e3");
 
   return node;
 }
-  
+
 ROOT::RDF::RNode CustomFrame::defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                          const std::string& /*treeName*/,
-                                                         const UniqueSampleID& /*sampleID*/) const {
+                                                         const UniqueSampleID& /*sampleID*/) {
   return node;
 }
-  
+
 ROOT::RDF::RNode CustomFrame::defineVariablesRegion(ROOT::RDF::RNode mainNode,
                                                     const UniqueSampleID& /*id*/,
                                                     const std::string& /*regionName*/) {
@@ -93,7 +93,7 @@ ROOT::RDF::RNode CustomFrame::defineVariablesRegion(ROOT::RDF::RNode mainNode,
   // ***** IT IS BEING INVESTIGATED BY THE ROOT TEAM                       *****
 
   // now you can add new variables only for some regions
-  
+
   //if (regionName == "myRegion") {
   //  mainNode = MainFrame::systematicDefine(mainNode,
   //                                         "leading_jet_pt_GeV",
@@ -103,7 +103,7 @@ ROOT::RDF::RNode CustomFrame::defineVariablesRegion(ROOT::RDF::RNode mainNode,
 
   return mainNode;
 }
-  
+
 
 bool CustomFrame::passes4Jets50GeV1Btag(const std::vector<ROOT::Math::PtEtaPhiEVector>& fourVec,
                                         const std::vector<char>& selected,
@@ -124,7 +124,7 @@ bool CustomFrame::passes4Jets50GeV1Btag(const std::vector<ROOT::Math::PtEtaPhiEV
   std::size_t nTags(0);
   for (std::size_t i = 0; i < sortedTLV.size(); ++i) {
     if (sortedTLV.at(i).pt() < 50e3) continue;
-  
+
     nJets++;
     if (sortedTag.at(i)) nTags++;
   }
