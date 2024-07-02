@@ -120,7 +120,7 @@ public:
    */
   virtual ROOT::RDF::RNode defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                       const std::string& /*treeName*/,
-                                                      const UniqueSampleID& /*sampleID*/) const {return node;}
+                                                      const UniqueSampleID& /*sampleID*/) {return node;}
 
   /**
    * @brief A helper method that make systematic copies of a provided nominal column
@@ -749,7 +749,7 @@ private:
   void processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth,
                                     const std::vector<std::string>& filePaths,
                                     const std::string& outputPath,
-                                    const UniqueSampleID& id) const;
+                                    const UniqueSampleID& id);
 
 protected:
 
