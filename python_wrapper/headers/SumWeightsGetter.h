@@ -25,7 +25,8 @@ class SumWeightsGetter {
          *
          * @param filelist Vector of files to read
          */
-        explicit SumWeightsGetter(const std::vector<std::string> &filelist) {
+        explicit SumWeightsGetter(const std::vector<std::string> &filelist, const std::string &histo_name) :
+            m_histo_name(histo_name) {
             for (const auto &filename : filelist) {
                 LOG(INFO) << "SumWeightsGetter: Reading file " + filename + "\n";
                 readFile(filename);
@@ -109,7 +110,14 @@ class SumWeightsGetter {
             }
         };
 
-        static std::string get_variation_name(const std::string &histogram_name)   {
+        std::string get_variation_name(const std::string &histogram_name)   {
+            if (m_histo_name == "") {
+                return get_variation_name_default(histogram_name);
+            }
+            return get_variation_name_custom(histogram_name);
+        }
+
+        std::string get_variation_name_default(const std::string &histogram_name)   {
             if (!StringOperations::stringStartsWith(histogram_name, "CutBookkeeper_"))   {
                 return "";
             }
@@ -125,8 +133,18 @@ class SumWeightsGetter {
             return StringOperations::joinStrings("_", elements);
         }
 
+        std::string get_variation_name_custom(const std::string &histogram_name)   {
+            const std::string prefix = m_histo_name + "_";
+            const int prefix_length = prefix.length();
+            if (!StringOperations::stringStartsWith(histogram_name, prefix))   {
+                return "";
+            }
+            return histogram_name.substr(prefix_length);
+        }
+
         std::vector<std::string> m_sumWeightsNames;
         std::vector<double>      m_sumWeightsValues;
+        std::string m_histo_name = "";
 
         std::map<std::string, double> m_sumWeightsMap;
 

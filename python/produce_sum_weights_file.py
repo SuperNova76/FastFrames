@@ -33,12 +33,12 @@ def read_filelist(filelist_path : str) -> dict[tuple[str,str], list[str]]:
             filelist[key].append(file_name)
     return filelist
 
-def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
+def produce_sum_of_weights_file(filelist_path : str, output_path : str, histo_name : str = "") -> None:
     """!Produce sum_of_weights.txt file from the input filelist.txt file
     @param filelist_path: path to the filelist.txt file
     @param output_path: path to the output sum_of_weights.txt file
+    @param histo_name: name of the histogram to get the sum of weights from. If empty string is provided, it will look for a corresponding Cutbookkeeper
     """
-    sample_map = {}
     filelist = read_filelist(filelist_path)
     counter = 1 # To keep track of the progress
     with open(output_path, "w") as sum_of_weights_file:
@@ -48,7 +48,7 @@ def produce_sum_of_weights_file(filelist_path : str, output_path : str) -> None:
             root_files_vector = StringVector()
             for root_file in root_files:
                 root_files_vector.append(root_file)
-            sum_weights_getter = SumWeightsGetter(root_files_vector)
+            sum_weights_getter = SumWeightsGetter(root_files_vector, histo_name)
             sum_weights_values = sum_weights_getter.getSumWeightsValues()
             sum_weights_names  = sum_weights_getter.getSumWeightsNames()
 
