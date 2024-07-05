@@ -519,7 +519,7 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
      *
      */
     class_<SumWeightsGetter>("SumWeightsGetter",
-        init<const std::vector<std::string> &>())
+        init<const std::vector<std::string> &, const std::string>())
 
         .def("getSumWeightsNames",      &SumWeightsGetter::getSumWeightsNames)
         .def("getSumWeightsValues",     &SumWeightsGetter::getSumWeightsValues)

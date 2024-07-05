@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #19](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/19): Adding support for non-default sumweights histograms.
 
 ### 2.2.0 <small>July 1, 2024</small>
 - [issue #37](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/37): Making ```MainFrame::defineVariablesNtupleTruth``` non const, for compatibility with ```MainFrame::defineVariablesTruth```. This is interface breaking change (this inteface was added quite recently in [issue #34](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/34))

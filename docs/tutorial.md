@@ -114,6 +114,8 @@ The beginning of the file looks like this:
 
 Where the first columns represent: DSID, campaign, simulation type, name of the variation and the corresponding sum weights.
 
+The sum of weights is calculated from ```CutBookkeeper``` histograms produced by TopCPToolkit. However, if you want to use a different histograms to calculate the sum of weights, you can use command line option ```--sum_weights_histo <histo_name>```. In this case, histograms with the names ```<histo_name>_<systematic_name>``` will be used to get sum of weights.
+
 ## Adding custom variables
 As the format of the ROOT file makes direct histogramming difficult, it is very likely you will need to use your own code to add more variables/columns to the input file.
 FastFrames allows seamless extension of the code code by providing a short custom class that allows users to add new columns in a convenient way.
@@ -329,7 +331,7 @@ void CustomFrame::init() {
 
   // Create ONNXWrapper
   m_onnx = new ONNXWrapper("My ML model", {
-    "/path/to/the/model/My_model_fold_0.onnx", 
+    "/path/to/the/model/My_model_fold_0.onnx",
     "/path/to/the/model/My_model_fold_1.onnx"
   });
 }

@@ -48,7 +48,7 @@ def createGridFileList():
         Logger.log_message("INFO", "Getting grid paths for "+gridSample+"...")
         proc = subprocess.Popen(["rucio list-file-replicas --protocol root --pfns --rse "+rucioRSE+" "+gridSample], stdout=subprocess.PIPE,  stderr=subprocess.PIPE, shell=True)
         (out, err) = proc.communicate()
-        
+
         # Get the grid paths
         gridPathsPerSample = [str(i)[2:-1] for i in out.splitlines()] # Remove b' and ' at the beginning and end.
         if len(gridPathsPerSample)==0:
@@ -66,8 +66,10 @@ if __name__ == "__main__":
     fileLocation.add_argument("--root_files_folder",  help="Path to folder containing root files")
     fileLocation.add_argument("--grid_datasets",help="Path to a text file containing grid paths.")
     parser.add_argument("--output_path",        help="Path to the folder with output text files", nargs = '?', default="")
+    parser.add_argument("--sum_weights_histo", help="Name of sum of weights files. Default is empty string, which means it will use Cutbookkeeper histograms with corresponding suffixes", nargs = '?', default="")
     args = parser.parse_args()
 
+    histo_name = args.sum_weights_histo
     # If user has local root files
     if args.grid_datasets is None:
         if args.root_files_folder is None:
@@ -79,7 +81,7 @@ if __name__ == "__main__":
         sum_of_weights_path = output_path + "/sum_of_weights.txt"
 
         produce_filelist(root_files_folder, filelist_path)
-        produce_sum_of_weights_file(filelist_path, sum_of_weights_path)
+        produce_sum_of_weights_file(filelist_path, sum_of_weights_path, histo_name)
 
     # Otherwise, user has grid datasets
     else :
@@ -88,4 +90,4 @@ if __name__ == "__main__":
         filelist_path = output_path + "/filelist.txt"
         sum_of_weights_path = output_path + "/sum_of_weights.txt"
         produce_filelist_grid(gPaths,filelist_path)
-        produce_sum_of_weights_file(filelist_path, sum_of_weights_path)
+        produce_sum_of_weights_file(filelist_path, sum_of_weights_path, histo_name)
