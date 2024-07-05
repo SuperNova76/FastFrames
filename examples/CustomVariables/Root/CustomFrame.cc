@@ -70,9 +70,9 @@ ROOT::RDF::RNode CustomFrame::defineVariablesTruth(ROOT::RDF::RNode node,
                                                    const std::string& treeName,
                                                    const UniqueSampleID& /*sampleID*/) {
 
-  if (treeName != "parton") return node; // do not do anything for other trees ("truth" = parton truth)
+  if (treeName != "truth") return node; // do not do anything for other trees ("truth" = parton truth)
   // no systematics for truth
-  // as i nany Define, we can pass as a simple string that will be Just-In-Time compiled
+  // as in any Define, we can pass as a simple string that will be Just-In-Time compiled
   LOG(INFO) << "Adding truth variable: Ttbar_MC_ttbar_beforeFSR_pt_GeV\n";
   node = node.Define("Ttbar_MC_ttbar_beforeFSR_pt_GeV", "Ttbar_MC_ttbar_beforeFSR_pt/1e3");
 
