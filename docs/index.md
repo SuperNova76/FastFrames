@@ -123,6 +123,12 @@ python3 python/merge_empty_grid_files.py --root_files_folder <path to the folder
 
 it will go recursivelly over all subfolders, merge all empty files belonging to the same DSID, campaign and type (fastsim/fullsim/data) with one non-empty file. After that, it will remove the original files in order to avoid double counting in the later steps. If all all files from the same DSID+campaign+type are empty, it will merge all of them together (FastFrames can handle this case).
 
+If one needs more detailed logging from this step, the following command line option can be used to set debug level (default is ```INFO```):
+
+```
+--log_level <LOG LEVEL, FOR EXAMPLE "DEBUG">
+```
+
 #### Obtaining metadata files:
 
 In order to run the code, you will firstly need to produce text files with metadata. There are 2 of them, the first one contains the list of all ROOT files belonging to the same sample (same DSID, campaign and simulation type - fastsim/fullsim).
