@@ -21,7 +21,7 @@ from python_wrapper.python.logger import Logger
 
 def build_model_file_from_empty_files(empty_files : list, trees_to_check : list[str]):
     """
-    Build a file with the correct tree structure from the empty files. 
+    Build a file with the correct tree structure from the empty files.
     This file will be used as the model when calling hadd.
     This function goes tree by tree:
     If none of the files contains the tree, skip the tree.
@@ -37,10 +37,10 @@ def build_model_file_from_empty_files(empty_files : list, trees_to_check : list[
             if tree == None: # Skip the file if it does not contain the tree
                 continue
             if tree.GetEntries() != 0: # Copy the tree structure if it has entries
-                model_tree = tree.CloneTree(0) 
+                model_tree = tree.CloneTree(0)
                 break # We found the tree with entries - no need to check the rest of the files
             if tree.GetEntries() == 0: # If the tree has no entries, copy the structure and keep looking the other files.
-                model_tree = tree.CloneTree(0) 
+                model_tree = tree.CloneTree(0)
 
         if model_tree != None: # Copy the tree to the model file if the tree is found in one of the files
             model_file.cd()
@@ -112,7 +112,7 @@ def merge_files(files_from_unique_sample : list[str], remove_original_files : bo
         empty_files = empty_files[1:]
 
     if len(empty_files) != 0:
-        build_model_file_from_empty_files(empty_files, trees_to_check)
+        build_model_file_from_empty_files(files_from_unique_sample, trees_to_check)
         merged_file_name = first_non_empty_file[:-5] + "_merged.root" # Put the model file first such that hadd takes the structure from it
         command = "hadd " + " " + merged_file_name + " " + "model_file.root" + " " + first_non_empty_file + " " + " ".join(empty_files)
         os.system(command)
@@ -121,15 +121,21 @@ def merge_files(files_from_unique_sample : list[str], remove_original_files : bo
             os.system("rm model_file.root")
             for file in empty_files:
                 os.system("rm {}".format(file))
+                Logger.log_message("DEBUG", "Removing empty file: {}".format(file))
             os.system("rm {}".format(first_non_empty_file))
+            Logger.log_message("DEBUG", "Removing  first non-empty file: {}".format(file))
 
     return not at_least_one_buggy_file
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--root_files_folder",  help="Path to folder containing root files", default=None)
+    parser.add_argument("--log_level", help="Logging level", default="INFO")
     args = parser.parse_args()
     root_files_folder   = args.root_files_folder
+    log_level           = args.log_level
+
+    Logger.set_log_level(log_level)
 
     # check if the input is correct
     if root_files_folder is None:
@@ -139,7 +145,7 @@ if __name__ == "__main__":
     buggy_samples = []
     for metadata_tuple, files_from_unique_sample in file_dictionary.items():
         Logger.log_message("INFO", "Processing sample: {}".format(metadata_tuple))
-        Logger.log_message("INFO", "Files: {}".format(files_from_unique_sample))
+        Logger.log_message("DEBUG", "List of all files for sample: {}".format("\n\t\t".join(files_from_unique_sample)))
         sample_contains_buggy_files = (not merge_files(files_from_unique_sample, True))
         if sample_contains_buggy_files:
             buggy_samples.append(metadata_tuple)
