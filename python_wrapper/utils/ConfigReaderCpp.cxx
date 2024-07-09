@@ -19,6 +19,7 @@
 #include "python_wrapper/headers/CutflowWrapper.h"
 #include "python_wrapper/headers/ConfigDefineWrapper.h"
 
+#include "python_wrapper/headers/DuplicateEventsChecker.h"
 #include "python_wrapper/headers/SumWeightsGetter.h"
 
 #include "FastFrames/Binning.h"
