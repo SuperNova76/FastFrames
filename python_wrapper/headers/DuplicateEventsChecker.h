@@ -74,14 +74,14 @@ class DuplicateEventChecker {
      *
      * @return const std::vector<unsigned int>&
      */
-    const std::vector<unsigned int>& duplicateRunNumbers() const {return m_duplicateRunNumbers;}
+    std::vector<unsigned int> duplicateRunNumbers() const {return m_duplicateRunNumbers;}
 
     /**
      * @brief Get the list of duplicate eventNumbers
      *
      * @return const std::vector<unsigned long long>&
      */
-    const std::vector<unsigned long long>& duplicateEventNumbers() const {return m_duplicateEventNumbers;}
+    std::vector<unsigned long long> duplicateEventNumbers() const {return m_duplicateEventNumbers;}
 
   private:
 

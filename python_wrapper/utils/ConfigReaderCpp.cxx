@@ -49,6 +49,13 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
     .def(boost::python::vector_indexing_suite<std::vector<std::string>>());
 
     /**
+     * @brief python wrapper around std::vector<unsigned int>
+     *
+     */
+    boost::python::class_<std::vector<unsigned int>>("UIntVector")
+    .def(boost::python::vector_indexing_suite<std::vector<unsigned int>>());
+
+    /**
      * @brief python wrapper around std::vector<std::tuple<std::string, std::string>>
      *
      */
@@ -525,4 +532,17 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("getSumWeightsNames",      &SumWeightsGetter::getSumWeightsNames)
         .def("getSumWeightsValues",     &SumWeightsGetter::getSumWeightsValues)
     ;
+
+    /**
+     * @brief Python wrapper DuplicateEventsChecker class
+     *
+     */
+    class_<DuplicateEventChecker>("DuplicateEventChecker",
+        init<const std::vector<std::string> &>())
+
+        .def("checkDuplicateEntries", &DuplicateEventChecker::checkDuplicateEntries)
+        .def("duplicateRunNumbers",   &DuplicateEventChecker::duplicateRunNumbers)
+        .def("duplicateEventNumbers", &DuplicateEventChecker::duplicateEventNumbers)
+    ;
+
 }

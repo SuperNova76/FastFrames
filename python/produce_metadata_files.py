@@ -13,6 +13,7 @@ import sys,os
 import argparse
 from produce_filelist import produce_filelist,produce_filelist_grid
 from produce_sum_weights_file import produce_sum_of_weights_file
+from check_duplicate_events import check_duplicate_events_in_folder
 
 this_dir = "/".join(os.path.dirname(os.path.abspath(__file__)).split("/")[0:-1])
 sys.path.append(this_dir)
@@ -67,7 +68,10 @@ if __name__ == "__main__":
     fileLocation.add_argument("--grid_datasets",help="Path to a text file containing grid paths.")
     parser.add_argument("--output_path",        help="Path to the folder with output text files", nargs = '?', default="")
     parser.add_argument("--sum_weights_histo", help="Name of sum of weights files. Default is empty string, which means it will use Cutbookkeeper histograms with corresponding suffixes", nargs = '?', default="")
+    parser.add_argument("--check_duplicates",  help="Check for duplicate events in the root files", default="False")
     args = parser.parse_args()
+
+    check_duplicates = args.check_duplicates.upper() == "TRUE"
 
     histo_name = args.sum_weights_histo
     # If user has local root files
@@ -82,6 +86,9 @@ if __name__ == "__main__":
 
         produce_filelist(root_files_folder, filelist_path)
         produce_sum_of_weights_file(filelist_path, sum_of_weights_path, histo_name)
+
+        if check_duplicates:
+            check_duplicate_events_in_folder(root_files_folder)
 
     # Otherwise, user has grid datasets
     else :
