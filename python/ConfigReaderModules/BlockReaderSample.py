@@ -11,6 +11,7 @@ from BlockReaderGeneral import BlockReaderGeneral
 from BlockReaderSystematic import BlockReaderSystematic
 from BlockOptionsGetter import BlockOptionsGetter
 from BlockReaderSampleTruth import BlockReaderSampleTruth
+from CommandLineOptions import CommandLineOptions
 
 import re
 
@@ -19,6 +20,20 @@ def string_matches_some_regex(string : list, regex_list : list) -> bool:
         if re.match(regex, string):
             return True
     return False
+
+def filter_only_selected_campaigns(campaigns_config : list[str]) -> list[str]:
+    """!Filter only campaigns that are selected by the user
+    @param campaigns_config: list of campaigns from the config file
+    @return list of campaigns that are selected by the user
+    """
+    campaigns_cli = CommandLineOptions().get_campaigns()
+    if campaigns_cli == None:
+        return campaigns_config
+    result = []
+    for campaign in campaigns_config:
+        if campaign in campaigns_cli:
+            result.append(campaign)
+    return result
 
 class BlockReaderSample:
     """!Class for reading sample block of the config, equivalent of C++ class Sample
@@ -348,7 +363,8 @@ class BlockReaderSample:
                 dsids = [0]
                 sample["_is_data"] = True
             unique_samples = []
-            for campaign in sample["campaigns"]:
+            selected_campaigns = filter_only_selected_campaigns(sample["campaigns"])
+            for campaign in selected_campaigns:
                 for dsid in dsids:
                     unique_samples.append((dsid, campaign, sample["simulation_type"]))
             sample["_internal_unique_samples"] = unique_samples
