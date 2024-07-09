@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #40](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/40): Adding the possibility to select campaigns as command line input.
 - [issue #39](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/39): Fixing issue with inconsistent set of branches in empty input files in merging script.
 - [issue #19](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/19): Adding support for non-default sumweights histograms.
 

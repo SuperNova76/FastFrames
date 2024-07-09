@@ -40,6 +40,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
         self._input_path = None
         self._output_path_ntuples = None
         self._output_path_histograms = None
+        self._campaigns = None
         self._set_options()
 
     def _set_options(self) -> None:
@@ -59,6 +60,7 @@ class CommandLineOptions(metaclass=SingletonMeta):
         parser.add_argument("-i", "--input_path", help="Path to the directory containing filelist.txt and sum_of_weights.txt. If not supplied, defaults to value in config file", default="")
         parser.add_argument("--output_path_ntuples", help="Path to the directory where ntuples are stored. If not supplied, defaults to value in config file", default="")
         parser.add_argument("--output_path_histograms", help="Path to the directory where histograms are stored. If not supplied, defaults to value in config file", default="")
+        parser.add_argument("--filter_campaigns", help="Comma separated list of campaigns", default="")
 
         args = parser.parse_args()
 
@@ -92,6 +94,9 @@ class CommandLineOptions(metaclass=SingletonMeta):
 
         if args.input_path:
             self._input_path = args.input_path
+
+        if args.filter_campaigns:
+            self._campaigns = args.filter_campaigns.split(",")
 
         self._read_splits(args)
         self._read_regions(args)
@@ -258,3 +263,9 @@ class CommandLineOptions(metaclass=SingletonMeta):
         Get path to the directory containing filelist.txt and sum_of_weights.txt.
         """
         return self._input_path
+
+    def get_campaigns(self) -> list[str]:
+        """
+        Get list of campaigns.
+        """
+        return self._campaigns

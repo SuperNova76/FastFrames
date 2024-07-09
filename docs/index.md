@@ -236,6 +236,10 @@ One can use the following options to override paths to the output ntuples/histog
 
 ```--output_path_ntuples <path>```
 
+In order to run only on given set of campaigns, you can use:
+
+```--filter_campaigns <list of comma selarated list of campaigns>```
+
 #### Submitting jobs to the HTCondor batch service
 
 FastFrames provides a useful script to submit jobs to the [CERN HTCondor batch service](https://batchdocs.web.cern.ch/concepts/index.html). After loging into an Lxplus node go the directory you have FastFrames under:
