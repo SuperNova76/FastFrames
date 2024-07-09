@@ -96,15 +96,44 @@ file(GLOB LIB_HEADERS "FastFrames/*.h" )
 
 # Define a variable for the ONNX module path. Allow it to be set from the command line.
 set(ONNXRUNTIME_ROOTDIR "" CACHE PATH "Path to the ONNX Runtime installation directory")
-message(STATUS "ONNXRUNTIME_ROOTDIR: ${ONNXRUNTIME_ROOTDIR}")
 
 # Check if onnxruntime was found
 if(onnxruntime_FOUND OR NOT ONNXRUNTIME_ROOTDIR STREQUAL "")
+   if (onnxruntime_FOUND)
+      message(STATUS "onnxruntime found at: ${onnxruntime_DIR}")
+   endif()
    message(STATUS "ONNX Runtime found - Enabling ONNXWrapper")
    if (NOT ${onnxruntime_FOUND})
+      message(STATUS "ONNXRUNTIME_ROOTDIR: ${ONNXRUNTIME_ROOTDIR}")
       set(ONNXRUNTIME_INCLUDE_DIRS ${ONNXRUNTIME_ROOTDIR}/include)
       set(ONNXRUNTIME_LIBRARIES ${ONNXRUNTIME_ROOTDIR}/lib/libonnxruntime.so)
    endif()
+
+   # This is necessary for Mac installations because
+   # the onnxruntime executable can be found without the paths being set
+   if ((NOT DEFINED ONNXRUNTIME_INCLUDE_DIRS) AND (NOT DEFINED ONNXRUNTIME_LIBRARIES))
+      message(STATUS "ONNXRUNTIME_ROOTDIR not set, need to search for ONNXRUNTIME_INCLUDE_DIRS and ONNXRUNTIME_LIBRARIES")
+      find_path(ONNXRUNTIME_INCLUDE_DIRS
+         NAMES onnxruntime_c_api.h
+         HINTS ${onnxruntime_DIR}/../include
+               /usr/local/include
+               /opt/homebrew/include/onnxruntime
+               /usr/include
+      )
+      message(STATUS "Found ONNXRUNTIME_INCLUDE_DIRS: ${ONNXRUNTIME_INCLUDE_DIRS}")
+
+      find_library(ONNXRUNTIME_LIBRARIES
+         NAMES onnxruntime libonnxruntime
+         HINTS ${onnxruntime_DIR}/../lib
+               /opt/homebrew/include/onnxruntime
+               /opt/homebrew/lib
+               /opt/homebrew/Cellar/
+      )
+      message(STATUS "Found ONNXRUNTIME_LIBRARIES: ${ONNXRUNTIME_LIBRARIES}")
+   endif()
+
+   message(STATUS "ONNXRUNTIME_INCLUDE_DIRS: ${ONNXRUNTIME_INCLUDE_DIRS}")
+   message(STATUS "ONNXRUNTIME_LIBRARIES: ${ONNXRUNTIME_LIBRARIES}")
 else()
    message(STATUS "ONNX Runtime not found - Disabling ONNXWrapper")
 
