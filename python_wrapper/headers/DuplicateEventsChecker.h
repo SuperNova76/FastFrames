@@ -8,6 +8,7 @@
 
 #include "TChain.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
@@ -63,8 +64,14 @@ class DuplicateEventChecker {
       for (auto ievent = 0; ievent < chain.GetEntries(); ++ievent) {
         chain.GetEntry(ievent);
         if (isDuplicate(runNumber, eventNumber)) {
-          m_duplicateRunNumbers.emplace_back(runNumber);
-          m_duplicateEventNumbers.emplace_back(eventNumber);
+          auto itr = std::find(m_duplicatePairs.begin(), m_duplicatePairs.end(), std::make_pair(runNumber, eventNumber));
+
+          // only add unique combination of run numbers and event numbers
+          if (itr == m_duplicatePairs.end()) {
+            m_duplicateRunNumbers.emplace_back(runNumber);
+            m_duplicateEventNumbers.emplace_back(eventNumber);
+            m_duplicatePairs.emplace_back(std::make_pair(runNumber, eventNumber));
+          }
         }
       }
     }
@@ -101,6 +108,7 @@ class DuplicateEventChecker {
 
     std::vector<unsigned int> m_duplicateRunNumbers;
     std::vector<unsigned long long> m_duplicateEventNumbers;
+    std::vector<std::pair<unsigned int, unsigned long long> > m_duplicatePairs;
 
     std::set<std::pair<unsigned int, unsigned long long> > m_processedEvents;
 };
