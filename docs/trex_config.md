@@ -6,15 +6,15 @@ derived from FastFrames config and thus the user is advised to check the created
 
 ## Creating config file for inclusive fit:
 
-```python3 python/produce_trexfitter_config.py --c test/configs/config.yml --o config_trex.config --trex_settings test/configs/trex_settings.yml```
+```python3 python/produce_trexfitter_config.py -c test/configs/config.yml -o config_trex.config --trex_settings test/configs/trex_settings.yml```
 
-where ```--c``` denotes the config file for FastFrames, ```--o``` is the address of the output TRExFitter config and the last argument, ```--trex_settings``` is optional. It contains additional settings, which will be used in the TRExFitter config and cannot be automatically obtained from the FastFrames config, such as colors for individual samples, LaTeX names of regions, normalization factors, additional systematic uncertainties etc.
+where ```-c``` denotes the config file for FastFrames, ```-o``` is the address of the output TRExFitter config and the last argument, ```--trex_settings``` is optional. It contains additional settings, which will be used in the TRExFitter config and cannot be automatically obtained from the FastFrames config, such as colors for individual samples, LaTeX names of regions, normalization factors, additional systematic uncertainties etc.
 
 ## Creating config file for unfolding:
 
 Creating the config file for unfolding is similar to the inclusive fit, however, one has to specify which variable is going to be unfolded at reco and truth level, what truth level is going to be used and which sample is the main signal sample. An example command:
 
-```python3 python/produce_trexfitter_config.py --c test/configs/config.yml --o config_trex.config --u ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt```
+```python3 python/produce_trexfitter_config.py -c test/configs/config.yml -o config_trex.config --u ttbar_FS:parton:Ttbar_MC_t_afterFSR_pt:jet_pt```
 
 where the last argument denoted by ```--u``` is combination of 4 strings separated by ```:```. The meaning of the 4 strings is as follows:
 
