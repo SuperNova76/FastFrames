@@ -143,6 +143,12 @@ python3 python/produce_metadata_files.py --root_files_folder <path_to_root_files
 where you have to specify the path to the folder with the ROOT files that you are going to reprocess. The second argument is optional, it is the path to the folder where metadata files will be stored.
 By default they will be in the same folder as input ROOT files. In the config file used in the next steps, you will have to specify the addresses of these metadata files.
 
+Optionaly, one can add ```--check_duplicates true``` option. This will loop over all input files and print warning if there are duplicate events (the same DSID, data type (i.e. AF, FS, data) eventNumber and runNumber).
+
+Checking duplicate events can be also run as a separate step:
+
+```python3 python/check_duplicate_events.py --root_files_folder <root_files_folder>```
+
 ##### Building the metadata from files stored in the GRID:
 
 ---
