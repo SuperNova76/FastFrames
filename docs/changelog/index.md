@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #42](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/42): Make ntupling code recognise also variables added via Define() call.
 - [issue #41](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/41): Adding script for checking duplicate events in input root files.
 - [issue #40](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/40): Adding the possibility to select campaigns as command line input.
 - [issue #39](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/39): Fixing issue with inconsistent set of branches in empty input files in merging script.

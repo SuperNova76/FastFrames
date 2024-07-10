@@ -89,6 +89,7 @@ void SystematicReplacer::matchSystematicVariables(const std::vector<std::string>
 std::string SystematicReplacer::replaceString(const std::string& original, const std::shared_ptr<Systematic>& systematic) const {
     return this->replaceString(original, systematic->name());
 }
+
 std::string SystematicReplacer::replaceString(const std::string& original, const std::string& systematicName) const {
     auto itr = m_systImpactsBranches.find(systematicName);
     if (itr == m_systImpactsBranches.end()) {
@@ -244,10 +245,10 @@ std::vector<std::string> SystematicReplacer::listOfVariablesAffected(const std::
     return result;
 }
 
-std::vector<std::string> SystematicReplacer::nominalBranches() const {
+std::vector<std::string> SystematicReplacer::nominalBranches(const std::vector<std::string>& branches) const {
     std::vector<std::string> result;
 
-    for (const auto& ibranch : m_allBranches) {
+    for (const auto& ibranch : branches) {
         if (!this->isNominalBranch(ibranch)) continue;
 
         result.emplace_back(ibranch);
