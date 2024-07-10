@@ -361,7 +361,8 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     }
     const std::string fileName = folder + sample->name() + "_" + std::to_string(id.dsid())+"_" + id.campaign() + "_"+id.simulation() + suffix + ".root";
     const bool nominalOnly = sample->nominalOnly();
-    const std::vector<std::string> selectedBranches = m_config->ntuple()->listOfSelectedBranches(nominalOnly ? m_systReplacer.nominalBranches() : m_systReplacer.allBranches());
+    const std::vector<std::string> allBranches = mainNode.GetColumnNames();
+    const std::vector<std::string> selectedBranches = m_config->ntuple()->listOfSelectedBranches(nominalOnly ? m_systReplacer.nominalBranches(allBranches) : allBranches);
     LOG(VERBOSE) << "List of selected branches:\n";
     for (const auto& iselected : selectedBranches) {
         LOG(VERBOSE) << "\t" << iselected << "\n";

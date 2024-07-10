@@ -99,7 +99,8 @@ public:
   void addBranch(const std::string& name) {m_allBranches.emplace_back(name);}
 
   /**
-   * @brief Get list of all branches
+   * @brief Get list of branches in the original tree + the ones added via systematicDefine.
+   * Note it does NOT include branches added with simple Define
    *
    * @return const std::vector<std::string>&
    */
@@ -107,10 +108,11 @@ public:
 
   /**
    * @brief Get lit of all branches that do not have systematic variations
+   * @param branches list of all branches to check
    *
    * @return std::vector<std::string>
    */
-  std::vector<std::string> nominalBranches() const;
+  std::vector<std::string> nominalBranches(const std::vector<std::string>& branches) const;
 
   /**
    * @brief Check if a branch exists
