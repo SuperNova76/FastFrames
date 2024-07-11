@@ -260,7 +260,7 @@ std::tuple<std::vector<SystematicHisto>,
 
     // this is the method users will be able to override
     LOG(DEBUG) << "Adding custom reco variables from the code\n";
-    mainNode = this->defineVariables(mainNode, uniqueSampleID);
+    mainNode = this->defineVariables(mainNode, sample, uniqueSampleID);
     LOG(DEBUG) << "Finished adding custom reco variables\n";
 
     if (m_config->configDefineAfterCustomClass()) {
@@ -338,7 +338,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
 
         // this is the method users will be able to override
         LOG(DEBUG) << "Adding custom reco variables from the code\n";
-        mainNode = this->defineVariablesNtuple(mainNode, id);
+        mainNode = this->defineVariablesNtuple(mainNode, sample, id);
         LOG(DEBUG) << "Finished adding custom reco variables\n";
 
         if (m_config->configDefineAfterCustomClass()) {
@@ -388,7 +388,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     }
 
     for (const auto& itruth : sample->truths()) {
-        this->processSingleTruthTreeNtuple(itruth, selectedFilePaths, fileName, id);
+        this->processSingleTruthTreeNtuple(itruth, selectedFilePaths, fileName, sample, id);
     }
 
     ObjectCopier copier(selectedFilePaths);
@@ -474,7 +474,7 @@ std::vector<std::vector<ROOT::RDF::RNode> > MainFrame::applyFilters(ROOT::RDF::R
             }
 
             ROOT::RDF::RNode filter = mainNode.Filter(this->systematicFilter(sample, isyst, ireg));
-            filter = this->defineVariablesRegion(filter, id, ireg->name());
+            filter = this->defineVariablesRegion(filter, sample, id, ireg->name());
             perSystFilter.emplace_back(std::move(filter));
         }
         result.emplace_back(std::move(perSystFilter));
@@ -1434,7 +1434,7 @@ ROOT::RDF::RNode MainFrame::addTruthVariablesToReco(ROOT::RDF::RNode node,
             node = this->addCustomTruthDefinesFromConfig(node, sample, treeName);
         }
         LOG(DEBUG) << "Adding custom truth variables from the code for tree: " << treeName << "\n";
-        node = this->defineVariablesTruth(node, treeName, id);
+        node = this->defineVariablesTruth(node, treeName, sample, id);
         LOG(DEBUG) << "Finished adding custom truth variables\n";
         if (m_config->configDefineAfterCustomClass()) {
             node = this->addCustomTruthDefinesFromConfig(node, sample, treeName);
@@ -1486,7 +1486,7 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
             if (!m_config->configDefineAfterCustomClass()) {
                 mainNode = this->addCustomTruthDefinesFromConfig(mainNode, sample, truthTreeName);
             }
-            mainNode = this->defineVariablesTruth(mainNode, truthTreeName, id);
+            mainNode = this->defineVariablesTruth(mainNode, truthTreeName, sample, id);
             if (m_config->configDefineAfterCustomClass()) {
                 mainNode = this->addCustomTruthDefinesFromConfig(mainNode, sample, truthTreeName);
             }
@@ -1502,6 +1502,7 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
 void MainFrame::processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth,
                                              const std::vector<std::string>& filePaths,
                                              const std::string& outputFilePath,
+                                             const std::shared_ptr<Sample>& sample,
                                              const UniqueSampleID& id) {
 
     LOG(INFO) << "Processing truth ntuple: " << truth->name() << ", from TTree: " << truth->truthTreeName() << "\n";
@@ -1520,7 +1521,7 @@ void MainFrame::processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth
     }
 
     LOG(DEBUG) << "Adding variables from the custom class\n";
-    mainNode = this->defineVariablesNtupleTruth(mainNode, truth->truthTreeName(), id);
+    mainNode = this->defineVariablesNtupleTruth(mainNode, truth->truthTreeName(), sample, id);
     LOG(DEBUG) << "Finsihed adding variables from the custom class\n";
 
     const std::vector<std::string> branches = Utils::selectedNotExcludedElements(mainNode.GetColumnNames(),
