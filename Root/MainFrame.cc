@@ -327,8 +327,6 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     if (!hasZeroEvents) {
         mainNode = this->minMaxRange(mainNode);
 
-        mainNode = this->addWeightColumns(mainNode, sample, id);
-
         // add TLorentzVectors for objects
         mainNode = this->addTLorentzVectors(mainNode);
 
@@ -344,6 +342,8 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
         if (m_config->configDefineAfterCustomClass()) {
             mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
         }
+
+        mainNode = this->addWeightColumns(mainNode, sample, id);
 
         m_systReplacer.printMaps();
 
