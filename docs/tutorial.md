@@ -291,8 +291,11 @@ make install
 cd ..
 ```
 
+!!! tip "Sample"
+    The `defineVariables` method of the class also provides `Sample` parameter (`sample`). You can use the poitner to get the Sample name as defined in the config file using `sample->name()`. See the class documentation [here](https://atlas-project-topreconstruction.web.cern.ch/fastframesdoxygen/classSample.html).
+
 !!! tip "UniqueSampleID"
-    The `systematicDefine` method of the class also provides `UniqueSampleID` parameter (`id`). This is a very simple class that allows to do per-sample specific operations. It has methods such as `id.dsid()`, `id.isData()`, `id.campaign()` that you can use to provide special defines based on these properties. See the class documentation [here](https://atlas-project-topreconstruction.web.cern.ch/fastframesdoxygen/classUniqueSampleID.html).
+    The `defineVariables` method of the class also provides `UniqueSampleID` parameter (`id`). This is a very simple class that allows to do per-sample specific operations. It has methods such as `id.dsid()`, `id.isData()`, `id.campaign()` that you can use to provide special defines based on these properties. See the class documentation [here](https://atlas-project-topreconstruction.web.cern.ch/fastframesdoxygen/classUniqueSampleID.html).
 
 !!! tip "On variable validity"
     The new variables/columns are added to the main node, i.e. before any selection. Make sure that the variables you define are always valid. For example if you access zeroth element of a vector, make sure it is not empty. For the undefined cases, you can put some dummy values.
@@ -696,7 +699,7 @@ You can control if the reco to truth matching between the input trees should be 
 This option is set to `False` by default and is automatically turned on when `match_variables` are provided.
 
 Similarly to the reco level, you can use the custom class to add new variables/columns to the truth level.
-The relevant method of the custom class is [WmassJESFrame::defineVariablesTruth](https://gitlab.cern.ch/tdado/wmassjescustomclass/-/blob/1085a47d141b4ab5d26629f880aa6a40adbbc535/Root/WmassJESFrame.cc#L629).
+The relevant method of the custom class is 'defineVariablesTruth'.
 
 !!! tip "Truth selection"
     You can apply selection on the truth level as well by setting the `selection` option in the given `truth` block.
@@ -726,7 +729,7 @@ You can also control which variables to be included in the output ntuple via `br
 Alternatively, you can also use `exclude_branches` options to select the branches to store.
 
 Similarly to the histogramming part, you can define custom variables in your custom class for the ntupling step.
-The relevant method in the custom class is [WmassJESFrame::defineVariablesNtuple](https://gitlab.cern.ch/tdado/wmassjescustomclass/-/blob/1085a47d141b4ab5d26629f880aa6a40adbbc535/Root/WmassJESFrame.cc#L623).
+The relevant method in the custom class is 'defineVariablesNtuple'.
 
 To run the ntupling step, do:
 ```

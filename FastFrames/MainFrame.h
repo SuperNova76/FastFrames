@@ -76,6 +76,7 @@ public:
    * @return ROOT::RDF::RNode the output node containg the new columns
    */
   virtual ROOT::RDF::RNode defineVariablesNtuple(ROOT::RDF::RNode node,
+                                                 const std::shared_ptr<Sample>& /*sample*/,
                                                  const UniqueSampleID& /*sampleID*/) {return node;}
 
   /**
@@ -86,6 +87,7 @@ public:
    * @return ROOT::RDF::RNode the output node containg the new columns
    */
   virtual ROOT::RDF::RNode defineVariables(ROOT::RDF::RNode node,
+                                           const std::shared_ptr<Sample>& /*sample*/,
                                            const UniqueSampleID& /*sampleID*/) {return node;}
 
   /**
@@ -96,6 +98,7 @@ public:
    * @return ROOT::RDF::RNode the output node containing the new columns
    */
   virtual ROOT::RDF::RNode defineVariablesRegion(ROOT::RDF::RNode node,
+                                                 const std::shared_ptr<Sample>&,
                                                  const UniqueSampleID&,
                                                  const std::string&) {return node;}
 
@@ -108,6 +111,7 @@ public:
    */
   virtual ROOT::RDF::RNode defineVariablesTruth(ROOT::RDF::RNode node,
                                                 const std::string& /*treeName*/,
+                                                const std::shared_ptr<Sample>& /*sample*/,
                                                 const UniqueSampleID& /*sampleID*/) {return node;}
 
 
@@ -120,6 +124,7 @@ public:
    */
   virtual ROOT::RDF::RNode defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                       const std::string& /*treeName*/,
+                                                      const std::shared_ptr<Sample>& /*sample*/,
                                                       const UniqueSampleID& /*sampleID*/) {return node;}
 
   /**
@@ -744,11 +749,13 @@ private:
    * @param truth
    * @param filePaths
    * @param outputPath
+   * @param sample
    * @param id
    */
   void processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth,
                                     const std::vector<std::string>& filePaths,
                                     const std::string& outputPath,
+                                    const std::shared_ptr<Sample>& sample,
                                     const UniqueSampleID& id);
 
 protected:

@@ -4,10 +4,12 @@
 #include "FastFrames/UniqueSampleID.h"
 
 ROOT::RDF::RNode CustomFrame::defineVariables(ROOT::RDF::RNode mainNode,
+                                              const std::shared_ptr<Sample>& /*sample*/,
                                               const UniqueSampleID& /*id*/) {
 
   // You can also use the UniqueSampleID object to apply a custom defione
-  // based on the sample:
+  // based on the sample and the subsample
+  //   sample->name(): is the name of the sample defined in the config
   //   id.dsid() returns sample DSID
   //   id.campaign() returns sample campaign
   //   id.simulation() return simulation flavour
@@ -46,6 +48,7 @@ ROOT::RDF::RNode CustomFrame::defineVariables(ROOT::RDF::RNode mainNode,
 }
 
 ROOT::RDF::RNode CustomFrame::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
+                                                    const std::shared_ptr<Sample>& /*sample*/,
                                                     const UniqueSampleID& /*id*/) {
 
   auto LeadingElectronPtTight = [](const std::vector<ROOT::Math::PtEtaPhiEVector>& electrons,
@@ -68,6 +71,7 @@ ROOT::RDF::RNode CustomFrame::defineVariablesNtuple(ROOT::RDF::RNode mainNode,
 
 ROOT::RDF::RNode CustomFrame::defineVariablesTruth(ROOT::RDF::RNode node,
                                                    const std::string& treeName,
+                                                   const std::shared_ptr<Sample>& /*sample*/,
                                                    const UniqueSampleID& /*sampleID*/) {
 
   if (treeName != "truth") return node; // do not do anything for other trees ("truth" = parton truth)
@@ -81,11 +85,13 @@ ROOT::RDF::RNode CustomFrame::defineVariablesTruth(ROOT::RDF::RNode node,
 
 ROOT::RDF::RNode CustomFrame::defineVariablesNtupleTruth(ROOT::RDF::RNode node,
                                                          const std::string& /*treeName*/,
+                                                         const std::shared_ptr<Sample>& /*sample*/,
                                                          const UniqueSampleID& /*sampleID*/) {
   return node;
 }
 
 ROOT::RDF::RNode CustomFrame::defineVariablesRegion(ROOT::RDF::RNode mainNode,
+                                                    const std::shared_ptr<Sample>& /*sample*/,
                                                     const UniqueSampleID& /*id*/,
                                                     const std::string& /*regionName*/) {
 
