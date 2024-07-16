@@ -37,12 +37,10 @@ public:
    */
   ~ConfigSetting() = default;
 
-
   /**
    * @brief Set some regions, systematics and samples for testing
    */
   void setTestingValues();
-
 
   /**
    * @brief Path the output folder for histogram option
@@ -398,6 +396,20 @@ public:
    */
   inline bool useRegionSubfolders() const {return m_useRegionSubfolders;}
 
+  /**
+   * @brief Set the List Of Systematics Name
+   *
+   * @param name
+   */
+  inline void setListOfSystematicsName(const std::string& name) {m_listOfSystematicsName = name;}
+
+  /**
+   * @brief name for the list of systematics histogram
+   *
+   * @return const std::string&
+   */
+  inline const std::string& listOfSystematicsName() const {return m_listOfSystematicsName;}
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -424,4 +436,5 @@ private:
   CustomOptions m_customOptions;
   bool m_configDefineAfterCustomClass = false;
   bool m_useRegionSubfolders = false;
+  std::string m_listOfSystematicsName = "listOfSystematics";
 };

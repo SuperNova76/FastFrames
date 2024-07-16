@@ -14,6 +14,7 @@ General block:
 	cap_acceptance_selection: False
 	config_define_after_custom_class: False
 	use_region_subfolders: False
+	list_of_systematics_name: CustomListOfSystematics
 	luminosity, mc20a:  123456.0
 	luminosity, mc20d:  44630.6015625
 	create_tlorentz_vectors_for:

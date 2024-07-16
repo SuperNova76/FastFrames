@@ -195,6 +195,9 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("setUseRegionSubfolders",          &ConfigSettingWrapper::setUseRegionSubfolders)
         .def("useRegionSubfolders",             &ConfigSettingWrapper::useRegionSubfolders)
+
+        .def("setListOfSystematicsName",        &ConfigSettingWrapper::setListOfSystematicsName)
+        .def("listOfSystematicsName",           &ConfigSettingWrapper::listOfSystematicsName)
     ;
 
     /**

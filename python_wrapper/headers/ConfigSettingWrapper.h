@@ -495,6 +495,21 @@ class ConfigSettingWrapper {
          */
         inline bool useRegionSubfolders() const {return m_configSetting->useRegionSubfolders();}
 
+
+        /**
+         * @brief Set the List Of Systematics Name
+         *
+         * @param name
+         */
+        inline void setListOfSystematicsName(const std::string& name) {m_configSetting->setListOfSystematicsName(name);}
+
+        /**
+         * @brief name for the list of systematics histogram
+         *
+         * @return const std::string&
+         */
+        inline const std::string listOfSystematicsName() const {return m_configSetting->listOfSystematicsName();}
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };
