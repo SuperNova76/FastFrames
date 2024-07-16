@@ -33,6 +33,7 @@ The options are case sensitive. Example config files can be found in ```test/con
 | custom_options | dict | Optional block, which can be used to define additional options, which can then be used from the user's defined custom class (CustomFrame). All values in this block must be convertible to string |
 | config_define_after_custom_class | bool | Define custom columns from config after running column definitions from CustomClass. Default is ```False``` |
 | use_region_subfolders | bool | The default option is ```False```. If set to ```True```, the histograms for individual regions will be in separate sufolders. Please note, that this settings is not supported by ```TRExFitter``` |
+| list_of_systematics_name | str | Name of the histogram in the input ROOT files, where the list of systematic uncertainties is defined. The default is "listOfSystematics", since this is the histogram's name in the ntuples from TopCPToolit |
 
 ## `ntuples` block settings
 

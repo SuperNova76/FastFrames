@@ -806,13 +806,13 @@ std::vector<std::string> MainFrame::automaticSystematicNames(const std::vector<s
             throw std::invalid_argument("");
         }
 
-        std::unique_ptr<TH1F> hist(in->Get<TH1F>("listOfSystematics"));
+        std::unique_ptr<TH1> hist(in->Get<TH1>(m_config->listOfSystematicsName().c_str()));
         if (!hist) {
             ++nPaths;
             if (nPaths == paths.size()) {
-                LOG(WARNING) << "None of the files have \"listOfSystematics\" histogram. This can happen for cases of zero events passing, but please check the inputs\n";
+                LOG(WARNING) << "None of the files have \"" << m_config->listOfSystematicsName() << "\" histogram. This can happen for cases of zero events passing, but please check the inputs\n";
             } else {
-                LOG(WARNING) << "Cannot read histogram \"listOfSystematics\". Will try the next file\n";
+                LOG(WARNING) << "Cannot read histogram \"" << m_config->listOfSystematicsName() << "\". Will try the next file\n";
             }
             continue;
         }

@@ -56,6 +56,7 @@ class BlockReaderGeneral:
         self._cap_acceptance_selection = self._options_getter.get("cap_acceptance_selection", True, [bool])
         self._custom_options = self._options_getter.get("custom_options", {}, [dict])
         self._use_region_subfolders = self._options_getter.get("use_region_subfolders", False, [bool])
+        self._list_of_systematics_name = self._options_getter.get("list_of_systematics_name", None, [str])
 
         ## Default value for sumweights -> can be overriden in sample block
         self.default_sumweights = self._options_getter.get("default_sumweights", "NOSYS", [str])
@@ -162,6 +163,9 @@ class BlockReaderGeneral:
             self._input_sumweights_path = input_path + "/sum_of_weights.txt"
         self.cpp_class.setInputSumWeightsPath(self._input_sumweights_path)
         self.cpp_class.setInputFilelistPath(self._input_filelist_path)
+
+        if self._list_of_systematics_name is not None:
+            self.cpp_class.setListOfSystematicsName(self._list_of_systematics_name)
 
     def add_region(self, region : RegionWrapper) -> None:
         """!Add region to the C++ ConfigSetting class
