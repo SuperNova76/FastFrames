@@ -360,6 +360,8 @@ class TrexSettingsGetter:
             dictionary["AddSample"] = sample_setting_dict["AddSample"]
         if "SubtractSample" in sample_setting_dict:
             dictionary["SubtractSample"] = sample_setting_dict["SubtractSample"]
+        if "Morphing" in sample_setting_dict:
+            dictionary["Morphing"] = sample_setting_dict["Morphing"]
 
         region_names = vector_to_list(sample.regionsNames())
         selected_regions = []
