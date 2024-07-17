@@ -114,6 +114,8 @@ Options to override:
 
 If provided by the user, the following option will be added to the sample definition in the TRExFitter config:
 
+```Morphing:```
+
 ```Template:```
 
 #### Systematics block:
