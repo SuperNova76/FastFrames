@@ -139,8 +139,8 @@ else()
    message(STATUS "ONNX Runtime not found - Disabling ONNXWrapper")
 
    # Remove ONNXWrapper source files from the lists
-   list(REMOVE_ITEM LIB_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/FastFrames/ONNXWrapper.h )
-   list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Root/ONNXWrapper.cc )
+   #list(REMOVE_ITEM LIB_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/FastFrames/ONNXWrapper.h )
+   #list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Root/ONNXWrapper.cc )
 endif()
 
 # Build the shared library.

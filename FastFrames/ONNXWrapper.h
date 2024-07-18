@@ -5,6 +5,9 @@
  */
 #pragma once
 
+
+#ifdef ONNXRUNTIME_AVAILABLE
+
 #include "FastFrames/Logger.h"
 
 #include <onnxruntime_cxx_api.h>
@@ -41,7 +44,7 @@ public:
 
   /**
    * @brief General purpose method to run inference. Don't directly use this method, use the ONNXWrapper::Inference object instead, if possible.
-   * 
+   *
    * @param input_tensors list of inputs
    * @return std::vector<Ort::Value>
    */
@@ -50,14 +53,14 @@ public:
     unsigned index_network = 0
   ) {
     Ort::Session& session = *m_sessions[index_network];
-    
+
     auto output_tensors = session.Run(Ort::RunOptions{nullptr}, m_input_names_cstr.data(), input_tensors.data(), input_tensors.size(), m_output_names_cstr.data(), m_output_names_cstr.size());
     return output_tensors;
   }
 
   /**
    * @brief Run inference
-   * 
+   *
    * @param infer ONNXWrapper::Inference object created using createInferenceInstance()
    * @param index_network which model file to use for inference, used from cross-validation
    * @return std::vector<Ort::Value>
@@ -72,7 +75,7 @@ public:
 
   /**
    * @brief Helper function to get the index used as the second argument of the evaluate(Inference& infer, unsigned index_network=0) method.
-   * 
+   *
    * @param eventNumber eventNumber of the event for which the inference will be run
    * @return unsigned int
    */
@@ -89,19 +92,19 @@ public:
       friend ONNXWrapper;
       /**
        * @brief Clear the staged inputs, needed to re-use an ONNXWrapper::Inference object
-       * 
+       *
        */
       void clearInputs() {m_input_tensors.clear();}
 
       /**
        * @brief Clear the previously calculated outputs
-       * 
+       *
        */
       void clearOutputs() {m_output_tensors.clear();}
 
       /**
        * @brief Add a new input tensor to the list of the model inputs to use for inference
-       * 
+       *
        * @param T data type of an individual tensor element
        * @param p_data pointer to the tensor data stored as a flat array
        * @param p_data_element_count total number of elements in the input tensor
@@ -119,7 +122,7 @@ public:
 
       /**
        * @brief Add a new input tensor to the list of the model inputs to use for inference
-       * 
+       *
        * @param T data type of an individual tensor element
        * @param values tensor data stored as a std::vector
        * @param shape tensor shape stored as a std::vector
@@ -135,7 +138,7 @@ public:
 
       /**
        * @brief Sets the input tensor for a specific input layer to use for inference
-       * 
+       *
        * @param T data type of an individual tensor element
        * @param node_name name of the input layer
        * @param p_data pointer to the tensor data stored as a flat array
@@ -166,7 +169,7 @@ public:
 
       /**
        * @brief Sets the input tensor for a specific input layer to use for inference
-       * 
+       *
        @param T data type of an individual tensor element
        * @param values tensor data stored as a std::vector
        * @param shape tensor shape stored as a std::vector
@@ -179,7 +182,7 @@ public:
       /**
        * @brief Gets the model output after running inference
        *
-       * @param T data type of the full output tensor 
+       * @param T data type of the full output tensor
        * @param node index of the output layer
        * @return pointer to the output tensor
        */
@@ -190,7 +193,7 @@ public:
 
       /**
        * @brief Gets the model output after running inference
-       * 
+       *
        * @param T data type of the full output tensor
        * @param node name of the output layer
        * @return pointer to the output tensor
@@ -211,7 +214,7 @@ public:
       ONNXWrapper& m_onnx;
       std::vector<Ort::Value> m_input_tensors;
       std::vector<Ort::Value> m_output_tensors;
-    
+
     private:
       Inference() = delete;
       explicit Inference(ONNXWrapper& onnx): m_onnx(onnx) {};
@@ -238,3 +241,5 @@ protected:
   std::unordered_map<std::string, unsigned> m_input_name_index;
   std::unordered_map<std::string, unsigned> m_output_name_index;
 };
+
+#endif // ONNXRUNTIME_AVAILABLE
