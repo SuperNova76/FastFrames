@@ -251,12 +251,12 @@ std::tuple<std::vector<SystematicHisto>,
 
     mainNode = this->minMaxRange(mainNode);
 
+    // add TLorentzVectors for objects
+    mainNode = this->addTLorentzVectors(mainNode);
+
     if (!m_config->configDefineAfterCustomClass()) {
         mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
     }
-
-    // add TLorentzVectors for objects
-    mainNode = this->addTLorentzVectors(mainNode);
 
     // this is the method users will be able to override
     LOG(DEBUG) << "Adding custom reco variables from the code\n";

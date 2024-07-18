@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #44](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/47): Move order of TLV creation before the custom define calls.
 - [issue #44](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/44): Adding an option to specify the name of the listOfSystematics histogram.
 - [issue #46](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/46): Fix the problem of not being able to use custom-defined variables as weights when running the ntuple step.
 - [issue #45](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/45): Pass Sample objects to the custom class defines. *THIS BREAKS USERS INTERFACE. CHECK THE ASSOCIATED MERGE REQUEST WITH DETAILS ON WHAT NEEDS TO BE UPDATED*.
