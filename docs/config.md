@@ -170,3 +170,36 @@ It contains list of dictionaries, each of them having the values defined in the 
 | min               | int               | Minimal value of the number in the name that should be used for the replacement.   |
 | max               | int               | Maximal value of the number in the name that should be used for the replacement.   |
 | values            | list of strings   | This can be used instead of ```min``` and ```max``` options, to define a sequence of values to use for replacement, for example ```["170", "172.5", "175"]``` |
+
+## `simple_onnx_inference` block settings
+
+| **Option**        | **Value type**    | **Function** |
+| ----------------- | ----------------- | ------------ |
+| name              | string            | Name of the ML model |
+| model_paths       | list of strings   | Paths to the ONNX model files for different folds in k-fold validation. Number of folds is determined by the length of this list, and the fold id is given by `eventNumber % nFolds`. |
+| inputs            | list of dicts     | Mapping between the input layer names and the lists of input columns to feed into the correspondinf layer. Only `float32` columns are supported. |
+| outputs           | list of dicts     | Mapping between the output layer names and the lists of output columns to create from the corresponding layer. Use a blank string in this list to skip creating a corresponding output column. |
+
+### Example
+
+For a set of ONNX models with one dense input layer `args_0` of size 4 and one dense output layer `softmax_output` of size 3, this config block would look like this. The model output is a `float32` array of length 3, however only the first and third elements are exported as two output coulumns.
+```
+general:
+  ...
+  define_custom_columns:
+    - name: "only_el_pt_NOSYS"
+      definition: "el_pt_NOSYS[0]"
+    - name: "only_el_eta_NOSYS"
+      definition: "el_eta[0]"
+
+simple_onnx_inference:
+  - name: "MVA_model_1"
+    model_paths: [
+      "/path/to/the/model_fold_0.onnx", 
+      "/path/to/the/model_fold_1.onnx"
+    ]
+    inputs:
+      "args_0": ["only_el_pt_NOSYS", "only_el_eta_NOSYS", "met_met_NOSYS", "met_phi_NOSYS"]
+    outputs:
+      "softmax_output": ["signal_score_NOSYS", "", "bkg2_score_NOSYS"]
+```

@@ -18,10 +18,27 @@ general:
   define_custom_columns:
     - name: "jet_pt_GeV_NOSYS"
       definition: "jet_pt_NOSYS/1e3"
+    - name: "only_el_pt_NOSYS"
+      definition: "el_pt_NOSYS[0]"
+    - name: "only_el_eta_NOSYS"
+      definition: "el_eta[0]"
+
+simple_onnx_inference:
+  - name: "MVA_model_1"
+    model_paths: [
+      "test/input/onnx_model/model_fold_0.onnx",
+      "test/input/onnx_model/model_fold_1.onnx"
+    ]
+    fold_formula: ""
+    inputs:
+      "args_0": ["only_el_pt_NOSYS", "only_el_eta_NOSYS", "met_met_NOSYS", "met_phi_NOSYS"]
+    outputs:
+      "softmax_output": ["signal_score_NOSYS", "", "bkg2_score_NOSYS"]
+
 
 ntuples:
   selection: "el_pt_NOSYS[0] > 30000" # optional
-  branches: ["weight_total_.*", "jet_pt_.*", "eventNumber"] # optional, if not provided, use all branches
+  branches: ["eventNumber","leading_el_pt_NOSYS", "leading_el_eta_NOSYS", "met_met_NOSYS", "met_phi_NOSYS", "signal_score_NOSYS", "bkg2_score_NOSYS"] # optional, if not provided, use all branches
   copy_trees: ["truth"]
 
 cutflows:
@@ -74,6 +91,22 @@ regions:
           min: -3.2
           max: 3.2
           number_of_bins: 16
+      - name: "signal_score"
+        title : "signal_score"
+        definition: "signal_score_NOSYS"
+        type: "float"
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 100
+      - name: "bkg2_score"
+        title : "bkg2_score"
+        definition: "bkg2_score_NOSYS"
+        type: "float"
+        binning:
+          min: 0
+          max: 1
+          number_of_bins: 100
 
   - name: "Muon"
     selection: "mu_pt_NOSYS[0] > 30000"

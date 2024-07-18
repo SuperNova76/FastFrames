@@ -12,6 +12,7 @@
 #include "FastFrames/UniqueSampleID.h"
 #include "FastFrames/Utils.h"
 #include "FastFrames/VariableMacros.h"
+#include "FastFrames/SimpleONNXInference.h"
 
 #include "TChain.h"
 #include "TSystem.h"
@@ -23,6 +24,7 @@
 #include <iostream>
 #include <exception>
 #include <regex>
+#include <utility>
 
 using ROOT::VecOps::RVec;
 
@@ -272,6 +274,9 @@ std::tuple<std::vector<SystematicHisto>,
     // add truth variables if matching reco and truth
     mainNode = this->addTruthVariablesToReco(mainNode, sample, uniqueSampleID);
 
+    // run models from simple_onnx_inference block
+    mainNode = this->scheduleSimpleONNXInference(mainNode);
+
     m_systReplacer.printMaps();
 
     // book cutflows
@@ -342,6 +347,9 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
         if (m_config->configDefineAfterCustomClass()) {
             mainNode = this->addCustomDefinesFromConfig(mainNode, sample);
         }
+
+        // run models from simple_onnx_inference block
+        mainNode = this->scheduleSimpleONNXInference(mainNode);
 
         mainNode = this->addWeightColumns(mainNode, sample, id);
 

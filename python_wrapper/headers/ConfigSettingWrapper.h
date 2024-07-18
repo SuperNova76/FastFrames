@@ -10,6 +10,7 @@
 #include "FastFrames/Systematic.h"
 #include "FastFrames/Region.h"
 #include "FastFrames/Sample.h"
+#include "FastFrames/SimpleONNXInference.h"
 
 #include <memory>
 #include <map>
@@ -279,6 +280,30 @@ class ConfigSettingWrapper {
         void addSample(long long int sample_shared_ptr_int) {
             const std::shared_ptr<Sample> *sample = reinterpret_cast<std::shared_ptr<Sample> *>(sample_shared_ptr_int);
             m_configSetting->addSample(*sample);
+        };
+
+        /**
+         * @brief Get list of all models in simple_onnx_inference block
+         *
+         * @return const std::vector<unsigned long long> - vector of raw pointers to shared pointers to SimpleONNXInference objects
+         */
+        std::vector<unsigned long long> simpleONNXInferencesSharedPtrs() {
+            const std::vector<std::shared_ptr<SimpleONNXInference>> &inferences = m_configSetting->simpleONNXInferences();
+            std::vector<unsigned long long> inferences_ptr(inferences.size());
+            for (unsigned int i = 0; i < inferences.size(); ++i) {
+                inferences_ptr.at(i) = reinterpret_cast<unsigned long long>(&inferences.at(i));
+            }
+            return inferences_ptr;
+        };
+
+        /**
+         * @brief Add SimpleONNXinference to the config setting
+         *
+         * @param inference_shared_ptr_int - raw pointer to shared pointer with the SimpleONNXinference object
+         */
+        void addSimpleONNXInference(long long int inference_shared_ptr_int) {
+            const std::shared_ptr<SimpleONNXInference> *inference = reinterpret_cast<std::shared_ptr<SimpleONNXInference> *>(inference_shared_ptr_int);
+            m_configSetting->addSimpleONNXInference(*inference);
         };
 
         /**

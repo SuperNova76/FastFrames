@@ -12,6 +12,7 @@
 - [issue #41](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/41): Adding script for checking duplicate events in input root files.
 - [issue #40](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/40): Adding the possibility to select campaigns as command line input.
 - [issue #39](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/39): Fixing issue with inconsistent set of branches in empty input files in merging script.
+- [issue #38](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/38): Implementing a new config block for performing k-fold inference on simple ONNX models.
 - [issue #19](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/19): Adding support for non-default sumweights histograms.
 
 ### 2.2.0 <small>July 1, 2024</small>
