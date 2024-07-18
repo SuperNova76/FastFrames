@@ -94,6 +94,10 @@ def loadYMLConfig(pathToConfig):
             print(exc)
 
 def copyCustomClassFilesForSubmission(customClassPath):
+    # Do nothing if no custom class is used
+    if customClassPath is None:
+        return
+
     # First, remove any previous custom class used for condor jobs.
     try:
         os.remove('../../CustomClassForCondor/')
