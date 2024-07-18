@@ -3,6 +3,8 @@
 ## FastFrames releases
 
 ### Upcoming release
+
+### 3.0.0 <small>July 18, 2024</small>
 - [issue #48](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/48): Fix condor_submit.py script to work without a custom FF class.
 - [issue #47](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/47): Move order of TLV creation before the custom define calls.
 - [issue #44](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/44): Adding an option to specify the name of the listOfSystematics histogram.
