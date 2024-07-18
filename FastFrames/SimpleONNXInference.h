@@ -7,7 +7,7 @@
 #pragma once
 
 #ifdef ONNXRUNTIME_AVAILABLE
-  #include <FastFrames/ONNXWrapper.h>
+  #include "FastFrames/ONNXWrapper.h"
 #endif
 
 #include "FastFrames/Logger.h"
