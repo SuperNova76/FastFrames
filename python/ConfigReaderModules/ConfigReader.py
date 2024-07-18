@@ -15,6 +15,7 @@ from BlockReaderSystematic import BlockReaderSystematic, read_systematics_variat
 from CommandLineOptions import CommandLineOptions
 from AutomaticRangeGenerator import AutomaticRangeGenerator
 from BlockReaderCutflow import BlockReaderCutflow
+from BlockReaderSimpleONNXInference import BlockReaderSimpleONNXInference
 
 from python_wrapper.python.logger import Logger
 from ConfigReaderCpp import VariableWrapper, ConfigDefineWrapper
@@ -117,6 +118,18 @@ class ConfigReader:
                 self.block_ntuple.adjust_samples(self.samples)
             self.block_general.cpp_class.setNtuple(self.block_ntuple.cpp_class.getPtr())
 
+            self.simple_onnx_inferences = {}
+            self.has_simple_onnx_inference_block = "simple_onnx_inference" in self.block_getter
+            if self.has_simple_onnx_inference_block:
+                for simple_onnx_inference_dict in self.block_getter.get("simple_onnx_inference"):
+                    inference = BlockReaderSimpleONNXInference(simple_onnx_inference_dict)
+                    inferernce_name = inference.cpp_class.name()
+                    if inferernce_name in self.simple_onnx_inferences:
+                        Logger.log_message("ERROR", "Duplicate ONNX model name: {}".format(inferernce_name))
+                        exit(1)
+                    self.simple_onnx_inferences[inferernce_name] = inference
+                    self.block_general.cpp_class.addSimpleONNXInference(inference.cpp_class.getPtr())
+
             unused_blocks = self.block_getter.get_unused_options()
             if unused_blocks:
                 Logger.log_message("ERROR", "Unused blocks: {}".format(unused_blocks))
@@ -158,6 +171,27 @@ if __name__ == "__main__":
     custom_option_keys = block_general.get_list_of_custom_keys()
     for custom_option_key in custom_option_keys:
         print("\t", custom_option_key, ": ", block_general.cpp_class.getCustomOption(custom_option_key))
+
+    onnx_interfaces = block_general.get_onnx_inferences()
+    if len(onnx_interfaces) > 0:
+        print("\nONNX interfaces:")
+        for onnx_interface in onnx_interfaces:
+            print("\tname: ", onnx_interface.name())
+            print("\tmodel_paths: ")
+            for model_path in onnx_interface.modelPaths():
+                print("\t\t", model_path)
+
+            # print input layers
+            print("\tInput layers: (name, [branches]) ")
+            for input_layer_name in onnx_interface.getInputLayerNames():
+                print("\t\t" + input_layer_name, [x for x in onnx_interface.getInputLayerBranches(input_layer_name)])
+
+            # print output layers
+            print("\tOutput layers: (name, [branches]) ")
+            for output_layer_name in onnx_interface.getOutputLayerNames():
+                print("\t\t" + output_layer_name, [x for x in onnx_interface.getOutputLayerBranches(output_layer_name)])
+
+            print("\n")
 
     ntuple_cpp_object = block_general.get_ntuple_object()
     if ntuple_cpp_object:

@@ -40,6 +40,17 @@ general:
     btagging_WP: 85
     btagging_algorithm: "DL1"
 
+simple_onnx_inference:
+  - name: "MVA_model_1"
+    model_paths: [
+      "/path/to/the/model_fold_0.onnx",
+      "/path/to/the/model_fold_1.onnx"
+    ]
+    inputs:
+      "args_0": ["only_el_pt_NOSYS", "only_el_eta_NOSYS", "met_met_NOSYS", "met_phi_NOSYS"]
+    outputs:
+      "softmax_output": ["signal_score_NOSYS", "", "bkg2_score_NOSYS"]
+
 cutflows:
   - name: "selection_el"
     samples: ["Data", "ttbar_FS"] # optional, default is all samples

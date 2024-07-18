@@ -757,6 +757,14 @@ private:
                                     const std::string& outputPath,
                                     const std::shared_ptr<Sample>& sample,
                                     const UniqueSampleID& id);
+  
+  /**
+   * @brief Run inference on models from simple_onnx_inference block
+   *
+   * @param node Input node
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode scheduleSimpleONNXInference(ROOT::RDF::RNode node);
 
 protected:
 

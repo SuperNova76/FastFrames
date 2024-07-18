@@ -24,6 +24,18 @@ custom_options:
 	 btagging_WP :  85
 	 btagging_algorithm :  DL1
 
+ONNX interfaces:
+	name:  MVA_model_1
+	model_paths: 
+		 /path/to/the/model_fold_0.onnx
+		 /path/to/the/model_fold_1.onnx
+	Input layers: (name, [branches]) 
+		args_0 ['only_el_pt_NOSYS', 'only_el_eta_NOSYS', 'met_met_NOSYS', 'met_phi_NOSYS']
+	Output layers: (name, [branches]) 
+		softmax_output ['signal_score_NOSYS', '', 'bkg2_score_NOSYS']
+
+
+
 Ntuple block:
 	selection:  ((el_pt_NOSYS[0] > 30000) || (mu_pt_NOSYS[0] > 30000))
 	samples: [ ttbar_FS,Zjets_b ]

@@ -18,6 +18,7 @@
 #include "python_wrapper/headers/TruthWrapper.h"
 #include "python_wrapper/headers/CutflowWrapper.h"
 #include "python_wrapper/headers/ConfigDefineWrapper.h"
+#include "python_wrapper/headers/SimpleONNXInferenceWrapper.h"
 
 #include "python_wrapper/headers/DuplicateEventsChecker.h"
 #include "python_wrapper/headers/SumWeightsGetter.h"
@@ -196,6 +197,8 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("setUseRegionSubfolders",          &ConfigSettingWrapper::setUseRegionSubfolders)
         .def("useRegionSubfolders",             &ConfigSettingWrapper::useRegionSubfolders)
 
+        .def("simpleONNXInferencesSharedPtrs",  &ConfigSettingWrapper::simpleONNXInferencesSharedPtrs)
+        .def("addSimpleONNXInference",          &ConfigSettingWrapper::addSimpleONNXInference)
         .def("setListOfSystematicsName",        &ConfigSettingWrapper::setListOfSystematicsName)
         .def("listOfSystematicsName",           &ConfigSettingWrapper::listOfSystematicsName)
     ;
@@ -523,8 +526,6 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("treeName",       &ConfigDefineWrapper::treeName)
     ;
 
-
-
     /**
      * @brief Python wrapper SumWeightsGetter class
      *
@@ -534,6 +535,34 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
 
         .def("getSumWeightsNames",      &SumWeightsGetter::getSumWeightsNames)
         .def("getSumWeightsValues",     &SumWeightsGetter::getSumWeightsValues)
+    ;
+
+    /**
+     * @brief Python wrapper around SimpleONNXInference class
+     *
+     */
+    class_<SimpleONNXInferenceWrapper>("SimpleONNXInferenceWrapper",
+        init<std::string>())
+        // getPtr
+        .def("getPtr",          &SimpleONNXInferenceWrapper::getPtr)
+
+        // constructFromSharedPtr
+        .def("constructFromSharedPtr",  &SimpleONNXInferenceWrapper::constructFromSharedPtr)
+
+        // name
+        .def("name",            &SimpleONNXInferenceWrapper::name)
+
+        .def("setModelPaths",           &SimpleONNXInferenceWrapper::setModelPaths)
+        .def("modelPaths",              &SimpleONNXInferenceWrapper::modelPaths)
+        .def("setFoldFormula",          &SimpleONNXInferenceWrapper::setFoldFormula)
+
+        .def("addInput",                &SimpleONNXInferenceWrapper::addInput)
+        .def("getInputLayerNames",      &SimpleONNXInferenceWrapper::getInputLayerNames)
+        .def("getInputLayerBranches",   &SimpleONNXInferenceWrapper::getInputLayerBranches)
+
+        .def("addOutput",               &SimpleONNXInferenceWrapper::addOutput)
+        .def("getOutputLayerNames",     &SimpleONNXInferenceWrapper::getOutputLayerNames)
+        .def("getOutputLayerBranches",  &SimpleONNXInferenceWrapper::getOutputLayerBranches)
     ;
 
     /**
@@ -547,5 +576,4 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("duplicateRunNumbers",   &DuplicateEventChecker::duplicateRunNumbers)
         .def("duplicateEventNumbers", &DuplicateEventChecker::duplicateEventNumbers)
     ;
-
 }

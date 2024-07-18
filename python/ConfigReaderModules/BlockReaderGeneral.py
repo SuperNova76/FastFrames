@@ -5,7 +5,7 @@ from typing import Optional
 from BlockReaderCommon import set_paths
 set_paths()
 
-from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, SampleWrapper, NtupleWrapper, SystematicWrapper
+from ConfigReaderCpp import ConfigSettingWrapper, RegionWrapper, SampleWrapper, NtupleWrapper, SystematicWrapper, SimpleONNXInferenceWrapper
 from ConfigReaderCpp import StringVector, ptrVector
 from python_wrapper.python.logger import Logger
 from BlockOptionsGetter import BlockOptionsGetter
@@ -262,3 +262,15 @@ class BlockReaderGeneral:
         @return value of the option
         """
         return self.cpp_class.getCustomOption(key)
+
+    def get_onnx_inferences(self) -> list:
+        """!Get list of onnx interfaces
+        @return list of onnx interfaces
+        """
+        result = []
+        vector_onnx_interfaces = self.cpp_class.simpleONNXInferencesSharedPtrs()
+        for onnx_interface_ptr in vector_onnx_interfaces:
+            onnx_interface_cpp_object = SimpleONNXInferenceWrapper("")
+            onnx_interface_cpp_object.constructFromSharedPtr(onnx_interface_ptr)
+            result.append(onnx_interface_cpp_object)
+        return result

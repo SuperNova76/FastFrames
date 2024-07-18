@@ -12,6 +12,7 @@
 #include "FastFrames/Sample.h"
 #include "FastFrames/Systematic.h"
 #include "FastFrames/CustomOptions.h"
+#include "FastFrames/SimpleONNXInference.h"
 
 #include <map>
 #include <memory>
@@ -229,6 +230,22 @@ public:
     m_samples.push_back(samples);
   };
 
+  /**
+   * @brief Get list of all models in simple_onnx_inference block
+   *
+   * @return const std::vector<std::shared_ptr<SimpleONNXInference> >&
+   */
+  std::vector<std::shared_ptr<SimpleONNXInference> >& simpleONNXInferences() {return m_simpleONNXInferences;}
+
+  /**
+   * @brief Add a model from simple_onnx_inference block
+   *
+   * @param model
+   */
+  void addSimpleONNXInference(const std::shared_ptr<SimpleONNXInference> &model)  {
+    m_simpleONNXInferences.push_back(model);
+  };
+
 
   /**
    * @brief Get list of all Systematics
@@ -436,5 +453,6 @@ private:
   CustomOptions m_customOptions;
   bool m_configDefineAfterCustomClass = false;
   bool m_useRegionSubfolders = false;
+  std::vector<std::shared_ptr<SimpleONNXInference>> m_simpleONNXInferences;
   std::string m_listOfSystematicsName = "listOfSystematics";
 };
