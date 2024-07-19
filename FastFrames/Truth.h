@@ -140,6 +140,14 @@ public:
   const Variable& variableByName(const std::string& name) const;
 
   /**
+   * @brief Get Variable from Truth by name (non-const)
+   *
+   * @param name
+   * @return Variable&
+   */
+  Variable& variableByName(const std::string& name);
+
+  /**
    * @brief Set the Match Reco Truth flag
    *
    * @param flag

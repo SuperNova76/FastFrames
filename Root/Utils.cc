@@ -197,3 +197,61 @@ std::vector<std::string> Utils::selectedNotExcludedElements(const std::vector<st
 
     return result;
 }
+
+std::map<std::string, std::string> Utils::variablesWithFormulaReco(ROOT::RDF::RNode node,
+                                                                   const std::shared_ptr<Sample>& sample) {
+
+    std::map<std::string, std::string> result;
+
+    const std::vector<std::string>& columns = node.GetColumnNames();
+
+    for (const auto& iregion : sample->regions()) {
+        for (const auto& ivariable : iregion->variables()) {
+
+            const std::string& definition = ivariable.definition();
+
+            // skip if the column exists (is not a formula)
+            auto itrColumns = std::find(columns.begin(), columns.end(), definition);
+            if (itrColumns != columns.end()) continue;
+
+            // skip if it is already added
+            auto itrMap = result.find(definition);
+            if (itrMap != result.end()) continue;
+
+            const std::string newName = "internal_FastFrames_" + sample->name() + "_" + iregion->name() + "_" + std::to_string(result.size()) + "_NOSYS";
+            result.insert({definition, newName});
+        }
+    }
+
+    return result;
+}
+
+std::map<std::string, std::string>Utils::variablesWithFormulaTruth(ROOT::RDF::RNode node,
+                                                                   const std::shared_ptr<Sample>& sample,
+                                                                   const std::string& treeName) {
+
+    std::map<std::string, std::string> result;
+    const std::vector<std::string>& columns = node.GetColumnNames();
+
+    for (const auto& itruth : sample->truths()) {
+        const std::string truthTreeName = itruth->truthTreeName();
+        if (truthTreeName != treeName) continue;
+
+        for (const auto& ivariable : itruth->variables()) {
+            const std::string definition = ivariable.definition();
+
+            // skip if the column exists (is not a formula)
+            auto itrColumns = std::find(columns.begin(), columns.end(), definition);
+            if (itrColumns != columns.end()) continue;
+
+            // skip if it is already added
+            auto itrMap = result.find(definition);
+            if (itrMap != result.end()) continue;
+
+            const std::string newName = "internal_FastFrames_" + sample->name() + "_" + itruth->name() + "_" + std::to_string(result.size());
+            result.insert({definition, newName});
+        }
+    }
+
+    return result;
+}

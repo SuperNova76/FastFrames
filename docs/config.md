@@ -78,7 +78,7 @@ This block is optional.
 | ------------- | ----------------- | ------------ |
 | name          | string            | Variable name   |
 | title         | string            | Title of the histogram. One can specify also title of x and y axis, using a sting like this: ```"histo title;X axis title;Y axis title"```
-| definition    | string            | Definition of the variable. All branches affected by systematic uncertainties must have ```_NOSYS``` suffix     |
+| definition    | string            | Definition of the variable. All branches affected by systematic uncertainties must have ```_NOSYS``` suffix. Simple formulae are also supported (e.g. leading_jet_Pt_NOSYS/1e3)     |
 | binning       | dict              | Binning of the variable   |
 | is_nominal_only | bool            | If set to true, only histogram for NOSYS will be produced. Default is ```False``` |
 | type          | string            | Allows to tell the code to define the c++ template arguments for the histograms. This prevents JITing thus saving some CPU time and memory. Allowed options are "char", "bool", "int", "long long int","unsigned int", "unsigned long", "unsigned long long int", "float", "double". The vector version of all of these types (except for "vector\<bool>") are also supported - one example is "vector\<float>". ROOT::RVec<type> are also supported, see [here](https://root.cern/doc/master/classROOT_1_1VecOps_1_1RVec.html). If not provided the JITed version will be used. |

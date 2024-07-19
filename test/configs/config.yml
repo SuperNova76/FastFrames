@@ -75,14 +75,11 @@ regions:
           number_of_bins: 10
       - name: "met_met"
         title : "histo title;X axis title;Y axis title"
-        definition: "met_met_NOSYS"
-        type: "float"
+        definition: "met_met_NOSYS/1e3"
+        type: "double"
         is_nominal_only: True
         binning:
-          #min: 0
-          #max: 250000
-          #number_of_bins: 100
-          bin_edges: [0,20000,60000,80000,140000,250000]
+          bin_edges: [0,20,60,80,140,250]
       - name: "met_phi"
         title : "histo title;X axis title;Y axis title"
         definition: "met_phi_NOSYS"
@@ -156,11 +153,11 @@ samples:
             truth: "Ttbar_MC_t_afterFSR_pt"
         variables:
           - name: "Ttbar_MC_t_afterFSR_pt"
-            definition:  "Ttbar_MC_t_afterFSR_pt"
-            type: "float"
+            definition:  "Ttbar_MC_t_afterFSR_pt/1e3"
+            type: "double"
             binning:
               min: 0
-              max: 500000
+              max: 500
               number_of_bins: 10
 
   - name: "Wjets"

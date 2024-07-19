@@ -34,25 +34,25 @@
 #define ADD_HISTO_1D_SUPPORT_SCALAR_TRUTH(CodeType, CppType) \
     case VariableType::CodeType : \
         return node.Histo1D<CppType, double>(variable.histoModel1D(), \
-                                             variable.definition(), \
-                                "weight_truth_TOTAL_"+truth->name()); \
+                                             definition, \
+                                             "weight_truth_TOTAL_"+truth->name()); \
         break;
 
 #define ADD_HISTO_1D_SUPPORT_VECTOR_TRUTH(CodeType, CppType) \
     case VariableType::CodeType : \
         return node.Histo1D<CppType, double>(variable.histoModel1D(), \
-                                             variable.definition(), \
-                                "weight_truth_TOTAL_"+truth->name()); \
+                                             definition, \
+                                             "weight_truth_TOTAL_"+truth->name()); \
         break; \
     case VariableType::VECTOR_##CodeType : \
         return node.Histo1D<std::vector<CppType>, double>(variable.histoModel1D(), \
-                                             variable.definition(), \
-                                "weight_truth_TOTAL_"+truth->name()); \
+                                                          definition, \
+                                                          "weight_truth_TOTAL_"+truth->name()); \
         break; \
     case VariableType::RVEC_##CodeType : \
         return node.Histo1D<ROOT::VecOps::RVec<CppType>, double>(variable.histoModel1D(), \
-                                             variable.definition(), \
-                                "weight_truth_TOTAL_"+truth->name()); \
+                                                                 definition, \
+                                                                 "weight_truth_TOTAL_"+truth->name()); \
         break;
 
 #define NOT_JIT_2D_HISTOGRAMS
