@@ -16,6 +16,7 @@
 #include "TH2D.h"
 #include "TH3D.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -133,4 +134,26 @@ namespace Utils {
   std::vector<std::string> selectedNotExcludedElements(const std::vector<std::string>& all,
                                                        const std::vector<std::string>& selected,
                                                        const std::vector<std::string>& excluded);
+
+  /**
+   * @brief Get the list of defined variables that use a formula and not the column name directly
+   *
+   * @param node Needed to get the list of the available columns
+   * @param sample Sample
+   * @return std::map<std::string, std::string>
+   */
+  std::map<std::string, std::string> variablesWithFormulaReco(ROOT::RDF::RNode node,
+                                                              const std::shared_ptr<Sample>& sample);
+
+    /**
+   * @brief Get the list of defined variables that use a formula and not the column name directly
+     *
+     * @param node Needed to get the list of all available columns
+     * @param sample Sample
+     * @param treeName name of the tree
+     * @return std::map<std::string, std::string> formula | new name
+     */
+  std::map<std::string, std::string> variablesWithFormulaTruth(ROOT::RDF::RNode node,
+                                                               const std::shared_ptr<Sample>& sample,
+                                                               const std::string& treeName);
 }

@@ -757,7 +757,7 @@ private:
                                     const std::string& outputPath,
                                     const std::shared_ptr<Sample>& sample,
                                     const UniqueSampleID& id);
-  
+
   /**
    * @brief Run inference on models from simple_onnx_inference block
    *
@@ -765,6 +765,27 @@ private:
    * @return ROOT::RDF::RNode
    */
   ROOT::RDF::RNode scheduleSimpleONNXInference(ROOT::RDF::RNode node);
+
+  /**
+   * @brief Add columns for variables with a formula
+   *
+   * @param node
+   * @param sample
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode addVariablesWithFormulaReco(ROOT::RDF::RNode node, const std::shared_ptr<Sample>& sample);
+
+  /**
+   * @brief Add columns for variables in a truth tree
+   *
+   * @param node
+   * @param sample
+   * @param treeName
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode addVariablesWithFormulaTruth(ROOT::RDF::RNode node,
+                                                const std::shared_ptr<Sample>& sample,
+                                                const std::string& treeName);
 
 protected:
 
@@ -785,6 +806,18 @@ protected:
    *
    */
   SystematicReplacer m_systReplacer;
+
+  /**
+   * @brief Map of variables with formula for the reco tree, key = formula, value = new name
+   *
+   */
+  std::map<std::string, std::string> m_variablesWithFormulaReco;
+
+  /**
+   * @brief Map of variables with formula for the truth tree: tree name | formula | new name
+   *
+   */
+  std::map<std::string, std::map<std::string, std::string> > m_variablesWithFormulaTruth;
 
   /**
    * @brief Needed for ROOT to generate the dictionary

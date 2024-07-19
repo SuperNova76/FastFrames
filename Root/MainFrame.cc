@@ -233,7 +233,9 @@ std::tuple<std::vector<SystematicHisto>,
     std::vector<VariableHisto> truthHistos;
 
     if (sample->hasTruth()) {
+        LOG(DEBUG) << "Processing standalone truth histograms\n";
         truthHistos = this->processTruthHistos(selectedFilePaths, sample, uniqueSampleID);
+        LOG(DEBUG) << "Done processing standalone truth histograms\n";
     }
 
     // we could use any file from the list, use the first one
@@ -276,6 +278,11 @@ std::tuple<std::vector<SystematicHisto>,
 
     // run models from simple_onnx_inference block
     mainNode = this->scheduleSimpleONNXInference(mainNode);
+
+    // add columns for variables defined with a formula
+    mainNode = this->addVariablesWithFormulaReco(mainNode, sample);
+
+    LOG(DEBUG) << "Finished adding all columns to the reco tree\n";
 
     m_systReplacer.printMaps();
 
@@ -449,7 +456,13 @@ std::string MainFrame::systematicOrFilter(const std::shared_ptr<Sample>& sample)
 std::string MainFrame::systematicVariable(const Variable& variable,
                                           const std::shared_ptr<Systematic>& systematic) const {
 
-    const std::string& nominalVariable = variable.definition();
+    std::string nominalVariable = variable.definition();
+    auto itr = m_variablesWithFormulaReco.find(nominalVariable);
+    if (itr != m_variablesWithFormulaReco.end()) {
+        LOG(VERBOSE) << "Booking variable: " << variable.name() << " with column: " << itr->second << "\n";
+        nominalVariable = itr->second;
+    }
+
     const std::string systVariable = m_systReplacer.replaceString(nominalVariable, systematic);
 
     return systVariable;
@@ -921,8 +934,17 @@ void MainFrame::processRecoVsTruthHistograms2D(RegionHisto* regionHisto,
         }
         for (const auto& imatch : itruth->matchedVariables()) {
             const Variable& recoVariable  = region->variableByName(imatch.first);
-            const Variable& truthVariable = itruth->variableByName(imatch.second);
+            Variable& truthVariable = itruth->variableByName(imatch.second);
             if (recoVariable.isNominalOnly() && systematic->name() != "NOSYS") continue;
+
+            auto itrTree = m_variablesWithFormulaTruth.find(itruth->truthTreeName());
+            if (itrTree != m_variablesWithFormulaTruth.end()) {
+                auto itr = itrTree->second.find(truthVariable.definition());
+                if (itr != itrTree->second.end()) {
+                    truthVariable.setDefinition(itr->second);
+                    LOG(VERBOSE) << "Truth tree: " << itruth->truthTreeName() << ", etting truth variable: " << truthVariable.name() << " definition to: " << truthVariable.definition() << "\n";
+                }
+            }
 
             const std::string name = recoVariable.name() + "_vs_" + itruth->name() + "_" + truthVariable.name();
             VariableHisto2D variableHistoPassed(name);
@@ -1173,7 +1195,7 @@ ROOT::RDF::RNode MainFrame::systematicStringDefine(ROOT::RDF::RNode mainNode,
         if (isyst == "NOSYS") continue; // we already added nominal
         const std::string newName = StringOperations::replaceString(name, "NOSYS", isyst);
         const std::string newFormula = m_systReplacer.replaceString(formula, isyst);
-        LOG(VERBOSE) << "Adding custom variable from config: " << newName << ", formula: " << newFormula << "\n";
+        LOG(VERBOSE) << "Adding custom variable using strings: " << newName << ", formula: " << newFormula << "\n";
 
         mainNode = mainNode.Define(newName, newFormula);
 
@@ -1290,10 +1312,20 @@ ROOT::RDF::RResultPtr<TH1D> MainFrame::book1DhistoTruth(ROOT::RDF::RNode node,
 
     const std::string weightName = "weight_truth_TOTAL_" + truth->name();
 
+    std::string definition = variable.definition();
+    auto itrTree = m_variablesWithFormulaTruth.find(truth->truthTreeName());
+    if (itrTree != m_variablesWithFormulaTruth.end()) {
+        auto itr = itrTree->second.find(definition);
+        if (itr != itrTree->second.end()) {
+            definition = itr->second;
+            LOG(VERBOSE) << "Truth tree: " << truth->truthTreeName() << ", variable: " << variable.name() << ", using definition: " << definition << "\n";
+        }
+    }
+
     switch (variable.type()) {
         case VariableType::UNDEFINED:
             return node.Histo1D(variable.histoModel1D(),
-                                variable.definition(),
+                                definition,
                                 weightName);
             break;
         ADD_HISTO_1D_SUPPORT_VECTOR_TRUTH(CHAR,char)
@@ -1438,15 +1470,18 @@ ROOT::RDF::RNode MainFrame::addTruthVariablesToReco(ROOT::RDF::RNode node,
         const std::string& treeName = itruth->truthTreeName();
         if (std::find(uniqueTrees.begin(), uniqueTrees.end(), treeName) != uniqueTrees.end()) continue;
 
+        LOG(DEBUG) << "Adding custom truth variables from the code for tree: " << treeName << "\n";
         if (!m_config->configDefineAfterCustomClass()) {
             node = this->addCustomTruthDefinesFromConfig(node, sample, treeName);
         }
-        LOG(DEBUG) << "Adding custom truth variables from the code for tree: " << treeName << "\n";
         node = this->defineVariablesTruth(node, treeName, sample, id);
-        LOG(DEBUG) << "Finished adding custom truth variables\n";
         if (m_config->configDefineAfterCustomClass()) {
             node = this->addCustomTruthDefinesFromConfig(node, sample, treeName);
         }
+        LOG(DEBUG) << "Finished adding custom truth variables\n";
+
+        node = this->addVariablesWithFormulaTruth(node, sample, treeName);
+        LOG(DEBUG) << "Finished adding all truth variables\n";
         uniqueTrees.emplace_back(treeName);
     }
 
@@ -1486,6 +1521,7 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
             mainNode = mainNode.Define(weightName, totalWeight);
         }
 
+        LOG(DEBUG) << "Adding custom variables to truth tree: " << iTree << "\n";
         // add custom variables
         for (const auto& itruth : sample->truths()) {
             const std::string& truthTreeName = itruth->truthTreeName();
@@ -1500,6 +1536,11 @@ std::map<std::string, ROOT::RDF::RNode> MainFrame::prepareTruthNodes(const std::
             }
             break;
         }
+        LOG(DEBUG) << "Finished adding custom variables to truth tree: " << iTree << "\n";
+
+        mainNode = this->addVariablesWithFormulaTruth(mainNode, sample, iTree);
+
+        LOG(DEBUG) << "Finished adding all variables to truth tree: " << iTree << "\n";
 
         result.insert(std::make_pair(iTree, std::move(mainNode)));
     }
@@ -1544,4 +1585,35 @@ void MainFrame::processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth
     ROOT::RDF::RSnapshotOptions opts;
     opts.fMode = "UPDATE";
     mainNode.Snapshot(truth->name(), outputFilePath, branches, opts);
+}
+
+ROOT::RDF::RNode MainFrame::addVariablesWithFormulaReco(ROOT::RDF::RNode node, const std::shared_ptr<Sample>& sample) {
+    m_variablesWithFormulaReco = Utils::variablesWithFormulaReco(node, sample);
+
+    ROOT::RDF::RNode outNode = node;
+
+    for (const auto& [formula, name] : m_variablesWithFormulaReco) {
+        LOG(DEBUG) << "Adding column: " << name << " with formula: " << formula << "\n";
+        outNode = this->systematicStringDefine(outNode, name, formula);
+    }
+
+    return outNode;
+}
+
+ROOT::RDF::RNode MainFrame::addVariablesWithFormulaTruth(ROOT::RDF::RNode node,
+                                                         const std::shared_ptr<Sample>& sample,
+                                                         const std::string& treeName) {
+
+    auto map = Utils::variablesWithFormulaTruth(node, sample, treeName);
+
+    ROOT::RDF::RNode outNode = node;
+
+    for (const auto& [formula, name] : map) {
+        LOG(DEBUG) << "Adding column: " << name << " with formula: " << formula << " from truth tree: " << treeName << " to the reco tree\n";
+        outNode = outNode.Define(name, formula);
+    }
+
+    m_variablesWithFormulaTruth.insert({treeName, map   });
+
+    return outNode;
 }
