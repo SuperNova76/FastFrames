@@ -787,6 +787,12 @@ private:
                                                 const std::shared_ptr<Sample>& sample,
                                                 const std::string& treeName);
 
+  /**
+   * @brief Load the ONNX model
+   *
+   */
+  void prepareONNXwrapper();
+
 protected:
 
   /**

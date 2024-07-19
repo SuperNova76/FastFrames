@@ -67,6 +67,8 @@ void MainFrame::init() {
             this->readAutomaticSystematics(isample, isample->nominalOnly());
         }
     }
+
+    this->prepareONNXwrapper();
 }
 
 void MainFrame::executeHistograms() {
@@ -1616,4 +1618,10 @@ ROOT::RDF::RNode MainFrame::addVariablesWithFormulaTruth(ROOT::RDF::RNode node,
     m_variablesWithFormulaTruth.insert({treeName, map   });
 
     return outNode;
+}
+
+void MainFrame::prepareONNXwrapper() {
+    for (const auto& infer : m_config->simpleONNXInferences()) {
+        infer->initializeModels();
+    }
 }

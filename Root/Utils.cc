@@ -218,7 +218,7 @@ std::map<std::string, std::string> Utils::variablesWithFormulaReco(ROOT::RDF::RN
             auto itrMap = result.find(definition);
             if (itrMap != result.end()) continue;
 
-            const std::string newName = "internal_FastFrames_" + sample->name() + "_" + iregion->name() + "_" + std::to_string(result.size()) + "_NOSYS";
+            const std::string newName = "internal_FastFrames_" + iregion->name() + "_" + std::to_string(result.size()) + "_NOSYS";
             result.insert({definition, newName});
         }
     }
@@ -248,7 +248,7 @@ std::map<std::string, std::string>Utils::variablesWithFormulaTruth(ROOT::RDF::RN
             auto itrMap = result.find(definition);
             if (itrMap != result.end()) continue;
 
-            const std::string newName = "internal_FastFrames_" + sample->name() + "_" + itruth->name() + "_" + std::to_string(result.size());
+            const std::string newName = "internal_FastFrames_" + itruth->name() + "_" + std::to_string(result.size());
             result.insert({definition, newName});
         }
     }
