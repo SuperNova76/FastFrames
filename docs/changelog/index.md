@@ -3,6 +3,7 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #50](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/50): Read ONNX model only once at the beginning.
 - [issue #49](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/49): Add an option to use simple formuale in a variable definition in the config.
 
 ### 3.0.0 <small>July 18, 2024</small>

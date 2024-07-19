@@ -2,7 +2,6 @@
 
 ROOT::RDF::RNode MainFrame::scheduleSimpleONNXInference(ROOT::RDF::RNode node) {
     for (const auto& infer : m_config->simpleONNXInferences()) {
-        infer->initializeModels();
         std::vector<std::string> inputColumns = infer->getInputColumnNames();
         for (const auto& output: infer->getOutputMap()) {
             auto inferenceFunc = [infer, output](unsigned long long eventNumber, const std::vector<float> &inputValues) {
