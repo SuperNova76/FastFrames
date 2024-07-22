@@ -204,6 +204,9 @@ if __name__ == "__main__":
     askUserForConfirmation()
     checkAssumptions(generalBlockSettings)
 
+    #Create the directories for the logs
+    os.system*("mkdir -p output log error")
+
     # Create the executable file
     createExecutable(commandLineArguments.config,commandLineArguments.step)
 
