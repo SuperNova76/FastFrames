@@ -3,8 +3,9 @@
 ## FastFrames releases
 
 ### Upcoming release
+- [issue #52](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/52): Skip not-defined variables for a sample when creating formula for a variable.
 - [issue #51](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/51): Create log directories automatically when using condor submission. Check that paths in the config are relative to the submission position.
-- [issue #43](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/43): Add a workaround for the bug in ROOT until is fixed upstream.
+- [issue #43](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/43): Add a workaround for the bug in ROOT until it is fixed upstream.
 - [issue #50](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/50): Read ONNX model only once at the beginning.
 - [issue #49](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/49): Add an option to use simple formuale in a variable definition in the config.
 
