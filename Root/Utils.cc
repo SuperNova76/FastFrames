@@ -208,8 +208,12 @@ std::map<std::string, std::string> Utils::variablesWithFormulaReco(ROOT::RDF::RN
 
     const std::vector<std::string>& columns = node.GetColumnNames();
 
+    const std::vector<std::string>& variableNames = sample->variables();
     for (const auto& iregion : sample->regions()) {
         for (const auto& ivariable : iregion->variables()) {
+
+            auto itrVar = std::find(variableNames.begin(), variableNames.end(), ivariable.name());
+            if (itrVar == variableNames.end()) continue;
 
             const std::string& definition = ivariable.definition();
 
