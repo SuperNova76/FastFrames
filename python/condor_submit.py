@@ -150,6 +150,11 @@ def checkIsAFSorEOSPath(path):
         print(WARNING("The path to the output files is recommended to be an absolute path in EOS or AFS."))
         print(path," is neither an AFS or EOS path.")
 
+def checkFileExistsFromSubmissionPath(filePath):
+    if not os.path.exists(filePath):
+        print(ERROR("The file "+filePath+" does not exist or its position is not defined properly relative to /fastframes/python/ in the YML config file."))
+        exit()
+
 def checkAssumptions(geeneralBlock):
     # 1. The script is run from the fastframes/python directory
     currentPath = os.getcwd()
@@ -176,6 +181,18 @@ def checkAssumptions(geeneralBlock):
     checkIsAFSorEOSPath(pathToOutputHisotograms)
     checkIsAFSorEOSPath(pathToOutputNtuples)
 
+    # 5. Check the that the paths to the metadata and the xSec files are set up correctly in the config file.
+    # Check the metadata file
+    pathToInputFiles = geeneralBlock['input_filelist_path']
+    pathToInputSumW = geeneralBlock['input_sumweights_path']
+    checkFileExistsFromSubmissionPath(pathToInputFiles)
+    checkFileExistsFromSubmissionPath(pathToInputSumW)
+    # Check the xSec file
+    pathsToXSecFile = geeneralBlock['xsection_files']
+    print(pathsToXSecFile)
+    for path in pathsToXSecFile:
+        checkFileExistsFromSubmissionPath(path)
+
 def askUserForConfirmation():
     print(TITLE("This script submits jobs to the HTCondor batch system from an lxplus-like machine..."))
     print(DEBUG("Please read the following carefully... you are about to potentially submit a large number of jobs to the HTCondor batch system."))
@@ -184,6 +201,7 @@ def askUserForConfirmation():
     print(TITLE("2. "), "The build and install directories of FastFrames are two levels up from the current directory, i.e, at the same level than the FastFrames source code.")
     print(TITLE("3. "), "The metadata files are stored in a folder called metadata at the same level than the FastFrames source code.")
     print(TITLE("4. (OPTIONAL)"), "The path to the output files is an absolute path in EOS or AFS preferentially.")
+    print(TITLE("5. "), "The paths defined in the general block of the FastFrames configuration file are relative to /fastframes/python or absolute paths.")
     print("Are these assumptions correct? [y/n]")
     userConfirmation = input()
     if userConfirmation != "y":
@@ -205,7 +223,7 @@ if __name__ == "__main__":
     checkAssumptions(generalBlockSettings)
 
     #Create the directories for the logs
-    os.system*("mkdir -p output log error")
+    os.system("mkdir -p ../../output ../../log ../../error")
 
     # Create the executable file
     createExecutable(commandLineArguments.config,commandLineArguments.step)
