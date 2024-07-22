@@ -140,7 +140,7 @@ Samples block:
 	weight:  weight_mc_NOSYS * globalTriggerEffSF_NOSYS * weight_jvt_effSF_NOSYS * weight_pileup_NOSYS
 	systematic:  ['NOSYS']
 	selection_suffix: ""
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  True
 	hasCutflows:  False

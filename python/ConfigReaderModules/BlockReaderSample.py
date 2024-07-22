@@ -222,6 +222,9 @@ class BlockReaderSample:
         self.cpp_class.setSelectionSuffix(self._selection_suffix)
 
         vector_pairing_indices = StringVector()
+        if (self._reco_to_truth_pairing_indices != ["runNumber", "eventNumber"]):
+            Logger.log_message("ERROR", "You have used non-default set of reco-to-truth pairing indices. Due to a bug in ROOT: https://github.com/root-project/root/issues/7713 this is currently not supported")
+            exit(1)
         for reco_to_truth_pairing_index in self._reco_to_truth_pairing_indices:
             vector_pairing_indices.append(reco_to_truth_pairing_index)
         self.cpp_class.setRecoToTruthPairingIndices(vector_pairing_indices)

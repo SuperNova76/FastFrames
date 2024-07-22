@@ -217,7 +217,7 @@ Samples block:
 	weight:  (weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS)*(my_suffix_weight_for_ttbar)
 	systematic:  ['NOSYS', 'JET_BJES_Response__1up', 'JET_BJES_Response__1down', '0p5muF_0p5muR_NNPDF31_NLO_0118', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: ""
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  True
 	nominalOnly:  False
 	hasCutflows:  True
@@ -410,7 +410,7 @@ Samples block:
 	weight:  weight_mc_NOSYS
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down']
 	selection_suffix: "n_bjets_truth == 0 && n_cjets_truth == 0"
-	reco_to_truth_pairing_indices:  ['eventNumber', 'runNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  False
 	hasCutflows:  False
@@ -464,7 +464,7 @@ Samples block:
 	weight:  weight_mc_NOSYS
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: "n_bjets_truth > 0"
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  False
 	hasCutflows:  False
@@ -568,7 +568,7 @@ Samples block:
 	weight:  weight_mc_0p5
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: "n_bjets_truth > 0"
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  False
 	hasCutflows:  False
@@ -671,7 +671,7 @@ Samples block:
 	weight:  weight_mc_0p8
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: "n_bjets_truth > 0"
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  False
 	hasCutflows:  False
@@ -774,7 +774,7 @@ Samples block:
 	weight:  weight_mc_1p8
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: "n_bjets_truth > 0"
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  False
 	hasCutflows:  False
@@ -877,7 +877,7 @@ Samples block:
 	weight:  weight_mc_2p0
 	systematic:  ['NOSYS', 'btag_B_1__up', 'btag_B_1__down', 'btag_C_1__up', 'btag_C_1__down', 'btag_light_1__up', 'btag_light_1__down', 'btag_light_2__up', 'btag_light_2__down', 'btag_light_3__up', 'btag_light_3__down', 'btag_light_4__up', 'btag_light_4__down']
 	selection_suffix: "n_bjets_truth > 0"
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  False
 	hasCutflows:  False
@@ -980,7 +980,7 @@ Samples block:
 	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
 	systematic:  ['NOSYS']
 	selection_suffix: ""
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  True
 	hasCutflows:  False
@@ -1015,7 +1015,7 @@ Samples block:
 	weight:  weight_mc_NOSYS * weight_beamspot * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_btagSF_DL1dv01_FixedCutBEff_85_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS
 	systematic:  ['NOSYS']
 	selection_suffix: "n_fakes > 0"
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  True
 	hasCutflows:  False
@@ -1065,7 +1065,7 @@ Samples block:
 	weight:  1.
 	systematic:  ['NOSYS', 'bootstraps1']
 	selection_suffix: ""
-	reco_to_truth_pairing_indices:  ['eventNumber']
+	reco_to_truth_pairing_indices:  ['runNumber', 'eventNumber']
 	automaticSystematics:  False
 	nominalOnly:  False
 	hasCutflows:  True

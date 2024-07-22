@@ -793,6 +793,16 @@ private:
    */
   void prepareONNXwrapper();
 
+  /**
+   * @brief Add variables as protection for for a bug in root that does not know about events that are not matched between trees
+   *
+   * @param node
+   * @param sample
+   * @return ROOT::RDF::RNode
+   */
+  ROOT::RDF::RNode addMatchingIndexProtection(ROOT::RDF::RNode node,
+                                              const std::shared_ptr<Sample>& sample);
+
 protected:
 
   /**
@@ -824,6 +834,12 @@ protected:
    *
    */
   std::map<std::string, std::map<std::string, std::string> > m_variablesWithFormulaTruth;
+
+  /**
+   * @brief Map to store indices for mathing to truth trees
+   *
+   */
+  std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > m_indexMap;
 
   /**
    * @brief Needed for ROOT to generate the dictionary
