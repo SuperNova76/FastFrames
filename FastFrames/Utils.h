@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 
+class TChain;
+class TTreeIndex;
 class Sample;
 
 /**
@@ -156,4 +158,16 @@ namespace Utils {
   std::map<std::string, std::string> variablesWithFormulaTruth(ROOT::RDF::RNode node,
                                                                const std::shared_ptr<Sample>& sample,
                                                                const std::string& treeName);
+
+  /**
+   * @brief returns a set for each truth tree where each element represents runNumber and eventNumber for a reco event that can be matched
+   *
+   * @param treeNames Names of the trees
+   * @param recoChain Reco tree
+   * @param chains truth trees and the corresponding indices
+   * @return std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > >
+   */
+  std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > eventsAreMatchable(const std::vector<std::string>& treeNames,
+                                                                                                    const std::unique_ptr<TChain>& recoChain,
+                                                                                                    const std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > >& chains);
 }

@@ -18,7 +18,10 @@ if __name__ == "__main__":
     print("Files are different:\n\n")
 
     print("Diff:")
-    colordiff_installed = not system("colordiff {} {}".format(argv[1], argv[2]))
-    if not colordiff_installed:
+    colordiff_installed = system("command -v colordiff > /dev/null") == 0
+
+    if colordiff_installed:
+        system("colordiff {} {}".format(argv[1], argv[2]))
+    else:
         system("diff {} {}".format(argv[1], argv[2]))
     exit(1)

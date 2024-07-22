@@ -228,8 +228,10 @@ std::tuple<std::vector<SystematicHisto>,
     std::unique_ptr<TChain> recoChain = Utils::chainFromFiles(sample->recoTreeName(), selectedFilePaths);
     const bool hasZeroEvents = recoChain->GetEntries() == 0;
 
+
     if (sample->hasTruth()) {
         truthChains = this->connectTruthTrees(recoChain, sample, selectedFilePaths);
+        m_indexMap = Utils::eventsAreMatchable(sample->uniqueTruthTreeNames(), recoChain, truthChains);
     }
 
     std::vector<VariableHisto> truthHistos;
@@ -254,6 +256,10 @@ std::tuple<std::vector<SystematicHisto>,
     #if ROOT_VERSION_CODE > ROOT_VERSION(6,29,0)
     ROOT::RDF::Experimental::AddProgressBar(mainNode);
     #endif
+
+    if (sample->hasTruth()) {
+        mainNode = this->addMatchingIndexProtection(mainNode, sample);
+    }
 
     mainNode = this->minMaxRange(mainNode);
 
@@ -325,6 +331,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
     if (sample->hasTruth()) {
         truthChains = this->connectTruthTrees(chain, sample, selectedFilePaths);
+        m_indexMap = Utils::eventsAreMatchable(sample->uniqueTruthTreeNames(), chain, truthChains);
     }
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
@@ -368,6 +375,10 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
         if (!m_config->ntuple()->selection().empty()) {
             mainNode = mainNode.Filter(this->systematicOrFilter(sample));
         }
+    }
+
+    if (sample->hasTruth()) {
+        mainNode = this->addMatchingIndexProtection(mainNode, sample);
     }
 
     //store the file
@@ -950,6 +961,9 @@ void MainFrame::processRecoVsTruthHistograms2D(RegionHisto* regionHisto,
 
             const std::string name = recoVariable.name() + "_vs_" + itruth->name() + "_" + truthVariable.name();
             VariableHisto2D variableHistoPassed(name);
+
+            const std::string pairingFilter = itruth->truthTreeName() + "_IsMatched";
+            passedNode = passedNode.Filter(pairingFilter);
 
             ROOT::RDF::RResultPtr<TH2D> histogramPassed = this->book2Dhisto(passedNode, truthVariable, recoVariable, systematic);
 
@@ -1624,4 +1638,26 @@ void MainFrame::prepareONNXwrapper() {
     for (const auto& infer : m_config->simpleONNXInferences()) {
         infer->initializeModels();
     }
+}
+
+ROOT::RDF::RNode MainFrame::addMatchingIndexProtection(ROOT::RDF::RNode node,
+                                                       const std::shared_ptr<Sample>& sample) {
+
+    auto Function = [this](const unsigned int runNumber, const unsigned long long eventNumber, const std::string& treeName) {
+
+
+        const auto& map = this->m_indexMap.at(treeName);
+        auto itr = map.find(std::make_pair(runNumber, eventNumber));
+        return itr != map.end();
+    };
+
+    for (const auto& iTree : sample->uniqueTruthTreeNames()) {
+        auto FunctionTree = [Function, iTree](const unsigned int runNumber, const unsigned long long eventNumber) -> bool {
+            return Function(runNumber, eventNumber, iTree);
+        };
+        const std::string name = iTree + "_IsMatched";
+        node = node.Define(name, FunctionTree, {"runNumber", "eventNumber"});
+    }
+
+    return node;
 }

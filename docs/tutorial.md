@@ -743,9 +743,10 @@ The above block tells the code which variables to plot on the truth level.
 The above block tells the code to create the 2D plots for reco and truth variables.
 Since this requires matching reco and truth trees, the code needs to know how to merge the individual events.
 This is done using the `BuildIndex` functionality in TTree and it requires a unique set of variables for event identification.
-These can be set via the `reco_to_truth_pairing_indices` option. The default value is `eventNumber`.
+These can be set via the `reco_to_truth_pairing_indices` option. The default value is `[runNumber, eventNumber]`.
 You can control if the reco to truth matching between the input trees should be applied or not with: `pair_reco_and_truth_trees`.
 This option is set to `False` by default and is automatically turned on when `match_variables` are provided.
+For ntuple processing, a variable called `treeName + "_IsMatched"` will be available that will allow you to decide what to do with events that do not have a corresponding matched truth index for a truth tree `treeName`.
 
 Similarly to the reco level, you can use the custom class to add new variables/columns to the truth level.
 The relevant method of the custom class is 'defineVariablesTruth'.

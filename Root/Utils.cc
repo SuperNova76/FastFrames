@@ -9,6 +9,9 @@
 #include "FastFrames/Logger.h"
 #include "FastFrames/Sample.h"
 
+#include "TChain.h"
+#include "TTreeIndex.h"
+
 #include <algorithm>
 #include <exception>
 #include <regex>
@@ -252,6 +255,46 @@ std::map<std::string, std::string>Utils::variablesWithFormulaTruth(ROOT::RDF::RN
             result.insert({definition, newName});
         }
     }
+
+    return result;
+}
+
+std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > Utils::eventsAreMatchable(const std::vector<std::string>& treeNames,
+                                                                                                         const std::unique_ptr<TChain>& recoChain,
+                                                                                                         const std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > >& chains) {
+
+    LOG(INFO) << "Starting building the list of events that have a corresponding truth chain\n";
+    std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > result;
+
+    if (treeNames.size() != chains.size()) {
+        LOG(ERROR) << "Truth tree size and the chains size do not match!";
+        throw std::runtime_error{""};
+    }
+
+    for (std::size_t itruth = 0; itruth < chains.size(); ++itruth) {
+        std::set<std::pair<unsigned int, unsigned long long> > tmp;
+        result.insert({treeNames.at(itruth), tmp});
+    }
+
+    unsigned int runNumber(0);
+    unsigned long long eventNumber(0);
+
+    recoChain->SetBranchStatus("*", 0);
+    recoChain->SetBranchStatus("runNumber", 1);
+    recoChain->SetBranchStatus("eventNumber", 1);
+    recoChain->SetBranchAddress("runNumber", &runNumber);
+    recoChain->SetBranchAddress("eventNumber", &eventNumber);
+
+    for (long long int ireco = 0; ireco < recoChain->GetEntries(); ++ireco) {
+        recoChain->GetEvent(ireco);
+        for (std::size_t itruth = 0; itruth < chains.size(); ++itruth) {
+            const bool exist = chains.at(itruth).second->GetEntryNumberWithIndex(runNumber, eventNumber) >= 0;
+            if (exist) {
+                result.at(treeNames.at(itruth)).insert({runNumber,eventNumber});
+            }
+        }
+    }
+    LOG(INFO) << "Finished building the list\n";
 
     return result;
 }

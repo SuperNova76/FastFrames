@@ -74,7 +74,7 @@ class BlockReaderGeneral:
         self.define_custom_columns_truth = self._options_getter.get("define_custom_columns_truth", [], [list], [dict])
 
         ## Default indices for pairing truth with reco-level trees, can be overriden in sample block
-        self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", ["eventNumber"], [list], [str])
+        self.reco_to_truth_pairing_indices = self._options_getter.get("reco_to_truth_pairing_indices", ["runNumber", "eventNumber"], [list], [str])
 
         ## List of systematics regexes to exclude from automatic systematics -> can be overriden in sample block
         self.default_exclude_systematics = self._options_getter.get("exclude_systematics", [], [list], [str])
