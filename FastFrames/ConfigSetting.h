@@ -427,6 +427,34 @@ public:
    */
   inline const std::string& listOfSystematicsName() const {return m_listOfSystematicsName;}
 
+  /**
+   * @brief Set the Ntuple Compression Level
+   *
+   * @param level
+   */
+  inline void setNtupleCompressionLevel(const int level) {m_ntupleCompressionLevel = level;}
+
+  /**
+   * @brief Get the ntuple compression level
+   *
+   * @return int
+   */
+  inline int ntupleCompressionLevel() const {return m_ntupleCompressionLevel;}
+
+  /**
+   * @brief Set the Ntuple Auto Flush
+   *
+   * @param level
+   */
+  inline void setNtupleAutoFlush(const int level) {m_ntupleAutoFlush = level;}
+
+  /**
+   * @brief Get the ntuple auto flush
+   *
+   * @return int
+   */
+  inline int ntupleAutoFlush() const {return m_ntupleAutoFlush;}
+
 private:
   std::string m_outputPathHistograms;
   std::string m_outputPathNtuples;
@@ -455,4 +483,6 @@ private:
   bool m_useRegionSubfolders = false;
   std::vector<std::shared_ptr<SimpleONNXInference>> m_simpleONNXInferences;
   std::string m_listOfSystematicsName = "listOfSystematics";
+  int m_ntupleCompressionLevel = 1;
+  int m_ntupleAutoFlush = 0;
 };

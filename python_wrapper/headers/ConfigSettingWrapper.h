@@ -535,6 +535,34 @@ class ConfigSettingWrapper {
          */
         inline const std::string listOfSystematicsName() const {return m_configSetting->listOfSystematicsName();}
 
+        /**
+         * @brief Set the Ntuple Compression Level
+         *
+         * @param level
+         */
+        inline void setNtupleCompressionLevel(const int level) { m_configSetting->setNtupleCompressionLevel(level);}
+
+        /**
+         * @brief Get the ntuple compression level
+         *
+         * @return int
+         */
+        inline int ntupleCompressionLevel() const {return m_configSetting->ntupleCompressionLevel();}
+
+        /**
+         * @brief Set the Ntuple Auto Flush
+         *
+         * @param level
+         */
+        inline void setNtupleAutoFlush(const int level) { m_configSetting->setNtupleAutoFlush(level);}
+
+        /**
+         * @brief Get the ntuple auto flush
+         *
+         * @return int
+         */
+        inline int ntupleAutoFlush() const {return m_configSetting->ntupleAutoFlush();}
+
     private:
         std::shared_ptr<ConfigSetting> m_configSetting;
 };

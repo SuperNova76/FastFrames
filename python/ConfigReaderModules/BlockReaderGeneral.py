@@ -57,6 +57,8 @@ class BlockReaderGeneral:
         self._custom_options = self._options_getter.get("custom_options", {}, [dict])
         self._use_region_subfolders = self._options_getter.get("use_region_subfolders", False, [bool])
         self._list_of_systematics_name = self._options_getter.get("list_of_systematics_name", None, [str])
+        self._ntuple_compression_level = self._options_getter.get("ntuple_compression_level", None, [int])
+        self._ntuple_auto_flush = self._options_getter.get("ntuple_auto_flush", None, [int])
 
         ## Default value for sumweights -> can be overriden in sample block
         self.default_sumweights = self._options_getter.get("default_sumweights", "NOSYS", [str])
@@ -166,6 +168,13 @@ class BlockReaderGeneral:
 
         if self._list_of_systematics_name is not None:
             self.cpp_class.setListOfSystematicsName(self._list_of_systematics_name)
+
+        if self._ntuple_compression_level is not None:
+            self.cpp_class.setNtupleCompressionLevel(self._ntuple_compression_level)
+
+        if self._ntuple_auto_flush is not None:
+            self.cpp_class.setNtupleAutoFlush(self._ntuple_auto_flush)
+
 
     def add_region(self, region : RegionWrapper) -> None:
         """!Add region to the C++ ConfigSetting class

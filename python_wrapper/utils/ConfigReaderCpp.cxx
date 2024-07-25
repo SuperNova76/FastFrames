@@ -201,6 +201,12 @@ BOOST_PYTHON_MODULE(ConfigReaderCpp) {
         .def("addSimpleONNXInference",          &ConfigSettingWrapper::addSimpleONNXInference)
         .def("setListOfSystematicsName",        &ConfigSettingWrapper::setListOfSystematicsName)
         .def("listOfSystematicsName",           &ConfigSettingWrapper::listOfSystematicsName)
+
+        .def("setNtupleCompressionLevel",       &ConfigSettingWrapper::setNtupleCompressionLevel)
+        .def("ntupleCompressionLevel",          &ConfigSettingWrapper::ntupleCompressionLevel)
+
+        .def("setNtupleAutoFlush",              &ConfigSettingWrapper::setNtupleAutoFlush)
+        .def("ntupleAutoFlush",                 &ConfigSettingWrapper::ntupleAutoFlush)
     ;
 
     /**

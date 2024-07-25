@@ -23,6 +23,8 @@ general:
   number_of_cpus: 4
   max_event: 1000
   list_of_systematics_name: "CustomListOfSystematics"
+  ntuple_compression_level: 0
+  ntuple_auto_flush: 3
   luminosity:
     mc20a: 123456
     #mc20d: 111111 #default one from C++ part
