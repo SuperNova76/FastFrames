@@ -157,6 +157,8 @@ if __name__ == "__main__":
     print("\tconfig_define_after_custom_class:", block_general.cpp_class.configDefineAfterCustomClass())
     print("\tuse_region_subfolders:", block_general.cpp_class.useRegionSubfolders())
     print("\tlist_of_systematics_name:", block_general.cpp_class.listOfSystematicsName())
+    print("\tntuple_compression_level:", block_general.cpp_class.ntupleCompressionLevel())
+    print("\tntuple_auto_flush:", block_general.cpp_class.ntupleAutoFlush())
     print("\tluminosity, mc20a: ", block_general.cpp_class.getLuminosity("mc20a"))
     print("\tluminosity, mc20d: ", block_general.cpp_class.getLuminosity("mc20d"))
 

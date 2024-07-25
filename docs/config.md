@@ -34,6 +34,8 @@ The options are case sensitive. Example config files can be found in ```test/con
 | config_define_after_custom_class | bool | Define custom columns from config after running column definitions from CustomClass. Default is ```False``` |
 | use_region_subfolders | bool | The default option is ```False```. If set to ```True```, the histograms for individual regions will be in separate sufolders. Please note, that this settings is not supported by ```TRExFitter``` |
 | list_of_systematics_name | str | Name of the histogram in the input ROOT files, where the list of systematic uncertainties is defined. The default is "listOfSystematics", since this is the histogram's name in the ntuples from TopCPToolit |
+| ntuple_compression_level | int | Corresponding option from ```RDF::RSnapshotOptions``` used to produce ntuples. Default value is 1.
+| ntuple_auto_flush | int | Corresponding option from ```RDF::RSnapshotOptions``` used to produce ntuples. Default value is 0.
 
 ## `ntuples` block settings
 
@@ -195,7 +197,7 @@ general:
 simple_onnx_inference:
   - name: "MVA_model_1"
     model_paths: [
-      "/path/to/the/model_fold_0.onnx", 
+      "/path/to/the/model_fold_0.onnx",
       "/path/to/the/model_fold_1.onnx"
     ]
     inputs:

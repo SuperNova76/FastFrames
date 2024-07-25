@@ -1600,6 +1600,8 @@ void MainFrame::processSingleTruthTreeNtuple(const std::shared_ptr<Truth>& truth
 
     ROOT::RDF::RSnapshotOptions opts;
     opts.fMode = "UPDATE";
+    opts.fAutoFlush = m_config->ntupleAutoFlush();
+    opts.fCompressionLevel = m_config->ntupleCompressionLevel();
     mainNode.Snapshot(truth->name(), outputFilePath, branches, opts);
 }
 
