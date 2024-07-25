@@ -397,7 +397,10 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     }
     LOG(INFO) << "Writing the ntuple to: " << fileName << "\n";
     LOG(INFO) << "Triggering event loop for the reco tree!\n";
-    mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches);
+    ROOT::RDF::RSnapshotOptions opts;
+    opts.fAutoFlush = m_config->ntupleAutoFlush();
+    opts.fCompressionLevel = m_config->ntupleCompressionLevel();
+    mainNode.Snapshot(sample->recoTreeName(), fileName, selectedBranches, opts);
     LOG(INFO) << "Number of event loops: " << mainNode.GetNRuns() << ". For an optimal run, this number should be 1\n";
 
     auto nEntriesAfterCuts = mainNode.Count().GetValue();
