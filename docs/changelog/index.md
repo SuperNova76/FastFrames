@@ -3,6 +3,8 @@
 ## FastFrames releases
 
 ### Upcoming release
+
+### 3.1.0 <small>July 30, 2024</small>
 - [issue #53](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/53): Add options to control the compression setting when creating ntuples.
 - [issue #52](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/52): Skip not-defined variables for a sample when creating formula for a variable.
 - [issue #51](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/51): Create log directories automatically when using condor submission. Check that paths in the config are relative to the submission position.

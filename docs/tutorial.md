@@ -39,10 +39,10 @@ Now, clone the [repository](https://gitlab.cern.ch/atlas-amglab/fastframes) usin
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git FastFrames
 ```
 
-And switch to release v3.0.0 using:
+And switch to release v3.1.0 using:
 ```
 cd FastFrames
-git checkout v3.0.0
+git checkout v3.1.0
 cd ../
 ```
 
@@ -358,16 +358,16 @@ Note that, for a binary classifier, generally class `0` corresponds to the backg
 ### Config block for simple models
 FastFrames lets you run inference on *simple enough* ONNX models directly from its [config](#preparing-the-config-file-and-running), without requiring the user to write any extra C++ code. Needless to say, the user still needs to write some code to caluclate the input variables for the ML model, unless they are already present in the output of TopCPToolkit. They can be defined either in the `CustomFrame` or in the config file itself.
 
-So, what is *simple enough* model?  
+So, what is *simple enough* model?
 
-1. Each input layer must accept a 1-D tensor (excluding the batch dimension) of type `float32`.  
-2. The output layer that the user wants to access must produce a 1-D tensor (excluding the batch dimension) of type `float32`.  
->There can be other output layers with different dimensions and data types. As long as the user doesn't access them, it's fine.  
+1. Each input layer must accept a 1-D tensor (excluding the batch dimension) of type `float32`.
+2. The output layer that the user wants to access must produce a 1-D tensor (excluding the batch dimension) of type `float32`.
+>There can be other output layers with different dimensions and data types. As long as the user doesn't access them, it's fine.
 
 To check the model architecture, use a tool like [Netron](https://netron.app/) to visualize the model.
 It also shows the names, dimensions and data types of the input and output layers of the model.
 
-Here is an example:  
+Here is an example:
 
 <div style="display: flex; align-items: center;">
   <img src="../images/model_architecture.png" style="flex: 2; object-fit: contain; max-height: 640px">
@@ -384,7 +384,7 @@ To run inference on this model, add the following block in the config file:
 simple_onnx_inference:
   - name: "MVA_model_1"
     model_paths: [
-      "/path/to/the/model_fold_0.onnx", 
+      "/path/to/the/model_fold_0.onnx",
       "/path/to/the/model_fold_1.onnx"
     ]
     inputs:
