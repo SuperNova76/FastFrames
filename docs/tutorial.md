@@ -400,7 +400,7 @@ general:
   ...
   define_custom_columns:
     - name: "nJets_float_NOSYS"
-      definition: "static_cast<float>(nJets_NOSYS>)"
+      definition: "static_cast<float>(nJets_NOSYS)"
 ```
 
 Details of this `simple_onnx_inference` config block is available [here](../config/#simple_onnx_inference-block-settings).
