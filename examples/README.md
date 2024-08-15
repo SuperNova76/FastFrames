@@ -9,3 +9,4 @@
  * ttbb lepton+jets analysis: https://gitlab.cern.ch/ubc-atlas/ttbb/ttbbljetsframe
  * Dilepton reconstruction (example of using ONNX): https://gitlab.cern.ch/dbiswas/SAJAEvaluator
  * Fake lepton estimate for Matrix Method (1L): https://gitlab.cern.ch/tdado/FakeLeptonFrame
+ * ttHH analysis: https://gitlab.cern.ch/awierda/tthhclass
