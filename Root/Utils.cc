@@ -267,12 +267,17 @@ std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > U
                                                                                                          const std::unique_ptr<TChain>& recoChain,
                                                                                                          const std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > >& chains) {
 
-    LOG(INFO) << "Starting building the list of events that have a corresponding truth chain\n";
     std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > result;
 
     if (treeNames.size() != chains.size()) {
-        LOG(ERROR) << "Truth tree size and the chains size do not match!";
+        LOG(ERROR) << "Truth tree size and the chains size do not match!\n";
+        LOG(ERROR) << "Truth tree size: " << treeNames.size() << ", chains size: " << chains.size() << "\n";
         throw std::runtime_error{""};
+    }
+
+    // if no matching is needed just dont run it
+    if (treeNames.empty()) {
+        return result;
     }
 
     for (std::size_t itruth = 0; itruth < chains.size(); ++itruth) {
@@ -289,6 +294,7 @@ std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > U
     recoChain->SetBranchAddress("runNumber", &runNumber);
     recoChain->SetBranchAddress("eventNumber", &eventNumber);
 
+    LOG(INFO) << "Starting building the list of events that have a corresponding truth chain\n";
     for (long long int ireco = 0; ireco < recoChain->GetEntries(); ++ireco) {
         recoChain->GetEvent(ireco);
         for (std::size_t itruth = 0; itruth < chains.size(); ++itruth) {

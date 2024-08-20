@@ -46,6 +46,17 @@ std::vector<std::string> Sample::uniqueTruthTreeNames() const {
   return result;
 }
 
+std::vector<std::string> Sample::uniqueTruthTreeNamesForMatching() const {
+  std::vector<std::string> result;
+
+  for (const auto& itree : this->uniqueTruthTreeNames()) {
+    if (!this->matchTruthTree(itree)) continue;
+    result.emplace_back(itree);
+  }
+
+  return result;
+}
+
 const std::shared_ptr<Systematic>& Sample::nominalSystematic() const {
   auto itr = std::find_if(m_systematics.begin(), m_systematics.end(), [](const auto& element){return element->isNominal();});
   if (itr == m_systematics.end()) {

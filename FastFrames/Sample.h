@@ -190,6 +190,13 @@ public:
   std::vector<std::string> uniqueTruthTreeNames() const;
 
   /**
+   * @brief Get the list of truth tree names that are used for matching reco and truth
+   *
+   * @return std::vector<std::string>
+   */
+  std::vector<std::string> uniqueTruthTreeNamesForMatching() const;
+
+  /**
    * @brief Get nominal (i.e. name == "NOSYS") systematic
    *
    * @return const std::shared_ptr<Systematic>&
