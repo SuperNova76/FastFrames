@@ -231,7 +231,7 @@ std::tuple<std::vector<SystematicHisto>,
 
     if (sample->hasTruth()) {
         truthChains = this->connectTruthTrees(recoChain, sample, selectedFilePaths);
-        m_indexMap = Utils::eventsAreMatchable(sample->uniqueTruthTreeNames(), recoChain, truthChains);
+        m_indexMap = Utils::eventsAreMatchable(sample->uniqueTruthTreeNamesForMatching(), recoChain, truthChains);
     }
 
     std::vector<VariableHisto> truthHistos;
@@ -331,7 +331,7 @@ void MainFrame::processUniqueSampleNtuple(const std::shared_ptr<Sample>& sample,
     std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > truthChains;
     if (sample->hasTruth()) {
         truthChains = this->connectTruthTrees(chain, sample, selectedFilePaths);
-        m_indexMap = Utils::eventsAreMatchable(sample->uniqueTruthTreeNames(), chain, truthChains);
+        m_indexMap = Utils::eventsAreMatchable(sample->uniqueTruthTreeNamesForMatching(), chain, truthChains);
     }
     // we could use any file from the list, use the first one
     m_systReplacer.readSystematicMapFromFile(selectedFilePaths.at(0), sample->recoTreeName(), sample->systematics());
@@ -1027,12 +1027,7 @@ std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > M
 
     std::vector<std::pair<std::unique_ptr<TChain>, std::unique_ptr<TTreeIndex> > > result;
 
-    for (const auto& itruth : sample->uniqueTruthTreeNames()) {
-
-        if (!sample->matchTruthTree(itruth)) {
-            LOG(INFO) << "Truth tree: \"" << itruth << "\" not requested to be matched to the reco tree\n";
-            continue;
-        }
+    for (const auto& itruth : sample->uniqueTruthTreeNamesForMatching()) {
 
         const std::vector<std::string>& indexNames = sample->recoToTruthPairingIndices();
         if (indexNames.empty() || indexNames.size() > 2) {
@@ -1650,13 +1645,12 @@ ROOT::RDF::RNode MainFrame::addMatchingIndexProtection(ROOT::RDF::RNode node,
 
     auto Function = [this](const unsigned int runNumber, const unsigned long long eventNumber, const std::string& treeName) {
 
-
         const auto& map = this->m_indexMap.at(treeName);
         auto itr = map.find(std::make_pair(runNumber, eventNumber));
         return itr != map.end();
     };
 
-    for (const auto& iTree : sample->uniqueTruthTreeNames()) {
+    for (const auto& iTree : sample->uniqueTruthTreeNamesForMatching()) {
         auto FunctionTree = [Function, iTree](const unsigned int runNumber, const unsigned long long eventNumber) -> bool {
             return Function(runNumber, eventNumber, iTree);
         };
