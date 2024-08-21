@@ -4,6 +4,7 @@
 
 ### Upcoming release
 
+- [issue #55](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/55): Updating condor submission script to use StatAnalysis 0.4.
 - [issue #54](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/54): Fixing issue with trying to find matchable event for reco and truth trees that are not matched resulting in an ERROR.
 
 ### 3.1.0 <small>July 30, 2024</small>

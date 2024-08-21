@@ -33,6 +33,8 @@ def createParser():
     parser.add_argument("--max-time", help="Maximum time for the job to run. Default: 1h", default="microcentury")
     parser.add_argument("--dry-run", help="Creates the execution and submission environment without sending the jobs to HTCondor. Useful for debugging.", action="store_true")
     parser.add_argument("--chicago", help="Use this flag if you are running the jobs in the Chicago Analysis Facility.", action="store_true")
+    parser.add_argument("--local-data", help="Use this flag if you want to copy the data to the scratch directory where jobs run before running the jobs.", action="store_true")
+    parser.add_argument("--metadata-path",help="Path to directory containing the metadata of the input files.")
     return parser
 
 # The params dictionary contains the parameters that are calculated given the user input.
@@ -70,7 +72,7 @@ def createSubmissionFile(paramsDictionary):
         f.write("\n")
         f.write("queue arguments from inputSamples.txt\n")
 
-def createExecutable(configYMLPath,step):
+def createExecutable(configYMLPath,step,copyDataToScratch,metadataPath):
     # Copy the config file to the submission directory
     os.system('cp ' +configYMLPath+ ' HTCondorConfig.yml')
     with open("runFF.sh","w") as f:
@@ -78,9 +80,14 @@ def createExecutable(configYMLPath,step):
         f.write("shopt -s expand_aliases\n") # Enable aliases in the remote machine
         f.write("alias setupATLAS='source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh'\n") # Set up the ATLAS environment
         f.write("setupATLAS\n")
-        f.write("asetup StatAnalysis,0.3.2\n")
+        f.write("asetup StatAnalysis,0.4.0\n")
         f.write("source build/setup.sh\n") # Load the FastFrames environment
         f.write("source CustomClassForCondor/build/setup.sh\n") # Load the custom class environment
+        if copyDataToScratch:
+            if metadataPath is None:
+                print(ERROR("ERROR: Please provide the path to the permanet data directory that will be used to send data from."))
+                exit(1)
+            f.write("python3 fastframes/python/copyDataToScratch.py $_CONDOR_SCRATCH_DIR $1 "+metadataPath+"\n") # Copy the data to the scratch directory if requested
         f.write("cd fastframes/python\n")
         f.write("python3 FastFrames.py " + "--config HTCondorConfig.yml --step " +step+ " --samples $1\n") # Run
     # Give the file executable rights.
@@ -189,7 +196,6 @@ def checkAssumptions(geeneralBlock):
     checkFileExistsFromSubmissionPath(pathToInputSumW)
     # Check the xSec file
     pathsToXSecFile = geeneralBlock['xsection_files']
-    print(pathsToXSecFile)
     for path in pathsToXSecFile:
         checkFileExistsFromSubmissionPath(path)
 
@@ -226,7 +232,7 @@ if __name__ == "__main__":
     os.system("mkdir -p ../../output ../../log ../../error")
 
     # Create the executable file
-    createExecutable(commandLineArguments.config,commandLineArguments.step)
+    createExecutable(commandLineArguments.config,commandLineArguments.step,commandLineArguments.local_data,commandLineArguments.metadata_path)
 
     # Copy the necessary files to send with the job
     copyCustomClassFilesForSubmission(commandLineArguments.custom_class_path)
