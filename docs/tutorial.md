@@ -16,7 +16,7 @@ After logging to the machine do
 ```
 setupATLAS
 lsetup git # to setup newer version of git
-asetup StatAnalysis,0.4.0
+asetup StatAnalysis,0.4.1
 ```
 
 To check the version of ROOT setup, use:
@@ -39,10 +39,10 @@ Now, clone the [repository](https://gitlab.cern.ch/atlas-amglab/fastframes) usin
 git clone ssh://git@gitlab.cern.ch:7999/atlas-amglab/fastframes.git FastFrames
 ```
 
-And switch to release v3.1.0 using:
+And switch to release v3.2.0 using:
 ```
 cd FastFrames
-git checkout v3.1.0
+git checkout v3.2.0
 cd ../
 ```
 
