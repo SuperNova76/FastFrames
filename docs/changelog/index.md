@@ -4,6 +4,8 @@
 
 ### Upcoming release
 
+- [issue #57](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/57): Add 2023 luminosity default.
+
 ### 3.2.0 <small>August 27, 2024</small>
 
 - [issue #55](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/55): Updating condor submission script to use StatAnalysis 0.4.

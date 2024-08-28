@@ -26,6 +26,7 @@ m_systematics({})
     m_luminosity_map.insert({"mc20d", 44630.6});
     m_luminosity_map.insert({"mc20e", 58791.6});
     m_luminosity_map.insert({"mc23a", 29049.3});
+    m_luminosity_map.insert({"mc23d", 27060.0});
 };
 
 void ConfigSetting::setTestingValues()  {
