@@ -34,13 +34,7 @@ def prepare_output_folder(folder_path : str) -> None:
         os.makedirs(folder_path)
 
 
-if __name__ == "__main__":
-    config_path = CommandLineOptions().get_config_path()
-    step        = CommandLineOptions().get_step()
-
-    Logger.log_message("INFO", "Going to read the config: " + config_path)
-    config_reader = ConfigReader(config_path)
-
+def run_fastframes(config_reader : ConfigReader, step : str) -> None:
     fast_frames_executor = FastFramesExecutor(config_reader.block_general.cpp_class.getPtr())
 
     if step == "n":
@@ -50,3 +44,14 @@ if __name__ == "__main__":
         prepare_output_folder(config_reader.block_general.cpp_class.outputPathHistograms())
 
     fast_frames_executor.runFastFrames()
+
+
+if __name__ == "__main__":
+    config_path = CommandLineOptions().get_config_path()
+    step        = CommandLineOptions().get_step()
+
+    Logger.log_message("INFO", "Going to read the config: " + config_path)
+    config_reader = ConfigReader(config_path)
+
+    for char in step:
+        run_fastframes(config_reader, char)

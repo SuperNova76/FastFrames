@@ -216,6 +216,8 @@ Running ntuple part is similar to running histogramming part, you just need to s
 python3 FastFrames.py --config <path to your config> --step n
 ```
 
+It is also possible to use ```-step nh``` to run both ntuples and histograms from one command.
+
 #### Other command line options:
 
 In order to split the sample into multiple jobs, you can use the following command line option:
