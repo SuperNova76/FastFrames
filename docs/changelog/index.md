@@ -4,6 +4,7 @@
 
 ### Upcoming release
 
+- [issue #58](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/58): Adding the possibility to use ```-step nh`` to run both ntuple and histogramming step in one command.
 - [issue #57](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/57): Add 2023 luminosity default.
 
 ### 3.2.0 <small>August 27, 2024</small>
