@@ -112,8 +112,17 @@ This will setup an appropriate version of ROOT (you can check the ROOT version w
 
 #### Merging empty files and removing them
 
-The RDataFrame cannot handle well files with empty trees, but one can obtain such files from GRID production.
-In order to solve this problem, one can merge the empty files from grid with one non-empty file and then remove the original files which have been merged (to avoid double counting). There is a script to do this in the ```FastFrames``` repository:
+The RDataFrame cannot handle files with empty trees or no trees at all, but one can obtain such files from GRID production.
+
+---
+**NOTE**
+
+From TopCPToolkit v2.12.0 one should never get empty trees as part of the output files. Please see [here](https://gitlab.cern.ch/atlasphys-top/reco/TopCPToolkit/-/issues/169).
+
+Users of earlier TCT versions should use the legacy version of the merging script. See the note below.
+
+---
+In order to solve this problem, one can merge the empty files with one non-empty file and then remove the original files which have been merged (to avoid double counting). There is a script to do this in the ```FastFrames``` repository:
 
 You can run the script using the following command:
 
@@ -128,6 +137,17 @@ If one needs more detailed logging from this step, the following command line op
 ```
 --log_level <LOG LEVEL, FOR EXAMPLE "DEBUG">
 ```
+
+---
+**TopCPToolkit < v2.12.0 users**
+
+Earlier versions of TCT can produce files with empty trees. To use the merging script over this files please add the `--legacy-tct-output` flag to the merging command. Like:
+
+```
+python3 python/merge_empty_grid_files.py --root_files_folder <path to the folder with ROOT files> --legacy-tct-output
+```
+
+---
 
 #### Obtaining metadata files:
 
