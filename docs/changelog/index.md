@@ -4,6 +4,7 @@
 
 ### Upcoming release
 
+- [issue #59](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/59): Re-enable branches after doing the truth-reco pairing
 - [issue #58](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/58): Adding the possibility to use ```-step nh`` to run both ntuple and histogramming step in one command.
 - [issue #57](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/57): Add 2023 luminosity default.
 - [issue #56](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/56): Merging script for empty files updated for TCT v2.12.0 outputs. 
