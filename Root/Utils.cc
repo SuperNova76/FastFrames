@@ -305,6 +305,7 @@ std::map<std::string, std::set<std::pair<unsigned int, unsigned long long> > > U
         }
     }
     LOG(INFO) << "Finished building the list\n";
+    recoChain->SetBranchStatus("*", 1);
 
     return result;
 }

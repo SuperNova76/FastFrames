@@ -958,7 +958,7 @@ void MainFrame::processRecoVsTruthHistograms2D(RegionHisto* regionHisto,
                 auto itr = itrTree->second.find(truthVariable.definition());
                 if (itr != itrTree->second.end()) {
                     truthVariable.setDefinition(itr->second);
-                    LOG(VERBOSE) << "Truth tree: " << itruth->truthTreeName() << ", etting truth variable: " << truthVariable.name() << " definition to: " << truthVariable.definition() << "\n";
+                    LOG(VERBOSE) << "Truth tree: " << itruth->truthTreeName() << ", setting truth variable: " << truthVariable.name() << " definition to: " << truthVariable.definition() << "\n";
                 }
             }
 
