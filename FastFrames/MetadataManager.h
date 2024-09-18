@@ -44,9 +44,8 @@ public:
    *
    * @param path Path to the txt file
    *
-   * @return std::vector<int> list of unique dsids
    */
-  std::vector<int> readFileList(const std::string& path);
+  void readFileList(const std::string& path);
 
   /**
    * @brief Reads file with the sumweight information

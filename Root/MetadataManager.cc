@@ -19,15 +19,13 @@ MetadataManager::MetadataManager() noexcept
 {
 }
 
-std::vector<int> MetadataManager::readFileList(const std::string& path) {
+void MetadataManager::readFileList(const std::string& path) {
     std::ifstream file(path);
     if (!file.is_open() || !file.good()) {
         LOG(ERROR) << "Cannot open file with file list at: " << path << "\n";
         throw std::invalid_argument("");
     }
     LOG(DEBUG) << "Reading file list from: " << path << "\n";
-
-    std::vector<int> result;
 
     int dsid;
     std::string campaign;
@@ -44,15 +42,9 @@ std::vector<int> MetadataManager::readFileList(const std::string& path) {
         } else {
             itr->second.addFilePath(filePath);
         }
-
-        if (std::find(result.begin(), result.end(), dsid) == result.end()) {
-            result.emplace_back(dsid);
-        }
     }
 
     file.close();
-
-    return result;
 }
 
 void MetadataManager::readSumWeights(const std::string& path) {
@@ -89,8 +81,10 @@ void MetadataManager::readSumWeights(const std::string& path) {
 void MetadataManager::readXSectionFiles(const std::vector<std::string>& xSectionFiles, const std::vector<int>& usedDSIDs)  {
     XSectionManager xSectionManger(xSectionFiles, usedDSIDs);
 
-    for (auto &m_mapPair : m_metadata)    {
+    for (auto &m_mapPair : m_metadata) {
         const UniqueSampleID &uniqueSampleId = m_mapPair.first;
+        const int dsid = uniqueSampleId.dsid();
+        if (!usedDSIDs.empty() && std::find(usedDSIDs.begin(), usedDSIDs.end(), dsid) == usedDSIDs.end()) continue;
         if (uniqueSampleId.isData()) continue;
         Metadata &metadata = m_mapPair.second;
         const double xSec = xSectionManger.xSection(uniqueSampleId.dsid());
