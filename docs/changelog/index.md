@@ -4,6 +4,8 @@
 
 ### Upcoming release
 
+### 3.3.0 <small>September 18, 2024</small>
+
 - [issue #60](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/60): Only check for missing cross-section for DSIDs defined in the config
 - [issue #59](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/59): Re-enable branches after doing the truth-reco pairing
 - [issue #58](https://gitlab.cern.ch/atlas-amglab/fastframes/-/issues/58): Adding the possibility to use ```-step nh`` to run both ntuple and histogramming step in one command.
