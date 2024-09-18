@@ -39,18 +39,13 @@ void MainFrame::init() {
         ROOT::EnableImplicitMT(m_config->numCPU());
         LOG(INFO) << "Enabling implicit MT with " << m_config->numCPU() << " threads\n";
     }
-    std::vector<int> dsids = m_metadataManager.readFileList(m_config->inputFilelistPath());
+    m_metadataManager.readFileList(m_config->inputFilelistPath());
     m_metadataManager.readSumWeights(m_config->inputSumWeightsPath());
 
     // concatenate dsids from the file list and from the config file
     const std::vector<int> configDSIDs = m_config->uniqueDSIDs();
-    dsids.insert(dsids.end(), configDSIDs.begin(), configDSIDs.end());
 
-    // take only unique values
-    std::sort(dsids.begin(), dsids.end());
-    dsids.erase(std::unique(dsids.begin(), dsids.end()), dsids.end());
-
-    m_metadataManager.readXSectionFiles(m_config->xSectionFiles(), dsids);
+    m_metadataManager.readXSectionFiles(m_config->xSectionFiles(), configDSIDs);
 
     // propagate luminosity information from config
     for (const auto& ilumi : m_config->luminosityMap()) {
