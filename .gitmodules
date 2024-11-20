@@ -1,0 +1,3 @@
+[submodule "FastFrames"]
+	path = FastFrames
+	url = https://gitlab.cern.ch/atlasphys-top/reco/TopCPToolkit.git
