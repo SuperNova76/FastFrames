@@ -1,0 +1,25 @@
+#!@BASH_EXECUTABLE@
+#
+# Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
+#
+# Script used for installing a project for CPack. Hiding any build errors
+# from the package generator.
+#
+
+# Turn off error reporting:
+set +e
+
+# Install the project:
+DESTDIR="${DESTDIR}/usr"
+"@CMAKE_COMMAND@" --install "@CMAKE_BINARY_DIR@" 2>&1 | tee "@CMAKE_BINARY_DIR@/cmake_cpack_install.log"
+
+# Remove the .dbg files from being packaged, in case we are in RelWithDebInfo
+# build mode:
+OUTDIR="${DESTDIR}/@CMAKE_PROJECT_NAME@/@CPACK_PACKAGE_VERSION@/InstallArea/@ATLAS_PLATFORM@"
+"@CMAKE_COMMAND@" -E remove -f ${OUTDIR}/@CMAKE_INSTALL_BINDIR@/*.dbg \
+   2>&1 | tee -a "@CMAKE_BINARY_DIR@/cmake_cpack_install.log"
+"@CMAKE_COMMAND@" -E remove -f ${OUTDIR}/@CMAKE_INSTALL_LIBDIR@/*.dbg \
+   2>&1 | tee -a "@CMAKE_BINARY_DIR@/cmake_cpack_install.log"
+
+# Exit gracefully:
+exit 0

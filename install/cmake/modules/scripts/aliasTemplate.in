@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Copyright (C) 2002-2020 CERN for the benefit of the ATLAS collaboration
+#
+# Auto-generated script providing an alias for command "@_cmd@".
+#
+
+# Fail on errors.
+set -e
+
+# Run the command.
+exec @_cmd@ "$@"

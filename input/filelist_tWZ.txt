@@ -1,0 +1,1 @@
+601229  mc23a   fullsim /afs/cern.ch/user/n/nsangwen/FastFrames/input/tutorial_file.root

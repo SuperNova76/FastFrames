@@ -1,0 +1,5 @@
+
+  @CMAKE_PROJECT_NAME@ - @CMAKE_PROJECT_VERSION@
+
+ATLAS software project. Please put a README.txt.in file into your
+project to replace this generic one for your build.

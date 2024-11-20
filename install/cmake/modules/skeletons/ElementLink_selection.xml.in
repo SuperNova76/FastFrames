@@ -1,0 +1,4 @@
+<!-- Copyright (C) 2002-2017 CERN for the benefit of the ATLAS collaboration -->
+<!-- Create the ElementLink<@type@> dictionaries: -->
+<class name="ElementLink<@type@>" />
+<class name="SG::AuxTypeVectorFactory<ElementLink<@type@> >" />

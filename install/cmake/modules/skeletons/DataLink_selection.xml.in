@@ -1,0 +1,3 @@
+<!-- Copyright (C) 2002-2017 CERN for the benefit of the ATLAS collaboration -->
+<!-- Create the DataLink<@type@> dictionary: -->
+<class name="DataLink<@type@>" />

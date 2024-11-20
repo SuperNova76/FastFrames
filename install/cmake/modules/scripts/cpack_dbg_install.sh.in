@@ -1,0 +1,32 @@
+#!@BASH_EXECUTABLE@
+#
+# Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
+#
+# Script used for installing a project for CPack. Hiding any build errors
+# from the package generator.
+#
+
+# Turn off error reporting:
+set +e
+
+# Set the output directory:
+OUTDIR="${DESTDIR}/usr/@CMAKE_PROJECT_NAME@/@CPACK_PACKAGE_VERSION@/InstallArea/@ATLAS_PLATFORM@"
+
+# Create the bin and lib directories:
+"@CMAKE_COMMAND@" -E make_directory "${OUTDIR}/@CMAKE_INSTALL_BINDIR@" \
+    2>&1 | tee "@CMAKE_BINARY_DIR@/cmake_cpack_dbg_install.log"
+"@CMAKE_COMMAND@" -E make_directory "${OUTDIR}/@CMAKE_INSTALL_LIBDIR@" \
+    2>&1 | tee -a "@CMAKE_BINARY_DIR@/cmake_cpack_dbg_install.log"
+
+# Copy the debug files into the place CPack expects to find them:
+RUNTIME_OUTPUT_DIR="@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
+"@CMAKE_COMMAND@" -E copy ${RUNTIME_OUTPUT_DIR}/*.dbg \
+    "${OUTDIR}/@CMAKE_INSTALL_BINDIR@/" 2>&1 | \
+    tee -a "@CMAKE_BINARY_DIR@/cmake_cpack_dbg_install.log"
+LIBRARY_OUTPUT_DIR="@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
+"@CMAKE_COMMAND@" -E copy ${LIBRARY_OUTPUT_DIR}/*.dbg \
+    "${OUTDIR}/@CMAKE_INSTALL_LIBDIR@/" 2>&1 | \
+    tee -a "@CMAKE_BINARY_DIR@/cmake_cpack_dbg_install.log"
+
+# Exit gracefully:
+exit 0

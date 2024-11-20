@@ -1,0 +1,45 @@
+#!@BASH_EXECUTABLE@
+#
+# Copyright (C) 2002-2021 CERN for the benefit of the ATLAS collaboration
+#
+# This script is used by CTest to run the test @testName@ with the correct
+# environment setup, and post processing.
+#
+
+# Set up the runtime environment:
+source @CMAKE_BINARY_DIR@/@ATLAS_PLATFORM@/setup.sh
+
+# Turn off xAOD monitoring for the test:
+export XAOD_ACCESSTRACER_FRACTION=0
+
+# Set variables for post-processing script:
+export ATLAS_CTEST_PACKAGE='@pkgName@'
+export ATLAS_CTEST_TESTNAME='@testName@'
+export ATLAS_CTEST_LOG_SELECT_PATTERN='@ARG_LOG_SELECT_PATTERN@'
+export ATLAS_CTEST_LOG_IGNORE_PATTERN='@ARG_LOG_IGNORE_PATTERN@'
+
+# Run a possible pre-exec script:
+@PRE_EXEC_SCRIPT@
+
+# Run the test:
+@CMAKE_CURRENT_BINARY_DIR@/test-bin/@testName@.exe 2>&1 | tee @testName@.log
+
+# Set the test's return code:
+export ATLAS_CTEST_TESTSTATUS=${PIPESTATUS[0]}
+# temporary for backwards-compatibilty:
+export testStatus=${ATLAS_CTEST_TESTSTATUS}
+
+# Put the reference file in place if it exists:
+if [ -f @CMAKE_CURRENT_SOURCE_DIR@/share/@testName@.ref ] &&
+    [ "@CMAKE_CURRENT_SOURCE_DIR@" != "@CMAKE_CURRENT_BINARY_DIR@" ]; then
+    @CMAKE_COMMAND@ -E make_directory ../share
+    @CMAKE_COMMAND@ -E create_symlink \
+     @CMAKE_CURRENT_SOURCE_DIR@/share/@testName@.ref ../share/@testName@.ref
+fi
+
+# Set exit code in case no post-processing follows:
+default_return() { return ${ATLAS_CTEST_TESTSTATUS} ; }
+default_return
+
+# Run a possible post-exec script:
+@POST_EXEC_SCRIPT@

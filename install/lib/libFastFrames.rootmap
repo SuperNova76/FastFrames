@@ -1,0 +1,6 @@
+[ libFastFrames.so ]
+# List of selected classes
+class MainFrame
+class ROOT6_FastFramesHelperAutoloadHook
+header FastFrames/MainFrame.h
+header FastFrames/DefineHelpersDict.h

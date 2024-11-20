@@ -1,0 +1,20 @@
+// Dear emacs, this is -*- c++ -*-
+// Copyright (C) 2002-2017 CERN for the benefit of the ATLAS collaboration
+#ifndef DATALINKDICT_@pkgName@_@typeSanitised@
+#define DATALINKDICT_@pkgName@_@typeSanitised@
+
+// Include the DataLink header:
+#include "AthLinks/DataLink.h"
+
+namespace {
+
+   // Instantiate the type:
+   struct DataLinkDict@pkgName@@typeSanitised@ {
+
+      DataLink< @type@ > dlinkInst;
+
+   }; // struct DataLinkDict@pkgName@@typeSanitised@
+
+} // private namespace
+
+#endif // DATALINKDICT_@pkgName@_@typeSanitised@

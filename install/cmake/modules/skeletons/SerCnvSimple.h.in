@@ -1,0 +1,15 @@
+// Dear emacs, this is -*- c++ -*-
+// Copyright (C) 2002-2017 CERN for the benefit of the ATLAS collaboration
+#ifndef @pkgName@_@ARG_CNV_PFX@@type@SerCnv_H
+#define @pkgName@_@ARG_CNV_PFX@@type@SerCnv_H
+
+// Athena include(s):
+#include "TrigSerializeCnvSvc/TrigSerializeConverter.h"
+
+// EDM include(s):
+#include "@header@"
+
+// Declare the converter as a simple typedef:
+typedef TrigSerializeConverter< @namespace@::@type@ > @ARG_CNV_PFX@@type@SerCnv;
+
+#endif // @pkgName@_@ARG_CNV_PFX@@type@SerCnv_H

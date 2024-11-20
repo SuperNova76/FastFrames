@@ -1,0 +1,7 @@
+module "FastFrames" {
+  requires cplusplus
+  module "FastFrames/MainFrame.h" { header "FastFrames/MainFrame.h" export * }
+  link "libFastFrames.so"
+  export *
+}
+

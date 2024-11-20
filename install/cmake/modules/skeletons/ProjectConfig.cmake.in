@@ -1,0 +1,206 @@
+# Copyright (C) 2002-2022 CERN for the benefit of the ATLAS collaboration
+#
+# Configuration file for an ATLAS CMake release installation.
+# It defines the following variables:
+#
+#  @CMAKE_PROJECT_NAME@_INSTALL_DIR  - Base install directory for the release
+#  @CMAKE_PROJECT_NAME@_INCLUDE_DIR  - Include directory for the release
+#  @CMAKE_PROJECT_NAME@_LIBRARY_DIR  - Library directory for the release
+#  @CMAKE_PROJECT_NAME@_BINARY_DIR   - Runtime directory for the release
+#  @CMAKE_PROJECT_NAME@_CMAKE_DIR    - Directory holding CMake files
+#  @CMAKE_PROJECT_NAME@_PYTHON_DIR   - Directory holding python code
+#  @CMAKE_PROJECT_NAME@_VERSION      - The version number of the release
+#  @CMAKE_PROJECT_NAME@_TARGET_NAMES - The names of the targets provided by the
+#                                      release
+#  @CMAKE_PROJECT_NAME@_PLATFORM     - The name of the platform of the release
+#
+# Note however that most of the time you should not be using any of these
+# variables, but the imported targets of the project instead. Even more, in most
+# cases you will want to use atlas_project(...) to handle the imported targets
+# in a "smart way".
+
+# Require CMake 3.11 for aliasing global imported targets.
+cmake_minimum_required( VERSION 3.11 )
+
+# Add the CMake provided initialisation code.
+@PACKAGE_INIT@
+
+# Set various directory variables.
+set( @CMAKE_PROJECT_NAME@_INSTALL_DIR "@PACKAGE_ATLAS_INSTALL_DIR@" )
+set( @CMAKE_PROJECT_NAME@_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@" )
+set( @CMAKE_PROJECT_NAME@_LIBRARY_DIR "@PACKAGE_CMAKE_INSTALL_LIBDIR@" )
+set( @CMAKE_PROJECT_NAME@_BINARY_DIR "@PACKAGE_CMAKE_INSTALL_BINDIR@" )
+set( @CMAKE_PROJECT_NAME@_CMAKE_DIR "@PACKAGE_CMAKE_INSTALL_CMAKEDIR@" )
+set( @CMAKE_PROJECT_NAME@_PYTHON_DIR "@PACKAGE_CMAKE_INSTALL_PYTHONDIR@" )
+
+# Set the version of the project.
+set( @CMAKE_PROJECT_NAME@_VERSION "@CMAKE_PROJECT_VERSION@" )
+
+# Set the names of the targets that the project exported.
+set( @CMAKE_PROJECT_NAME@_TARGET_NAMES "@ATLAS_EXPORTED_TARGETS@" )
+
+# Print what project/release was found just now.
+include( FindPackageHandleStandardArgs )
+find_package_handle_standard_args( @CMAKE_PROJECT_NAME@
+   REQUIRED_VARS CMAKE_CURRENT_LIST_FILE
+   VERSION_VAR @CMAKE_PROJECT_NAME@_VERSION )
+
+# The base projects that this project was built on top of:
+set( @CMAKE_PROJECT_NAME@_BASE_PROJECTS @ATLAS_BASE_PROJECTS@ )
+
+# The platform name used for the build.
+set( @CMAKE_PROJECT_NAME@_PLATFORM "@ATLAS_PLATFORM@" )
+set( ATLAS_PLATFORM "@ATLAS_PLATFORM@" )
+
+# Include the project-specific pre-include file, if it exists:
+include( "${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/PreConfig.cmake" OPTIONAL )
+
+# Include the base projects, in the order in which they were given to
+# the atlas_project call.
+set( _baseProjects@CMAKE_PROJECT_NAME@
+   ${@CMAKE_PROJECT_NAME@_BASE_PROJECTS} )
+while( _baseProjects@CMAKE_PROJECT_NAME@ )
+   # Extract the release name and version, and then remove these entries
+   # from the list:
+   list( GET _baseProjects@CMAKE_PROJECT_NAME@ 0
+      _base_project@CMAKE_PROJECT_NAME@ )
+   list( GET _baseProjects@CMAKE_PROJECT_NAME@ 1
+      _base_version@CMAKE_PROJECT_NAME@ )
+   list( REMOVE_AT _baseProjects@CMAKE_PROJECT_NAME@ 0 1 )
+   # Make sure that the project version is a regular version number:
+   if( NOT _base_version@CMAKE_PROJECT_NAME@ MATCHES "^[0-9]+[0-9.]*" )
+      # Let's not specify a version in this case...
+      message( STATUS "Using base project "
+         "\"${_base_project@CMAKE_PROJECT_NAME@}\" without "
+         "its \"${_base_version@CMAKE_PROJECT_NAME@}\" version name/number" )
+      set( _base_version@CMAKE_PROJECT_NAME@ )
+   endif()
+   # Find the base release:
+   if( @CMAKE_PROJECT_NAME@_FIND_QUIETLY )
+      find_package( ${_base_project@CMAKE_PROJECT_NAME@}
+         ${_base_version@CMAKE_PROJECT_NAME@} EXACT QUIET )
+   else()
+      find_package( ${_base_project@CMAKE_PROJECT_NAME@}
+         ${_base_version@CMAKE_PROJECT_NAME@} EXACT )
+   endif()
+endwhile()
+unset( _baseProjects@CMAKE_PROJECT_NAME@ )
+unset( _base_project@CMAKE_PROJECT_NAME@ )
+unset( _base_version@CMAKE_PROJECT_NAME@ )
+
+# Make CMake find the release's installed modules. Optionally append the module
+# library instead of prepending it. To allow the user to override the
+# modules packaged with the release.
+if( ATLAS_DONT_PREPEND_PROJECT_MODULES )
+   list( APPEND CMAKE_MODULE_PATH "${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/modules" )
+else()
+   list( INSERT CMAKE_MODULE_PATH 0 "${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/modules" )
+endif()
+list( REMOVE_DUPLICATES CMAKE_MODULE_PATH )
+
+# Pull in the ATLAS code:
+include( AtlasFunctions )
+
+# Include the file listing all the imported targets and options:
+include(
+   "${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/@CMAKE_PROJECT_NAME@Config-targets.cmake"
+   OPTIONAL )
+
+# Check what build mode the release was built with. And set CMAKE_BUILD_TYPE
+# to that value by default. While there should only be one build mode in
+# a given install area, provide an explicit preference order to the different
+# build modes:
+foreach( _type "Debug" "RelWithDebInfo" "Release" "MinSizeRel" "Default" )
+   string( TOLOWER "${_type}" _typeLower )
+   set( _fileName "${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/" )
+   set( _fileName "${_fileName}@CMAKE_PROJECT_NAME@Config-targets" )
+   set( _fileName "${_fileName}-${_typeLower}.cmake" )
+   if( EXISTS "${_fileName}" )
+      # Set the build type forcefully. CMake (at least at the time of writing
+      # [3.19]) needs to be handled in this weird way. (One would think that if
+      # the variable is deemed not-yet-set, then you wouldn't need to use the
+      # FORCE keyword. But you do...)
+      if( NOT CMAKE_BUILD_TYPE )
+         set( CMAKE_BUILD_TYPE "${_type}"
+            CACHE STRING "Build mode for the release" FORCE )
+      endif()
+      break()
+   endif()
+   unset( _fileName )
+   unset( _typeLower )
+endforeach()
+
+# If the libraries need to be set up...
+if( @CMAKE_PROJECT_NAME@_FIND_COMPONENTS )
+
+   # A sanity check.
+   if( NOT ${@CMAKE_PROJECT_NAME@_FIND_COMPONENTS} STREQUAL "INCLUDE" )
+      message( WARNING "Only the 'INCLUDE' component is understood. "
+         "Continuing as if 'INCLUDE' would have been specified..." )
+   endif()
+
+   # Tell the user what's happening.
+   message( STATUS "Including the packages from project "
+      "@CMAKE_PROJECT_NAME@ - @CMAKE_PROJECT_VERSION@..." )
+
+   # Loop over the targets that this project has.
+   foreach( _target ${@CMAKE_PROJECT_NAME@_TARGET_NAMES} )
+      # If the target exists already, then don't do aything else.
+      if( TARGET ${_target} )
+         continue()
+      endif()
+      # Check whether the target in question is known in this release.
+      if( NOT TARGET @CMAKE_PROJECT_NAME@::${_target} )
+         message( SEND_ERROR
+            "Target with name @CMAKE_PROJECT_NAME@::${_target} not found" )
+         continue()
+      endif()
+      # And now create a deep copy of it.
+      atlas_copy_target( @CMAKE_PROJECT_NAME@ ${_target} )
+   endforeach()
+
+   # Include the base projects, in reverse order. So that the components from
+   # the end of the list would get precedence over the components from the
+   # front.
+   set( _baseProjects@CMAKE_PROJECT_NAME@
+      ${@CMAKE_PROJECT_NAME@_BASE_PROJECTS} )
+   while( _baseProjects@CMAKE_PROJECT_NAME@ )
+      # Get the last project from the list:
+      list( LENGTH _baseProjects@CMAKE_PROJECT_NAME@
+         _length@CMAKE_PROJECT_NAME@ )
+      math( EXPR _projNameIdx@CMAKE_PROJECT_NAME@
+         "${_length@CMAKE_PROJECT_NAME@} - 2" )
+      math( EXPR _projVersIdx@CMAKE_PROJECT_NAME@
+         "${_length@CMAKE_PROJECT_NAME@} - 1" )
+      list( GET _baseProjects@CMAKE_PROJECT_NAME@
+         ${_projNameIdx@CMAKE_PROJECT_NAME@}
+         _base_project@CMAKE_PROJECT_NAME@ )
+      list( GET _baseProjects@CMAKE_PROJECT_NAME@
+         ${_projVersIdx@CMAKE_PROJECT_NAME@}
+         _base_version@CMAKE_PROJECT_NAME@ )
+      list( REMOVE_AT _baseProjects@CMAKE_PROJECT_NAME@
+         ${_projNameIdx@CMAKE_PROJECT_NAME@}
+         ${_projVersIdx@CMAKE_PROJECT_NAME@} )
+      # Find the base release:
+      find_package( ${_base_project@CMAKE_PROJECT_NAME@}
+         ${_base_version@CMAKE_PROJECT_NAME@} EXACT COMPONENTS INCLUDE QUIET )
+   endwhile()
+   unset( _baseProjects@CMAKE_PROJECT_NAME@ )
+   unset( _projNameIdx@CMAKE_PROJECT_NAME@ )
+   unset( _projVersIdx@CMAKE_PROJECT_NAME@ )
+   unset( _base_project@CMAKE_PROJECT_NAME@ )
+   unset( _base_version@CMAKE_PROJECT_NAME@ )
+   unset( _length@CMAKE_PROJECT_NAME@ )
+
+endif()
+
+# Only do this if necessary:
+if( NOT ATLAS_DONT_PREPEND_PROJECT_MODULES )
+   # Make sure that after all of this, we still have this release's module
+   # directory at the front of the list:
+   list( INSERT CMAKE_MODULE_PATH 0 "${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/modules" )
+   list( REMOVE_DUPLICATES CMAKE_MODULE_PATH )
+endif()
+
+# Include the project-specific post-include file, if it exists:
+include( "${@CMAKE_PROJECT_NAME@_CMAKE_DIR}/PostConfig.cmake" OPTIONAL )
