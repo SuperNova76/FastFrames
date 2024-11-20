@@ -1,0 +1,101 @@
+general:
+  debug_level: DEBUG
+
+  # paths
+  input_filelist_path: "/eos/user/n/nsangwen/TopCPToolKit/Grid_Output/filelist_tWZ.txt"
+  input_sumweights_path: "/eos/user/n/nsangwen/TopCPToolKit/Grid_Output/sum_of_weights_tWZ.txt"
+  output_path_histograms: "/eos/user/n/nsangwen/TopCPToolKit/FastFrames/"
+  output_path_ntuples: "/eos/user/n/nsangwen/TopCPToolKit/FastFrames/"
+
+  # weights
+  default_sumweights: "NOSYS"
+  default_event_weights: "weight_mc_NOSYS * weight_pileup_NOSYS * weight_jvt_effSF_NOSYS * weight_ftag_effSF_DL1dv01_Continuous_NOSYS * globalTriggerEffSF_NOSYS * weight_leptonSF_tight_NOSYS"
+
+  default_reco_tree_name: "reco"
+
+  # path to the file with cross-sections
+  xsection_files: ["data/XSection-MC16-13TeV.data"]
+
+  # name of the custom class
+  custom_frame_name: "TutorialClass"
+
+  # automatic systematics?
+  automatic_systematics: True
+  nominal_only: False
+
+  # which objects to create lorentz vectors for
+  create_tlorentz_vectors_for: ["jet","el","mu"]
+
+  number_of_cpus: 4
+
+
+# define regions
+regions:
+  - name: "Electron"
+    selection: "pass_ejets_NOSYS"
+    variables:
+      - name: "jet1_pt_GEV"
+        title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
+        definition: "jet1_pt_GEV_NOSYS"
+        type: "double"
+        binning:
+          min: 0
+          max: 300
+          number_of_bins: 10
+      - name: "reco_met"
+        title : "MET;E_{T}^{miss} [MeV];Events"
+        definition: "met_met_NOSYS"
+        type: "float"
+        binning:
+          bin_edges: [0,20000,60000,80000,140000,250000]
+
+  - name: "Muon"
+    selection: "pass_mujets_NOSYS"
+    variables:
+      - name: "jet1_pt_GEV"
+        title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
+        definition: "jet1_pt_GEV_NOSYS"
+        type: "double"
+        binning:
+          min: 0
+          max: 300
+          number_of_bins: 10
+      - name: "reco_met"
+        title : "MET;E_{T}^{miss} [MeV];Events"
+        definition: "met_met_NOSYS"
+        type: "float"
+        binning:
+          bin_edges: [0,20000,60000,80000,140000,250000]
+
+
+# define samples
+samples:
+  - name: "ttz_MGPy8_new_ee"
+    dsids: [504330]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+
+  - name: "ttz_MGPy8_new_mumu"
+    dsids: [504334]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+
+  - name: "ttz_MGPy8_new_tautau"
+    dsids: [504342]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+
+  #- name: "tWZ_DR1"
+  #  dsids: [525955]
+  #  campaigns: ["mc20a"]
+  #  simulation_type: "fastsim"
+
+  #- name: "tWZ_DR2"
+  #  dsids: [525956]
+  #  campaigns: ["mc20a"]
+  #  simulation_type: "fullsim"
+
+ntuples:
+  # selection: "pass_ejets_NOSYS"
+  copy_trees: ["reco"]
+

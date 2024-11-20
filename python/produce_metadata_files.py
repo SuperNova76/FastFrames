@@ -81,8 +81,8 @@ if __name__ == "__main__":
             sys.exit(1)
         root_files_folder = args.root_files_folder
         output_path = args.output_path if args.output_path != "" else root_files_folder
-        filelist_path = output_path + "/filelist.txt"
-        sum_of_weights_path = output_path + "/sum_of_weights.txt"
+        filelist_path = output_path + "/filelist_tWZ.txt"
+        sum_of_weights_path = output_path + "/sum_of_weights_tWZ.txt"
 
         produce_filelist(root_files_folder, filelist_path)
         produce_sum_of_weights_file(filelist_path, sum_of_weights_path, histo_name)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     else :
         gPaths = createGridFileList()
         output_path = args.output_path if args.output_path != "" else ""
-        filelist_path = output_path + "/filelist.txt"
-        sum_of_weights_path = output_path + "/sum_of_weights.txt"
+        filelist_path = output_path + "/filelist_tWZ.txt"
+        sum_of_weights_path = output_path + "/sum_of_weights_tWZ.txt"
         produce_filelist_grid(gPaths,filelist_path)
         produce_sum_of_weights_file(filelist_path, sum_of_weights_path, histo_name)
