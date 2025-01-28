@@ -1,7 +1,7 @@
 
 # FastFrames
 
-This repository is designed for producing metadata and running the FastFrames package for analysis tasks. Below are the steps to set up and run the package on LXPlus.
+This repository is designed for producing metadata and running the FastFrames package for analysis tasks. Below are the steps to set up and run the package on Lxplus.
 
 ## Setup
 
