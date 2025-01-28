@@ -50,5 +50,4 @@ Here, replace `n` with the necessary step you wish to run.
 
 ## Notes
 
-- Ensure you have all dependencies installed as specified in the `setup.sh` file.
 - Modify the paths and configuration files according to your specific setup.
