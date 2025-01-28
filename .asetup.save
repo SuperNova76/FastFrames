@@ -7,8 +7,8 @@ export ASETUP_PRINTLEVEL="0"
 export BINARY_TAG="x86_64-el9-gcc13-opt"
 export CMTCONFIG="x86_64-el9-gcc13-opt"
 if [ -z "${AtlasSetup:+x}" ]; then
-    export AtlasSetup="/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/AtlasSetup/V03-01-04/AtlasSetup"
-    export AtlasSetupVersion="AtlasSetup-03-01-04"
+    export AtlasSetup="/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/AtlasSetup/V03-01-09/AtlasSetup"
+    export AtlasSetupVersion="AtlasSetup-03-01-09"
 fi
 
 if [ -d /tmp/nsangwen ]; then
@@ -47,8 +47,14 @@ export CMAKE_NO_VERBOSE="1"
 if [ -z "${CMAKE_BUILD_PARALLEL_LEVEL:+x}" ]; then
     export CMAKE_BUILD_PARALLEL_LEVEL="16"
 fi
-type lsetup >/dev/null 2>/dev/null
+type lsetup &>/dev/null
 if [ $? -ne 0 ]; then
+   if [ -z "$ATLAS_LOCAL_ROOT_BASE" ]; then
+      if [ -z "$ATLAS_SW_BASE" ]; then
+         export ATLAS_SW_BASE=/cvmfs
+       fi
+      export ATLAS_LOCAL_ROOT_BASE=$ATLAS_SW_BASE/atlas.cern.ch/repo/ATLASLocalRootBase
+   fi
    source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh --quiet
 fi
 source $ATLAS_LOCAL_ROOT_BASE/packageSetups/localSetup.sh --quiet "cmake 3.27.5"
