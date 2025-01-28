@@ -23,7 +23,7 @@ Replace `<input path>` with the folder containing the input ROOT files and `<out
 
 ## Running the Package
 
-To run the FastFrames package, use the following command with the appropriate configuration file and step number:
+To run the FastFrames package, use the following command with the appropriate configuration file and step:
 
 ```bash
 python3 FastFrames/python/FastFrames.py --config <path to config file> --step n
@@ -43,7 +43,7 @@ Here, replace `n` with the necessary step you wish to run.
    python3 python/produce_metadata_files.py --root_files_folder /path/to/root_files --output_path /path/to/output
    ```
 
-3. Run the FastFrames package (assuming step `1` for example):
+3. Run the FastFrames package:
    ```bash
    python3 python/FastFrames.py --config /path/to/config.yml --step n
    ```
