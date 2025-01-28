@@ -2,10 +2,10 @@ general:
   debug_level: DEBUG
 
   # paths
-  input_filelist_path: "/eos/user/n/nsangwen/TopCPToolKit/Grid_Output/filelist_tWZ.txt"
-  input_sumweights_path: "/eos/user/n/nsangwen/TopCPToolKit/Grid_Output/sum_of_weights_tWZ.txt"
-  output_path_histograms: "/eos/user/n/nsangwen/TopCPToolKit/FastFrames/"
-  output_path_ntuples: "/eos/user/n/nsangwen/TopCPToolKit/FastFrames/"
+  input_filelist_path: "/eos/user/n/nsangwen/TopCPToolKit/Grid_Output_No_Met_v2/27-Jan-mc20a/filelist_tWZ.txt"
+  input_sumweights_path: "/eos/user/n/nsangwen/TopCPToolKit/Grid_Output_No_Met_v2/27-Jan-mc20a/sum_of_weights_tWZ.txt"
+  output_path_histograms: "/eos/user/n/nsangwen/TopCPToolKit/FastFrames/run/hist/"
+  output_path_ntuples: "/eos/user/n/nsangwen/TopCPToolKit/FastFrames/run/ntups_no_met_v2/2016_mc16a/"
 
   # weights
   default_sumweights: "NOSYS"
@@ -31,8 +31,8 @@ general:
 
 # define regions
 regions:
-  - name: "Electron"
-    selection: "pass_ejets_NOSYS"
+  - name: "eee"
+    selection: "pass_eee_NOSYS"
     variables:
       - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
@@ -49,8 +49,45 @@ regions:
         binning:
           bin_edges: [0,20000,60000,80000,140000,250000]
 
-  - name: "Muon"
-    selection: "pass_mujets_NOSYS"
+  - name: "eemu"
+    selection: "pass_eemu_NOSYS"
+    variables:
+      - name: "jet1_pt_GEV"
+        title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
+        definition: "jet1_pt_GEV_NOSYS"
+        type: "double"
+        binning:
+          min: 0
+          max: 300
+          number_of_bins: 10
+      - name: "reco_met"
+        title : "MET;E_{T}^{miss} [MeV];Events"
+        definition: "met_met_NOSYS"
+        type: "float"
+        binning:
+          bin_edges: [0,20000,60000,80000,140000,250000]
+
+  - name: "mumue"
+    selection: "pass_mumue_NOSYS"
+    variables:
+      - name: "jet1_pt_GEV"
+        title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
+        definition: "jet1_pt_GEV_NOSYS"
+        type: "double"
+        binning:
+          min: 0
+          max: 300
+          number_of_bins: 10
+      - name: "reco_met"
+        title : "MET;E_{T}^{miss} [MeV];Events"
+        definition: "met_met_NOSYS"
+        type: "float"
+        binning:
+          bin_edges: [0,20000,60000,80000,140000,250000]
+
+
+  - name: "mumumu"
+    selection: "pass_mumumu_NOSYS"
     variables:
       - name: "jet1_pt_GEV"
         title : "Leading jet p_{T}; Leading jet p_{T} [GeV];Events"
@@ -70,32 +107,67 @@ regions:
 
 # define samples
 samples:
-  - name: "ttz_MGPy8_new_ee"
+  - name: "ttz_MGPy8_ttee"
     dsids: [504330]
     campaigns: ["mc20a"]
     simulation_type: "fullsim"
 
-  - name: "ttz_MGPy8_new_mumu"
+  - name: "ttz_MGPy8_ttmumu"
     dsids: [504334]
     campaigns: ["mc20a"]
     simulation_type: "fullsim"
 
-  - name: "ttz_MGPy8_new_tautau"
+  - name: "ttz_MGPy8_tttautau"
     dsids: [504342]
     campaigns: ["mc20a"]
     simulation_type: "fullsim"
 
-  #- name: "tWZ_DR1"
-  #  dsids: [525955]
-  #  campaigns: ["mc20a"]
-  #  simulation_type: "fastsim"
+  - name: "ttz_Sh2211_new"
+    dsids: [700309]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
 
-  #- name: "tWZ_DR2"
-  #  dsids: [525956]
-  #  campaigns: ["mc20a"]
-  #  simulation_type: "fullsim"
+  - name: "tWZ_Ztoll_DR1"
+    dsids: [525955]
+    campaigns: ["mc20a"]
+    simulation_type: "fastsim"
+
+  - name: "tWZ_Ztoll_DR2"
+    dsids: [525956]
+    campaigns: ["mc20a"]
+    simulation_type: "fastsim"
+  
+  - name: "ZZ_Sherpa222_llll"
+    dsids: [364250]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+
+  - name: "ZZ_lllljj_EW6"
+    dsids: [364283]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+
+  - name: "ZZ_llll_lowMllPtComplement"
+    dsids: [364288]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+
+  - name: "ZZ_ggllll_130M4l"
+    dsids: [345706]
+    campaigns: ["mc20a"]
+    simulation_type: "fullsim"
+
+ # - name: "data15"
+ #   dsids: [0]
+ #   campaigns: ["2015"]
+ #   simulation_type: "data"
+
+ # - name: "data16"
+ #   dsids: [0]
+ #   campaigns: ["2016"]
+ #   simulation_type: "data"
 
 ntuples:
-  # selection: "pass_ejets_NOSYS"
-  copy_trees: ["reco"]
+  regions: ["eee", "eemu", "mumue", "mumumu"]
+  #copy_trees: ["reco"]
 
