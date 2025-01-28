@@ -16,7 +16,7 @@ source setup.sh
 To produce metadata files, use the following Python command. This will generate the necessary metadata files from the input ROOT files:
 
 ```bash
-python3 python/produce_metadata_files.py --root_files_folder <input path> --output_path <output path>
+python3 FastFrames/python/produce_metadata_files.py --root_files_folder <input path> --output_path <output path>
 ```
 
 Replace `<input path>` with the folder containing the input ROOT files and `<output path>` with the desired output directory for the metadata files.
@@ -26,10 +26,10 @@ Replace `<input path>` with the folder containing the input ROOT files and `<out
 To run the FastFrames package, use the following command with the appropriate configuration file and step number:
 
 ```bash
-python3 python/FastFrames.py --config tWZ_test_config.yml --step n
+python3 FastFrames/python/FastFrames.py --config <path to config file> --step n
 ```
 
-Here, replace `n` with the step number for the ntuple step you wish to run.
+Here, replace `n` with the necessary step you wish to run.
 
 ## Example Usage
 
@@ -45,7 +45,7 @@ Here, replace `n` with the step number for the ntuple step you wish to run.
 
 3. Run the FastFrames package (assuming step `1` for example):
    ```bash
-   python3 python/FastFrames.py --config tWZ_test_config.yml --step 1
+   python3 python/FastFrames.py --config /path/to/config.yml --step n
    ```
 
 ## Notes
