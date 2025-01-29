@@ -51,3 +51,4 @@ Here, replace `n` with the necessary step you wish to run.
 ## Notes
 
 - Modify the paths and configuration files according to your specific setup.
+- Check the `nsangwen_dev` branch for the tWZ analysis config `tWZ_test_config.yml`.
